@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-export default function ClassSummaryPopModal({ visible, onClose} : any) {
+export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : { visible: boolean; onClose: () => void; clickedNext: () => void}) {
   const [topic, setTopic] = useState();
   const [subTopic, setSubTopic] = useState();
 
@@ -51,6 +51,7 @@ export default function ClassSummaryPopModal({ visible, onClose} : any) {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Set Class Topic</Text>
             <View style={styles.row}>
+              
               <Text style={styles.label}>Topic :</Text>
               <Picker
                 selectedValue={topic}
@@ -62,9 +63,7 @@ export default function ClassSummaryPopModal({ visible, onClose} : any) {
                 <Picker.Item label="Dark" value="dark" />
                 <Picker.Item label="System" value="system" />
               </Picker>
-            </View>
 
-            <View style={styles.row}>
               <Text style={styles.label}>Sub Topic :</Text>
               <Picker
                 selectedValue={subTopic}
@@ -77,11 +76,15 @@ export default function ClassSummaryPopModal({ visible, onClose} : any) {
                 <Picker.Item label="System" value="system" />
               </Picker>
             </View>
+
+            <View style={styles.row}>
+              
+            </View>
           </View>
 
           {/* Next Button */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onClose} style={styles.nextButton}>
+            <TouchableOpacity onPress={clickedNext} style={styles.nextButton}>
               <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
           </View>
@@ -95,7 +98,7 @@ export default function ClassSummaryPopModal({ visible, onClose} : any) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    // backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -161,7 +164,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   picker: {
-    height: 40,
+    height: 60,
     width: 200,
     marginLeft: 16,
   },
