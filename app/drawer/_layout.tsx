@@ -51,7 +51,7 @@ const DrawerLayout = () => {
       />
       <Drawer.Screen name="Home" component={Home} 
       options={{ 
-        // title: 'Home',
+        title: 'Keshavareddy Internation Schools',
         // drawerLabel: 'Login',
         drawerIcon: ({ color, focused }) => (
             <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
@@ -61,6 +61,7 @@ const DrawerLayout = () => {
             marginTop: 10,      // Adjust the margin to move the label to the top
             fontSize: 14,       // Font size of the label
             textAlign: 'center', // Center the label
+            alignItems: 'center'
           },
           drawerItemStyle: {
             alignItems: 'center', // Center horizontally
