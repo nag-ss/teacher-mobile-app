@@ -50,8 +50,8 @@ const DrawerLayout = () => {
         }}
       />
       <Drawer.Screen name="Home" component={Home} 
-        options={{ 
-          // title: 'Home',
+       options={{ 
+          title: 'Keshavareddy Internation Schools',
           // drawerLabel: 'Login',
           drawerIcon: ({ color, focused }) => (
               <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
@@ -86,6 +86,7 @@ const DrawerLayout = () => {
                 },
           }}
           />
+
       
     </Drawer.Navigator>
   );
