@@ -5,6 +5,11 @@ import { Asset } from 'expo-asset';
 // Mapping of static asset paths
 const svgAssets = {
   logo: require('../assets/images/ss/Logo.svg'),
+  aiAssistant: require('../assets/images/ss/aiAsistant.svg'),
+  aiCheck: require('../assets/images/ss/aiCheck.svg'),
+  autoTest: require('../assets/images/ss/autoTest.svg'),
+  classUpload: require('../assets/images/ss/classUpload.svg'),
+
 //   icon: require('../../assets/images/icon.svg'),
 //   background: require('../../assets/images/background.svg'),
 };

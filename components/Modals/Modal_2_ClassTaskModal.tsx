@@ -1,3 +1,5 @@
+// Prep Class page 2
+
 import React from 'react';
 import {
   Modal,
@@ -8,9 +10,9 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
-  ScrollView,
 } from 'react-native';
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
+import SvgLoader from '@/utils/SvgLoader';
 
 const tasks = [
   {
@@ -50,12 +52,20 @@ const tasks = [
   },
 ];
 
-const ClassTaskCardPop = ({ visible, onClose, goBack }: { visible: boolean; onClose: () => void; goBack: () => void  }) => {
+// const tasks = [
+//   { id:1, icon: '📄', title: 'Covalent Bond Worksheet', category: 'Classwork' },
+//   { id:2, icon: '🧪', title: 'Periodic Table', category: 'Quiz' },
+//   { id:3, icon: '📄', title: 'Upload Notes on Hydrogen Bonds', category: 'Classwork' },
+//   { id:4, icon: '🎯', title: 'Student Engagement', category: 'AI Check' },
+//   { id:5, icon: '🎯', title: 'Student Engagement', category: 'AI Check' },
+// ];
+
+const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: boolean; onClose: () => void; goBack: () => void; addTask: () => void }) => {
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <ScrollView>
+          <View>
             {/* Header */}
             <View style={styles.header}>
               <View style={styles.titleContainer}>
@@ -88,11 +98,15 @@ const ClassTaskCardPop = ({ visible, onClose, goBack }: { visible: boolean; onCl
 
             {/* AI Assistant Image */}
             <View style={styles.aiImageContainer}>
-              <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.aiImage} resizeMode="contain" />
+              <SvgLoader
+                svgFilePath='aiAssistant' // Replace with your own logo
+                style={styles.aiAssistant}
+                resizeMode="contain"
+              />
             </View>
 
             {/* Table / Task List */}
-            <ScrollView style={styles.taskTable}> 
+            <View style={styles.taskTable}> 
               <FlatList
                 data={tasks}
                 keyExtractor={(item) => item.index.toString()}
@@ -105,11 +119,11 @@ const ClassTaskCardPop = ({ visible, onClose, goBack }: { visible: boolean; onCl
                   </View>
                 )}
               />
-            </ScrollView>
+            </View>
 
             {/* Add Task */}
             <View style={styles.addTaskContainer}>
-              <TouchableOpacity style={styles.addButton}>
+              <TouchableOpacity onPress={addTask} style={styles.addButton}>
                 <Text style={styles.addButtonText}>+ Add Task</Text>
               </TouchableOpacity>
             </View>
@@ -124,7 +138,7 @@ const ClassTaskCardPop = ({ visible, onClose, goBack }: { visible: boolean; onCl
                 <UploadMaterialsCard title='Assignment'/>
               </View>
             </View>
-          </ScrollView>
+          </View>
         </View>
       </View>
     </Modal>
@@ -166,6 +180,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 32,
     height: 32,
+  },
+  aiAssistant: {
+    width: 120,
+    height: 120,
   },
   topicContainer: {
     flexDirection: 'row',
