@@ -5,12 +5,15 @@ import SummaryModal from '@/components/Modals/Modal_1_SummaryModal';
 import ClassTaskCardPop from '@/components/Modals/Modal_2_ClassTaskModal';
 import NewTaskModal from '@/components/Modals/Modal_3_CreateTaskModal';
 import AiCheckModal from '@/components/Modals/Modal_4_AICheckModal';
+import GenerateSlipTestModal from '@/components/Modals/Modal_5_GenerateSlipTest';
 
 const Settings = () => {
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
   const [showModal2TasksModal, setShowModal2TasksModal] = useState(false);
   const [showModal3NewTasksModal, setShowModal3NewTaskModal] = useState(false);
   const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
+  const [showModal5GenerateSlipTestModal, setShowModal5GenerateSlipTestModal] = useState(false);
+
 
   const showDetailsModal = () => {
     setShowModal1SummaryModal(false)
@@ -34,12 +37,11 @@ const Settings = () => {
 
   const gotoTask = (taskTitle: string) => {
     if(taskTitle == 'AI') {
-        setShowModal3NewTaskModal(false)
-        setShowModal4AICheckModal(true)
+      setShowModal3NewTaskModal(false)
+      setShowModal4AICheckModal(true)
     } else if(taskTitle == 'Slip Test') {
-        // setCreateTaskModalOpen(false)
-        // setCreateSlipTestModal(true)
-        alert("Slip Test Clicked")
+      setShowModal3NewTaskModal(false)
+      setShowModal5GenerateSlipTestModal(true)
     } else {
         // setCreateTaskModalOpen(false)
         // setShowCWTaskModal(true)
@@ -52,6 +54,11 @@ const Settings = () => {
     setShowModal3NewTaskModal(true)
   }
 
+  const goToSlipTestDetails = () => {
+    setShowModal5GenerateSlipTestModal(false)
+    alert("Slip test being Generated ...")
+
+  }
   
 
   return (
@@ -62,6 +69,7 @@ const Settings = () => {
         <ClassTaskCardPop visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
         <AiCheckModal visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} />
+        <GenerateSlipTestModal visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
