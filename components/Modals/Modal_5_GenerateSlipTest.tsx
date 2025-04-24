@@ -9,6 +9,7 @@ import {
   Pressable,
   Platform,
   ScrollView,
+  Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
@@ -29,9 +30,10 @@ const GenerateSlipTestModal = ({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <ScrollView contentContainerStyle={styles.contentContainer}>
-            <Pressable style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeText}>&times;</Text>
-            </Pressable>
+
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+            </TouchableOpacity>
 
             <Text style={styles.modalTitle}>Generate Slip Test</Text>
 
@@ -153,6 +155,10 @@ const styles = StyleSheet.create({
     right: 10,
     top: 10,
     zIndex: 10,
+  },
+  icon: {
+    width: 32,
+    height: 32,
   },
   closeText: {
     fontSize: 28,

@@ -6,6 +6,7 @@ import ClassTaskCardPop from '@/components/Modals/Modal_2_ClassTaskModal';
 import NewTaskModal from '@/components/Modals/Modal_3_CreateTaskModal';
 import AiCheckModal from '@/components/Modals/Modal_4_AICheckModal';
 import GenerateSlipTestModal from '@/components/Modals/Modal_5_GenerateSlipTest';
+import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails'; 
 
 const Settings = () => {
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
@@ -13,6 +14,7 @@ const Settings = () => {
   const [showModal3NewTasksModal, setShowModal3NewTaskModal] = useState(false);
   const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
   const [showModal5GenerateSlipTestModal, setShowModal5GenerateSlipTestModal] = useState(false);
+  const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
 
 
   const showDetailsModal = () => {
@@ -56,10 +58,14 @@ const Settings = () => {
 
   const goToSlipTestDetails = () => {
     setShowModal5GenerateSlipTestModal(false)
-    alert("Slip test being Generated ...")
-
+    setShowModal6SlipTestSettingsModal(true)
   }
-  
+
+  const saveSlipTestDetails = () => {  
+    setShowModal6SlipTestSettingsModal(false)
+    console.log('Navigating to /teacher/sliptest');
+  };
+
 
   return (
     <SafeAreaProvider>
@@ -70,6 +76,7 @@ const Settings = () => {
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
         <AiCheckModal visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} />
         <GenerateSlipTestModal visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
+        <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
