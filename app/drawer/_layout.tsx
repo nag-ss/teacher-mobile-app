@@ -50,24 +50,43 @@ const DrawerLayout = () => {
         }}
       />
       <Drawer.Screen name="Home" component={Home} 
-      options={{ 
-        title: 'Keshavareddy Internation Schools',
-        // drawerLabel: 'Login',
-        drawerIcon: ({ color, focused }) => (
-            <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-        ),
-        drawerLabelStyle: {
-            fontWeight: 'bold', // Customize label style
-            marginTop: 10,      // Adjust the margin to move the label to the top
-            fontSize: 14,       // Font size of the label
-            textAlign: 'center', // Center the label
-            alignItems: 'center'
-          },
-          drawerItemStyle: {
-            alignItems: 'center', // Center horizontally
-          },
-    }}
-    />
+       options={{ 
+          title: 'Keshavareddy Internation Schools',
+          // drawerLabel: 'Login',
+          drawerIcon: ({ color, focused }) => (
+              <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          ),
+          drawerLabelStyle: {
+              fontWeight: 'bold', // Customize label style
+              marginTop: 10,      // Adjust the margin to move the label to the top
+              fontSize: 14,       // Font size of the label
+              textAlign: 'center', // Center the label
+            },
+            drawerItemStyle: {
+              alignItems: 'center', // Center horizontally
+            },
+        }}
+      />
+
+      <Drawer.Screen name="Settings" component={Settings} 
+            options={{ 
+              // title: 'Home',
+              // drawerLabel: 'Login',
+              drawerIcon: ({ color, focused }) => (
+                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+              ),
+              drawerLabelStyle: {
+                  fontWeight: 'bold', // Customize label style
+                  marginTop: 10,      // Adjust the margin to move the label to the top
+                  fontSize: 14,       // Font size of the label
+                  textAlign: 'center', // Center the label
+                },
+                drawerItemStyle: {
+                  alignItems: 'center', // Center horizontally
+                },
+          }}
+          />
+
       
     </Drawer.Navigator>
   );
