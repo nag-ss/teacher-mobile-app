@@ -3,6 +3,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Login from '../login';
 import Home from '../home';
 import Settings from '../settings';
+import SlipTest from '../slip_test';
 import { DrawerTabBarIcon, DrawerTabBarIconCustom, DrawerTabBarLogoIcon } from '@/components/navigation/TabBarIcon';
 import { MaterialIcons } from '@expo/vector-icons';
 import CustomDrawerContent from '@/components/navigation/Sidebar';
@@ -86,6 +87,25 @@ const DrawerLayout = () => {
                 },
           }}
           />
+      
+      <Drawer.Screen name="SlipTest" component={SlipTest} 
+          options={{ 
+            // title: 'Home',
+            // drawerLabel: 'Login',
+            drawerIcon: ({ color, focused }) => (
+                <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            ),
+            drawerLabelStyle: {
+                fontWeight: 'bold', // Customize label style
+                marginTop: 10,      // Adjust the margin to move the label to the top
+                fontSize: 14,       // Font size of the label
+                textAlign: 'center', // Center the label
+              },
+              drawerItemStyle: {
+                alignItems: 'center', // Center horizontally
+              },
+        }}
+        />
 
       
     </Drawer.Navigator>

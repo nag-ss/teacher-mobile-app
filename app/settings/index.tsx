@@ -6,9 +6,16 @@ import ClassTaskCardPop from '@/components/Modals/Modal_2_ClassTaskModal';
 import NewTaskModal from '@/components/Modals/Modal_3_CreateTaskModal';
 import AiCheckModal from '@/components/Modals/Modal_4_AICheckModal';
 import GenerateSlipTestModal from '@/components/Modals/Modal_5_GenerateSlipTest';
-import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails'; 
+import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 
-const Settings = () => {
+type Props = {
+  navigation: DrawerNavigationProp<any, any>;
+};
+
+
+const Settings: React.FC<Props> = ({navigation}) => {
+
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
   const [showModal2TasksModal, setShowModal2TasksModal] = useState(false);
   const [showModal3NewTasksModal, setShowModal3NewTaskModal] = useState(false);
@@ -63,7 +70,7 @@ const Settings = () => {
 
   const saveSlipTestDetails = () => {  
     setShowModal6SlipTestSettingsModal(false)
-    console.log('Navigating to /teacher/sliptest');
+    navigation.navigate('SlipTest');
   };
 
 
