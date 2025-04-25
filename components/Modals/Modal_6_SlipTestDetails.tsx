@@ -11,6 +11,7 @@ import {
   Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import Slider from '@react-native-community/slider';
 
 const TestSettingsModal = ({ visible, onClose, generateSlipTest }: {visible: boolean; onClose: () => void; generateSlipTest: () => void}) => {
   const [time, setTime] = useState('15 min');
@@ -74,17 +75,22 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: {visible: boo
                   {difficulty >= 7 ? 'Hard' : difficulty >= 4 ? 'Medium' : 'Easy'}
                 </Text>
               </Text>
-              <TextInput
+              {/* <TextInput
                 style={styles.slider}
                 value={String(difficulty)}
                 onChangeText={(val) => setDifficulty(Math.max(0, Math.min(10, Number(val))))}
                 keyboardType="numeric"
+              /> */}
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10}
+                step={1}
+                value={difficulty}
+                onValueChange={(num) => setDifficulty(num)}
+                renderStepNumber
               />
-              <View style={styles.scale}>
-                {[...Array(11)].map((_, i) => (
-                  <Text key={i} style={styles.scaleMark}>{i}</Text>
-                ))}
-              </View>
+
             </View>
 
             {/* Number of Questions */}
@@ -215,11 +221,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     borderRadius: 6,
-    padding: 8,
+    padding: 3,
     textAlign: 'center',
-    width: 80,
     alignSelf: 'center',
     marginTop: 10,
+    width: 630,
   },
   scale: {
     flexDirection: 'row',
