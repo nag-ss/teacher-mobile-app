@@ -7,18 +7,16 @@ import SvgLoader from '@/utils/SvgLoader';
 const LiveSessionCard = () => {
   return (
     <View style={styles.cardContainer}>
-      {/* Live Indicator */}
-      {/* <View style={styles.liveBadge}>
-        <Badge value="Live" status="error" />
-      </View> */}
-
       {/* Image and Text */}
       <View style={styles.sessionDetails}>
-        <SvgLoader svgFilePath="liveclass" width={150} height={150} style={styles.sessionImage}  />
+        <SvgLoader svgFilePath="liveclass" width={200} height={200} style={styles.sessionImage}  />
         <View style={styles.textContainer}>
           <Text style={styles.time}>09:00 AM - 10:00 AM</Text>
-          <Text style={styles.subject}>Trigonometry</Text>
-          <Text style={styles.category}>Mathematics</Text>
+          <View>
+            <Text style={styles.subject}>Trigonometry</Text>
+            <Text style={styles.category}>Mathematics</Text>
+          </View>
+          
           {/* Join Button */}
           <Button
             title="Join now"
@@ -27,8 +25,6 @@ const LiveSessionCard = () => {
           />
         </View>
       </View>
-
-      
     </View>
   );
 };
@@ -39,11 +35,13 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 5,  // For Android shadow
+    borderColor: 'gray',
+    borderWidth: 1,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 2,
+    // elevation: 1,  // For Android shadow
   },
   liveBadge: {
     position: 'absolute',
@@ -62,6 +60,8 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginLeft: 15,
+    // backgroundColor: 'red',
+    justifyContent: 'space-between'
   },
   time: {
     fontSize: 14,

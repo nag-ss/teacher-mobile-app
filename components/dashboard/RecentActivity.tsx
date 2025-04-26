@@ -4,8 +4,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import RecentActivityCard from './RecentActivityCard';
 
 const activities = [
-  {image: 'activityAnalytics', text: "Class Performance Update - Score improved by 5%"},
-  {image: 'activityEngagement', text: "Student Engagement Summary - 85% participated"},
+  {image: 'activityAnalytics', title: "Class Performance Update", text: "Average Score improved by 5% in last test"},
+  {image: 'activityEngagement', title: "Student Engagement Summary", text: "85% students participated in last session"},
 //   {image: 'activityStruggle', text: "Assignment Completion Rate - 92%"},
 //   {image: 'activityTrend', text: "Quiz Results - Average score 78%"}
 ];
@@ -22,14 +22,19 @@ const RecentActivity = () => (
     </View>
     
     {activities.map((activity, idx) => (
-      <RecentActivityCard key={idx} image={activity.image}  text={activity.text} />
+      <RecentActivityCard key={idx} image={activity.image} title={activity.title} text={activity.text} />
     ))}
   </View>
 );
 
 const styles = StyleSheet.create({
-    container: {
-    padding: 16,
+  container: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 8,
+    borderColor: 'lightgray',
+    borderWidth: 1,
   },
   headerContent: {
     flexDirection: 'row',

@@ -15,14 +15,22 @@ const DashboardScreen = () => {
         <View style={{flexDirection: 'column', height: '100%'}}>
             <View style={styles.container}>
                 <View style={styles.leftColumn}>
-                    <LiveClassCard />
+                    <View style={styles.liveCardContainer}>
+                        <Text style={styles.title}>Welcome Ankit Sharma</Text>
+                        <Text style={styles.subTitle}>"Inspire minds, shape futures — let’s make today a great day of learning.!"</Text>
+                        <LiveClassCard />
+                    </View>
+                    
                     <Timeline />
                 </View>
 
                 <View style={styles.rightColumn}>
-                    <ClassProgress />
-                    <UpcomingTopics />
-                    <CompletedTopics />
+                    <View style={styles.classProgressContainer}>
+                        <ClassProgress />
+                        <UpcomingTopics />
+                        <CompletedTopics />
+                    </View>
+                    
                     <RecentActivity />
                     <ImportantAlerts />
                 </View>
@@ -57,7 +65,29 @@ const styles = StyleSheet.create({
   rightColumn: {
     flex: 0.4,
     marginLeft: 8,
-    backgroundColor: '#fff'
+    // backgroundColor: '#fff'
+  },
+  liveCardContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subTitle: {
+    marginTop: 12,
+    // fontWeight: '600',
+  },
+  classProgressContainer: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 8,
+    borderColor: 'lightgray',
+    borderWidth: 1,
   }
 });
 

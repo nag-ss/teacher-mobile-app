@@ -18,6 +18,8 @@ const svgAssets = {
   activityEngagement: require('../assets/images/ss/activityEngagement.svg'),
   activityStruggle: require('../assets/images/ss/activityStruggle.svg'),
   activityTrend: require('../assets/images/ss/activityTrend.svg'),
+  alertAlert: require('../assets/images/ss/alertAlert.svg'),
+  alertCorrect: require('../assets/images/ss/alertCorrect.svg'),
 //   icon: require('../../assets/images/icon.svg'),
 //   background: require('../../assets/images/background.svg'),
 };

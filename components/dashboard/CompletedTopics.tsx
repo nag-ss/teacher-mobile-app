@@ -6,10 +6,10 @@ import SvgLoader from '@/utils/SvgLoader';
 
 const CompletedTopics = () => (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={{marginRight: 5}}>
+    <View style={{marginRight: 10}}>
         <SvgLoader svgFilePath="iconCompleted" width={50} height={50}  />
     </View>
-    <View>
+    <View style={{height: 60}}>
         <Text style={styles.title}>Completed Topics</Text>
         <Text>• Pythagorean Theorem</Text>
     </View>
@@ -23,11 +23,13 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 2,
+    // elevation: 5,
   },
   title: {
     fontWeight: 'bold',

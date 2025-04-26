@@ -14,7 +14,7 @@ const ClassProgress = () => (
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    padding: 16,
+    // padding: 16,
     borderRadius: 12,
     marginBottom: 16,
   },
