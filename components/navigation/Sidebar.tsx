@@ -56,6 +56,17 @@ const CustomDrawerContent = () => {
             </Text>
         </View>
       </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.iconItem} 
+        onPress={() => navigation.navigate('SlipTest')}>
+        <View style={{ alignItems: 'center' }}>
+            <Ionicons size={18} style={[{ marginBottom: -3 }]} name="checkmark-circle" />;
+            <Text>
+            {'Slip Test'}
+            </Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };
