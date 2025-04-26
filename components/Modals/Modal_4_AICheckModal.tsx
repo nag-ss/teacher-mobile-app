@@ -44,9 +44,6 @@ const AiCheckModal = ({ visible, onClose, goBack }: { visible: boolean; onClose:
             <Text style={styles.label}>Check Type</Text>
             <View style={styles.checkTypeContainer}>
               <Text>{checkType}</Text>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>P</Text>
-              </View>
             </View>
           </View>
 
