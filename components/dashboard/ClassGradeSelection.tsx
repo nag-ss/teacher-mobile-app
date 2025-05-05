@@ -29,7 +29,7 @@ const ClassGradeSelection = () => {
             >
                 {
                     gradeOptions.map((gradeData) => {
-                        return (<Picker.Item style={{fontSize: 12}} label={gradeData.label} value={gradeData.value} />)
+                        return (<Picker.Item key={gradeData.label} style={{fontSize: 12}} label={gradeData.label} value={gradeData.value} />)
                     })
                 }
         </Picker>
@@ -42,7 +42,7 @@ const ClassGradeSelection = () => {
             }>
                 {
                     sectionOptions.map((sectionData) => {
-                        return (<Picker.Item style={{fontSize: 12}} label={sectionData.label} value={sectionData.value} />)
+                        return (<Picker.Item key={sectionData.label} style={{fontSize: 12}} label={sectionData.label} value={sectionData.value} />)
                     })
                 }
         </Picker>

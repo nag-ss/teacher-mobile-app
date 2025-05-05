@@ -1,18 +1,44 @@
+import { userDetails, userLogin } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { width } = Dimensions.get('window');
 const Login = () => {
+    const dispatch = useDispatch<any>()
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const { userToken } = useSelector((state: any) => state.user)
+
+    const loginAction = async () => {
+        const loginReqObj: any = {
+            grant_type: 'password',
+            username,
+            password
+        }
+        await dispatch(userLogin(loginReqObj))
+    }
+
+    const getTeacherDetails = async () => {
+        await dispatch(userDetails(userToken))
+    }
+
+    useEffect(() => {
+        if(userToken) {
+            getTeacherDetails()
+        }
+    }, [userToken])
   return (
     <View style={styles.container}>
       <View style={styles.leftPanel}>
         <View style={styles.logoCircle}>
-        <SvgLoader
+        {/* <SvgLoader
             svgFilePath='logo' // Replace with your own logo
             style={styles.logo}
             resizeMode="contain"
-          />
+          /> */}
+            <Image style={{width: 34, height: 64}} source={require('@/assets/images/ss/s-logo.png')} />
         </View>
         <Text style={styles.appName}>Super Slatee</Text>
       </View>
@@ -21,17 +47,18 @@ const Login = () => {
         <View style={styles.card}>
           <Text style={styles.signInTitle}>Sign In</Text>
 
-          <Text style={styles.label}>User name</Text>
-          <TextInput style={styles.input} placeholder="test@test.com" />
+          <Text style={styles.label}>Username</Text>
+          <TextInput style={styles.input} placeholder="test@test.com" onChangeText={(uname) => setUsername(uname)} />
 
-          <Text style={styles.label}>password</Text>
+          <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
             placeholder="password"
             secureTextEntry
+            onChangeText={(uname) => setPassword(uname)}
           />
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => loginAction()}>
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
         </View>

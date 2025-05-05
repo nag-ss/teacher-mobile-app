@@ -7,12 +7,20 @@ import SlipTest from '../slip_test';
 import { DrawerTabBarIcon, DrawerTabBarIconCustom, DrawerTabBarLogoIcon } from '@/components/navigation/TabBarIcon';
 import { MaterialIcons } from '@expo/vector-icons';
 import CustomDrawerContent from '@/components/navigation/Sidebar';
+import Analytics from '../analytics';
+import Classes from '../classes';
+import Profile from '../profile';
+import Logout from '../logout';
+import { useSelector } from 'react-redux';
 
 const Drawer = createDrawerNavigator();
 
 const DrawerLayout = () => {
+    const {user} = useSelector((state: any) => state.user)
+    console.log("user")
+    console.log(user)
   return (
-    <Drawer.Navigator initialRouteName="Login"
+    <Drawer.Navigator initialRouteName="Home"
     drawerContent={() => <CustomDrawerContent />}
     
         screenOptions={{
@@ -28,31 +36,9 @@ const DrawerLayout = () => {
         // animation: 'none', // Disable animations for Boox devices
       }}
     >
-      <Drawer.Screen name="Login" component={Login} 
-        options={{ 
-            // title: 'Home',
-            // drawerLabel: 'Login',
-            drawerIcon: ({ color, focused, size }) => (
-                // <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-                <DrawerTabBarIconCustom name={focused ? 'home' : 'home-outline'} color={color} size={size} focused={focused} title={'Login'} />
-            ),
-            drawerLabelStyle: {
-                fontWeight: 'bold', // Make label bold
-                fontSize: 14, // Font size of the label
-                textAlign: 'center', // Center the label
-                marginTop: 5, // Ensure there’s space below the icon
-                color: '#000', // Make label color black for visibility
-              },
-              drawerItemStyle: {
-                alignItems: 'center', // Center horizontally
-                borderBlockColor: 'red',
-                borderRadius: 0
-              },
-        }}
-      />
       <Drawer.Screen name="Home" component={Home} 
        options={{ 
-          title: 'Keshavareddy Internation Schools',
+          title: user ? user.school_name : 'Keshavareddy Internation Schools',
           // drawerLabel: 'Login',
           drawerIcon: ({ color, focused }) => (
               <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
@@ -69,7 +55,83 @@ const DrawerLayout = () => {
         }}
       />
 
+    
       <Drawer.Screen name="Settings" component={Settings} 
+            options={{ 
+              // title: 'Home',
+              // drawerLabel: 'Login',
+              drawerIcon: ({ color, focused }) => (
+                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+              ),
+              drawerLabelStyle: {
+                  fontWeight: 'bold', // Customize label style
+                  marginTop: 10,      // Adjust the margin to move the label to the top
+                  fontSize: 14,       // Font size of the label
+                  textAlign: 'center', // Center the label
+                },
+                drawerItemStyle: {
+                  alignItems: 'center', // Center horizontally
+                },
+          }}
+          />
+     <Drawer.Screen name="Analytics" component={Analytics} 
+            options={{ 
+              // title: 'Home',
+              // drawerLabel: 'Login',
+              drawerIcon: ({ color, focused }) => (
+                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+              ),
+              drawerLabelStyle: {
+                  fontWeight: 'bold', // Customize label style
+                  marginTop: 10,      // Adjust the margin to move the label to the top
+                  fontSize: 14,       // Font size of the label
+                  textAlign: 'center', // Center the label
+                },
+                drawerItemStyle: {
+                  alignItems: 'center', // Center horizontally
+                },
+          }}
+          />
+    
+    <Drawer.Screen name="Classes" component={Classes} 
+            options={{ 
+              // title: 'Home',
+              // drawerLabel: 'Login',
+              drawerIcon: ({ color, focused }) => (
+                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+              ),
+              drawerLabelStyle: {
+                  fontWeight: 'bold', // Customize label style
+                  marginTop: 10,      // Adjust the margin to move the label to the top
+                  fontSize: 14,       // Font size of the label
+                  textAlign: 'center', // Center the label
+                },
+                drawerItemStyle: {
+                  alignItems: 'center', // Center horizontally
+                },
+          }}
+          />
+
+<Drawer.Screen name="Profile" component={Profile} 
+            options={{ 
+              // title: 'Home',
+              // drawerLabel: 'Login',
+              drawerIcon: ({ color, focused }) => (
+                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+              ),
+              drawerLabelStyle: {
+                  fontWeight: 'bold', // Customize label style
+                  marginTop: 10,      // Adjust the margin to move the label to the top
+                  fontSize: 14,       // Font size of the label
+                  textAlign: 'center', // Center the label
+                },
+                drawerItemStyle: {
+                  alignItems: 'center', // Center horizontally
+                },
+          }}
+          />
+
+<Drawer.Screen name="Logout" component={Logout} 
             options={{ 
               // title: 'Home',
               // drawerLabel: 'Login',

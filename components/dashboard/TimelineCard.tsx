@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // For icons
 import { Badge } from 'react-native-elements'; // For "Live" badge
 import SvgLoader from '@/utils/SvgLoader';
@@ -7,9 +7,10 @@ import SvgLoader from '@/utils/SvgLoader';
 
 const TimelineCard = ({idx, item, height}: any) => {
   return (
-    <View key={idx} style={[styles.classCard, {height: height*50, marginBottom:20}]}>
+    <View key={idx} style={[styles.classCard, {height: height*50}]}>
         <View style={[styles.classHeader]}>
-            <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  />
+            {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
+            <Image style={{width: height == 1 ? 45 : 65, height: height == 1 ? 45 : 70}} source={require('../../assets/images/ss/Chemistry.png')} />
             <View style={{marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'space-between'}}>
                 <Text style={styles.classTime}>{item.time}</Text>
                 <Text style={styles.classSubject}>{item.subject}</Text>

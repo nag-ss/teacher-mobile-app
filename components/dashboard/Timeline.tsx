@@ -1,11 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import TimelineCard from './TimelineCard';
 import { LayoutChangeEvent } from 'react-native';
 import { blue } from 'react-native-reanimated/lib/typescript/Colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { getScheduleClasses } from '@/store/classSlice';
+import moment from 'moment';
 
-const timelineData = [
+/*const timelineData = [
   {
     time: '08:30 - 09:00',
     subject: 'Algebra - Linear Equations',
@@ -46,12 +49,14 @@ const timelineData = [
     startTime: '14:00', 
     classLength: 15
   },
-];
+];*/
 
-const timeSlots = ['08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45', '10:00', '10:15', '10:30', '10:45',
-    '11:00', '11:15', '11:30', '11:45','12:00', '12:15', '12:30', '12:45','13:00', '13:15', '13:30', '13:45',
-    '14:00', '14:15', '14:30', '14:45','15:00', '15:15', '15:30', '15:45'
-];
+
+
+// const timeSlots = ['08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45', '10:00', '10:15', '10:30', '10:45',
+//     '11:00', '11:15', '11:30', '11:45','12:00', '12:15', '12:30', '12:45','13:00', '13:15', '13:30', '13:45',
+//     '14:00', '14:15', '14:30', '14:45','15:00', '15:15', '15:30', '15:45'
+// ];
 
 const TimelineWithClassDetails = () => {
     // const [noClass, setNoClass] = useState(0)
@@ -83,36 +88,114 @@ const TimelineWithClassDetails = () => {
   const onContentSizeChange = (_: any, contentHeight: any) => 
     setCompleteScrollBarHeight(contentHeight);
 
-//   const onLayout1 = ({
-//     nativeEvent: {
-//       layout: { height },
-//     },
-//   }) => {
-//     setVisibleScrollBarHeight(height);
-//   };
-
-  
-
 const onLayout = (event: LayoutChangeEvent): void => {
   const { height } = event.nativeEvent.layout;
   setVisibleScrollBarHeight(height);
 };
 
+    const dispatch = useDispatch<any>();
+    const { classTimeline } = useSelector((state: any) => state.classes)
+    const [timelineData, setTimelineData] = useState([])
+    const [timeSlots, setTimeSlots] = useState<string[]>([])
+
+    const getDetails = async () => {
+    //    await dispatch(getScheduleClasses())
+    }
+    useEffect(() => {
+        getDetails()
+    }, [])
+
+    function generateTimeSlots(startTime: string, endTime: string, intervalMinutes: number) {
+        const slots = [];
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+    
+        const start = new Date();
+        start.setHours(startHour, startMinute, 0, 0);
+    
+        const end = new Date();
+        end.setHours(endHour, endMinute, 0, 0);
+    
+        while (start <= end) {
+            const hours = String(start.getHours()).padStart(2, '0');
+            const minutes = String(start.getMinutes()).padStart(2, '0');
+            slots.push(`${hours}:${minutes}`);
+            start.setMinutes(start.getMinutes() + intervalMinutes);
+        }
+    
+        return slots;
+    }
+    
+    useEffect(() => {
+        if(classTimeline && classTimeline.length) {
+            let timelineDataArray = classTimeline.map((timeline: any) => {
+                /*response sample 
+                {
+                    "class_id": 32,
+                    "date": "2025-05-03",
+                    "period": "Period 1",
+                    "start_time": "18:00:00",
+                    "end_time": "18:59:00",
+                    "school_name": "Super School",
+                    "division_name": "Class 8",
+                    "section_name": "A",
+                    "subject_name": "Maths",
+                    "teacher_first_name": "Nageswara Rao",
+                    "teacher_last_name": "Nali",
+                    "assets": [],
+                    "class_details": []
+                  },*/
+                console.log(timeline.start_time)
+                console.log(moment(timeline.start_time))
+                var startTime = moment(timeline.start_time, 'HH:mm:ss');
+                var endTime = moment(timeline.end_time, 'HH:mm:ss');
+                let startTimeStr = startTime.format('HH:mm')
+                let endTimeStr = endTime.format('HH:mm')
+
+                var duration = moment.duration(endTime.diff(startTime));
+
+                var minutes = duration.asMinutes() % 60;
+                return {
+                    classId: timeline.class_id,
+                    time: startTimeStr + " - " + endTimeStr,
+                    // subject: 'Biology - Cell Structure',
+                    category: timeline.subject_name,
+                    live: false,
+                    startTime: startTimeStr, 
+                    classLength: minutes
+                }
+            })
+            console.log("timelineDataArray")
+            console.log(timelineDataArray)
+            setTimelineData(timelineDataArray)
+            const firstClassTime = moment(classTimeline[0].start_time, 'HH:mm:ss').format('HH:mm')
+            const lastClassTime = moment(classTimeline[classTimeline.length-1].end_time, 'HH:mm:ss').format('HH:mm')
+            // const timeSlotsData = generateTimeSlots(firstClassTime, lastClassTime, 15);
+            const timeSlotsData = generateTimeSlots('8:00', lastClassTime, 15);
+            setTimeSlots(timeSlotsData)
+            console.log("timeSlotsData")
+            console.log(timeSlotsData)
+        } else {
+            const timeSlotsData = generateTimeSlots('8:00', '17:00', 15);
+            setTimeSlots(timeSlotsData)
+        }
+    }, [classTimeline])
+
   return (
     <View style={{flex: 1, flexDirection: 'column'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10}}> 
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10, marginBottom: 10}}> 
             <Text style={styles.timelineText}>Today's Timeline</Text>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', borderWidth: 1, borderColor: 'grey', borderRadius: 5, paddingHorizontal: 20, paddingVertical: 5}}>
                 <MaterialIcons
                     name="calendar-month"
-                    size={24}
+                    size={20}
                     color={'gray' }
                     />
-                <Text style={styles.timelineDateText}>2025-04-22</Text>
+                <Text style={styles.timelineDateText}>{moment(new Date()).format('YYYY-MM-DD')}</Text>
             </View>
             
         </View>
-        <View style={{flexDirection: 'row', height: '95%'}}>
+        <View style={{flexDirection: 'row', height: '93%'}}>
             <ScrollView  
                 // persistentScrollbar={true} style={{}} indicatorStyle='black' scrollEventThrottle={25} 
                 contentContainerStyle={{ paddingRight: 14 }}
@@ -131,9 +214,10 @@ const onLayout = (event: LayoutChangeEvent): void => {
                         {/* Left Column with Time */}
                         <ScrollView style={styles.timeColumn}>
                         {timeSlots.map((time, index) => (
-                            <View style={{height: 50}}>
-                                <Text key={index} style={styles.timeText}>
-                                    {time}
+                            <View key={index} style={{height: 50}}>
+                                <Text  style={styles.timeText}>
+                                    {  parseInt(time.split(':')[1]) == 0 ? time : (parseInt(time.split(':')[1]) == 30 ? '_____' : '___')
+                                    }
                                 </Text>
                             </View>
                             
@@ -146,7 +230,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                         <ScrollView style={styles.classColumn}>
                         {timeSlots.map((timeSlot, index) => {
                             // Find the classes that start at or after the current time slot
-                            const classesForTimeSlot = timelineData.filter((item) => {
+                            const classesForTimeSlot = timelineData.filter((item: any) => {
                             // Check if class starts at or after the current time slot
                             const [classHour, classMins] = item.startTime.split(':');
                             const [slotHour, slotMins] = timeSlot.split(':');
@@ -156,7 +240,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                             return (
                             <View key={index} style={styles.classWrapper}>
                                 {classesForTimeSlot.length > 0 ? (
-                                classesForTimeSlot.map((item, idx) => {
+                                classesForTimeSlot.map((item: any, idx) => {
                                     // setNoClass(noClass + (item.classLength/15))
                                     noClass = noClass + (item.classLength/15) + 1
                                     return (<TimelineCard idx={index+"-"+idx} item={item} height={item.classLength/15} />)
@@ -197,6 +281,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     marginTop: 20,
+    // backgroundColor: 'red'
     // paddingHorizontal: 10,
   },
   leftColumn: {
@@ -213,8 +298,9 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 12,
     // marginVertical: 10,
-    textAlign: 'center',
+    // textAlign: 'center',
     // color: '#555',
+    // backgroundColor: 'red'
   },
   rightColumn: {
     flex: 9,
@@ -227,7 +313,8 @@ const styles = StyleSheet.create({
   },
   classWrapper: {
     position: 'relative',
-    marginBottom: 10,
+    // marginBottom: 10,
+    // backgroundColor: 'red'
   },
   classCard: {
     backgroundColor: '#fff',
@@ -242,10 +329,11 @@ const styles = StyleSheet.create({
     // elevation: 5, // For Android shadow
   },
   emptySpace: {
-    height: 30,
+    height: 40,
     // backgroundColor: '#f0f0f0',
     // backgroundColor: '#fff',
     marginBottom: 10,
+    // backgroundColor: 'red'
   },
   timelineText: {
     fontSize: 16,
@@ -265,7 +353,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#232323',
     backgroundColor: 'lightgray',
     borderRadius: 3,
-    height: '100%',
+    // height: '100%',
     width: 8,
   },
 });

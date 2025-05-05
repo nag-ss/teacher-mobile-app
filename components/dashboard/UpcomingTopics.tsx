@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, ProgressBarAndroid } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import ProgressBar from './Progressbar';
 import ClassGradeSelection from './ClassGradeSelection';
 import SvgLoader from '@/utils/SvgLoader';
+import { Colors } from '@/constants/Colors';
 
 const UpcomingTopics = () => (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={{marginRight: 10}}>
-        <SvgLoader svgFilePath="iconUpcoming" width={50} height={50}  />
+    <View style={styles.iconContent}>
+        {/* <SvgLoader svgFilePath="iconUpcoming" width={50} height={50}  /> */}
+        <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Upcoming.png')} width={50} height={50}  />
     </View>
     <View style={{height: 60}}>
         <Text style={styles.title}>Upcoming Topics</Text>
@@ -39,6 +41,16 @@ const styles = StyleSheet.create({
   subTitle: {
     marginTop: 12,
     fontWeight: '600',
+  },
+  iconContent: {
+    height: 50, 
+    width: 50, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginRight: 10, 
+    borderWidth: 1, 
+    borderRadius: 5, 
+    borderColor: Colors.primaryColor
   }
 });
 

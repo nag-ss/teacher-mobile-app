@@ -1,13 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, ProgressBarAndroid } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import ProgressBar from './Progressbar';
 import ClassGradeSelection from './ClassGradeSelection';
 import SvgLoader from '@/utils/SvgLoader';
+import { Colors } from '@/constants/Colors';
 
-const RecentActivityCard = ({image, title, text}: any) => (
+const RecentActivityCard = ({image, title, text}: any) => {
+    const imgesUrls: any = {
+        'Analytics': require('../../assets/images/ss/Analytics.png'),
+        'Warning': require('../../assets/images/ss/Warning.png'),
+        'Correct': require('../../assets/images/ss/Correct.png'),
+        'Engagement': require('../../assets/images/ss/Engagement.png'),
+    }
+    return (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={{marginRight: 5}}>
-        <SvgLoader svgFilePath={image} width={50} height={50}  />
+    <View style={styles.iconContent}>
+        {/* <SvgLoader svgFilePath={image} width={50} height={50}  /> */}
+        <Image style={{width: 40, height: 40}} source={imgesUrls[image]} />
     </View>
     <View style={{flex: 1, height: 50}}>
         <Text style={styles.title}>{title}</Text>
@@ -15,7 +24,7 @@ const RecentActivityCard = ({image, title, text}: any) => (
     </View>
     
   </View>
-);
+)};
 
 const styles = StyleSheet.create({
   card: {
@@ -39,6 +48,16 @@ const styles = StyleSheet.create({
   subTitle: {
     // marginTop: 10,
     fontSize: 10
+  },
+  iconContent: {
+    height: 50, 
+    width: 50, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginRight: 10, 
+    borderWidth: 1, 
+    borderRadius: 5, 
+    borderColor: Colors.primaryColor
   }
 });
 

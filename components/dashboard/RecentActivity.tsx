@@ -1,11 +1,11 @@
 import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import RecentActivityCard from './RecentActivityCard';
 
 const activities = [
-  {image: 'activityAnalytics', title: "Class Performance Update", text: "Average Score improved by 5% in last test"},
-  {image: 'activityEngagement', title: "Student Engagement Summary", text: "85% students participated in last session"},
+  {image: 'Analytics', title: "Class Performance Update", text: "Average Score improved by 5% in last test"},
+  {image: 'Engagement', title: "Student Engagement Summary", text: "85% students participated in last session"},
 //   {image: 'activityStruggle', text: "Assignment Completion Rate - 92%"},
 //   {image: 'activityTrend', text: "Quiz Results - Average score 78%"}
 ];
@@ -16,8 +16,9 @@ const RecentActivity = () => (
         <Text style={styles.title}>Recent Activity</Text>
         
         <View style={styles.viewAllContent}>
-            <Text style={{marginRight: -30}}>View All</Text>
-            <SvgLoader svgFilePath='rightArrow' height={20} />
+            <Text style={{marginRight: 10}}>View All</Text>
+            {/* <SvgLoader svgFilePath='rightArrow' height={20} /> */}
+            <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/rightArrow.png')} />
         </View>
     </View>
     
@@ -31,6 +32,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     padding: 15,
+    paddingBottom: 5,
     marginVertical: 10,
     borderRadius: 8,
     borderColor: 'lightgray',
