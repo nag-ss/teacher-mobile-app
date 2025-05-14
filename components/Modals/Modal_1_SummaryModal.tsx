@@ -29,9 +29,17 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
           <View style={styles.section}>
             <Text style={styles.subTitle}>Class Details</Text>
             <View style={styles.rowBetween}>
-              <Text style={styles.detailText}>Grade : VII</Text>
-              <Text style={styles.detailText}>Section : A</Text>
-              <Text style={styles.detailText}>Subject : Chemistry</Text>
+              <View style={styles.rowItem}>
+                <Text style={styles.detailText}>Grade </Text> <Text style={styles.detailTextValues}>: VII</Text>
+              </View>
+              <View style={styles.rowItem}>
+                <Text style={styles.detailText}>Section </Text> <Text style={styles.detailTextValues}>: A</Text>
+              </View>
+              <View style={styles.rowItem}>
+                <Text style={styles.detailText}>Subject </Text> <Text style={styles.detailTextValues}>: Chemistry</Text>
+              </View>
+              
+             
             </View>
           </View>
 
@@ -54,29 +62,39 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
             <Text style={styles.cardTitle}>Set Class Topic</Text>
             <View style={styles.row}>
               
-              <Text style={styles.label}>Topic :</Text>
-              <Picker
-                selectedValue={topic}
-                style={styles.picker}
-                onValueChange={(itemValue) => setTopic(itemValue)}
-              >
-                <Picker.Item label="Select Topic" value={null} />
-                <Picker.Item label="Light" value="light" />
-                <Picker.Item label="Dark" value="dark" />
-                <Picker.Item label="System" value="system" />
-              </Picker>
+              <Text style={styles.label}>Topic </Text>
+              <Text>:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={topic}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => setTopic(itemValue)}
+                  mode="dropdown"
+                >
+                  <Picker.Item label="Select Topic" value={null} />
+                  <Picker.Item label="Light" value="light" />
+                  <Picker.Item label="Dark" value="dark" />
+                  <Picker.Item label="System" value="system" />
+                </Picker>
+              </View>
+              
 
-              <Text style={styles.label}>Sub Topic :</Text>
-              <Picker
-                selectedValue={subTopic}
-                style={styles.picker}
-                onValueChange={(itemValue) => setSubTopic(itemValue)}
-              >
-                <Picker.Item label="Select Sub Topic" value={null} />
-                <Picker.Item label="Light" value="light" />
-                <Picker.Item label="Dark" value="dark" />
-                <Picker.Item label="System" value="system" />
-              </Picker>
+              <Text style={styles.label}>Sub Topic </Text>
+              <Text>:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={subTopic}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => setSubTopic(itemValue)}
+                  mode="dropdown"
+                >
+                  <Picker.Item label="Select Sub Topic" value={null} />
+                  <Picker.Item label="Light" value="light" />
+                  <Picker.Item label="Dark" value="dark" />
+                  <Picker.Item label="System" value="system" />
+                </Picker>
+              </View>
+              
             </View>
 
             <View style={styles.row}>
@@ -100,14 +118,14 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    // backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: '#00000080',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
     width: '90%',
     maxHeight: '90%',
-    backgroundColor: 'white',
+    backgroundColor: '#f5f5f5',
     borderRadius: 16,
     padding: 20,
   },
@@ -117,9 +135,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 12,
   },
+  rowItem:{
+    flexDirection: 'row'
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginVertical: 6,
   },
   title: {
@@ -134,13 +156,20 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginRight: 10
+  },
+  detailTextValues: {
+    fontSize: 18
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
+    marginLeft: 3,
+    marginRight: 10,
+    fontWeight: 'bold',
   },
   value: {
-    fontSize: 16,
-    marginLeft: 12,
+    fontSize: 18,
+    marginLeft: 20,
   },
   icon: {
     width: 32,
@@ -165,10 +194,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 12,
   },
+  pickerContainer: {
+    borderWidth: 1, 
+    borderRadius: 4,
+    marginLeft: 10
+  },
   picker: {
-    height: 60,
-    width: 200,
-    marginLeft: 16,
+    height: 54,
+    width: 180,
   },
   buttonContainer: {
     alignItems: 'flex-end',
@@ -176,12 +209,14 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#21C17C',
+    width: 200,
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
   },
   nextButtonText: {
     fontSize: 18,
+    textAlign: 'center',
     color: '#000',
     fontWeight: 'bold',
   },
