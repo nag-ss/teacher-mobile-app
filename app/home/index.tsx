@@ -11,6 +11,7 @@ import CompletedTopics from '@/components/dashboard/CompletedTopics';
 import { useSelector } from 'react-redux';
 
 const DashboardScreen = () => {
+    
     const {user} = useSelector((state: any) => state.user)
   return (
     <SafeAreaView style={{}}>

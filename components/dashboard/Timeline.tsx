@@ -97,9 +97,11 @@ const onLayout = (event: LayoutChangeEvent): void => {
     const { classTimeline } = useSelector((state: any) => state.classes)
     const [timelineData, setTimelineData] = useState([])
     const [timeSlots, setTimeSlots] = useState<string[]>([])
+    const timelineRef = useRef<any>()
 
     const getDetails = async () => {
-    //    await dispatch(getScheduleClasses())
+       await dispatch(getScheduleClasses())
+       
     }
     useEffect(() => {
         getDetails()
@@ -125,6 +127,20 @@ const onLayout = (event: LayoutChangeEvent): void => {
     
         return slots;
     }
+
+    const getLastQuarterHour = (): string => {
+        const now = new Date();
+        const minutes = now.getMinutes();
+        const roundedMinutes = Math.floor(minutes / 15) * 15;
+        
+        now.setMinutes(roundedMinutes);
+        now.setSeconds(0);
+        now.setMilliseconds(0);
+      
+        const hh = now.getHours().toString().padStart(2, '0');
+        const mm = now.getMinutes().toString().padStart(2, '0');
+        return `${hh}:${mm}`;
+    };
     
     useEffect(() => {
         if(classTimeline && classTimeline.length) {
@@ -173,8 +189,16 @@ const onLayout = (event: LayoutChangeEvent): void => {
             // const timeSlotsData = generateTimeSlots(firstClassTime, lastClassTime, 15);
             const timeSlotsData = generateTimeSlots('8:00', lastClassTime, 15);
             setTimeSlots(timeSlotsData)
+            const preTime = getLastQuarterHour()
+            const ind = timeSlotsData.indexOf(preTime)
+            console.log("preTime")
+            console.log(preTime)
+            console.log(ind)
+
             console.log("timeSlotsData")
             console.log(timeSlotsData)
+            let y= ind*100;
+            timelineRef.current.scrollTo({x: 0, y, animated: true});
         } else {
             const timeSlotsData = generateTimeSlots('8:00', '17:00', 15);
             setTimeSlots(timeSlotsData)
@@ -207,6 +231,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
             )}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
+            ref={timelineRef}
             
                 >
                 <View style={styles.container}>

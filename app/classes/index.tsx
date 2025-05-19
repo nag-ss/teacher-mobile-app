@@ -1,19 +1,19 @@
-import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import MetricsGrid from '@/components/classes/MetricsGrid';
+import StudentTable from '@/components/classes/StudentTable';
 
 const Classes = () => {
   return (
-    <View style={styles.container}>
-      <Text>Coming Soon ...!</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      <MetricsGrid />
+      <StudentTable />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#f4f4f4',
-    }
-  });
+  container: { padding: 10, backgroundColor: '#f5f5f5' },
+});
+
 export default Classes;
