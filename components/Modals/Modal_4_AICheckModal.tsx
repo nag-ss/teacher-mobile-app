@@ -93,7 +93,12 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
             <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
               <Text>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveBtn} onPress={() => saveAICheckDetails({title,  checkType, matchType, textInput })}>
+            <TouchableOpacity style={styles.saveBtn} onPress={() => {
+              saveAICheckDetails({title,  checkType, matchType, textInput }),
+              setTitle(''), 
+              setMatchType({exact: false, approximate: false})
+              setTextInput('')
+            }}>
               <Text style={{ color: 'white' }}>Save</Text>
             </TouchableOpacity>
           </View>

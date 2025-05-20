@@ -7,8 +7,8 @@ const API_URL = 'https://superslate-ss.onrender.com/';
 
 const getHeaders = (token: string | null, isFile: boolean) => {
   let headers: any = {
-    // 'Content-Type': 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/x-www-form-urlencoded',
     'accept': 'application/json'
   };
   if (token) {

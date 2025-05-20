@@ -22,7 +22,7 @@ type Props = {
 const Settings: React.FC<Props> = ({navigation}) => {
 
   const dispatch = useDispatch<any>();
-  const { liveClass: selectedClass, classTimeline } = useSelector((state: any) => state.classes);
+  const { liveClass: selectedClass, classTimeline, classTasks } = useSelector((state: any) => state.classes);
   const {user} = useSelector((state: any) => state.user);
 
   const [topic, setTopic] = useState(topicsList[0]);
@@ -83,48 +83,46 @@ const Settings: React.FC<Props> = ({navigation}) => {
   }
 
   const saveAICheckDetails = async(aiCheckDetails: any) => {
-    console.log(aiCheckDetails)
     const data: any = {
       title: aiCheckDetails.title,
-      instructions: {...aiCheckDetails},
+      instructions: {
+        ...aiCheckDetails
+      },
       task_type: "AICheck",
       subject_id: 1,
-      division_id: 1,
+      division_id: 43,
       teacher_id: user.id,
-      class_schedule_id: 97,
+      class_schedule_id: 98,
       start_date: classTimeline[0].date,
       end_date: classTimeline[0].date,
     }
     
     await dispatch(addTaskToClass(data))
-    
     setShowModal4AICheckModal(false)
-
   }
 
   const saveSlipTestDetails = async(slipTestDetails: any) => {
-    console.log(user);
     const quizDetails: any = {
       title: `Slip Test ${Math.floor(Math.random() * 100)}`, 
       task_type: "SlipTest", 
       start_date: classTimeline[0].date,
       end_date: classTimeline[0].date,
       instructions: {
-        text: {
-          Q1:"How to generate Quiz"
-        },
-        mcqs: 10,
-        longQuestions: 10,
-        totalQuestions: 20
+        multipleChoice: slipTestDetails.mcqCount,
+        longQuestions: slipTestDetails.subCount,
+        totalQuestions: slipTestDetails.totalQuestions,
+        marks: slipTestDetails.marks,
+        duration: slipTestDetails.duration,
+        difficulty: slipTestDetails.difficulty
       },
       subject_id: 1,
-      division_id: 1,
+      division_id: 43,
       teacher_id: user.id,
-      class_schedule_id: 97,
+      class_schedule_id: 98,
       quiz: {
         title: `Slip Test ${Math.floor(Math.random() * 100)}`,
-        start_date: "2025-05-02T07:07:22.632Z",
-        duration: 15,
+        start_date: "2025-05-02T07:07:22.632Z", // Change the hard coded start date
+        duration: slipTestDetails.duration,
         is_auto: true,
         asset_link: {},
         topic: topic,
@@ -132,15 +130,13 @@ const Settings: React.FC<Props> = ({navigation}) => {
         skills: {},
         quiz_type: "SlipTest",
         is_public: true,
-        difficulty_id: 1,
+        difficulty_id: 1, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
         school_id: user.school_id,
-        division_id: 1,
+        division_id: 43,
         subject_id: 1,
         is_notified: false
       }
     };
-    console.log(classTimeline)
-    console.log(quizDetails)
     await dispatch(addTaskToClass(quizDetails)) 
     setShowModal6SlipTestSettingsModal(false)
     navigation.navigate('SlipTest');

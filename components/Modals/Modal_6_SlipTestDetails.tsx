@@ -20,9 +20,9 @@ interface TestSettingsModalProps {
 }
 
 const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsModalProps) => {
-  const [duration, setDuration] = useState('15 min');
-  const [marks, setMarks] = useState('50');
-  const [difficulty, setDifficulty] = useState(8);
+  const [duration, setDuration] = useState(15);
+  const [marks, setMarks] = useState(50);
+  const [difficulty, setDifficulty] = useState(7);
   const [mcqCount, setMcqCount] = useState(10);
   const [subCount, setSubCount] = useState(10);
   const [isMCQ, setIsMCQ] = useState(true);
@@ -53,10 +53,10 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
                   onValueChange={(value) => setDuration(value)}
                   style={styles.picker}
                 >
-                  <Picker.Item label="15 min" value="15 min" />
-                  <Picker.Item label="30 min" value="30 min" />
-                  <Picker.Item label="45 min" value="45 min" />
-                  <Picker.Item label="60 min" value="60 min" />
+                  <Picker.Item label="15 min" value={15} />
+                  <Picker.Item label="30 min" value={30} />
+                  <Picker.Item label="45 min" value={45} />
+                  <Picker.Item label="60 min" value={60} />
                 </Picker>
               </View>
 
@@ -67,8 +67,11 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
                   onValueChange={(value) => setMarks(value)}
                   style={styles.picker}
                 >
-                  <Picker.Item label="50" value="50" />
-                  <Picker.Item label="100" value="100" />
+                  <Picker.Item label="20" value={20} />
+                  <Picker.Item label="50" value={50} />
+                  <Picker.Item label="60" value={60} />
+                  <Picker.Item label="100" value={100} />
+
                 </Picker>
               </View>
             </View>
@@ -106,7 +109,7 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
               {/* MCQ Toggle */}
               <View style={styles.questionRow}>
                 <Text>Multiple Choice</Text>
-                <Switch value={isMCQ} onValueChange={setIsMCQ} />
+                {/* <Switch value={isMCQ} onValueChange={setIsMCQ} /> */}
                 <TouchableOpacity
                   style={styles.counterButton}
                   onPress={() => setMcqCount((prev) => Math.max(0, prev - 1))}
@@ -127,7 +130,7 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
               {/* Subjective Toggle */}
               <View style={styles.questionRow}>
                 <Text>Subjective</Text>
-                <Switch value={isSubjective} onValueChange={setIsSubjective} />
+                {/* <Switch value={isSubjective} onValueChange={setIsSubjective} /> */}
                 <TouchableOpacity
                   style={styles.counterButton}
                   onPress={() => setSubCount((prev) => Math.max(0, prev - 1))}
@@ -153,7 +156,14 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
 
             {/* Submit Button */}
             <View style={styles.footer}>
-              <TouchableOpacity style={styles.button} onPress={() => generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions})}>
+              <TouchableOpacity style={styles.button} onPress={() => {
+                generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions})
+                setDifficulty(7)
+                setDuration(15),
+                setMarks(50),
+                setMcqCount(10)
+                setSubCount(10)
+              }}>
                 <Text style={styles.buttonText}>Generate Test</Text>
               </TouchableOpacity>
             </View>
