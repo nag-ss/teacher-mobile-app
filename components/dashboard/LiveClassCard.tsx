@@ -1,16 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Button, Badge } from 'react-native-elements';  // Import components from react-native-elements
 import { MaterialIcons } from '@expo/vector-icons'; // For the "Live" icon
 import SvgLoader from '@/utils/SvgLoader';
 import { useDispatch, useSelector } from 'react-redux';
-import { getLiveClass } from '@/store/classSlice';
+import { getLiveClass, getScheduleClasses } from '@/store/classSlice';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
+import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 
 const LiveSessionCard = () => {
   const dispatch = useDispatch<any>();
-  const { liveClass } = useSelector((state: any) => state.classes)
-
+  const navigation = useNavigation<any>()
+  const { liveClass, classTimeline } = useSelector((state: any) => state.classes)
+  const [timelineData, setTimelineData] = useState([])
+  const [nextClass, setNextClass] = useState<any>({})
+  const [isnextClass, setIsNextClass] = useState<boolean>(false)
   const classData = {
     "class_id": 0,
     "date": "2025-05-05",
@@ -37,34 +42,80 @@ const LiveSessionCard = () => {
     ]
   }
   const getDetails = async () => {
-    await dispatch(getLiveClass())
+    let liveClassDataRes = await dispatch(getLiveClass())
+    console.log("liveClassDataRes.payload")
+    console.log(liveClassDataRes.payload)
+    if(!liveClassDataRes.payload) {
+      // await dispatch(getScheduleClasses())
+      getClassFromSchedule()
+    } else {
+      console.log("liveClassDataRes.payload")
+      console.log(liveClassDataRes.payload)
+      setNextClass(liveClassDataRes.payload)
+    }
   }
   useEffect(() => {
     getDetails()
   }, [])
+
+  const getClassFromSchedule = async () => {
+    console.log("next call")
+    if(classTimeline && classTimeline.length) {
+      console.log("am in liv sc")
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        let timelineDataArray = classTimeline.map((timeline: any) => {
+            
+            console.log(timeline.start_time)
+            console.log(moment(timeline.start_time))
+            var startTime = moment(timeline.start_time, 'HH:mm:ss').format('HH:mm');
+            const [hours, minutes] = startTime.split(':').map(Number);
+            const itemMinutes = hours * 60 + minutes;
+            console.log("------------")
+            console.log({ ...timeline, itemMinutes })
+            return { ...timeline, itemMinutes };
+        }).filter((item: any) => item.itemMinutes > currentMinutes)
+        .sort((a: any, b: any) => a.itemMinutes - b.itemMinutes);
+        setNextClass(timelineDataArray[0])
+        console.log(timelineDataArray[0])
+        setIsNextClass(true)
+    } else {
+        
+    }
+  }
+
+  const navigateToMonitor = () => {
+    console.log("calling nav ...")
+    dispatch(setSelectedTask('Attendance'))
+    dispatch(setClassId(nextClass.class_id ? nextClass.class_id : 92))
+    navigation.navigate('live-monitoring')
+  }
   return (
-    <View style={[styles.cardContainer, {opacity: liveClass.start_time ? 1 : 0.4 }]} pointerEvents={liveClass.start_time ? 'auto' : 'none'}>
-      {/* Image and Text */}
+    <View style={[styles.cardContainer, {opacity: nextClass.class_id ? 1 : 0.4 }]} pointerEvents={nextClass.class_id ? 'auto' : 'auto'}>
       <View style={styles.sessionDetails}>
-        {/* <SvgLoader svgFilePath="liveclass" width={200} height={200} style={styles.sessionImage}  /> */}
-        <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/LiveClass.png')} />
+        {
+          isnextClass ? 
+          <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/UpcomingClass.png')} />
+        : <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/LiveClass.png')} />
+        }
+        
         <View style={styles.textContainer}>
           <Text style={styles.time}>
-            {liveClass.start_time ? (moment(liveClass.start_time, 'HH:mm:ss').format('HH:mm a')) : moment().format('HH:mm a')} - 
-            {liveClass.end_time ? moment(liveClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
+            {nextClass.start_time ? (moment(nextClass.start_time, 'HH:mm:ss').format('HH:mm a')) : moment().format('HH:mm a')} - 
+            {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
           </Text>
           <View>
             <Text style={styles.subject}>
-              {(liveClass.class_details && liveClass.class_details.length) ? liveClass.class_details[0].Topic : ''}
+              {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].Topic : ''}
             </Text>
-            <Text style={styles.category}>{liveClass.subject_name}</Text>
+            <Text style={styles.category}>{nextClass.subject_name}</Text>
           </View>
           
-          {/* Join Button */}
           <Button
-            title="Join now"
+            title={isnextClass ? 'Upcoming' : "Join now"}
             buttonStyle={styles.joinButton}
             titleStyle={styles.buttonTitle}
+            onPress={navigateToMonitor}
           />
         </View>
       </View>

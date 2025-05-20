@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/s-icon.png",
+        "foregroundImage": "./assets/images/Logo.png",
         "backgroundColor": "#000000"
       },
       "package": "com.ngrao.teachermobileapp"
