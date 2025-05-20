@@ -1,14 +1,14 @@
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { USER_LOGIN } from '../utils/apiRoutes'
 
 // const API_URL = 'http://localhost:3002/api/';
 const API_URL = 'https://superslate-ss.onrender.com/';
 
-const getHeaders = (token: string | null, isFile: boolean) => {
+const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => {
   let headers: any = {
-    'Content-Type': 'application/json',
-    // 'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': endpoint == USER_LOGIN ? 'application/x-www-form-urlencoded' : 'application/json',
     'accept': 'application/json'
   };
   if (token) {
@@ -35,7 +35,7 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
       url: `${API_URL}${endpoint}`,
       method,
       data,
-      headers: getHeaders(token, isFile),
+      headers: getHeaders(token, isFile, endpoint),
     });
     console.log("response.data")
     console.log(response.data)

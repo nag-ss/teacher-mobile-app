@@ -14,6 +14,9 @@ import {
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
 import SvgLoader from '@/utils/SvgLoader';
 
+const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
+const action_icon = require('../../assets/images/actions_icon.png');
+
 const tasks = [
   {
     index: 1,
@@ -56,6 +59,7 @@ interface ClassTaskCardPopProps {
   topic: string; 
   subTopic: string; 
   visible: boolean; 
+  classTasks: any[];
   selectedClass:any; 
   onClose: () => void;
   goBack: () => void;
@@ -70,7 +74,13 @@ interface ClassTaskCardPopProps {
 //   { id:5, icon: '🎯', title: 'Student Engagement', category: 'AI Check' },
 // ];
 
-const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, onClose, goBack, addTask }: ClassTaskCardPopProps) => {
+const mapper: any = {
+  SlipTest: "Slip Test",
+  AICheck: "AI Check"
+}
+
+const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask }: ClassTaskCardPopProps) => {
+
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
@@ -118,14 +128,14 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, onClose, go
             {/* Table / Task List */}
             <View style={styles.taskTable}> 
               <FlatList
-                data={tasks}
-                keyExtractor={(item) => item.index.toString()}
+                data={classTasks}
+                keyExtractor={(item) => item.title}
                 renderItem={({ item }) => (
                   <View style={styles.taskRow}>
-                    <Image source={item.icon} style={styles.taskIcon} />
+                    <Image source={calendar_month_icon} style={styles.taskIcon} />
                     <Text style={styles.taskCell}>{item.title}</Text>
-                    <Text style={styles.taskCell}>{item.category}</Text>
-                    <Image source={require('../../assets/images/actions_icon.png')} style={styles.taskIcon} />
+                    <Text style={styles.taskCell}>{mapper[item.task_type] || 'Other'}</Text>
+                    <Image source={action_icon} style={styles.taskIcon} />
                   </View>
                 )}
               />
