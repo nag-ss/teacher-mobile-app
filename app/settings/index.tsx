@@ -82,6 +82,26 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setShowModal6SlipTestSettingsModal(true)
   }
 
+  const saveAICheckDetails = async(aiCheckDetails: any) => {
+    console.log(aiCheckDetails)
+    const data: any = {
+      title: aiCheckDetails.title,
+      instructions: {...aiCheckDetails},
+      task_type: "AICheck",
+      subject_id: 1,
+      division_id: 1,
+      teacher_id: user.id,
+      class_schedule_id: 97,
+      start_date: classTimeline[0].date,
+      end_date: classTimeline[0].date,
+    }
+    
+    await dispatch(addTaskToClass(data))
+    
+    setShowModal4AICheckModal(false)
+
+  }
+
   const saveSlipTestDetails = async(slipTestDetails: any) => {
     console.log(user);
     const quizDetails: any = {
@@ -156,7 +176,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
         <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
         <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
-        <AiCheckModal visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} />
+        <AiCheckModal visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
         <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
         <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
       </SafeAreaView>

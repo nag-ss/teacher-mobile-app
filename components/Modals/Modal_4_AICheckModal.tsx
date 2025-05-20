@@ -10,7 +10,14 @@ import {
   Switch,
 } from 'react-native';
 
-const AiCheckModal = ({ visible, onClose, goBack }: { visible: boolean; onClose: () => void; goBack: () => void }) => {
+interface AiCheckModalProps {
+  visible: boolean; 
+  onClose: () => void;
+  goBack: () => void; 
+  saveAICheckDetails: (AICheckDetails:any) => void;
+}
+
+const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
   const [matchType, setMatchType] = useState({ exact: false, approximate: false });
@@ -86,7 +93,7 @@ const AiCheckModal = ({ visible, onClose, goBack }: { visible: boolean; onClose:
             <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
               <Text>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveBtn} onPress={onClose}>
+            <TouchableOpacity style={styles.saveBtn} onPress={() => saveAICheckDetails({title,  checkType, matchType, textInput })}>
               <Text style={{ color: 'white' }}>Save</Text>
             </TouchableOpacity>
           </View>
