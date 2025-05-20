@@ -13,8 +13,14 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 
-const TestSettingsModal = ({ visible, onClose, generateSlipTest }: {visible: boolean; onClose: () => void; generateSlipTest: () => void}) => {
-  const [time, setTime] = useState('15 min');
+interface TestSettingsModalProps {
+  visible: boolean; 
+  onClose: () => void; 
+  generateSlipTest: (slipTestDetails:any) => void;
+}
+
+const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsModalProps) => {
+  const [duration, setDuration] = useState('15 min');
   const [marks, setMarks] = useState('50');
   const [difficulty, setDifficulty] = useState(8);
   const [mcqCount, setMcqCount] = useState(10);
@@ -43,8 +49,8 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: {visible: boo
               <View style={styles.row}>
                 <Text>⏰ Time:</Text>
                 <Picker
-                  selectedValue={time}
-                  onValueChange={(value) => setTime(value)}
+                  selectedValue={duration}
+                  onValueChange={(value) => setDuration(value)}
                   style={styles.picker}
                 >
                   <Picker.Item label="15 min" value="15 min" />
@@ -147,7 +153,7 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: {visible: boo
 
             {/* Submit Button */}
             <View style={styles.footer}>
-              <TouchableOpacity style={styles.button} onPress={generateSlipTest}>
+              <TouchableOpacity style={styles.button} onPress={() => generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions})}>
                 <Text style={styles.buttonText}>Generate Test</Text>
               </TouchableOpacity>
             </View>

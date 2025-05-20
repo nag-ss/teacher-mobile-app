@@ -52,6 +52,16 @@ const tasks = [
   },
 ];
 
+interface ClassTaskCardPopProps { 
+  topic: string; 
+  subTopic: string; 
+  visible: boolean; 
+  selectedClass:any; 
+  onClose: () => void;
+  goBack: () => void;
+  addTask: () => void;
+}
+
 // const tasks = [
 //   { id:1, icon: '📄', title: 'Covalent Bond Worksheet', category: 'Classwork' },
 //   { id:2, icon: '🧪', title: 'Periodic Table', category: 'Quiz' },
@@ -60,7 +70,7 @@ const tasks = [
 //   { id:5, icon: '🎯', title: 'Student Engagement', category: 'AI Check' },
 // ];
 
-const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: boolean; onClose: () => void; goBack: () => void; addTask: () => void }) => {
+const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, onClose, goBack, addTask }: ClassTaskCardPopProps) => {
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
@@ -72,7 +82,7 @@ const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: bool
                 <TouchableOpacity onPress={goBack}>
                   <Image source={require('../../assets/images/back-icon.png')} style={styles.icon} />
                 </TouchableOpacity>  
-                <Text style={styles.sectionTitle}>VII Grade - Section A</Text>
+                <Text style={styles.sectionTitle}>{selectedClass.division_name} - Section {selectedClass.section_name}</Text>
               </View>
               <TouchableOpacity onPress={onClose}>
                 <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
@@ -81,8 +91,8 @@ const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: bool
 
             {/* Topic */}
             <View style={styles.topicContainer}>
-              <Text style={styles.topicText}>Topic - Covalent Bond</Text>
-              <Text style={styles.topicText}>Sub topic - Oxygen, Hydrogen</Text>
+              <Text style={styles.topicText}>Topic - {topic}</Text>
+              <Text style={styles.topicText}>Sub topic - {subTopic}</Text>
               <TouchableOpacity style={styles.editButton}>
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
@@ -157,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     borderRadius: 12,
     padding: 20,
     width: width - 40,

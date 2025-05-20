@@ -13,17 +13,32 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
+const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
+const subTopicsList = ["Sub Topic 1", "Sub Topic 2", "Sub Topic 3", "Sub Topic 4"]
+
+interface GenerateSlipTestModalProps { 
+  topic: string; 
+  subTopic: string; 
+  visible: boolean; 
+  selectedClass:any; 
+  updateTopic: (topic: string) => void;
+  updateSubTopic: (subtopic: string) => void;
+  onClose: () => void; 
+  clickedNext: () => void;
+}
+
+
 const GenerateSlipTestModal = ({
+  topic, 
+  subTopic,
   visible,
+  selectedClass,
+  updateTopic,
+  updateSubTopic,
   onClose,
   clickedNext,
-}: {visible: boolean; onClose: () => void; clickedNext: () => void} ) => {
+}: GenerateSlipTestModalProps ) => {
   const [selectedOption, setSelectedOption] = useState<'topic' | 'upload'>();
-  const [selectedTopic, setSelectedTopic] = useState('');
-  const [selectedSubTopic, setSelectedSubTopic] = useState('');
-
-  const topics = ['Option 1', 'Option 2', 'Option 3'];
-  const subTopics = ['Sub 1', 'Sub 2', 'Sub 3'];
 
   return (
     <Modal visible={visible} animationType="fade" transparent>
@@ -41,9 +56,9 @@ const GenerateSlipTestModal = ({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Class Details</Text>
               <View style={styles.detailGrid}>
-                <Text style={styles.detailItem}>Grade: <Text style={styles.detailValue}>VII</Text></Text>
-                <Text style={styles.detailItem}>Section: <Text style={styles.detailValue}>A</Text></Text>
-                <Text style={styles.detailItem}>Subject: <Text style={styles.detailValue}>Chemistry</Text></Text>
+                <Text style={styles.detailItem}>Grade: <Text style={styles.detailValue}>{selectedClass.division_name}</Text></Text>
+                <Text style={styles.detailItem}>Section: <Text style={styles.detailValue}>{selectedClass.section_name}</Text></Text>
+                <Text style={styles.detailItem}>Subject: <Text style={styles.detailValue}>{selectedClass.subject_name}</Text></Text>
               </View>
             </View>
 
@@ -69,12 +84,11 @@ const GenerateSlipTestModal = ({
                   <View style={styles.pickerWrapper}>
                     <Text style={styles.label}>Topic</Text>
                     <Picker
-                      selectedValue={selectedTopic}
-                      onValueChange={(itemValue) => setSelectedTopic(itemValue)}
+                      selectedValue={topic}
+                      onValueChange={(itemValue) => updateTopic(itemValue)}
                       style={styles.picker}
                     >
-                      <Picker.Item label="Choose an option" value="" />
-                      {topics.map((topic) => (
+                      {topicsList.map((topic) => (
                         <Picker.Item key={topic} label={topic} value={topic} />
                       ))}
                     </Picker>
@@ -82,12 +96,11 @@ const GenerateSlipTestModal = ({
                   <View style={styles.pickerWrapper}>
                     <Text style={styles.label}>Sub Topic</Text>
                     <Picker
-                      selectedValue={selectedSubTopic}
-                      onValueChange={(itemValue) => setSelectedSubTopic(itemValue)}
+                      selectedValue={subTopic}
+                      onValueChange={(itemValue) => updateSubTopic(itemValue)}
                       style={styles.picker}
                     >
-                      <Picker.Item label="Choose an option" value="" />
-                      {subTopics.map((sub) => (
+                      {subTopicsList.map((sub) => (
                         <Picker.Item key={sub} label={sub} value={sub} />
                       ))}
                     </Picker>

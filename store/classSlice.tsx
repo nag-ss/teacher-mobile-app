@@ -7,11 +7,17 @@ export const getLiveClass = createAsyncThunk('class/getLiveClass', async (reqDat
 });
 
 export const getScheduleClasses = createAsyncThunk('class/getScheduleClasses', async (reqData, thunkAPI) => {
-    return handleAuthApiCall(classService.getScheduleClasses, reqData, thunkAPI);
+  return handleAuthApiCall(classService.getScheduleClasses, reqData, thunkAPI);
 });
 
+export const addTaskToClass = createAsyncThunk<any>('/teacher/createTeacherTasks', async (reqData, thunkAPI) => {
+  return handleAuthApiCall(classService.addTaskToClass, reqData, thunkAPI);
+});
 
-  
+export const getTeacherClassTasks = createAsyncThunk('/teacher/getTeacherClassTasks', async (reqData, thunkAPI) => {
+  return handleAuthApiCall(classService.getTeacherClassTasks, reqData, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -41,6 +47,7 @@ const classSlice = createSlice({
     //       }
     //     ]
     //   },
+      classTasks: [],
       classTimeline: [],
       loading: false,
       error: null
@@ -73,6 +80,35 @@ const classSlice = createSlice({
             
         })
         .addCase(getScheduleClasses.rejected, (state, action) => {
+          state.loading = false
+          console.log("error api ")
+          console.log(action.payload)
+        })
+        .addCase(getTeacherClassTasks.pending, (state,action) => {
+          state.loading = true
+          console.log("Fetching the tasks of a class")
+        })
+        .addCase(getTeacherClassTasks.fulfilled, (state, action) => {
+          console.log("action.payload")
+          console.log(action.payload)
+          state.classTasks = action.payload
+          state.loading = false;
+        })
+        .addCase(getTeacherClassTasks.rejected, (state, action) => {
+          state.loading = false
+          console.log("error api ")
+          console.log(action.payload)
+        })
+        .addCase(addTaskToClass.pending, (state, action) => {
+          state.loading = true
+          console.log("Fetching the tasks of a class")
+        })
+        .addCase(addTaskToClass.fulfilled, (state, action) => {
+          console.log("action.payload")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(addTaskToClass.rejected, (state, action) => {
           state.loading = false
           console.log("error api ")
           console.log(action.payload)
