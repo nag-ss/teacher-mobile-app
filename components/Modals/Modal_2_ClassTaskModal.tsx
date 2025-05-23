@@ -14,6 +14,9 @@ import {
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
 import SvgLoader from '@/utils/SvgLoader';
 
+const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
+const action_icon = require('../../assets/images/actions_icon.png');
+
 const tasks = [
   {
     index: 1,
@@ -52,6 +55,17 @@ const tasks = [
   },
 ];
 
+interface ClassTaskCardPopProps { 
+  topic: string; 
+  subTopic: string; 
+  visible: boolean; 
+  classTasks: any[];
+  selectedClass:any; 
+  onClose: () => void;
+  goBack: () => void;
+  addTask: () => void;
+}
+
 // const tasks = [
 //   { id:1, icon: '📄', title: 'Covalent Bond Worksheet', category: 'Classwork' },
 //   { id:2, icon: '🧪', title: 'Periodic Table', category: 'Quiz' },
@@ -60,7 +74,13 @@ const tasks = [
 //   { id:5, icon: '🎯', title: 'Student Engagement', category: 'AI Check' },
 // ];
 
-const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: boolean; onClose: () => void; goBack: () => void; addTask: () => void }) => {
+const mapper: any = {
+  SlipTest: "Slip Test",
+  AICheck: "AI Check"
+}
+
+const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask }: ClassTaskCardPopProps) => {
+
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
@@ -72,7 +92,7 @@ const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: bool
                 <TouchableOpacity onPress={goBack}>
                   <Image source={require('../../assets/images/back-icon.png')} style={styles.icon} />
                 </TouchableOpacity>  
-                <Text style={styles.sectionTitle}>VII Grade - Section A</Text>
+                <Text style={styles.sectionTitle}>{selectedClass.division_name} - Section {selectedClass.section_name}</Text>
               </View>
               <TouchableOpacity onPress={onClose}>
                 <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
@@ -81,8 +101,8 @@ const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: bool
 
             {/* Topic */}
             <View style={styles.topicContainer}>
-              <Text style={styles.topicText}>Topic - Covalent Bond</Text>
-              <Text style={styles.topicText}>Sub topic - Oxygen, Hydrogen</Text>
+              <Text style={styles.topicText}>Topic - {topic}</Text>
+              <Text style={styles.topicText}>Sub topic - {subTopic}</Text>
               <TouchableOpacity style={styles.editButton}>
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
@@ -108,14 +128,14 @@ const ClassTaskCardPop = ({ visible, onClose, goBack, addTask }: { visible: bool
             {/* Table / Task List */}
             <View style={styles.taskTable}> 
               <FlatList
-                data={tasks}
-                keyExtractor={(item) => item.index.toString()}
+                data={classTasks}
+                keyExtractor={(item) => item.title}
                 renderItem={({ item }) => (
                   <View style={styles.taskRow}>
-                    <Image source={item.icon} style={styles.taskIcon} />
+                    <Image source={calendar_month_icon} style={styles.taskIcon} />
                     <Text style={styles.taskCell}>{item.title}</Text>
-                    <Text style={styles.taskCell}>{item.category}</Text>
-                    <Image source={require('../../assets/images/actions_icon.png')} style={styles.taskIcon} />
+                    <Text style={styles.taskCell}>{mapper[item.task_type] || 'Other'}</Text>
+                    <Image source={action_icon} style={styles.taskIcon} />
                   </View>
                 )}
               />
@@ -157,7 +177,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     borderRadius: 12,
     padding: 20,
     width: width - 40,

@@ -61,6 +61,17 @@ const CustomDrawerContent = () => {
 
       <TouchableOpacity 
         style={styles.iconItem} 
+        onPress={() => navigation.navigate('Settings')}>
+        <View style={[styles.submenuContent, pathname == '/Settings' ? styles.selectedMenu : {}]}>
+            <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/analytics-menu.png')} />
+            <Text style={styles.menuText}>
+            {'Settings'}
+            </Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.iconItem} 
         onPress={() => navigation.navigate('Profile')}>
         <View style={[styles.submenuContent, pathname == '/profile' ? styles.selectedMenu : {}]}>
             <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/profile-menu.png')} />
@@ -77,6 +88,17 @@ const CustomDrawerContent = () => {
             <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/logout-menu.png')} />
             <Text style={styles.menuText}>
             {'Log Out'}
+            </Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.iconItem} 
+        onPress={() => navigation.navigate('SlipTest')}>
+        <View style={[styles.submenuContent, pathname == '/sliptest' ? styles.selectedMenu : {}]}>
+            <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/profile-menu.png')} />
+            <Text style={styles.menuText}>
+            {'SlipTest'}
             </Text>
         </View>
       </TouchableOpacity>

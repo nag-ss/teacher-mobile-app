@@ -3,11 +3,38 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+// import { useDispatch, useSelector } from 'react-redux';
 
-export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : { visible: boolean; onClose: () => void; clickedNext: () => void}) {
-  const [topic, setTopic] = useState();
-  const [subTopic, setSubTopic] = useState();
+const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
+const subTopicsList = ["Sub Topic 1", "Sub Topic 2", "Sub Topic 3", "Sub Topic 4"]
 
+interface ClassSummaryPopModalProps { 
+  topic: string; 
+  subTopic: string; 
+  visible: boolean; 
+  selectedClass: any; 
+  updateTopic: (topic: string) => void;
+  updateSubTopic: (subtopic: string) => void;
+  onClose: () => void; 
+  clickedNext: () => void;
+}
+
+
+export default function ClassSummaryPopModal({ 
+  topic, 
+  subTopic, 
+  visible, 
+  selectedClass,
+  updateTopic,
+  updateSubTopic, 
+  onClose, 
+  clickedNext
+} : ClassSummaryPopModalProps) {
+  
+  
+  // const dispatch = useDispatch<any>()
+  
+  
   return (
     <Modal
       animationType="slide"
@@ -29,9 +56,17 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
           <View style={styles.section}>
             <Text style={styles.subTitle}>Class Details</Text>
             <View style={styles.rowBetween}>
-              <Text style={styles.detailText}>Grade : VII</Text>
-              <Text style={styles.detailText}>Section : A</Text>
-              <Text style={styles.detailText}>Subject : Chemistry</Text>
+              <View style={styles.rowItem}>
+                <Text style={styles.detailText}>Grade </Text> <Text style={styles.detailTextValues}>: {selectedClass.division_name}</Text>
+              </View>
+              <View style={styles.rowItem}>
+                <Text style={styles.detailText}>Section </Text> <Text style={styles.detailTextValues}>: {selectedClass.section_name}</Text>
+              </View>
+              <View style={styles.rowItem}>
+                <Text style={styles.detailText}>Subject </Text> <Text style={styles.detailTextValues}>: {selectedClass.subject_name}</Text>
+              </View>
+              
+             
             </View>
           </View>
 
@@ -40,12 +75,12 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
             <View style={styles.row}>
               <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.icon} />
               <Text style={styles.label}>Date</Text>
-              <Text style={styles.value}>: Mar 5 - 2025</Text>
+              <Text style={styles.value}>: {selectedClass.date}</Text>
             </View>
             <View style={styles.row}>
               <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} />
               <Text style={styles.label}>Time</Text>
-              <Text style={styles.value}>: 10:00 - 11:00 AM</Text>
+              <Text style={styles.value}>: {selectedClass.start_time} - {selectedClass.end_time}</Text>
             </View>
           </View>
 
@@ -54,29 +89,33 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
             <Text style={styles.cardTitle}>Set Class Topic</Text>
             <View style={styles.row}>
               
-              <Text style={styles.label}>Topic :</Text>
-              <Picker
-                selectedValue={topic}
-                style={styles.picker}
-                onValueChange={(itemValue) => setTopic(itemValue)}
-              >
-                <Picker.Item label="Select Topic" value={null} />
-                <Picker.Item label="Light" value="light" />
-                <Picker.Item label="Dark" value="dark" />
-                <Picker.Item label="System" value="system" />
-              </Picker>
+              <Text style={styles.label}>Topic </Text>
+              <Text>:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={topic}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => updateTopic(itemValue)}
+                  mode="dropdown"
+                >
+                  {topicsList.map((key)=> <Picker.Item label={key} value={key} />)}
+                </Picker>
+              </View>
+              
 
-              <Text style={styles.label}>Sub Topic :</Text>
-              <Picker
-                selectedValue={subTopic}
-                style={styles.picker}
-                onValueChange={(itemValue) => setSubTopic(itemValue)}
-              >
-                <Picker.Item label="Select Sub Topic" value={null} />
-                <Picker.Item label="Light" value="light" />
-                <Picker.Item label="Dark" value="dark" />
-                <Picker.Item label="System" value="system" />
-              </Picker>
+              <Text style={styles.label}>Sub Topic </Text>
+              <Text>:</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={subTopic}
+                  style={styles.picker}
+                  onValueChange={(itemValue) => updateSubTopic(itemValue)}
+                  mode="dropdown"
+                >
+                  {subTopicsList.map((key)=> <Picker.Item label={key} value={key} />)}
+                </Picker>
+              </View>
+              
             </View>
 
             <View style={styles.row}>
@@ -100,14 +139,14 @@ export default function ClassSummaryPopModal({ visible, onClose, clickedNext} : 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    // backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: '#00000080',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
     width: '90%',
     maxHeight: '90%',
-    backgroundColor: 'white',
+    backgroundColor: '#f5f5f5',
     borderRadius: 16,
     padding: 20,
   },
@@ -117,9 +156,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 12,
   },
+  rowItem:{
+    flexDirection: 'row'
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginVertical: 6,
   },
   title: {
@@ -134,13 +177,20 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginRight: 10
+  },
+  detailTextValues: {
+    fontSize: 18
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
+    marginLeft: 3,
+    marginRight: 10,
+    fontWeight: 'bold',
   },
   value: {
-    fontSize: 16,
-    marginLeft: 12,
+    fontSize: 18,
+    marginLeft: 20,
   },
   icon: {
     width: 32,
@@ -165,10 +215,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 12,
   },
+  pickerContainer: {
+    borderWidth: 1, 
+    borderRadius: 4,
+    marginLeft: 10
+  },
   picker: {
-    height: 60,
-    width: 200,
-    marginLeft: 16,
+    height: 54,
+    width: 180,
   },
   buttonContainer: {
     alignItems: 'flex-end',
@@ -176,12 +230,14 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#21C17C',
+    width: 200,
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
   },
   nextButtonText: {
     fontSize: 18,
+    textAlign: 'center',
     color: '#000',
     fontWeight: 'bold',
   },
