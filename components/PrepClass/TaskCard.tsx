@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     borderWidth: 1,
     borderRadius: 12,
+    backgroundColor: 'white',
     padding: 12,
     marginBottom: 12,
     flexDirection: 'column',
@@ -61,12 +62,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   taskDescription: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#4B5563',
   },
   actionButton: {
     alignSelf: 'flex-end',
-    marginTop: 10,
+    marginTop: -30,
     borderWidth: 1,
     borderColor: '#10B981',
     paddingVertical: 6,
