@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  ScrollView
 } from 'react-native';
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
 import SvgLoader from '@/utils/SvgLoader';
@@ -21,36 +22,36 @@ const tasks = [
   {
     index: 1,
     icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Friction',
-    category: 'Class Work',
+    title: 'Covalent Bond Worksheet',
+    task_type: 'ClassWork',
     action: '02-11-2024',
   },
   {
     index: 2,
     icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Friction',
-    category: 'Quiz',
+    title: 'Periodic Table',
+    task_type: 'Quiz',
     action: '02-11-2024',
   },
   {
     index: 3,
     icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Friction',
-    category: 'AI Check',
+    title: 'Upload Notes on Hydrogen Bonds',
+    task_type: 'ClassWork',
     action: '02-11-2024',
   },
   {
     index: 4,
     icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Friction',
-    category: 'Lecture Notes',
+    title: 'Student Engagement',
+    task_type: 'AICheck',
     action: '02-11-2024',
   },
   {
     index: 5,
     icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Friction',
-    category: 'Lecture Notes',
+    title: 'Student Engagement Notes',
+    task_type: 'AICheck',
     action: '02-11-2024',
   },
 ];
@@ -76,6 +77,8 @@ interface ClassTaskCardPopProps {
 
 const mapper: any = {
   SlipTest: "Slip Test",
+  Quiz: "Quiz",
+  ClassWork: "Classwork",
   AICheck: "AI Check"
 }
 
@@ -101,52 +104,79 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
 
             {/* Topic */}
             <View style={styles.topicContainer}>
-              <Text style={styles.topicText}>Topic - {topic}</Text>
-              <Text style={styles.topicText}>Sub topic - {subTopic}</Text>
+              <View style={styles.topicRow}>
+                <Text style={{fontSize: 16}}>Topic - </Text>
+                <Text style={styles.topicText}>{topic}</Text>
+              </View>
+              <View style={styles.topicRow}>
+                <Text style={{fontSize: 16}}>Sub Topic - </Text>
+                <Text style={styles.topicText}>{subTopic}</Text>
+              </View>
+              
+              
               <TouchableOpacity style={styles.editButton}>
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
             </View>
 
             {/* AI Assistant Text */}
-            <View style={styles.aiTextContainer}>
-              <Text style={styles.aiTitle}>Your AI-Powered Assistant</Text>
-              <Text style={styles.aiSubtitle}>
-                Let AI handle the heavy lifting — create assignments, tests, and classwork in seconds.
-              </Text>
-            </View>
+            <View style={styles.aiAssistantContainer}>
+              <View style={styles.aiTextContainer}>
+                <Text style={styles.aiTitle}>Your AI-Powered Assistant</Text>
+                <Text style={styles.aiSubtitle}>
+                  Let AI handle the heavy lifting — create assignments, tests, and classwork in seconds.
+                </Text>
+              </View>
 
-            {/* AI Assistant Image */}
-            <View style={styles.aiImageContainer}>
-              <SvgLoader
-                svgFilePath='aiAssistant' // Replace with your own logo
-                style={styles.aiAssistant}
-                resizeMode="contain"
-              />
-            </View>
+              {/* AI Assistant Image */}
+              <View style={styles.aiImageContainer}>
+                <SvgLoader
+                  svgFilePath='aiAssistant' // Replace with your own logo
+                  style={styles.aiAssistant}
+                />
+              </View>
 
-            {/* Table / Task List */}
-            <View style={styles.taskTable}> 
-              <FlatList
-                data={classTasks}
-                keyExtractor={(item) => item.title}
-                renderItem={({ item }) => (
-                  <View style={styles.taskRow}>
-                    <Image source={calendar_month_icon} style={styles.taskIcon} />
-                    <Text style={styles.taskCell}>{item.title}</Text>
-                    <Text style={styles.taskCell}>{mapper[item.task_type] || 'Other'}</Text>
-                    <Image source={action_icon} style={styles.taskIcon} />
-                  </View>
-                )}
-              />
-            </View>
+              <ScrollView>
+                {
+                  (tasks.length > 0) ? (
+                    <View style={styles.taskTable}>
+                      <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
+                        <Text style={{width: 40, textAlign: 'center', marginLeft: 20}}>Icon</Text>
+                        <Text style={{width: 290, textAlign: 'center'}}>Title</Text>
+                        <Text style={{width: 230, textAlign: 'center'}}>Category</Text>
+                        <Text style={{width: 100, textAlign: 'center'}}>Action</Text>
+                      </View>
+                      <FlatList
+                        data={tasks}
+                        keyExtractor={(item) => item.title}
+                        renderItem={({ item }) => (
+                          <View style={styles.taskRow}>
+                            <Image source={calendar_month_icon} style={{...styles.taskIcon, width: 40, marginLeft: 20}} />
+                            <Text style={{...styles.taskCell, width: 300, fontWeight: 'bold'}}>{item.title}</Text>
+                            <Text style={styles.taskCell}>{mapper[item.task_type] || 'Other'}</Text>
+                            <Image source={action_icon} style={styles.taskIcon} />
+                          </View>
+                        )}
+                      />
+                    </View>
+                  ) : (
+                    <View>
+                      <Text style={styles.aiSubtitle}> No tasts yet! Start by adding a task.</Text>
+                    </View>
+                    
+                  )
+                }
+              </ScrollView>
 
-            {/* Add Task */}
-            <View style={styles.addTaskContainer}>
-              <TouchableOpacity onPress={addTask} style={styles.addButton}>
-                <Text style={styles.addButtonText}>+ Add Task</Text>
-              </TouchableOpacity>
+              {/* Add Task */}
+              <View style={styles.addTaskContainer}>
+                <TouchableOpacity onPress={addTask} style={styles.addButton}>
+                  <Text style={styles.addButtonText}>+ Add a Task</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
+            
 
             {/* Quick Actions */}
             <View style={styles.quickActions}>
@@ -202,22 +232,26 @@ const styles = StyleSheet.create({
     height: 32,
   },
   aiAssistant: {
-    width: 120,
-    height: 120,
+    width: 280,
+    height: 280,
   },
   topicContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
+    marginLeft: 40
+  },
+  topicRow: {
+    flexDirection: 'row',
   },
   topicText: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    fontSize: 16
   },
   editButton: {
     borderWidth: 1,
-    borderColor: '#64748B',
+    borderColor: '#21c17c',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
@@ -225,6 +259,12 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#64748B',
     fontSize: 16,
+  },
+  aiAssistantContainer: {
+    backgroundColor: 'white', 
+    marginTop: 20, 
+    paddingBottom: 20, 
+    borderRadius: 10
   },
   aiTextContainer: {
     marginTop: 20,
@@ -235,9 +275,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   aiSubtitle: {
-    fontSize: 16,
-    color: '#94A3B8',
+    fontSize: 14,
     textAlign: 'center',
+    marginTop: 10
   },
   aiImageContainer: {
     marginTop: 20,
@@ -248,21 +288,27 @@ const styles = StyleSheet.create({
     height: 200,
   },
   taskTable: {
-    marginTop: 20,
+    borderWidth: 1,
+    paddingTop: 10,
+    borderRadius: 10,
+    borderColor: 'grey'
   },
   taskRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 8,
+    paddingTop: 10,
+    paddingBottom: 10,
     justifyContent: 'space-between',
+    borderWidth: 0.5,
+    borderColor: 'grey'
   },
   taskCell: {
     fontSize: 16,
     flex: 1,
     textAlign: 'center',
+    width: 230
   },
   taskIcon: {
-    width: 32,
+    width: 50,
     height: 32,
     marginHorizontal: 8,
   },
@@ -283,12 +329,13 @@ const styles = StyleSheet.create({
   },
   quickActions: {
     marginTop: 30,
+    backgroundColor: 'white'
   },
   quickActionsTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
+    marginLeft: 15,
     marginBottom: 16,
-    textAlign: 'center',
   },
   quickCards: {
     flexDirection: 'row',
