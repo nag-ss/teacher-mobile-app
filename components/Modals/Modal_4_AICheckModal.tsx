@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Switch,
 } from 'react-native';
+import { CheckBox } from 'react-native-elements';
 
 interface AiCheckModalProps {
   visible: boolean; 
@@ -57,18 +57,18 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
           {/* Match Type */}
           <View style={styles.matchTypeRow}>
             <View style={styles.switchRow}>
-              <Switch
-                value={matchType.exact}
-                onValueChange={() =>
+              <CheckBox
+                checked={matchType.exact}
+                onPress={() =>
                   setMatchType((prev) => ({ ...prev, exact: !prev.exact }))
                 }
               />
               <Text style={styles.switchLabel}>Exact Match</Text>
             </View>
             <View style={styles.switchRow}>
-              <Switch
-                value={matchType.approximate}
-                onValueChange={() =>
+              <CheckBox
+                checked={matchType.approximate}
+                onPress={() =>
                   setMatchType((prev) => ({ ...prev, approximate: !prev.approximate }))
                 }
               />
@@ -79,19 +79,22 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
           {/* Text Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Text Input</Text>
-            <TextInput
-              value={textInput}
-              onChangeText={setTextInput}
-              placeholder="Type Here:"
-              multiline
-              style={styles.textArea}
-            />
+            <View style={{borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8 }}>
+              <TextInput
+                value={textInput}
+                onChangeText={setTextInput}
+                placeholder="Type Here:"
+                multiline
+                style={styles.textArea}
+              />
+            </View>
+            
           </View>
 
           {/* Footer Buttons */}
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
-              <Text>Cancel</Text>
+              <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveBtn} onPress={() => {
               saveAICheckDetails({title,  checkType, matchType, textInput }),
@@ -99,7 +102,7 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
               setMatchType({exact: false, approximate: false})
               setTextInput('')
             }}>
-              <Text style={{ color: 'white' }}>Save</Text>
+              <Text style={{ textAlign: 'center' }}>Save</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
-    width: '90%',
+    width: '60%',
   },
   header: {
     flexDirection: 'row',
@@ -189,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   textArea: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F5F5F6',
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
@@ -197,10 +200,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     height: 100,
     textAlignVertical: 'top',
+    margin: 10
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginTop: 24,
   },
   cancelBtn: {
@@ -209,11 +213,13 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
+    width: 180,
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
+    width: 180
   },
 });
