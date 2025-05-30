@@ -29,7 +29,7 @@ const getTeacherClassTasks = async (reqData: any, userToken: string) => {
 
 const addTaskToClass = async(reqData: any, userToken: string) => {
   console.log(reqData)
-  const reqUrl = ADD_TASK_TO_TEACHER_CLASS
+  const reqUrl = ADD_TASK_TO_TEACHER_CLASS + "?provider=openai";
   return await apiRequest(reqUrl, 'POST', reqData, userToken);
 }
 

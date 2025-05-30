@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Modal,
   View,
@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
-
+import RadioGroup from 'react-native-radio-buttons-group';
 interface AiCheckModalProps {
   visible: boolean; 
   onClose: () => void;
@@ -18,10 +18,26 @@ interface AiCheckModalProps {
 }
 
 const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+  const radioButtons = useMemo(() => ([
+    {
+        id: 'exact', // acts as primary key, should be unique and non-empty string
+        label: 'Exact Match',
+        value: 'exact'
+    },
+    {
+        id: 'approx',
+        label: 'Approximate Match',
+        value: 'approx'
+    }
+  ]), []);
+  
+  
+  
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
-  const [matchType, setMatchType] = useState({ exact: false, approximate: false });
+  const [selectedId, setSelectedId] = useState('exact');
   const [textInput, setTextInput] = useState('');
+
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -31,7 +47,7 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
           <View style={styles.header}>
             <Text style={styles.title}>AI Check</Text>
             <TouchableOpacity onPress={onClose}>
-              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
           </View>
 
@@ -56,24 +72,12 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
 
           {/* Match Type */}
           <View style={styles.matchTypeRow}>
-            <View style={styles.switchRow}>
-              <CheckBox
-                checked={matchType.exact}
-                onPress={() =>
-                  setMatchType((prev) => ({ ...prev, exact: !prev.exact }))
-                }
-              />
-              <Text style={styles.switchLabel}>Exact Match</Text>
-            </View>
-            <View style={styles.switchRow}>
-              <CheckBox
-                checked={matchType.approximate}
-                onPress={() =>
-                  setMatchType((prev) => ({ ...prev, approximate: !prev.approximate }))
-                }
-              />
-              <Text style={styles.switchLabel}>Approximate</Text>
-            </View>
+            <RadioGroup 
+              radioButtons={radioButtons} 
+              selectedId={selectedId}
+              onPress={setSelectedId}
+              layout='row'
+            />
           </View>
 
           {/* Text Input */}
@@ -97,9 +101,8 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveBtn} onPress={() => {
-              saveAICheckDetails({title,  checkType, matchType, textInput }),
+              saveAICheckDetails({title,  checkType, selectedId, textInput }),
               setTitle(''), 
-              setMatchType({exact: false, approximate: false})
               setTextInput('')
             }}>
               <Text style={{ textAlign: 'center' }}>Save</Text>
@@ -139,6 +142,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 32,
     height: 32,
+  },
+  closeIcon:{
+    width: 24,
+    height: 24
   },
   inputGroup: {
     marginBottom: 16,

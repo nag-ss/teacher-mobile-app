@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
   },
   taskText: {
     flex: 1,
+    marginLeft: 5
   },
   taskTitle: {
     fontSize: 16,

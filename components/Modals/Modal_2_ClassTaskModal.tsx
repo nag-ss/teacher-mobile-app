@@ -98,7 +98,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 <Text style={styles.sectionTitle}>{selectedClass.division_name} - Section {selectedClass.section_name}</Text>
               </View>
               <TouchableOpacity onPress={onClose}>
-                <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+                <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
               </TouchableOpacity>
             </View>
 
@@ -138,7 +138,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
 
               <ScrollView>
                 {
-                  (tasks.length > 0) ? (
+                  (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
                       <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
                         <Text style={{width: 40, textAlign: 'center', marginLeft: 20}}>Icon</Text>
@@ -147,7 +147,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                         <Text style={{width: 100, textAlign: 'center'}}>Action</Text>
                       </View>
                       <FlatList
-                        data={tasks}
+                        data={classTasks}
                         keyExtractor={(item) => item.title}
                         renderItem={({ item }) => (
                           <View style={styles.taskRow}>
@@ -227,6 +227,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
   },
+  closeIcon:{
+    width: 24,
+    height: 24
+  },
   icon: {
     width: 32,
     height: 32,
@@ -291,7 +295,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingTop: 10,
     borderRadius: 10,
-    borderColor: 'grey'
+    borderColor: 'grey',
+    height: 320,
   },
   taskRow: {
     flexDirection: 'row',
