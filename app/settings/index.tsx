@@ -58,7 +58,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   }
 
   const gotoTask = (taskTitle: string) => {
-    if(taskTitle == 'AI') {
+    if(taskTitle == 'AI' || taskTitle == 'Classwork' ) {
       setShowModal3NewTaskModal(false)
       setShowModal4AICheckModal(true)
     } else if(taskTitle == 'Slip Test') {
@@ -83,12 +83,13 @@ const Settings: React.FC<Props> = ({navigation}) => {
   }
 
   const saveAICheckDetails = async(aiCheckDetails: any) => {
+    const task_type = (taskType == "AI") ? "AICheck" : "ClassWork"; 
     const data: any = {
       title: aiCheckDetails.title,
       instructions: {
         ...aiCheckDetails
       },
-      task_type: "AICheck",
+      task_type: task_type,
       subject_id: 1,
       division_id: 43,
       teacher_id: user.id,
@@ -96,7 +97,6 @@ const Settings: React.FC<Props> = ({navigation}) => {
       start_date: classTimeline[0].date,
       end_date: classTimeline[0].date,
     }
-    
     await dispatch(addTaskToClass(data))
     setShowModal4AICheckModal(false)
   }
@@ -172,7 +172,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
         <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
         <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
-        <AiCheckModal visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
+        <AiCheckModal visible={showModal4AICheckModal} taskType={taskType} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
         <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
         <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
       </SafeAreaView>

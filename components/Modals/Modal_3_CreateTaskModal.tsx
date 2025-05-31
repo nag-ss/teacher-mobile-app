@@ -49,9 +49,7 @@ const taskOptions = [
 const NewTaskModal = ({ visible, onClose, goBack, clickedNext }: {visible: boolean; onClose: () => void; goBack: () => void; clickedNext: (taskName:string) => void}) => {
 
   const createTask = (taskName: string) => {
-    if (taskName === 'AI' || taskName === 'Slip Test') {
-      clickedNext(taskName);
-    }
+    clickedNext(taskName);
   };
 
   return (

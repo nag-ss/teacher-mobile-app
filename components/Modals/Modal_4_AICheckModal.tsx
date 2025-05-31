@@ -11,27 +11,28 @@ import {
 import { CheckBox } from 'react-native-elements';
 import RadioGroup from 'react-native-radio-buttons-group';
 interface AiCheckModalProps {
-  visible: boolean; 
+  visible: boolean;
+  taskType: string;
   onClose: () => void;
   goBack: () => void; 
   saveAICheckDetails: (AICheckDetails:any) => void;
 }
 
-const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+const AiCheckModal = ({ visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const radioButtons = useMemo(() => ([
     {
         id: 'exact', // acts as primary key, should be unique and non-empty string
         label: 'Exact Match',
-        value: 'exact'
+        value: 'exact',
+        color:"#21c17c"
     },
     {
         id: 'approx',
         label: 'Approximate Match',
-        value: 'approx'
+        value: 'approx',
+        color: "#21c17c"
     }
   ]), []);
-  
-  
   
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
@@ -45,7 +46,7 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>AI Check</Text>
+            <Text style={styles.title}>{taskType == 'AI' ? 'AI Check' : 'Class Work' }</Text>
             <TouchableOpacity onPress={onClose}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
