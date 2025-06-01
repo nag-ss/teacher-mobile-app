@@ -1,6 +1,6 @@
 // Prep Class page 2
 
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Modal,
   View,
@@ -13,6 +13,7 @@ import {
   ScrollView
 } from 'react-native';
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
+import TaskItem from '../PrepClass/TaskItem';
 import SvgLoader from '@/utils/SvgLoader';
 
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
@@ -83,7 +84,7 @@ const mapper: any = {
 }
 
 const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask }: ClassTaskCardPopProps) => {
-
+  const tasksCount = classTasks.length;
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
@@ -149,14 +150,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                       <FlatList
                         data={classTasks}
                         keyExtractor={(item) => item.title}
-                        renderItem={({ item }) => (
-                          <View style={styles.taskRow}>
-                            <Image source={calendar_month_icon} style={{...styles.taskIcon, width: 40, marginLeft: 20}} />
-                            <Text style={{...styles.taskCell, width: 300, fontWeight: 'bold'}}>{item.title}</Text>
-                            <Text style={styles.taskCell}>{mapper[item.task_type] || 'Other'}</Text>
-                            <Image source={action_icon} style={styles.taskIcon} />
-                          </View>
-                        )}
+                        renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} />)}
                       />
                     </View>
                   ) : (
@@ -297,25 +291,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: 'grey',
     height: 320,
-  },
-  taskRow: {
-    flexDirection: 'row',
-    paddingTop: 10,
-    paddingBottom: 10,
-    justifyContent: 'space-between',
-    borderWidth: 0.5,
-    borderColor: 'grey'
-  },
-  taskCell: {
-    fontSize: 16,
-    flex: 1,
-    textAlign: 'center',
-    width: 230
-  },
-  taskIcon: {
-    width: 50,
-    height: 32,
-    marginHorizontal: 8,
   },
   addTaskContainer: {
     marginTop: 20,
