@@ -10,6 +10,7 @@ import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks } from '@/store/classSlice';
+import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import moment from 'moment';
 
 const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
@@ -28,6 +29,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [topic, setTopic] = useState(topicsList[0]);
   const [subTopic, setSubTopic] = useState(subTopicsList[0]);
   const [taskType, setTaskType] = useState("AI");
+  const [taskIDToDelete, setTaskIDToDelete] = useState<number | null>(null)
 
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
   const [showModal2TasksModal, setShowModal2TasksModal] = useState(false);
@@ -35,7 +37,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
   const [showModal5GenerateSlipTestModal, setShowModal5GenerateSlipTestModal] = useState(false);
   const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
-
+  const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false)
 
   const showDetailsModal = () => {
     setShowModal1SummaryModal(false)
@@ -161,6 +163,28 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setSubTopic(subTopic)
   }
 
+  const deleteItem = (task_id: number) => {
+    setShowModal2TasksModal(false)
+    setTaskIDToDelete(task_id)
+    setShowDeleteQuestionModal(true)
+    console.log(task_id);
+  }
+
+  const confirmDeleteTask = async() => {
+
+    console.log('Task Deleted ' + taskIDToDelete);
+    setShowDeleteQuestionModal(false)
+    setShowModal2TasksModal(true)
+  }
+
+  const cancelDeleteTask = async() => {
+
+    // delete the task
+    setShowDeleteQuestionModal(false)
+    setShowModal2TasksModal(true)
+  }
+
+
   useEffect(() => {
     getDetails()
   }, []);
@@ -170,11 +194,17 @@ const Settings: React.FC<Props> = ({navigation}) => {
       <SafeAreaView>
         <Button onPress={() => setShowModal1SummaryModal(true)} title="Open Summary" />
         <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
-        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} />
+        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteItem={deleteItem} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
         <AiCheckModal visible={showModal4AICheckModal} taskType={taskType} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
         <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
         <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
+        <DeleteQuestionModal
+          show={showDeleteQuestionModal}
+          resourceType='task'
+          onCancel={() => cancelDeleteTask()}
+          onDelete={() => confirmDeleteTask()}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   );

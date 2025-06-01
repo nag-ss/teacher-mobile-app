@@ -26,9 +26,10 @@ interface TaskItemProps {
   item: any;
   index: number;
   tasksCount: number;
+  deleteItem: (id: number) => void;
 };
 
-const TaskItem = ({item, index, tasksCount}: TaskItemProps) => {
+const TaskItem = ({item, index, tasksCount, deleteItem}: TaskItemProps) => {
   const [taskOptionsVisible, setTaskOptionsVisible] = useState(false);
   const mt = (index==tasksCount-1 || index == tasksCount - 2) ? -75: 50;
   return (
@@ -43,7 +44,7 @@ const TaskItem = ({item, index, tasksCount}: TaskItemProps) => {
         <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => console.log('Edit Clicked ' + item.task_id)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>
-        <TouchableHighlight underlayColor='#bdedd7' onPress={() => console.log('Delete Clicked ' + item.task_id)}>
+        <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteItem(item.task_id)}>
           <Text style={styles.actionButton}>Delete</Text>
         </TouchableHighlight>
       </View>)}

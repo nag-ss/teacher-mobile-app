@@ -66,6 +66,7 @@ interface ClassTaskCardPopProps {
   onClose: () => void;
   goBack: () => void;
   addTask: () => void;
+  deleteItem: (task_id: number) => void;
 }
 
 // const tasks = [
@@ -83,7 +84,7 @@ const mapper: any = {
   AICheck: "AI Check"
 }
 
-const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask }: ClassTaskCardPopProps) => {
+const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask, deleteItem }: ClassTaskCardPopProps) => {
   const tasksCount = classTasks.length;
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -150,7 +151,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                       <FlatList
                         data={classTasks}
                         keyExtractor={(item) => item.title}
-                        renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} />)}
+                        renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} deleteItem={deleteItem} />)}
                       />
                     </View>
                   ) : (

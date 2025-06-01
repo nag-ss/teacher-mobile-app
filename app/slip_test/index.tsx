@@ -154,6 +154,7 @@ const SlipTestPage = () => {
 
       <DeleteQuestionModal
         show={isDeleteTaskModal}
+        resourceType='question'
         onCancel={() => setDeleteTaskModal(false)}
         onDelete={() => setDeleteTaskModal(false)}
       />
