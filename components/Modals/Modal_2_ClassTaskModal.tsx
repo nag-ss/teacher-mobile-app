@@ -66,7 +66,7 @@ interface ClassTaskCardPopProps {
   onClose: () => void;
   goBack: () => void;
   addTask: () => void;
-  deleteItem: (task_id: number) => void;
+  deleteItem: (task_id: number, task_type: string) => void;
 }
 
 // const tasks = [

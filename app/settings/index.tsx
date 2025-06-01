@@ -30,6 +30,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [subTopic, setSubTopic] = useState(subTopicsList[0]);
   const [taskType, setTaskType] = useState("AI");
   const [taskIDToDelete, setTaskIDToDelete] = useState<number | null>(null)
+  const [taskTypeToDelete, setTaskTypeToDelete] = useState<string | null>(null)
 
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
   const [showModal2TasksModal, setShowModal2TasksModal] = useState(false);
@@ -163,16 +164,16 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setSubTopic(subTopic)
   }
 
-  const deleteItem = (task_id: number) => {
+  const deleteItem = (task_id: number, task_type: string) => {
     setShowModal2TasksModal(false)
     setTaskIDToDelete(task_id)
+    setTaskTypeToDelete(task_type)
     setShowDeleteQuestionModal(true)
-    console.log(task_id);
+    console.log(task_id, task_type);
   }
 
   const confirmDeleteTask = async() => {
-
-    console.log('Task Deleted ' + taskIDToDelete);
+    console.log('Task Deleted ' + taskIDToDelete + ' of type ' + taskTypeToDelete);
     setShowDeleteQuestionModal(false)
     setShowModal2TasksModal(true)
   }

@@ -26,7 +26,7 @@ interface TaskItemProps {
   item: any;
   index: number;
   tasksCount: number;
-  deleteItem: (id: number) => void;
+  deleteItem: (id: number, type: string) => void;
 };
 
 const TaskItem = ({item, index, tasksCount, deleteItem}: TaskItemProps) => {
@@ -44,7 +44,7 @@ const TaskItem = ({item, index, tasksCount, deleteItem}: TaskItemProps) => {
         <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => console.log('Edit Clicked ' + item.task_id)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>
-        <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteItem(item.task_id)}>
+        <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteItem(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Delete</Text>
         </TouchableHighlight>
       </View>)}
