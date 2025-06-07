@@ -9,7 +9,7 @@ import GenerateSlipTestModal from '@/components/Modals/Modal_5_GenerateSlipTest'
 import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks } from '@/store/classSlice';
+import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks, deleteTeacherClassTask } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import moment from 'moment';
 
@@ -29,7 +29,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [topic, setTopic] = useState(topicsList[0]);
   const [subTopic, setSubTopic] = useState(subTopicsList[0]);
   const [taskType, setTaskType] = useState("AI");
-  const [taskIDToDelete, setTaskIDToDelete] = useState<number | null>(null)
+  const [taskIDToDelete, setTaskIDToDelete] = useState<number>(-1)
   const [taskTypeToDelete, setTaskTypeToDelete] = useState<string | null>(null)
 
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
@@ -174,8 +174,10 @@ const Settings: React.FC<Props> = ({navigation}) => {
 
   const confirmDeleteTask = async() => {
     console.log('Task Deleted ' + taskIDToDelete + ' of type ' + taskTypeToDelete);
-    setShowDeleteQuestionModal(false)
-    setShowModal2TasksModal(true)
+    await dispatch(deleteTeacherClassTask(taskIDToDelete));
+    await dispatch(getTeacherClassTasks());
+    setShowDeleteQuestionModal(false);
+    setShowModal2TasksModal(true);
   }
 
   const cancelDeleteTask = async() => {

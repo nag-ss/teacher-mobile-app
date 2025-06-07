@@ -1,5 +1,5 @@
 import apiRequest from '../utils/api';
-import { GET_LIVE_CLASS, GET_SCHEDULE_CLASSES, ADD_TASK_TO_TEACHER_CLASS, GET_TEACHER_CLASS_TASKS } from '../utils/apiRoutes'
+import { GET_LIVE_CLASS, GET_SCHEDULE_CLASSES, ADD_TASK_TO_TEACHER_CLASS, GET_TEACHER_CLASS_TASKS, DELETE_TEACHER_CLASS_TASK } from '../utils/apiRoutes'
 import moment from 'moment';
 
 const getLiveClass = async (reqData: any, userToken: string) => {
@@ -33,11 +33,18 @@ const addTaskToClass = async(reqData: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', reqData, userToken);
 }
 
+const deleteTeacherClassTask = async(taskID: number, userToken: string) => {
+  console.log(taskID);
+  const reqUrl = `${DELETE_TEACHER_CLASS_TASK}/${taskID}`;
+  return await apiRequest(reqUrl, 'DELETE', taskID, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
     addTaskToClass,
-    getTeacherClassTasks
+    getTeacherClassTasks,
+    deleteTeacherClassTask
 };
 
 export default authService;

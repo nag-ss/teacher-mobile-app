@@ -18,6 +18,11 @@ export const getTeacherClassTasks = createAsyncThunk('/teacher/getTeacherClassTa
   return handleAuthApiCall(classService.getTeacherClassTasks, reqData, thunkAPI);
 });
 
+export const deleteTeacherClassTask = createAsyncThunk('/teacher/createTeacherTasks', async (taskid: number, thunkAPI) => {
+  return handleAuthApiCall(classService.deleteTeacherClassTask, taskid, thunkAPI);
+});
+
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
