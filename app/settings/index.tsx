@@ -9,7 +9,7 @@ import GenerateSlipTestModal from '@/components/Modals/Modal_5_GenerateSlipTest'
 import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks, deleteTeacherClassTask } from '@/store/classSlice';
+import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks, deleteTeacherClassTask, editTeacherClassTask } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import moment from 'moment';
 
@@ -26,11 +26,12 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const { liveClass: selectedClass, classTimeline, classTasks } = useSelector((state: any) => state.classes);
   const {user} = useSelector((state: any) => state.user);
 
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const [topic, setTopic] = useState(topicsList[0]);
   const [subTopic, setSubTopic] = useState(subTopicsList[0]);
   const [taskType, setTaskType] = useState("AI");
   const [taskIDToDelete, setTaskIDToDelete] = useState<number>(-1)
-  const [taskTypeToDelete, setTaskTypeToDelete] = useState<string | null>(null)
+  const [taskIDToEdit, setTaskIDToEdit] = useState<number>(-1)
 
   const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
   const [showModal2TasksModal, setShowModal2TasksModal] = useState(false);
@@ -63,6 +64,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const gotoTask = (taskTitle: string) => {
     if(taskTitle == 'AI' || taskTitle == 'Classwork' ) {
       setShowModal3NewTaskModal(false)
+      setSelectedTask(null);
       setShowModal4AICheckModal(true)
     } else if(taskTitle == 'Slip Test') {
       setShowModal3NewTaskModal(false)
@@ -86,7 +88,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   }
 
   const saveAICheckDetails = async(aiCheckDetails: any) => {
-    const task_type = (taskType == "AI") ? "AICheck" : "ClassWork"; 
+    const task_type = (taskType == "AI") ? "AICheck" : "Classwork"; 
     const data: any = {
       title: aiCheckDetails.title,
       instructions: {
@@ -100,7 +102,12 @@ const Settings: React.FC<Props> = ({navigation}) => {
       start_date: classTimeline[0].date,
       end_date: classTimeline[0].date,
     }
-    await dispatch(addTaskToClass(data))
+    if(aiCheckDetails.taskId) {
+      await dispatch(editTeacherClassTask({id: aiCheckDetails.taskId, ...data}))
+    } else {
+      await dispatch(addTaskToClass(data))
+    }
+    await dispatch(getTeacherClassTasks())
     setShowModal4AICheckModal(false)
   }
 
@@ -140,7 +147,8 @@ const Settings: React.FC<Props> = ({navigation}) => {
         is_notified: false
       }
     };
-    await dispatch(addTaskToClass(quizDetails)) 
+    await dispatch(addTaskToClass(quizDetails));
+    await dispatch(getTeacherClassTasks())
     setShowModal6SlipTestSettingsModal(false)
     navigation.navigate('SlipTest');
   };
@@ -164,18 +172,32 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setSubTopic(subTopic)
   }
 
-  const deleteItem = (task_id: number, task_type: string) => {
+  const deleteTask = (task_id: number, task_type: string) => {
     setShowModal2TasksModal(false)
     setTaskIDToDelete(task_id)
-    setTaskTypeToDelete(task_type)
+    setTaskType(task_type)
     setShowDeleteQuestionModal(true)
     console.log(task_id, task_type);
   }
 
+  const editTask = (task_id: number, task_type: string) => {  
+    console.log(task_type);
+    console.log(task_id);
+    setShowModal2TasksModal(false)
+    setTaskIDToEdit(task_id)
+    setTaskType(task_type)
+    const currTask = (classTasks?.filter((tsk: any) => tsk.task_id == task_id))[0];
+    setSelectedTask(currTask);
+    console.log(currTask);
+    if (task_type == 'AICheck' || task_type == 'ClassWork') {
+      setShowModal4AICheckModal(true);
+    }
+  }
+
   const confirmDeleteTask = async() => {
-    console.log('Task Deleted ' + taskIDToDelete + ' of type ' + taskTypeToDelete);
+    console.log('Task Deleted ' + taskIDToDelete + ' of type ' + taskType);
     await dispatch(deleteTeacherClassTask(taskIDToDelete));
-    await dispatch(getTeacherClassTasks());
+    await dispatch(getTeacherClassTasks())
     setShowDeleteQuestionModal(false);
     setShowModal2TasksModal(true);
   }
@@ -197,9 +219,9 @@ const Settings: React.FC<Props> = ({navigation}) => {
       <SafeAreaView>
         <Button onPress={() => setShowModal1SummaryModal(true)} title="Open Summary" />
         <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
-        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteItem={deleteItem} />
+        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
-        <AiCheckModal visible={showModal4AICheckModal} taskType={taskType} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
+        <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
         <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
         <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
         <DeleteQuestionModal

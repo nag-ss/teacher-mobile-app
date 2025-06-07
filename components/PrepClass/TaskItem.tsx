@@ -26,10 +26,11 @@ interface TaskItemProps {
   item: any;
   index: number;
   tasksCount: number;
-  deleteItem: (id: number, type: string) => void;
+  deleteTask: (id: number, type: string) => void;
+  editTask: (id: number, type: string) => void;
 };
 
-const TaskItem = ({item, index, tasksCount, deleteItem}: TaskItemProps) => {
+const TaskItem = ({item, index, tasksCount, deleteTask, editTask}: TaskItemProps) => {
   const [taskOptionsVisible, setTaskOptionsVisible] = useState(false);
   const mt = (index==tasksCount-1 || index == tasksCount - 2) ? -75: 50;
   return (
@@ -41,10 +42,10 @@ const TaskItem = ({item, index, tasksCount, deleteItem}: TaskItemProps) => {
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
       {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt}}>
-        <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => console.log('Edit Clicked ' + item.task_id)}>
+        {item.task_type != 'SlipTest' && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
-        </TouchableHighlight>
-        <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteItem(item.task_id, item.task_type)}>
+        </TouchableHighlight>)}
+        <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Delete</Text>
         </TouchableHighlight>
       </View>)}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -13,12 +13,13 @@ import RadioGroup from 'react-native-radio-buttons-group';
 interface AiCheckModalProps {
   visible: boolean;
   taskType: string;
+  selectedTask: any;
   onClose: () => void;
   goBack: () => void; 
   saveAICheckDetails: (AICheckDetails:any) => void;
 }
 
-const AiCheckModal = ({ visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const radioButtons = useMemo(() => ([
     {
         id: 'exact', // acts as primary key, should be unique and non-empty string
@@ -34,11 +35,16 @@ const AiCheckModal = ({ visible, taskType, onClose, goBack, saveAICheckDetails }
     }
   ]), []);
   
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(selectedTask?.title || '');
   const [checkType] = useState('Custom (Manual Input)');
   const [selectedId, setSelectedId] = useState('exact');
   const [textInput, setTextInput] = useState('');
 
+  useEffect(() => {
+    if (selectedTask) {
+      setTitle(selectedTask.title);
+    }
+  }, [selectedTask]);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -102,7 +108,7 @@ const AiCheckModal = ({ visible, taskType, onClose, goBack, saveAICheckDetails }
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveBtn} onPress={() => {
-              saveAICheckDetails({title,  checkType, selectedId, textInput }),
+              saveAICheckDetails({title, checkType, selectedId, textInput, taskId: selectedTask?.task_id }),
               setTitle(''), 
               setTextInput('')
             }}>

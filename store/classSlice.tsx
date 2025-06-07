@@ -18,10 +18,13 @@ export const getTeacherClassTasks = createAsyncThunk('/teacher/getTeacherClassTa
   return handleAuthApiCall(classService.getTeacherClassTasks, reqData, thunkAPI);
 });
 
-export const deleteTeacherClassTask = createAsyncThunk('/teacher/createTeacherTasks', async (taskid: number, thunkAPI) => {
+export const deleteTeacherClassTask = createAsyncThunk('/teacher/deleteTeacherClassTask', async (taskid: number, thunkAPI) => {
   return handleAuthApiCall(classService.deleteTeacherClassTask, taskid, thunkAPI);
 });
 
+export const editTeacherClassTask = createAsyncThunk('/teacher/editTeacherClassTask', async (task: any, thunkAPI) => {
+  return handleAuthApiCall(classService.editTeacherClassTask, task, thunkAPI);
+});
 
 const classSlice = createSlice({
     name: 'class',
@@ -114,6 +117,34 @@ const classSlice = createSlice({
           state.loading = false;
         })
         .addCase(addTaskToClass.rejected, (state, action) => {
+          state.loading = false
+          console.log("error api ")
+          console.log(action.payload)
+        })
+        .addCase(deleteTeacherClassTask.pending, (state, action) => {
+          state.loading = true
+          console.log("Deleting the task")
+        })
+        .addCase(deleteTeacherClassTask.fulfilled, (state, action) => {
+          console.log("action.payload")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(deleteTeacherClassTask.rejected, (state, action) => {
+          state.loading = false
+          console.log("error api ")
+          console.log(action.payload)
+        })
+        .addCase(editTeacherClassTask.pending, (state, action) => {
+          state.loading = true
+          console.log("Updating the task")
+        })
+        .addCase(editTeacherClassTask.fulfilled, (state, action) => {
+          console.log("action.payload")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(editTeacherClassTask.rejected, (state, action) => {
           state.loading = false
           console.log("error api ")
           console.log(action.payload)
