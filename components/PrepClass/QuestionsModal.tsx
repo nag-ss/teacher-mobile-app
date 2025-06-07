@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
 
 const QuestionModal = ({ show, ques, onClose, clickedNext, onCancel }: any) => {
   if (!show) return null;
@@ -22,20 +23,27 @@ const QuestionModal = ({ show, ques, onClose, clickedNext, onCancel }: any) => {
             <View style={styles.questionBox}>
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Question</Text>
-                <TextInput
+                <MathJaxSvg 
+                  fontCache={true}
+                  fontSize={16}
+                >
+                  {ques.body.Question}
+                </MathJaxSvg>
+                
+                {/* <TextInput
                   value={ques.question}
                   style={styles.input}
                   multiline
                   editable={false} // change to true if editing is needed
-                />
+                /> */}
               </View>
 
               {/* Subjective Answer */}
-              {ques.type === 'subjective' && (
+              {!ques.is_objective && (
                 <View style={styles.answerBox}>
                   <Text style={styles.answerLabel}>Answer:</Text>
                   <TextInput
-                    value={ques.answer}
+                    value={ques.answer.explanation}
                     style={styles.textArea}
                     multiline
                     editable={false} // change to true if editing is needed
@@ -44,9 +52,9 @@ const QuestionModal = ({ show, ques, onClose, clickedNext, onCancel }: any) => {
               )}
 
               {/* Objective Options */}
-              {ques.type === 'objective' && (
+              {ques.is_objective && (
                 <View style={styles.optionsContainer}>
-                  {ques.options?.map((opt: any, idx: number) => (
+                  {ques.choice_body?.map((opt: any, idx: number) => (
                     <View key={idx} style={styles.optionItem}>
                       <Text style={styles.label}>Option - {String.fromCharCode(65 + idx)}</Text>
                       <View style={styles.optionRow}>
@@ -54,11 +62,12 @@ const QuestionModal = ({ show, ques, onClose, clickedNext, onCancel }: any) => {
                         <View style={styles.radioCircle}>
                           {ques.correct === idx && <View style={styles.selectedRb} />}
                         </View>
-                        <TextInput
-                          value={opt}
-                          style={styles.input}
-                          editable={false} // change to true if editing is needed
-                        />
+                        <MathJaxSvg 
+                          fontCache={true}
+                          fontSize={16}
+                        >
+                          {opt}
+                        </MathJaxSvg>
                       </View>
                     </View>
                   ))}
