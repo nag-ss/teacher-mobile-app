@@ -24,7 +24,7 @@ const tasks = [
     index: 1,
     icon: require('../../assets/images/modal/calendar_month.png'),
     title: 'Covalent Bond Worksheet',
-    task_type: 'ClassWork',
+    task_type: 'Classwork',
     action: '02-11-2024',
   },
   {
@@ -38,7 +38,7 @@ const tasks = [
     index: 3,
     icon: require('../../assets/images/modal/calendar_month.png'),
     title: 'Upload Notes on Hydrogen Bonds',
-    task_type: 'ClassWork',
+    task_type: 'Classwork',
     action: '02-11-2024',
   },
   {
@@ -81,7 +81,7 @@ interface ClassTaskCardPopProps {
 const mapper: any = {
   SlipTest: "Slip Test",
   Quiz: "Quiz",
-  ClassWork: "Classwork",
+  Classwork: "Classwork",
   AICheck: "AI Check"
 }
 

@@ -18,7 +18,7 @@ const action_icon = require('../../assets/images/actions_icon.png');
 const mapper: any = {
   SlipTest: "Slip Test",
   Quiz: "Quiz",
-  ClassWork: "Classwork",
+  Classwork: "Classwork",
   AICheck: "AI Check"
 }
 
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   actionBox: { 
-    zIndex: 100 ,
+    zIndex: 100,
     display: 'flex', 
     position: 'absolute', 
     backgroundColor: '#f5f5f5',

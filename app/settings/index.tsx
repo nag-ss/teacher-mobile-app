@@ -29,7 +29,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [topic, setTopic] = useState(topicsList[0]);
   const [subTopic, setSubTopic] = useState(subTopicsList[0]);
-  const [taskType, setTaskType] = useState("AI");
+  const [taskType, setTaskType] = useState("AICheck");
   const [taskIDToDelete, setTaskIDToDelete] = useState<number>(-1)
   const [taskIDToEdit, setTaskIDToEdit] = useState<number>(-1)
 
@@ -62,19 +62,21 @@ const Settings: React.FC<Props> = ({navigation}) => {
   }
 
   const gotoTask = (taskTitle: string) => {
-    if(taskTitle == 'AI' || taskTitle == 'Classwork' ) {
+    if(taskTitle == 'AICheck' || taskTitle == 'Classwork' ) {
       setShowModal3NewTaskModal(false)
       setSelectedTask(null);
       setShowModal4AICheckModal(true)
-    } else if(taskTitle == 'Slip Test') {
+      setTaskType(taskTitle)
+    } else if(taskTitle == 'SlipTest') {
       setShowModal3NewTaskModal(false)
       setShowModal5GenerateSlipTestModal(true)
+      setTaskType(taskTitle)
     } else {
         // setCreateTaskModalOpen(false)
         // setShowCWTaskModal(true)
-        alert("Classwork Clicked")
+        alert("Task type unidentifiable")
     }
-    setTaskType(taskTitle)
+    
   }
 
   const backToNewTasksModal = () => {
@@ -87,14 +89,13 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setShowModal6SlipTestSettingsModal(true)
   }
 
-  const saveAICheckDetails = async(aiCheckDetails: any) => {
-    const task_type = (taskType == "AI") ? "AICheck" : "Classwork"; 
+  const saveAICheckDetails = async(aiCheckDetails: any) => { 
     const data: any = {
       title: aiCheckDetails.title,
       instructions: {
         ...aiCheckDetails
       },
-      task_type: task_type,
+      task_type: taskType,
       subject_id: 1,
       division_id: 43,
       teacher_id: user.id,
@@ -189,7 +190,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
     const currTask = (classTasks?.filter((tsk: any) => tsk.task_id == task_id))[0];
     setSelectedTask(currTask);
     console.log(currTask);
-    if (task_type == 'AICheck' || task_type == 'ClassWork') {
+    if (task_type == 'AICheck' || task_type == 'Classwork') {
       setShowModal4AICheckModal(true);
     }
   }

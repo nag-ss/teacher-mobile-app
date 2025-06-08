@@ -15,7 +15,7 @@ import TaskCard from '../PrepClass/TaskCard';
 
 const taskOptions = [
   {
-    id: 'AI',
+    id: 'AICheck',
     title: 'AI Check-Up',
     description: [
       'Get instant AI evaluation on student submissions',
@@ -25,7 +25,7 @@ const taskOptions = [
     action: 'Set up',
   },
   {
-    id: 'Slip Test',
+    id: 'SlipTest',
     title: 'Auto Slip Test Generation',
     description: [
       'Generate customized tests using AI.',
@@ -43,7 +43,7 @@ const taskOptions = [
     ],
     svgIcon: 'classUpload',
     action: 'Set up',
-  },
+  }
 ];
 
 const NewTaskModal = ({ visible, onClose, goBack, clickedNext }: {visible: boolean; onClose: () => void; goBack: () => void; clickedNext: (taskName:string) => void}) => {
