@@ -133,9 +133,10 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
 
               {/* AI Assistant Image */}
               <View style={styles.aiImageContainer}>
-                <SvgLoader
-                  svgFilePath='aiAssistant' // Replace with your own logo
+                <Image
+                  source={require('../../assets/images/AI_Assistant_large.png')} // Replace with your actual image path
                   style={styles.aiAssistant}
+                  resizeMode="contain"
                 />
               </View>
 

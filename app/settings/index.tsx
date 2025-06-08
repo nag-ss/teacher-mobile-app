@@ -11,6 +11,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks, deleteTeacherClassTask, editTeacherClassTask } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
+import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
 import moment from 'moment';
 
 const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
@@ -39,7 +40,8 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
   const [showModal5GenerateSlipTestModal, setShowModal5GenerateSlipTestModal] = useState(false);
   const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
-  const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false)
+  const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false);
+  const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(true);
 
   const showDetailsModal = () => {
     setShowModal1SummaryModal(false)
@@ -231,6 +233,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
           onCancel={() => cancelDeleteTask()}
           onDelete={() => confirmDeleteTask()}
         />
+        <LoadingSlipTestModal show={showLoadingQuizModal} onCancel={() => setShowLoadingQuizModal(false)} />
       </SafeAreaView>
     </SafeAreaProvider>
   );
