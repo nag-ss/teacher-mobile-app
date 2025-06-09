@@ -26,10 +26,20 @@ export const editTeacherClassTask = createAsyncThunk('/teacher/editTeacherClassT
   return handleAuthApiCall(classService.editTeacherClassTask, task, thunkAPI);
 });
 
+export const getSlipTestStatus = createAsyncThunk('tasks/updateTask', async (quiz_id: number, thunkAPI) => {
+  return handleAuthApiCall(classService.getSlipTestStatus, quiz_id, thunkAPI);
+});
+
+export const addSlipTestToClass = createAsyncThunk<any>('/teacher/createSlipTest', async (reqData, thunkAPI) => {
+  return handleAuthApiCall(classService.addSlipTestToClass, reqData, thunkAPI);
+});
+
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
       liveClass:  {},
+      quiz_details: {},
     //   liveClass: {
     //     "class_id": 0,
     //     "date": "2025-05-05",
@@ -149,7 +159,35 @@ const classSlice = createSlice({
           console.log("error api ")
           console.log(action.payload)
         })
-      
+        .addCase(getSlipTestStatus.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(getSlipTestStatus.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(getSlipTestStatus.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(addSlipTestToClass.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(addSlipTestToClass.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+          state.quiz_details = action.payload
+        })
+        .addCase(addSlipTestToClass.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
     },
 });
   

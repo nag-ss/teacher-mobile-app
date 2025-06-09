@@ -60,22 +60,25 @@ const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuest
       {/* Subjective Answer */}
       {!item.is_objective && (
         <View style={styles.answerBox}>
-          <Text>
-            <Text style={{ fontWeight: 'bold' }}>Answer: </Text>
-              {item.answer.explanation}
-          </Text>
+          <Text style={{ fontWeight: 'bold' }}>Answer: </Text>
+          <MathJaxSvg
+            fontCache={true}
+            fontSize={16}
+          >
+            {item.answer.explanation}
+          </MathJaxSvg>
         </View>
       )}
 
       {/* Objective Options */}
       {item.is_objective && (
         <View style={styles.optionsGrid}>
-          {item.choice_body?.map((opt: string, idx: number) => (
+          {Object.keys(item.choice_body).map((key:string) => (
             <View
-              key={idx}
+              key={key}
               style={[
                 styles.optionBox,
-                idx === item.correct && {
+                key === item.answer?.text && {
                   borderColor: '#059669',
                 },
               ]}
@@ -84,9 +87,9 @@ const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuest
                 fontCache={true}
                 fontSize={16}
               >
-                {opt}
+                {item.choice_body[key]}
               </MathJaxSvg>
-              {idx === item.correct && <Feather name="check-circle" size={18} color="#059669" />}
+              {key === item.answer.text && <Feather name="check-circle" size={18} color="#059669" />}
             </View>
           ))}
         </View>

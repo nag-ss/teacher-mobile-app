@@ -92,7 +92,7 @@ const CustomDrawerContent = () => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity 
+      {/* <TouchableOpacity 
         style={styles.iconItem} 
         onPress={() => navigation.navigate('SlipTest')}>
         <View style={[styles.submenuContent, pathname == '/sliptest' ? styles.selectedMenu : {}]}>
@@ -101,7 +101,7 @@ const CustomDrawerContent = () => {
             {'SlipTest'}
             </Text>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

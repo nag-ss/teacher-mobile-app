@@ -10,3 +10,5 @@ export const GET_CLASSWORK_CHECK = 'monitoring/get_task_classwork_check';
 export const GET_SLIPTEST_CHECK = 'monitoring/get_task_sliptest_check';
 export const DELETE_TEACHER_CLASS_TASK = 'teacher/delete_task';
 export const EDIT_TEACHER_CLASS_TASK = 'teacher/update_teacher_tasks';
+export const QUIZ_GENERATION_STATUS = 'teacher/quiz-generation-status';
+export const GET_QUIZ = 'quiz/get_quiz';

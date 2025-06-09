@@ -40,8 +40,8 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
   const [duration, setDuration] = useState(15);
   const [marks, setMarks] = useState(50);
   const [difficulty, setDifficulty] = useState(7);
-  const [mcqCount, setMcqCount] = useState(10);
-  const [subCount, setSubCount] = useState(10);
+  const [mcqCount, setMcqCount] = useState(3);
+  const [subCount, setSubCount] = useState(2);
   const [isMCQ, setIsMCQ] = useState(true);
   const [isSubjective, setIsSubjective] = useState(true);
 

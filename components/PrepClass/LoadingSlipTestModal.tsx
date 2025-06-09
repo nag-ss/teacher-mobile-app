@@ -26,7 +26,7 @@ const LoadingSlipTestModal = ({ show, onCancel }: LoadingSlipTestModalProps) => 
           <Text style={styles.title}>Generating your Test...</Text>
           <Text style={styles.subtitle}>Please wait a moment - this may take up to 30 seconds.</Text>
           <View style={styles.buttonRow}>
-            <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
+            <TouchableOpacity disabled onPress={onCancel} style={styles.cancelButton}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>

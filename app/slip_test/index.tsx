@@ -7,22 +7,23 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import QuestionCard from '@/components/PrepClass/QuestionCard';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import QuestionModal from '@/components/PrepClass/QuestionsModal';
-import questions from '../../data/Questions';
+// import questions from '../../data/Questions';
 
 const SlipTestPage = () => {
+  const dispatch = useDispatch<any>();
+  const { quiz_details } = useSelector((state: any) => state.classes);
+  const {questions} = quiz_details;
   const [activeDropdown, setActiveDropdown] = useState(-1);
   const [isDeleteTaskModal, setDeleteTaskModal] = useState(false);
   const [isQuestionModal, setQuestionModal] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
 
   const editQuestion = (id: number) => {
-    console.log("========================");
-    console.log(id);
-    console.log("========================");
-    const question = (questions.filter(q => q.question_id == id))[0]
+    const question = (questions.filter((q: { question_id: number; }) => q.question_id == id))[0]
     setSelectedQuestion(question);
     setQuestionModal(true);
   };

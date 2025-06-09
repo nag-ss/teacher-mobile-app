@@ -9,7 +9,15 @@ import GenerateSlipTestModal from '@/components/Modals/Modal_5_GenerateSlipTest'
 import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
-import { getLiveClass, getScheduleClasses, addTaskToClass, getTeacherClassTasks, deleteTeacherClassTask, editTeacherClassTask } from '@/store/classSlice';
+import { 
+  getLiveClass, 
+  getScheduleClasses, 
+  addTaskToClass, 
+  getTeacherClassTasks, 
+  deleteTeacherClassTask, 
+  editTeacherClassTask, 
+  addSlipTestToClass 
+} from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
 import moment from 'moment';
@@ -41,7 +49,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
   const [showModal5GenerateSlipTestModal, setShowModal5GenerateSlipTestModal] = useState(false);
   const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
   const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false);
-  const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(true);
+  const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(false);
 
   const showDetailsModal = () => {
     setShowModal1SummaryModal(false)
@@ -116,20 +124,21 @@ const Settings: React.FC<Props> = ({navigation}) => {
 
   const saveSlipTestDetails = async(slipTestDetails: any) => {
     const quizDetails: any = {
-      title: `Slip Test ${Math.floor(Math.random() * 100)}`, 
+      title: `Slip Test ${Math.floor(Math.random() * 1000)}`, 
       task_type: "SlipTest", 
       start_date: classTimeline[0].date,
       end_date: classTimeline[0].date,
       instructions: {
-        multipleChoice: slipTestDetails.mcqCount,
-        longQuestions: slipTestDetails.subCount,
-        totalQuestions: slipTestDetails.totalQuestions,
+        objective_questions: slipTestDetails.mcqCount,
+        subjective_questions: slipTestDetails.subCount,
+        total_questions: slipTestDetails.totalQuestions,
         marks: slipTestDetails.marks,
         duration: slipTestDetails.duration,
         difficulty: slipTestDetails.difficulty
       },
       subject_id: 1,
-      division_id: 43,
+      // division_id: 43,
+      division_id: 37,
       teacher_id: user.id,
       class_schedule_id: 98,
       quiz: {
@@ -138,8 +147,10 @@ const Settings: React.FC<Props> = ({navigation}) => {
         duration: slipTestDetails.duration,
         is_auto: true,
         asset_link: {},
-        topic: topic,
-        sub_topic: subTopic,
+        // topic: topic,
+        topic: 'Integer',
+        // sub_topic: subTopic,
+        sub_topic: 'Addition, Subtraction, Division, Multiplication',
         skills: {},
         quiz_type: "SlipTest",
         is_public: true,
@@ -150,8 +161,13 @@ const Settings: React.FC<Props> = ({navigation}) => {
         is_notified: false
       }
     };
-    await dispatch(addTaskToClass(quizDetails));
-    await dispatch(getTeacherClassTasks())
+    setShowModal6SlipTestSettingsModal(false)
+    setShowLoadingQuizModal(true)
+
+    await dispatch(addSlipTestToClass(quizDetails));
+    setShowLoadingQuizModal(false)
+    // I am here
+    // await dispatch(getTeacherClassTasks())
     setShowModal6SlipTestSettingsModal(false)
     navigation.navigate('SlipTest');
   };
@@ -160,7 +176,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
     await dispatch(getLiveClass())
     await dispatch(getScheduleClasses())
     await dispatch(getTeacherClassTasks())
-    // console.log("I am getting Scheduled Classes")  
+    // console.log("I am getting Scheduled Classes")
     console.log(selectedClass)
     // console.log(scheduleClasses)
   };
