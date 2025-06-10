@@ -11,8 +11,12 @@ export default function UploadMaterialsCard({ title }: { title: string }) {
                     resizeMode="contain"
                 />
                 <Text style={styles.title}>{title}</Text>
+                <View style={{
+                    borderBottomColor: 'black',
+                    borderBottomWidth: 1,
+                    marginBottom: 10
+                }}></View>
                 <Text style={styles.subtitle}>Please add your content here.</Text>
-
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>Upload</Text>
                 </TouchableOpacity>
@@ -25,33 +29,27 @@ const styles = StyleSheet.create({
     card: {
         width: 200,
         height: 200,
-        // backgroundColor: '#fff',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 4,
-        elevation: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
+        paddingLeft: 10,
+        paddingTop: 10,
+        borderWidth: 0.5,
+        borderRadius: 10,
+        borderColor: 'grey'
     },
     content: {
         width: '100%',
         paddingHorizontal: 10,
-        alignItems: 'center',
     },
     image: {
-        width: 48,
-        height: 48,
+        width: 36,
+        height: 36,
         marginBottom: 10,
     },
     title: {
         fontSize: 16,
-        fontWeight: '600',
         marginBottom: 8,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: 11,
         color: '#64748b', // slate-500 equivalent
         marginBottom: 8,
     },

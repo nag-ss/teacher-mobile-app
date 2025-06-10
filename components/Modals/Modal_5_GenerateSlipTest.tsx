@@ -12,6 +12,7 @@ import {
   Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import {RadioButton} from 'react-native-radio-buttons-group';
 
 const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
 const subTopicsList = ["Sub Topic 1", "Sub Topic 2", "Sub Topic 3", "Sub Topic 4"]
@@ -39,6 +40,9 @@ const GenerateSlipTestModal = ({
   clickedNext,
 }: GenerateSlipTestModalProps ) => {
   const [selectedOption, setSelectedOption] = useState<'topic' | 'upload'>();
+  const [topicSelected, setTopicSelected] = useState(false)
+  const [uploadSelected, setUploadSelected] = useState(false)
+  const [selectedId, setSelectedId] = useState<string | undefined>();
 
   return (
     <Modal visible={visible} animationType="fade" transparent>
@@ -47,7 +51,7 @@ const GenerateSlipTestModal = ({
           <ScrollView contentContainerStyle={styles.contentContainer}>
 
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
 
             <Text style={styles.modalTitle}>Generate Slip Test</Text>
@@ -56,80 +60,93 @@ const GenerateSlipTestModal = ({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Class Details</Text>
               <View style={styles.detailGrid}>
-                <Text style={styles.detailItem}>Grade: <Text style={styles.detailValue}>{selectedClass.division_name}</Text></Text>
-                <Text style={styles.detailItem}>Section: <Text style={styles.detailValue}>{selectedClass.section_name}</Text></Text>
-                <Text style={styles.detailItem}>Subject: <Text style={styles.detailValue}>{selectedClass.subject_name}</Text></Text>
+                <Text style={styles.detailItem}>Grade</Text>
+                <Text>
+                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass.division_name}</Text>
+                </Text>
+                <Text style={styles.detailItem}>Section</Text>
+                <Text>
+                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass.section_name}</Text>
+                </Text>
+                
+                <Text style={styles.detailItem}>Subject</Text>
+                <Text>
+                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass.subject_name}</Text>
+                </Text>
+                
               </View>
             </View>
 
             <Text style={styles.sectionTitle}>Select an Option to Proceed</Text>
 
             {/* Topic Option */}
-            <TouchableOpacity
-              style={[
-                styles.optionBox,
-                selectedOption === 'topic' && styles.optionBoxSelected,
-              ]}
-              onPress={() => setSelectedOption('topic')}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.optionIcon}>📁</Text>
-              <Text style={styles.optionTitle}>Topic</Text>
-              <Text style={styles.optionDescription}>
-                Generate a test by choosing a topic and sub-topic. The test will be automatically created using these topics.
-              </Text>
 
-              {selectedOption === 'topic' && (
-                <View style={styles.pickerGroup}>
-                  <View style={styles.pickerWrapper}>
-                    <Text style={styles.label}>Topic</Text>
+            <View  style={styles.optionBox}>
+              <View style={styles.optionBoxMainContent}>
+                <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
+                <View>
+                  <Text style={styles.optionTitle}>Topic</Text>
+                  <Text style={styles.optionDescription}>
+                    Generate a test by choosing a topic and sub-topic. The test will be automatically created using these topics.
+                  </Text>
+                </View>
+                <RadioButton color="#21c17c" id='topic' onPress={() => setTopicSelected(val => !val)} selected={topicSelected} />
+                {/* <CheckBox checked={topicSelected} onPress={() => setTopicSelected(val => !val)}/> */}
+                  
+              </View>
+              {topicSelected && (
+                <View style={{display: 'flex', 'flexDirection': 'row', justifyContent: 'space-between'}}>            
+                  <Text style={styles.label}>Topic :</Text>
+                  <View style={styles.pickerContainer}>
                     <Picker
                       selectedValue={topic}
-                      onValueChange={(itemValue) => updateTopic(itemValue)}
                       style={styles.picker}
+                      onValueChange={(itemValue) => updateTopic(itemValue)}
+                      mode="dropdown"
                     >
-                      {topicsList.map((topic) => (
-                        <Picker.Item key={topic} label={topic} value={topic} />
-                      ))}
+                      {topicsList.map((key)=> <Picker.Item label={key} value={key} />)}
                     </Picker>
                   </View>
-                  <View style={styles.pickerWrapper}>
-                    <Text style={styles.label}>Sub Topic</Text>
+                  
+    
+                  <Text style={styles.label}>Sub Topic :</Text>
+                  <View style={styles.pickerContainer}>
                     <Picker
                       selectedValue={subTopic}
-                      onValueChange={(itemValue) => updateSubTopic(itemValue)}
                       style={styles.picker}
+                      onValueChange={(itemValue) => updateSubTopic(itemValue)}
+                      mode="dropdown"
                     >
-                      {subTopicsList.map((sub) => (
-                        <Picker.Item key={sub} label={sub} value={sub} />
-                      ))}
+                      {subTopicsList.map((key)=> <Picker.Item label={key} value={key} />)}
                     </Picker>
                   </View>
+                  
                 </View>
               )}
-            </TouchableOpacity>
+            </View>
+            
 
             {/* Upload Option */}
-            <TouchableOpacity
-              style={[
-                styles.optionBox,
-                selectedOption === 'upload' && styles.optionBoxSelected,
-              ]}
-              onPress={() => setSelectedOption('upload')}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.optionIcon}>📤</Text>
-              <Text style={styles.optionTitle}>Upload</Text>
-              <Text style={styles.optionDescription}>
-                Upload your own test, learning material, or classwork to generate a test from its content.
-              </Text>
+            <View style={styles.optionBox}>
+              
+              <View style={styles.optionBoxMainContent}>
+                <Image source={require('../../assets/images/ss/Upload-materials.png')} style={styles.icon} />
+                <View>
+                  <Text style={styles.optionTitle}>Upload</Text>
+                  <Text style={styles.optionDescription}>
+                    Upload your own test, learning material, or classwork to generate a test from its content.
+                  </Text>
+                </View>
+                
+                <RadioButton color="#21c17c" id='upload' onPress={() => setUploadSelected(val => !val)} selected={uploadSelected} />
+              </View>
 
-              {selectedOption === 'upload' && (
+              {uploadSelected && (
                 <View style={styles.uploadPlaceholder}>
                   <Text style={styles.uploadText}>📎 Upload file (simulated)</Text>
                 </View>
               )}
-            </TouchableOpacity>
+            </View>
 
             {/* Footer */}
             <View style={styles.footer}>
@@ -157,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 16,
     padding: 20,
-    width: '90%',
+    width: '75%',
     maxHeight: '90%',
   },
   contentContainer: {
@@ -169,9 +186,16 @@ const styles = StyleSheet.create({
     top: 10,
     zIndex: 10,
   },
+  closeIcon:{
+    width: 24,
+    height: 24
+  },
   icon: {
     width: 32,
     height: 32,
+    borderColor: '#21c17c',
+    borderRadius: 6,
+    borderWidth: 2,
   },
   closeText: {
     fontSize: 28,
@@ -192,16 +216,15 @@ const styles = StyleSheet.create({
   },
   detailGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between'
   },
   detailItem: {
     fontSize: 14,
-    marginRight: 12,
     marginBottom: 4,
+    fontWeight: '600',
   },
   detailValue: {
-    fontWeight: '600',
+    fontWeight: 'normal'
   },
   optionBox: {
     borderWidth: 1,
@@ -211,27 +234,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: '#FFF',
   },
-  optionBoxSelected: {
-    borderColor: '#10B981',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 3,
+  optionBoxMainContent: {
+    display: 'flex',
+    flexDirection: 'row', 
+    justifyContent: 'space-between'
   },
   optionIcon: {
     fontSize: 24,
     marginBottom: 4,
   },
   optionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: 6,
   },
   optionDescription: {
-    fontSize: 14,
+    fontSize: 11,
     color: '#4B5563',
+    width: 300,
     marginBottom: 12,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   pickerGroup: {
     flexDirection: 'row',
@@ -242,9 +268,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   label: {
-    marginBottom: 4,
-    fontSize: 14,
-    color: '#374151',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10
   },
   picker: {
     backgroundColor: '#F3F4F6',
@@ -273,7 +299,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   nextText: {
-    color: 'white',
-    fontWeight: '600',
+    paddingLeft: 30,
+    paddingRight: 30,
+    fontSize: 14,
+  },
+  pickerContainer: {
+    width: 160,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -7,21 +7,44 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Switch,
 } from 'react-native';
-
+import { CheckBox } from 'react-native-elements';
+import RadioGroup from 'react-native-radio-buttons-group';
 interface AiCheckModalProps {
-  visible: boolean; 
+  visible: boolean;
+  taskType: string;
+  selectedTask: any;
   onClose: () => void;
   goBack: () => void; 
   saveAICheckDetails: (AICheckDetails:any) => void;
 }
 
-const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
-  const [title, setTitle] = useState('');
+const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+  const radioButtons = useMemo(() => ([
+    {
+        id: 'exact', // acts as primary key, should be unique and non-empty string
+        label: 'Exact Match',
+        value: 'exact',
+        color:"#21c17c"
+    },
+    {
+        id: 'approx',
+        label: 'Approximate Match',
+        value: 'approx',
+        color: "#21c17c"
+    }
+  ]), []);
+  
+  const [title, setTitle] = useState(selectedTask?.title || '');
   const [checkType] = useState('Custom (Manual Input)');
-  const [matchType, setMatchType] = useState({ exact: false, approximate: false });
+  const [selectedId, setSelectedId] = useState('exact');
   const [textInput, setTextInput] = useState('');
+
+  useEffect(() => {
+    if (selectedTask) {
+      setTitle(selectedTask.title);
+    }
+  }, [selectedTask]);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -29,9 +52,9 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>AI Check</Text>
+            <Text style={styles.title}>{taskType == 'AI' ? 'AI Check' : 'Class Work' }</Text>
             <TouchableOpacity onPress={onClose}>
-              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
           </View>
 
@@ -56,50 +79,40 @@ const AiCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckM
 
           {/* Match Type */}
           <View style={styles.matchTypeRow}>
-            <View style={styles.switchRow}>
-              <Switch
-                value={matchType.exact}
-                onValueChange={() =>
-                  setMatchType((prev) => ({ ...prev, exact: !prev.exact }))
-                }
-              />
-              <Text style={styles.switchLabel}>Exact Match</Text>
-            </View>
-            <View style={styles.switchRow}>
-              <Switch
-                value={matchType.approximate}
-                onValueChange={() =>
-                  setMatchType((prev) => ({ ...prev, approximate: !prev.approximate }))
-                }
-              />
-              <Text style={styles.switchLabel}>Approximate</Text>
-            </View>
+            <RadioGroup 
+              radioButtons={radioButtons} 
+              selectedId={selectedId}
+              onPress={setSelectedId}
+              layout='row'
+            />
           </View>
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Text Input</Text>
-            <TextInput
-              value={textInput}
-              onChangeText={setTextInput}
-              placeholder="Type Here:"
-              multiline
-              style={styles.textArea}
-            />
+            <View style={{borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8 }}>
+              <TextInput
+                value={textInput}
+                onChangeText={setTextInput}
+                placeholder="Type Here:"
+                multiline
+                style={styles.textArea}
+              />
+            </View>
+            
           </View>
 
           {/* Footer Buttons */}
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
-              <Text>Cancel</Text>
+              <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveBtn} onPress={() => {
-              saveAICheckDetails({title,  checkType, matchType, textInput }),
+              saveAICheckDetails({title, checkType, selectedId, textInput, taskId: selectedTask?.task_id }),
               setTitle(''), 
-              setMatchType({exact: false, approximate: false})
               setTextInput('')
             }}>
-              <Text style={{ color: 'white' }}>Save</Text>
+              <Text style={{ textAlign: 'center' }}>Save</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -121,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
-    width: '90%',
+    width: '60%',
   },
   header: {
     flexDirection: 'row',
@@ -136,6 +149,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 32,
     height: 32,
+  },
+  closeIcon:{
+    width: 24,
+    height: 24
   },
   inputGroup: {
     marginBottom: 16,
@@ -189,7 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   textArea: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F5F5F6',
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
@@ -197,10 +214,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     height: 100,
     textAlignVertical: 'top',
+    margin: 10
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginTop: 24,
   },
   cancelBtn: {
@@ -209,11 +227,13 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
+    width: 180,
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
+    width: 180
   },
 });

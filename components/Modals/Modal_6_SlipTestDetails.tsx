@@ -12,12 +12,29 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
+import InputSpinner from "react-native-input-spinner";
+
 
 interface TestSettingsModalProps {
   visible: boolean; 
   onClose: () => void; 
   generateSlipTest: (slipTestDetails:any) => void;
 }
+
+const timeData = [
+  {id: 1,value: 15, label: '15 mins'},
+  {id: 2,value: 30, label: '30 mins'},
+  {id: 3,value: 45, label: '45 mins'},
+  {id: 4,value: 60, label: '60 mins'},
+];
+
+const marksData = [
+  {id: 1,value: 20, label: '20'},
+  {id: 2,value: 50, label: '50'},
+  {id: 3,value: 60, label: '60'},
+  {id: 4,value: 100, label: '100'},
+]
+
 
 const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsModalProps) => {
   const [duration, setDuration] = useState(15);
@@ -36,44 +53,54 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
         <View style={styles.modalContainer}>
           <ScrollView>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-             <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+             <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
 
-            <Text style={styles.modalTitle}>Test Settings</Text>
-            <Text style={styles.subtitle}>Customize test parameters before generating questions.</Text>
+            <View style={styles.titleContainer}>
+              <Text style={styles.modalTitle}>Test Settings - </Text>
+              <Text style={styles.subtitle}>Customize test parameters before generating questions.</Text>
+            </View>
+            
 
             {/* Time & Marks */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Time & Marks Section</Text>
 
               <View style={styles.row}>
-                <Text>⏰ Time:</Text>
-                <Picker
-                  selectedValue={duration}
-                  onValueChange={(value) => setDuration(value)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="15 min" value={15} />
-                  <Picker.Item label="30 min" value={30} />
-                  <Picker.Item label="45 min" value={45} />
-                  <Picker.Item label="60 min" value={60} />
-                </Picker>
+                <Text style={styles.marksTextStyle}><Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} /> Time</Text>
+                <Text style={styles.colonStyle}>:</Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={duration}
+                    onValueChange={(value) => setDuration(value)}
+                    style={styles.picker}
+                    mode='dropdown'
+                  >
+                    {
+                      timeData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
+                    }
+                  </Picker>
+                </View>
+                
+                <Text style={styles.marksTextStyle}><Image source={require('../../assets/images/ss/Marks.png')} style={styles.clockIcon} /> Marks</Text>
+                <Text style={styles.colonStyle}>:</Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={marks}
+                    onValueChange={(value) => setMarks(value)}
+                    style={styles.picker}
+                    mode='dropdown'
+                  >
+                    {
+                      marksData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
+                    }
+
+                  </Picker>
+                </View>
+                
               </View>
 
-              <View style={styles.row}>
-                <Text>📄 Marks:</Text>
-                <Picker
-                  selectedValue={marks}
-                  onValueChange={(value) => setMarks(value)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="20" value={20} />
-                  <Picker.Item label="50" value={50} />
-                  <Picker.Item label="60" value={60} />
-                  <Picker.Item label="100" value={100} />
-
-                </Picker>
-              </View>
+                
             </View>
 
             {/* Difficulty */}
@@ -92,12 +119,14 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
               /> */}
               <Slider
                 style={styles.slider}
-                minimumValue={0}
+                minimumValue={1}
                 maximumValue={10}
                 step={1}
                 value={difficulty}
                 onValueChange={(num) => setDifficulty(num)}
                 renderStepNumber
+                minimumTrackTintColor='#21c17c'
+                thumbTintColor='#21c17c'
               />
 
             </View>
@@ -106,51 +135,74 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Number of Questions</Text>
 
-              {/* MCQ Toggle */}
+              
               <View style={styles.questionRow}>
-                <Text>Multiple Choice</Text>
-                {/* <Switch value={isMCQ} onValueChange={setIsMCQ} /> */}
-                <TouchableOpacity
-                  style={styles.counterButton}
-                  onPress={() => setMcqCount((prev) => Math.max(0, prev - 1))}
-                  disabled={!isMCQ}
-                >
-                  <Text>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.countText}>{mcqCount}</Text>
-                <TouchableOpacity
-                  style={styles.counterButton}
-                  onPress={() => setMcqCount((prev) => prev + 1)}
-                  disabled={!isMCQ}
-                >
-                  <Text>+</Text>
-                </TouchableOpacity>
-              </View>
+                {/* MCQ Toggle */}  
+                <View >
+                  <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <Image source={require('../../assets/images/ss/Checkbox.png')} style={styles.subjectCheckIcon} />
+                    <Text>Multiple Choice</Text>
+                  </View>
+                  
+                  <View style={styles.questionsCount}>
+                    <InputSpinner
+                      value={mcqCount}
+                      onIncrease={() => setMcqCount((prev) => prev + 1)}
+                      onDecrease={() => setMcqCount((prev) => prev - 1)}              
+                      height={40}
+                      color='#8080801A'
+                      colorPress='#BDEDD7'
+                      buttonTextColor='#808080'
+                    />;
+                  </View>
+                  
+                  {/* <Switch value={isMCQ} onValueChange={setIsMCQ} /> */}
 
-              {/* Subjective Toggle */}
-              <View style={styles.questionRow}>
-                <Text>Subjective</Text>
-                {/* <Switch value={isSubjective} onValueChange={setIsSubjective} /> */}
-                <TouchableOpacity
-                  style={styles.counterButton}
-                  onPress={() => setSubCount((prev) => Math.max(0, prev - 1))}
-                  disabled={!isSubjective}
-                >
-                  <Text>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.countText}>{subCount}</Text>
-                <TouchableOpacity
-                  style={styles.counterButton}
-                  onPress={() => setSubCount((prev) => prev + 1)}
-                  disabled={!isSubjective}
-                >
-                  <Text>+</Text>
-                </TouchableOpacity>
-              </View>
+                  {/* <TouchableOpacity
+                    style={styles.counterButton}
+                    onPress={() => setMcqCount((prev) => Math.max(0, prev - 1))}
+                    disabled={!isMCQ}
+                  >
+                    <Text>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.countText}>{mcqCount}</Text>
+                  <TouchableOpacity
+                    style={styles.counterButton}
+                    onPress={() => setMcqCount((prev) => prev + 1)}
+                    disabled={!isMCQ}
+                  >
+                    <Text>+</Text>
+                  </TouchableOpacity> */}
+                </View>
+                 {/* Subjective Toggle */}
+                <View>
+                  <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <Image source={require('../../assets/images/ss/Checkbox.png')} style={styles.subjectCheckIcon} />
+                    <Text>Subjective</Text>
+                  </View>
+                  
+                  {/* <Switch value={isSubjective} onValueChange={setIsSubjective} /> */}
+                  <View style={styles.questionsCount}>
+                    <InputSpinner
+                      value={subCount}
+                      onIncrease={() => setSubCount((prev) => prev + 1)}
+                      onDecrease={() => setSubCount((prev) => prev - 1)}
+                      height={40}
+                      color='#8080801A'
+                      colorPress='#BDEDD7'
+                      buttonTextColor='#808080'
+                    />;
+                  </View>
+                  
+                </View>
+                {/* Total */}
+                <View>
+                  <Text style={{marginBottom: 8}}>Total Questions</Text>
+                  <View style={{width: 150, borderWidth: 0.5, borderRadius: 8}}>
+                    <Text style={{textAlign: 'center', marginTop: 10, height: 30}}>{totalQuestions}</Text>
+                  </View>
+                </View>
 
-              {/* Total */}
-              <View style={{ marginTop: 10 }}>
-                <Text>Total Questions: {totalQuestions}</Text>
               </View>
             </View>
 
@@ -164,7 +216,7 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
                 setMcqCount(10)
                 setSubCount(10)
               }}>
-                <Text style={styles.buttonText}>Generate Test</Text>
+                <Text>Generate Test</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -184,10 +236,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
     borderRadius: 16,
     padding: 20,
-    width: '90%',
+    width: '70%',
     maxHeight: '90%',
   },
   closeButton: {
@@ -200,20 +252,43 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
   },
+  closeIcon:{
+    width: 24,
+    height: 24,
+  },
   closeText: {
     fontSize: 24,
     color: '#6B7280',
   },
+  titleContainer: {
+    display: 'flex', 
+    flexDirection: 'row', 
+    marginTop: 4, 
+    marginBottom: 10,
+  },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '600',
   },
   subtitle: {
     color: '#6B7280',
-    marginBottom: 16,
+    marginTop: 6,
+    fontSize: 12
   },
   section: {
     marginBottom: 20,
+    padding: 10,
+    backgroundColor: 'white'
+  },
+  clockIcon: {
+    width: 16,
+    height: 16
+  },
+  subjectCheckIcon: {
+    width: 16,
+    height: 16,
+    marginRight: 6,
+    marginTop: 2
   },
   sectionTitle: {
     fontSize: 16,
@@ -226,12 +301,25 @@ const styles = StyleSheet.create({
   },
   row: {
     marginBottom: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  marksTextStyle: {
+    marginTop: 12
+  },
+  colonStyle:{
+    fontWeight: 'bold',
+    marginTop: 12
+  },
+  pickerWrapper: {
+    borderWidth: 0.5,
+    borderColor: '#999',
+    borderRadius: 8,
+    overflow: 'hidden'
   },
   picker: {
-    height: 50,
-    width: '100%',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 6,
+    width: 150
   },
   slider: {
     borderWidth: 1,
@@ -241,7 +329,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'center',
     marginTop: 10,
-    width: 630,
+    width: '95%',
   },
   scale: {
     flexDirection: 'row',
@@ -253,10 +341,17 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
   questionRow: {
+    display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 8,
     marginBottom: 10,
+  },
+  questionsCount: {
+    width: 150,
+    marginTop: 10, 
+    borderWidth: 0.5, 
+    borderRadius: 10
   },
   counterButton: {
     borderWidth: 1,
@@ -275,13 +370,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   button: {
-    backgroundColor: '#10B981',
+    backgroundColor: '#21c17c',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 6,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '600',
   },
 });

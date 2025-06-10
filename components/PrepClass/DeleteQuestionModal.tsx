@@ -10,11 +10,12 @@ import {
 
 interface DeleteTaskModalProps {
   show: boolean;
+  resourceType: string;
   onCancel: () => void;
   onDelete: () => void;
 }
 
-const DeleteQuestionModal: React.FC<DeleteTaskModalProps> = ({ show, onCancel, onDelete }) => {
+const DeleteQuestionModal: React.FC<DeleteTaskModalProps> = ({ show, resourceType, onCancel, onDelete }) => {
   return (
     <Modal visible={show} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -24,7 +25,7 @@ const DeleteQuestionModal: React.FC<DeleteTaskModalProps> = ({ show, onCancel, o
             style={styles.image}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Delete Task?</Text>
+          <Text style={styles.title}>Delete {resourceType == "task" ? "Task" : "Question"}?</Text>
           <Text style={styles.subtitle}>Are you sure you want to proceed?</Text>
 
           <View style={styles.buttonRow}>
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 24,
-    width: '85%',
+    width: '50%',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -91,20 +92,22 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     marginRight: 8,
+    width: 120,
   },
   cancelButtonText: {
     color: '#333',
     fontSize: 14,
+    textAlign: 'center'
   },
   deleteButton: {
+    width: 120,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
-    backgroundColor: '#22c55e',
+    backgroundColor: '#21c17c',
   },
   deleteButtonText: {
-    color: '#fff',
-    fontWeight: '500',
     fontSize: 14,
+    textAlign: 'center'
   },
 });

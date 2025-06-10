@@ -15,7 +15,7 @@ import TaskCard from '../PrepClass/TaskCard';
 
 const taskOptions = [
   {
-    id: 'AI',
+    id: 'AICheck',
     title: 'AI Check-Up',
     description: [
       'Get instant AI evaluation on student submissions',
@@ -25,7 +25,7 @@ const taskOptions = [
     action: 'Set up',
   },
   {
-    id: 'Slip Test',
+    id: 'SlipTest',
     title: 'Auto Slip Test Generation',
     description: [
       'Generate customized tests using AI.',
@@ -43,15 +43,13 @@ const taskOptions = [
     ],
     svgIcon: 'classUpload',
     action: 'Set up',
-  },
+  }
 ];
 
 const NewTaskModal = ({ visible, onClose, goBack, clickedNext }: {visible: boolean; onClose: () => void; goBack: () => void; clickedNext: (taskName:string) => void}) => {
 
   const createTask = (taskName: string) => {
-    if (taskName === 'AI' || taskName === 'Slip Test') {
-      clickedNext(taskName);
-    }
+    clickedNext(taskName);
   };
 
   return (
@@ -98,13 +96,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 20
   },
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
     padding: 20,
-    width: '100%',
+    width: '80%',
     maxHeight: '90%',
   },
   header: {
@@ -127,14 +125,12 @@ const styles = StyleSheet.create({
   subtitle: {
     fontWeight: 'normal',
     fontSize: 14,
-    color: '#6B7280',
   },
   taskList: {
     paddingBottom: 20,
   },
   footer: {
     alignItems: 'flex-end',
-    marginTop: 10,
   },
   cancelButton: {
     backgroundColor: '#10B981',
@@ -143,8 +139,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   cancelText: {
-    color: '#fff',
-    fontWeight: '500',
     fontSize: 14,
+    paddingLeft: 20,
+    paddingRight: 20
   },
 });

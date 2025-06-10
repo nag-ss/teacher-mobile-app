@@ -1,5 +1,5 @@
 import apiRequest from '../utils/api';
-import { GET_LIVE_CLASS, GET_SCHEDULE_CLASSES, ADD_TASK_TO_TEACHER_CLASS, GET_TEACHER_CLASS_TASKS } from '../utils/apiRoutes'
+import { GET_LIVE_CLASS, GET_SCHEDULE_CLASSES, ADD_TASK_TO_TEACHER_CLASS, GET_TEACHER_CLASS_TASKS, DELETE_TEACHER_CLASS_TASK, EDIT_TEACHER_CLASS_TASK } from '../utils/apiRoutes'
 import moment from 'moment';
 
 const getLiveClass = async (reqData: any, userToken: string) => {
@@ -31,15 +31,33 @@ const getTeacherClassTasks = async (reqData: any, userToken: string) => {
 
 const addTaskToClass = async(reqData: any, userToken: string) => {
   console.log(reqData)
-  const reqUrl = ADD_TASK_TO_TEACHER_CLASS
+  const reqUrl = ADD_TASK_TO_TEACHER_CLASS + "?provider=openai";
   return await apiRequest(reqUrl, 'POST', reqData, userToken);
+}
+
+const deleteTeacherClassTask = async(taskID: number, userToken: string) => {
+  console.log(taskID);
+  const reqUrl = `${DELETE_TEACHER_CLASS_TASK}/${taskID}`;
+  return await apiRequest(reqUrl, 'DELETE', taskID, userToken);
+}
+
+const editTeacherClassTask = async(task: any, userToken: string) => {
+  const id = task.id;
+  delete task.id;
+  delete task.instructions?.taskId;
+
+  const reqUrl = `${EDIT_TEACHER_CLASS_TASK}/${id}`;
+  
+  return await apiRequest(reqUrl, 'PATCH', task, userToken);
 }
 
 const authService = {
     getLiveClass,
     getScheduleClasses,
     addTaskToClass,
-    getTeacherClassTasks
+    getTeacherClassTasks,
+    deleteTeacherClassTask,
+    editTeacherClassTask
 };
 
 export default authService;

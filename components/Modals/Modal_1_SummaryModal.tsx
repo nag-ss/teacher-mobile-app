@@ -48,7 +48,7 @@ export default function ClassSummaryPopModal({
           <View style={styles.rowBetween}>
             <Text style={styles.title}>Summary</Text>
             <TouchableOpacity onPress={onClose}>
-              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
+              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
           </View>
 
@@ -117,10 +117,6 @@ export default function ClassSummaryPopModal({
               </View>
               
             </View>
-
-            <View style={styles.row}>
-              
-            </View>
           </View>
 
           {/* Next Button */}
@@ -169,6 +165,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+  closeIcon:{
+    width: 24,
+    height: 24
+  },
   subTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginLeft: 3,
-    marginRight: 10,
     fontWeight: 'bold',
   },
   value: {
@@ -218,7 +217,6 @@ const styles = StyleSheet.create({
   pickerContainer: {
     borderWidth: 1, 
     borderRadius: 4,
-    marginLeft: 10
   },
   picker: {
     height: 54,
