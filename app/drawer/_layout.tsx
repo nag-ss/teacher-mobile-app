@@ -17,29 +17,11 @@ import { useSelector } from 'react-redux';
 const Drawer = createDrawerNavigator();
 
 const DrawerLayout = () => {
-    const [activeStudentsCount, setActiveStudentsCount] = useState(0)
-    const [totalStudentsCount, setTotalStudentsCount] = useState(0)
+    
     const {user} = useSelector((state: any) => state.user)
-    const { studentsData } = useSelector((state: any) => state.liveMonitor)
     console.log("user")
     console.log(user)
-    useEffect(() => {
-        setActiveStudentsCount(0)
-        if(studentsData.length) {
-            let aCount = 0
-            for(let student of studentsData) {
-                if(student.status == 'active') {
-                    aCount = aCount + 1
-                    
-                }
-            }
-            setActiveStudentsCount(aCount)
-            setTotalStudentsCount(studentsData.length)
-        } else {
-            setActiveStudentsCount(0)
-            setTotalStudentsCount(0)
-        }
-    }, [studentsData])
+   
   return (
     <Drawer.Navigator initialRouteName="Home"
     drawerContent={() => <CustomDrawerContent />}
@@ -154,7 +136,7 @@ const DrawerLayout = () => {
 
 <Drawer.Screen name="live-monitoring" component={LiveMonitoring} 
             options={{ 
-              title: `Live Monitoring                                                       Students: ${activeStudentsCount}/${totalStudentsCount}`,
+              title: `Live Monitoring`,
               // drawerLabel: 'Login',
               drawerIcon: ({ color, focused }) => (
                   <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />

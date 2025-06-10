@@ -1,13 +1,27 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // For icons
 import { Badge } from 'react-native-elements'; // For "Live" badge
 import SvgLoader from '@/utils/SvgLoader';
+import ClassPrep from './ClassPrep';
+import moment from 'moment';
 
 
-const TimelineCard = ({idx, item, height}: any) => {
+const TimelineCard = ({idx, item, height, currentDate}: any) => {
+
+  const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
+  const classPrepRef = useRef<any>();
+
+  const openClassPrep = () => {
+    console.log("welcome to class ....")
+    console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate)
+    if(moment(new Date()).format('YYYY-MM-DD') == currentDate) {
+      classPrepRef.current?.doSomething()
+    }
+  }
+
   return (
-    <View key={idx} style={[styles.classCard, {height: height*50}]}>
+    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*50}]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
             <Image style={{width: height == 1 ? 45 : 65, height: height == 1 ? 45 : 70}} source={require('../../assets/images/ss/Chemistry.png')} />
@@ -21,7 +35,10 @@ const TimelineCard = ({idx, item, height}: any) => {
         {item.live && (
             <Badge status="error" containerStyle={styles.liveBadge} />
         )}
-    </View>
+        {isLoad ? 
+          <ClassPrep ref={classPrepRef} />
+        : null}
+    </TouchableOpacity>
     
   );
 };

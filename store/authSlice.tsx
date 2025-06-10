@@ -46,6 +46,7 @@ const userSlice = createSlice({
     },
     reducers: {
       logout: (state) => {
+        console.log("calling login dis .....")
         state.user = null;
         state.isAuthenticated = false;
         state.userToken = null;

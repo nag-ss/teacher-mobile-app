@@ -50,9 +50,9 @@ const Attendance = () => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 140,
+    width: 130,
     // marginHorizontal: 8,
-    marginRight: 16,
+    // marginRight: 16,
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 10,

@@ -10,7 +10,7 @@ const RecentActivityCard = ({image, title, text}: any) => {
         'Analytics': require('../../assets/images/ss/Analytics.png'),
         'Warning': require('../../assets/images/ss/Warning.png'),
         'Correct': require('../../assets/images/ss/Correct.png'),
-        'Engagement': require('../../assets/images/ss/Engagementr.png'),
+        'Engagement': require('../../assets/images/ss/Engagement.png'),
     }
     return (
   <View style={[styles.card, {flexDirection: 'row'}]}>
