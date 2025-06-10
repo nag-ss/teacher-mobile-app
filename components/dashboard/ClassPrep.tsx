@@ -24,10 +24,14 @@ const ClassPrep = forwardRef((props, ref) => {
   const dispatch = useDispatch<any>();
     const { liveClass: selectedClass, classTimeline, classTasks } = useSelector((state: any) => state.classes);
     const {user} = useSelector((state: any) => state.user);
+    const [taskIDToDelete, setTaskIDToDelete] = useState<number>(-1)
+
+    const [selectedTask, setSelectedTask] = useState<any>(null);
   
     const [topic, setTopic] = useState(topicsList[0]);
     const [subTopic, setSubTopic] = useState(subTopicsList[0]);
-    const [taskType, setTaskType] = useState("AI");
+    const [taskType, setTaskType] = useState("AICheck");
+    const [taskIDToEdit, setTaskIDToEdit] = useState<number>(-1)
   
     const [showModal1SummaryModal, setShowModal1SummaryModal] = useState(false);
     const [showModal2TasksModal, setShowModal2TasksModal] = useState(false);
@@ -35,6 +39,7 @@ const ClassPrep = forwardRef((props, ref) => {
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     const [showModal5GenerateSlipTestModal, setShowModal5GenerateSlipTestModal] = useState(false);
     const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
+    const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false)
   
     const doSomething = () => {
         console.log("Action from Parent!", "You triggered this from parent.");
@@ -89,6 +94,28 @@ const ClassPrep = forwardRef((props, ref) => {
       setShowModal5GenerateSlipTestModal(false)
       setShowModal6SlipTestSettingsModal(true)
     }
+
+    const deleteTask = (task_id: number, task_type: string) => {
+        setShowModal2TasksModal(false)
+        setTaskIDToDelete(task_id)
+        setTaskType(task_type)
+        setShowDeleteQuestionModal(true)
+        console.log(task_id, task_type);
+      }
+    
+      const editTask = (task_id: number, task_type: string) => {  
+        console.log(task_type);
+        console.log(task_id);
+        setShowModal2TasksModal(false)
+        setTaskIDToEdit(task_id)
+        setTaskType(task_type)
+        const currTask = (classTasks?.filter((tsk: any) => tsk.task_id == task_id))[0];
+        setSelectedTask(currTask);
+        console.log(currTask);
+        if (task_type == 'AICheck' || task_type == 'Classwork') {
+          setShowModal4AICheckModal(true);
+        }
+      }
   
     const saveAICheckDetails = async(aiCheckDetails: any) => {
       const data: any = {
@@ -175,9 +202,9 @@ const ClassPrep = forwardRef((props, ref) => {
   return (
     <View>
       <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
-        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} />
+        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
-        <AiCheckModal visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
+        <AiCheckModal selectedTask={selectedTask} taskType={taskType} visible={showModal4AICheckModal} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
         <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
         <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
     </View>
