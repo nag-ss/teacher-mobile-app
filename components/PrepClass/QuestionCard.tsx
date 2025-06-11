@@ -4,7 +4,8 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  TouchableHighlight
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -44,17 +45,26 @@ const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuest
         </TouchableOpacity>
       </View>
 
+      {/* {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt}}>
+              {item.task_type != 'SlipTest' && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
+                <Text style={styles.actionButton}>Edit</Text>
+              </TouchableHighlight>)}
+              <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteTask(item.task_id, item.task_type)}>
+                <Text style={styles.actionButton}>Delete</Text>
+              </TouchableHighlight>
+            </View>)} */}
+
       {activeDropdown === index && (
         <View style={styles.dropdown}>
-          <TouchableOpacity onPress={() => editQuestion(item.question_id)} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => console.log(`Edit clicked on question ${item.question_id}`)} style={styles.dropdownItem}>
             <Text>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}} style={styles.dropdownItem}>
+          </TouchableHighlight>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => {}} style={styles.dropdownItem}>
             <Text>Replace</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>
+          </TouchableHighlight>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>
             <Text>Delete</Text>
-          </TouchableOpacity>
+          </TouchableHighlight>
         </View>
       )}
 
@@ -109,11 +119,11 @@ const styles = StyleSheet.create({
     margin: 10,
     marginBottom: 20,
     borderColor: '#E5E7EB',
-    borderWidth: 0.5
+    borderWidth: 0.5,
   },
   cardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     margin: 10
   },
@@ -148,15 +158,15 @@ const styles = StyleSheet.create({
     zIndex: 100,
     display: 'flex', 
     position: 'absolute', 
-    backgroundColor: '#f5f5f5',
-    marginLeft: 600, 
+    backgroundColor: 'white',
+    marginLeft: 610, 
     borderWidth: 1, 
     borderRadius: 8,
-    marginTop: 50,
+    marginTop: 40,
   },
   dropdownItem: {
     padding: 10,
-    flexDirection: 'row-reverse',
+    borderBottomWidth: 0.5
   },
   answerBox: {
     backgroundColor: '#f5f5f5',

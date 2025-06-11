@@ -37,7 +37,7 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask}: TaskItemProps
       <TouchableOpacity onPress={() => setTaskOptionsVisible(val => !val)}>
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
-      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt}}>
+      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt, backgroundColor: 'white'}}>
         {item.task_type != 'SlipTest' && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>)}
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     marginLeft: 600, 
     borderWidth: 1, 
     borderRadius: 8 
-    },
+  },
   actionButton: {
     margin: 12, 
     textAlign: 'left' 
