@@ -1,14 +1,10 @@
 import React, {useState} from 'react';
 import {
-  Modal,
   View,
   Text,
   StyleSheet,
   Image,
   TouchableOpacity,
-  FlatList,
-  Dimensions,
-  ScrollView,
   TouchableHighlight,
 } from 'react-native';
 
@@ -78,9 +74,9 @@ const styles = StyleSheet.create({
     display: 'flex', 
     position: 'absolute', 
     backgroundColor: '#f5f5f5',
-     marginLeft: 600, 
-     borderWidth: 1, 
-     borderRadius: 8 
+    marginLeft: 600, 
+    borderWidth: 1, 
+    borderRadius: 8 
     },
   actionButton: {
     margin: 12, 
