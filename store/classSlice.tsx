@@ -34,6 +34,11 @@ export const addSlipTestToClass = createAsyncThunk<any>('/teacher/createSlipTest
   return handleAuthApiCall(classService.addSlipTestToClass, reqData, thunkAPI);
 });
 
+export const updateSlipTest = createAsyncThunk<any>('/teacher/updateSlipTest', async (reqData, thunkAPI) => {
+  return handleAuthApiCall(classService.updateSlipTest, reqData, thunkAPI);
+});
+
+
 
 const classSlice = createSlice({
     name: 'class',
@@ -184,6 +189,21 @@ const classSlice = createSlice({
           state.quiz_details = action.payload
         })
         .addCase(addSlipTestToClass.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(updateSlipTest.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(updateSlipTest.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+          state.quiz_details = action.payload
+        })
+        .addCase(updateSlipTest.rejected, (state, action) => {
           state.loading = false
           console.log("Quiz fetch failed")
           console.log(action.payload)

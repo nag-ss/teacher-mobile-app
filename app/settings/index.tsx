@@ -16,7 +16,8 @@ import {
   getTeacherClassTasks, 
   deleteTeacherClassTask, 
   editTeacherClassTask, 
-  addSlipTestToClass 
+  addSlipTestToClass,
+  updateSlipTest 
 } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
@@ -123,52 +124,108 @@ const Settings: React.FC<Props> = ({navigation}) => {
   }
 
   const saveSlipTestDetails = async(slipTestDetails: any) => {
-    const quizDetails: any = {
-      title: `Slip Test ${Math.floor(Math.random() * 1000)}`, 
-      task_type: "SlipTest", 
-      start_date: classTimeline[0].date,
-      end_date: classTimeline[0].date,
-      instructions: {
-        objective_questions: slipTestDetails.mcqCount,
-        subjective_questions: slipTestDetails.subCount,
-        total_questions: slipTestDetails.totalQuestions,
-        marks: slipTestDetails.marks,
-        duration: slipTestDetails.duration,
-        difficulty: slipTestDetails.difficulty
-      },
-      subject_id: 1,
-      // division_id: 43,
-      division_id: 37,
-      teacher_id: user.id,
-      class_schedule_id: 98,
-      quiz: {
-        title: `Slip Test ${Math.floor(Math.random() * 100)}`,
-        start_date: "2025-05-02T07:07:22.632Z", // Change the hard coded start date
-        duration: slipTestDetails.duration,
-        is_auto: true,
-        asset_link: {},
-        // topic: topic,
-        topic: 'Integer',
-        // sub_topic: subTopic,
-        sub_topic: 'Addition, Subtraction, Division, Multiplication',
-        skills: {},
-        quiz_type: "SlipTest",
-        is_public: true,
-        difficulty_id: 1, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
-        school_id: user.school_id,
-        division_id: 43,
-        subject_id: 1,
-        is_notified: false
-      }
-    };
     setShowModal6SlipTestSettingsModal(false)
     setShowLoadingQuizModal(true)
-
-    await dispatch(addSlipTestToClass(quizDetails));
-    setShowLoadingQuizModal(false)
-    // I am here
-    // await dispatch(getTeacherClassTasks())
-    setShowModal6SlipTestSettingsModal(false)
+    if (selectedTask && selectedTask.task_type == 'SlipTest') {
+      console.log('I am editing a quiz');
+      console.log(selectedTask);
+      const quizDetails: any = {
+        title: selectedTask.title, 
+        task_type: "SlipTest", 
+        start_date: "2025-06-20",
+        end_date: "2025-06-20",
+        quiz_id: selectedTask.quiz_id,
+        task_id: selectedTask.task_id,
+        instructions: {
+          objective_questions: slipTestDetails.mcqCount,
+          subjective_questions: slipTestDetails.subCount,
+          total_questions: slipTestDetails.totalQuestions,
+          total_marks: slipTestDetails.marks,
+        },
+        subject_id: 1,
+        division_id: 43,
+        // division_id: 37,
+        teacher_id: user.id,
+        class_schedule_id: selectedTask.class_schedule_id,
+        quiz: {
+          title: selectedTask.quiz_details.title,
+          start_date: "2025-06-20T07:07:22.632Z", // Change the hard coded start date
+          duration: slipTestDetails.duration,
+          is_auto: true,
+          asset_link: {},
+          // topic: topic,
+          topic: 'Integer',
+          // sub_topic: subTopic,
+          sub_topic: 'Addition, Subtraction, Division, Multiplication',
+          skills: {},
+          quiz_type: "SlipTest",
+          is_public: true,
+          difficulty_id: slipTestDetails.difficulty, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
+          school_id: user.school_id,
+          division_id: selectedTask.division_id,
+          subject_id: 1,
+          is_notified: false,
+          instructions: {
+            objective_questions: slipTestDetails.mcqCount,
+            subjective_questions: slipTestDetails.subCount,
+            total_questions: slipTestDetails.totalQuestions,
+            total_marks: slipTestDetails.marks,
+          }
+        }
+      };
+      await dispatch(updateSlipTest(quizDetails));
+    } else {
+      console.log('I am creating a quiz')
+      const quiz_title = `Slip Test ${Math.floor(Math.random() * 1000)}`
+      const quizDetails: any = {
+        title: quiz_title, 
+        task_type: "SlipTest", 
+        start_date: "2025-06-20",
+        end_date: "2025-06-20",
+        instructions: {
+          objective_questions: slipTestDetails.mcqCount,
+          subjective_questions: slipTestDetails.subCount,
+          total_questions: slipTestDetails.totalQuestions,
+          total_marks: slipTestDetails.marks,
+        },
+        subject_id: 1,
+        division_id: 43,
+        // division_id: 37,
+        teacher_id: user.id,
+        class_schedule_id: 98,
+        quiz: {
+          title: quiz_title,
+          start_date: "2025-06-20T07:07:22.632Z", // Change the hard coded start date
+          duration: slipTestDetails.duration,
+          is_auto: true,
+          asset_link: {},
+          // topic: topic,
+          topic: 'Integer',
+          // sub_topic: subTopic,
+          sub_topic: 'Addition, Subtraction, Division, Multiplication',
+          skills: {},
+          quiz_type: "SlipTest",
+          is_public: true,
+          difficulty_id: (slipTestDetails.difficulty <= 7) ? slipTestDetails.difficulty: 7, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
+          school_id: user.school_id,
+          division_id: 43,
+          subject_id: 1,
+          is_notified: false,
+          instructions: {
+            objective_questions: slipTestDetails.mcqCount,
+            subjective_questions: slipTestDetails.subCount,
+            total_questions: slipTestDetails.totalQuestions,
+            total_marks: slipTestDetails.marks,
+          },
+        }
+      };
+      await dispatch(addSlipTestToClass(quizDetails));
+    }
+    console.log('Closing quiz modal')
+    setSelectedTask(null)
+    setTaskType('');
+    await dispatch(getTeacherClassTasks())
+    setShowLoadingQuizModal(false);
     navigation.navigate('SlipTest');
   };
 
@@ -210,6 +267,10 @@ const Settings: React.FC<Props> = ({navigation}) => {
     console.log(currTask);
     if (task_type == 'AICheck' || task_type == 'Classwork') {
       setShowModal4AICheckModal(true);
+    } else if (task_type == 'SlipTest') {
+      setShowModal5GenerateSlipTestModal(true);
+      setTopic(currTask.quiz_details?.topic);
+      setSubTopic(currTask.quiz_details?.sub_topic)
     }
   }
 
@@ -228,6 +289,26 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setShowModal2TasksModal(true)
   }
 
+  const setTaskToEmpty = () => {
+    console.log("Setting task to empty");
+    setSelectedTask(null);
+    setTaskType('');
+  }
+
+  const closeModal4AICheck = () => {
+    setShowModal4AICheckModal(false);
+    setTaskToEmpty();
+  }
+
+  const closeModal5GenerateSlipTest = () => {
+    setShowModal5GenerateSlipTestModal(false);
+    setTaskToEmpty();
+  }
+
+  const closeModal6 = () => {
+    setShowModal6SlipTestSettingsModal(false);
+    setTaskToEmpty();
+  }
 
   useEffect(() => {
     getDetails()
@@ -240,16 +321,16 @@ const Settings: React.FC<Props> = ({navigation}) => {
         <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
         <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
-        <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={() => setShowModal4AICheckModal(false)} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
-        <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={() => setShowModal5GenerateSlipTestModal(false)} clickedNext={goToSlipTestDetails} />
-        <TestSettingsModal visible={showModal6SlipTestSettingsModal} onClose={() => setShowModal6SlipTestSettingsModal(false)} generateSlipTest={saveSlipTestDetails} />
+        <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
+        <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} />
+        <TestSettingsModal selectedTask={selectedTask} visible={showModal6SlipTestSettingsModal} onClose={closeModal6} generateSlipTest={saveSlipTestDetails} />
         <DeleteQuestionModal
           show={showDeleteQuestionModal}
           resourceType='task'
           onCancel={() => cancelDeleteTask()}
           onDelete={() => confirmDeleteTask()}
         />
-        <LoadingSlipTestModal show={showLoadingQuizModal} onCancel={() => setShowLoadingQuizModal(false)} />
+        <LoadingSlipTestModal show={showLoadingQuizModal} />
       </SafeAreaView>
     </SafeAreaProvider>
   );

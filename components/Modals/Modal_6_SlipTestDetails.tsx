@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -17,6 +17,7 @@ import InputSpinner from "react-native-input-spinner";
 
 interface TestSettingsModalProps {
   visible: boolean; 
+  selectedTask: any,
   onClose: () => void; 
   generateSlipTest: (slipTestDetails:any) => void;
 }
@@ -36,16 +37,32 @@ const marksData = [
 ]
 
 
-const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsModalProps) => {
-  const [duration, setDuration] = useState(15);
-  const [marks, setMarks] = useState(50);
-  const [difficulty, setDifficulty] = useState(7);
-  const [mcqCount, setMcqCount] = useState(3);
-  const [subCount, setSubCount] = useState(2);
+const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }: TestSettingsModalProps) => {
+  const [duration, setDuration] = useState(0);
+  const [marks, setMarks] = useState(0);
+  const [difficulty, setDifficulty] = useState(0);
+  const [mcqCount, setMcqCount] = useState(0);
+  const [subCount, setSubCount] = useState(0);
   const [isMCQ, setIsMCQ] = useState(true);
   const [isSubjective, setIsSubjective] = useState(true);
 
   const totalQuestions = (isMCQ ? mcqCount : 0) + (isSubjective ? subCount : 0);
+
+  useEffect(() => {
+      if (selectedTask && selectedTask.task_type == 'SlipTest') {
+        setDuration(selectedTask.quiz_details.duration);
+        setMarks(selectedTask.instructions?.total_marks);
+        setDifficulty(selectedTask.quiz_details.level_id);
+        setSubCount(selectedTask.instructions?.subjective_questions);
+        setMcqCount(selectedTask.instructions?.objective_questions);
+      } else {
+        setDuration(15);
+        setMarks(50);
+        setDifficulty(5);
+        setSubCount(2);
+        setMcqCount(3);
+      }
+    }, [selectedTask]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent>
@@ -147,8 +164,8 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
                   <View style={styles.questionsCount}>
                     <InputSpinner
                       value={mcqCount}
-                      onIncrease={() => setMcqCount((prev) => prev + 1)}
-                      onDecrease={() => setMcqCount((prev) => prev - 1)}              
+                      onIncrease={() => setMcqCount((prev: number) => prev + 1)}
+                      onDecrease={() => setMcqCount((prev: number) => prev - 1)}              
                       height={40}
                       color='#8080801A'
                       colorPress='#BDEDD7'
@@ -185,8 +202,8 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
                   <View style={styles.questionsCount}>
                     <InputSpinner
                       value={subCount}
-                      onIncrease={() => setSubCount((prev) => prev + 1)}
-                      onDecrease={() => setSubCount((prev) => prev - 1)}
+                      onIncrease={() => setSubCount((prev: number) => prev + 1)}
+                      onDecrease={() => setSubCount((prev: number) => prev - 1)}
                       height={40}
                       color='#8080801A'
                       colorPress='#BDEDD7'
@@ -210,11 +227,6 @@ const TestSettingsModal = ({ visible, onClose, generateSlipTest }: TestSettingsM
             <View style={styles.footer}>
               <TouchableOpacity style={styles.button} onPress={() => {
                 generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions})
-                setDifficulty(7)
-                setDuration(15),
-                setMarks(50),
-                setMcqCount(10)
-                setSubCount(10)
               }}>
                 <Text>Generate Test</Text>
               </TouchableOpacity>

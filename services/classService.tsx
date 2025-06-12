@@ -7,12 +7,14 @@ import {
   DELETE_TEACHER_CLASS_TASK, 
   EDIT_TEACHER_CLASS_TASK, 
   QUIZ_GENERATION_STATUS,
-  GET_QUIZ
+  GET_QUIZ,
+  UPDATE_QUIZ
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
 const RETRY_LIMIT = 5;
 const RETRY_DELAY_MS = 10000;
+const FIRST_RETRY_DELAY_MS = 5000;
 const COMPLETED_STATUS = 'completed';
 const FAILED_STATUS = 'failed';
 const QUEUED_STATUS =   'queued';
@@ -82,10 +84,10 @@ const getSlipTestStatus = async(quiz_id: number, userToken: string) => {
   }
 }
 
-const addSlipTestToClass = async(quiz: any, userToken: string) => {
-  console.log(quiz)
+const addSlipTestToClass = async(task: any, userToken: string) => {
+  console.log(task)
   const reqUrl = ADD_TASK_TO_TEACHER_CLASS + "?provider=openai";
-  const quiz_task = await apiRequest(reqUrl, 'POST', quiz, userToken);
+  const quiz_task = await apiRequest(reqUrl, 'POST', task, userToken);
   const {quiz_id} = quiz_task;
   await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
   const statusUrl = `${QUIZ_GENERATION_STATUS}/${quiz_id}`;
@@ -115,6 +117,38 @@ const addSlipTestToClass = async(quiz: any, userToken: string) => {
 
 }
 
+const updateSlipTest = async(task: any, userToken: string) => {
+  console.log(task);
+  const {task_id, quiz_id} = task;
+  const reqUrl = UPDATE_QUIZ + `/${task_id}/quiz/${quiz_id}`;
+  const quiz_task = await apiRequest(reqUrl, 'PATCH', task, userToken);
+  await new Promise(resolve => setTimeout(resolve, FIRST_RETRY_DELAY_MS));
+  const statusUrl = `${QUIZ_GENERATION_STATUS}/${quiz_id}`;
+  let attempt = 0;
+  let status_response; 
+  while(attempt < RETRY_LIMIT) {
+    status_response = await apiRequest(statusUrl, 'GET', quiz_id, userToken);
+    if (status_response.status == COMPLETED_STATUS){
+      break;
+    } else if (status_response.status == FAILED_STATUS) {
+      return status_response;
+    } 
+    attempt += 1;
+    if (attempt < RETRY_LIMIT) {
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+    } 
+  }
+
+  if (status_response.status == COMPLETED_STATUS) {
+    const getQuizUrl = `${GET_QUIZ}/${quiz_id}`
+    return await apiRequest(getQuizUrl, 'GET', quiz_id, userToken);
+  }
+
+  if(status_response.status == QUEUED_STATUS || status_response.status == GENERATING_STATUS) {
+    return status_response;
+  }
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -123,7 +157,8 @@ const authService = {
     deleteTeacherClassTask,
     editTeacherClassTask,
     getSlipTestStatus, 
-    addSlipTestToClass
+    addSlipTestToClass,
+    updateSlipTest
 };
 
 export default authService;

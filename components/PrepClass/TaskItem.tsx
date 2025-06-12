@@ -38,9 +38,9 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask}: TaskItemProps
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
       {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt, backgroundColor: 'white'}}>
-        {item.task_type != 'SlipTest' && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
+        <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
-        </TouchableHighlight>)}
+        </TouchableHighlight>
         <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Delete</Text>
         </TouchableHighlight>

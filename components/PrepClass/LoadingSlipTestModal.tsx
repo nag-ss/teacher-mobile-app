@@ -10,10 +10,9 @@ import {
 
 interface LoadingSlipTestModalProps {
   show: boolean;
-  onCancel: () => void;
 }
 
-const LoadingSlipTestModal = ({ show, onCancel }: LoadingSlipTestModalProps) => {
+const LoadingSlipTestModal = ({ show }: LoadingSlipTestModalProps) => {
   return (
     <Modal visible={show} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -25,11 +24,6 @@ const LoadingSlipTestModal = ({ show, onCancel }: LoadingSlipTestModalProps) => 
           />
           <Text style={styles.title}>Generating your Test...</Text>
           <Text style={styles.subtitle}>Please wait a moment - this may take up to 30 seconds.</Text>
-          <View style={styles.buttonRow}>
-            <TouchableOpacity disabled onPress={onCancel} style={styles.cancelButton}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
     </Modal>
