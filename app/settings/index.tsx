@@ -17,7 +17,8 @@ import {
   deleteTeacherClassTask, 
   editTeacherClassTask, 
   addSlipTestToClass,
-  updateSlipTest 
+  updateSlipTest, 
+  getClassQuiz
 } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
@@ -226,7 +227,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
     setTaskType('');
     await dispatch(getTeacherClassTasks())
     setShowLoadingQuizModal(false);
-    navigation.navigate('SlipTest');
+    navigation.navigate('SlipTest', {new_quiz: true});
   };
 
   const getDetails = async () => {
@@ -274,6 +275,14 @@ const Settings: React.FC<Props> = ({navigation}) => {
     }
   }
 
+  const viewQuiz = async(quiz_id: number) => {
+    console.log(quiz_id);
+    // dispatch get quiz
+    await dispatch (getClassQuiz(quiz_id));
+    setShowModal2TasksModal(false);
+    navigation.navigate('SlipTest', { new_quiz: false });
+  }
+
   const confirmDeleteTask = async() => {
     console.log('Task Deleted ' + taskIDToDelete + ' of type ' + taskType);
     await dispatch(deleteTeacherClassTask(taskIDToDelete));
@@ -319,7 +328,7 @@ const Settings: React.FC<Props> = ({navigation}) => {
       <SafeAreaView>
         <Button onPress={() => setShowModal1SummaryModal(true)} title="Open Summary" />
         <SummaryModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />
-        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} />
+        <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />
         <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
         <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
         <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={(classTimeline.length != 0) ? classTimeline[0]: selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} />

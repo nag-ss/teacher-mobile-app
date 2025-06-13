@@ -149,6 +149,11 @@ const updateSlipTest = async(task: any, userToken: string) => {
   }
 }
 
+const getClassQuiz = async(quiz_id: any, userToken: string) => {
+  const reqUrl = `${GET_QUIZ}/${quiz_id}`;
+  return await apiRequest(reqUrl, 'GET', quiz_id, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -158,7 +163,8 @@ const authService = {
     editTeacherClassTask,
     getSlipTestStatus, 
     addSlipTestToClass,
-    updateSlipTest
+    updateSlipTest,
+    getClassQuiz
 };
 
 export default authService;

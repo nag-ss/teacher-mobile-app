@@ -22,13 +22,21 @@ interface TaskItemProps {
   item: any;
   index: number;
   tasksCount: number;
+  viewQuiz: (id: number) => void;
   deleteTask: (id: number, type: string) => void;
   editTask: (id: number, type: string) => void;
 };
 
-const TaskItem = ({item, index, tasksCount, deleteTask, editTask}: TaskItemProps) => {
+const TaskItem = ({item, index, tasksCount, deleteTask, editTask, viewQuiz}: TaskItemProps) => {
   const [taskOptionsVisible, setTaskOptionsVisible] = useState(false);
-  const mt = (index==tasksCount-1 || index == tasksCount - 2) ? -75: 50;
+  let mt = 50;
+  if (index==tasksCount - 1 || index == tasksCount - 2) {
+    if (item.task_type == "SlipTest"){
+      mt = -120;
+    } else {
+      mt = -80;
+    }
+  } 
   return (
     <View style={styles.taskRow}>
       <Image source={calendar_month_icon} style={{...styles.taskIcon, width: 40, marginLeft: 20}} />
@@ -41,9 +49,12 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask}: TaskItemProps
         <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>
-        <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteTask(item.task_id, item.task_type)}>
+        <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => deleteTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Delete</Text>
         </TouchableHighlight>
+        {item.task_type == "SlipTest" && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id)}>
+          <Text style={styles.actionButton}>View Quiz</Text>
+        </TouchableHighlight>)}
       </View>)}
     </View>
   )
@@ -74,7 +85,7 @@ const styles = StyleSheet.create({
     display: 'flex', 
     position: 'absolute', 
     backgroundColor: '#f5f5f5',
-    marginLeft: 600, 
+    marginLeft: 580, 
     borderWidth: 1, 
     borderRadius: 8 
   },

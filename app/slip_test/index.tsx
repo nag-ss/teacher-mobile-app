@@ -14,7 +14,8 @@ import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import QuestionModal from '@/components/PrepClass/QuestionsModal';
 // import questions from '../../data/Questions';
 
-const SlipTestPage = () => {
+const SlipTestPage = ({route} : any) => {
+  const {new_quiz} = route.params
   const dispatch = useDispatch<any>();
   const { quiz_details } = useSelector((state: any) => state.classes);
   const {questions} = quiz_details;
@@ -38,7 +39,7 @@ const SlipTestPage = () => {
   };
 
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteQuestion} replaceQuestion={replaceQuestion} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteQuestion} replaceQuestion={replaceQuestion} />)
   }
 
   return (
@@ -90,11 +91,11 @@ const SlipTestPage = () => {
             </TouchableOpacity>
           </View>
 
-          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24}}>
+          { new_quiz && (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24}}>
             <TouchableOpacity style={styles.saveButton}>
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
-          </View>
+          </View>)}
         </View>
       </ScrollView>
 

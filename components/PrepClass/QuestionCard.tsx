@@ -17,13 +17,14 @@ interface QuestionCardProps {
   item: any;
   index: number;
   activeDropdown: number;
+  newQuiz: boolean;
   setActiveDropdown: (id: number) => void;
   editQuestion: (id: number) => void;
   deleteQuestion: (id: number) => void;
   replaceQuestion: (id: number) => void;
 };
 
-const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuestion, deleteQuestion}: QuestionCardProps) => {
+const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion}: QuestionCardProps) => {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -40,9 +41,9 @@ const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuest
         <View style={styles.markBox}>
           <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
         </View>
-        <TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+        {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
           <Feather name="more-vertical" size={20} color="#4B5563" />
-        </TouchableOpacity>
+        </TouchableOpacity>)}
       </View>
 
       {/* {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt}}>
