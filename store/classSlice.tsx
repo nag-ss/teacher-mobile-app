@@ -50,6 +50,11 @@ export const deleteQuestion = createAsyncThunk('/question/delete', async (questi
   return handleAuthApiCall(classService.deleteQuestion, question_id, thunkAPI);
 });
 
+export const replaceQuestion = createAsyncThunk('/quiz/change_question', async (question: any, thunkAPI) => {
+  return handleAuthApiCall(classService.replaceQuestion, question, thunkAPI);
+});
+
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -259,6 +264,20 @@ const classSlice = createSlice({
         .addCase(deleteQuestion.rejected, (state, action) => {
           state.loading = false
           console.log("Question delete failed");
+          console.log(action.payload)
+        })
+        .addCase(replaceQuestion.pending, (state, action) => {
+          state.loading = true
+          console.log("Question being Replaced")
+        })
+        .addCase(replaceQuestion.fulfilled, (state, action) => {
+          console.log("Question replaced successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(replaceQuestion.rejected, (state, action) => {
+          state.loading = false
+          console.log("Question replace failed");
           console.log(action.payload)
         })
     },

@@ -24,7 +24,7 @@ interface QuestionCardProps {
   replaceQuestion: (id: number) => void;
 };
 
-const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion}: QuestionCardProps) => {
+const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion}: QuestionCardProps) => {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -60,7 +60,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => console.log(`Edit clicked on question ${item.question_id}`)} style={styles.dropdownItem}>
             <Text>Edit</Text>
           </TouchableHighlight>
-          <TouchableHighlight underlayColor='#bdedd7' onPress={() => {}} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => replaceQuestion(item.question_id)} style={styles.dropdownItem}>
             <Text>Replace</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>

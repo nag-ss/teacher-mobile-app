@@ -6,13 +6,14 @@ import {
   FlatList,
   StyleSheet,
   ScrollView,
-  Image
+  Image,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import QuestionCard from '@/components/PrepClass/QuestionCard';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import QuestionModal from '@/components/PrepClass/QuestionsModal';
-import { publishQuiz, getClassQuiz, deleteQuestion } from '@/store/classSlice';
+import ReplaceQuestionModal from '@/components/PrepClass/ReplaceQuestionModal'
+import { publishQuiz, getClassQuiz, deleteQuestion, replaceQuestion } from '@/store/classSlice';
 import questions from '../../data/Questions';
 
 const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
@@ -22,10 +23,13 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const { quiz_details } = useSelector((state: any) => state.classes);
   const {questions} = quiz_details;
   const [activeDropdown, setActiveDropdown] = useState(-1);
-  const [isDeleteTaskModal, setDeleteTaskModal] = useState(false);
+  const [isDeleteQuestionModal, setDeleteQuestionModal] = useState(false);
   const [isQuestionModal, setQuestionModal] = useState(false);
+  const [isReplaceQuestionModal, setReplaceQuestionModal] = useState(false);
+
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
   const [questionIdToDelete, setQuestionIdToDelete] = useState(-1);
+  const [questionIdToReplace, setQuestionIdToReplace] = useState(-1);
 
   const editQuestion = (id: number) => {
     const question = (questions.filter((q: { question_id: number; }) => q.question_id == id))[0]
@@ -33,13 +37,9 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
     setQuestionModal(true);
   };
 
-  const replaceQuestion = (id: number) => {
-    console.log("The question to be replaced is " + id);
-  } 
-
   const deleteClicked = (id: number) => {
     setQuestionIdToDelete(id);
-    setDeleteTaskModal(true);
+    setDeleteQuestionModal(true);
   };
 
   const confirmDelete = async() => {
@@ -49,11 +49,25 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
     await dispatch(deleteQuestion(questionIdToDelete))
     await dispatch(getClassQuiz(quiz_id));
 
-    setDeleteTaskModal(false);
+    setDeleteQuestionModal(false);
+  }
+
+  const replaceClicked = (id: number) => {
+    console.log(id);
+    setQuestionIdToReplace(id);
+    setReplaceQuestionModal(true);
+  }
+
+  const confirmReplace = async() => {
+    const quiz_id = quiz_details.quiz_id || 35;
+    console.log(questionIdToReplace);
+    await dispatch(replaceQuestion({question_id: questionIdToReplace, additional_context: "I want this question changed"}))
+    await dispatch(getClassQuiz(quiz_id));
+    setReplaceQuestionModal(false);
   }
 
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceQuestion} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} />)
   }
 
   const publishQuizTask = async() => {
@@ -127,15 +141,22 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
       </ScrollView>
 
       <DeleteQuestionModal
-        show={isDeleteTaskModal}
+        show={isDeleteQuestionModal}
         resourceType='question'
-        onCancel={() => setDeleteTaskModal(false)}
+        onCancel={() => setDeleteQuestionModal(false)}
         onDelete={confirmDelete}
       />
       <QuestionModal
         ques={selectedQuestion}
         show={isQuestionModal}
         onCancel={() => setQuestionModal(false)}
+      />
+      
+      <ReplaceQuestionModal 
+        show={isReplaceQuestionModal}
+        resourceType='question'
+        onCancel={() => setReplaceQuestionModal(false)}
+        onReplace={confirmReplace}
       />
     </View>
   );

@@ -10,7 +10,8 @@ import {
   GET_QUIZ,
   UPDATE_QUIZ,
   PUBLISH_QUIZ,
-  DELETE_QUESTION
+  DELETE_QUESTION,
+  REPLACE_QUESTION
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -166,6 +167,11 @@ const deleteQuestion = async(questionId: number, userToken: string) => {
   return await apiRequest(reqUrl, 'DELETE', questionId, userToken);
 }
 
+const replaceQuestion = async(question: any, userToken: string) => {
+  const reqUrl = REPLACE_QUESTION;
+  return await apiRequest(reqUrl, 'POST', question, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -178,7 +184,8 @@ const authService = {
     updateSlipTest,
     getClassQuiz,
     publishQuiz,
-    deleteQuestion
+    deleteQuestion,
+    replaceQuestion
 };
 
 export default authService;
