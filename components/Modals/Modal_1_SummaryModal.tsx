@@ -98,7 +98,7 @@ export default function ClassSummaryPopModal({
                   onValueChange={(itemValue) => updateTopic(itemValue)}
                   mode="dropdown"
                 >
-                  {topicsList.map((key)=> <Picker.Item label={key} value={key} />)}
+                  {topicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
                 </Picker>
               </View>
               
@@ -112,7 +112,7 @@ export default function ClassSummaryPopModal({
                   onValueChange={(itemValue) => updateSubTopic(itemValue)}
                   mode="dropdown"
                 >
-                  {subTopicsList.map((key)=> <Picker.Item label={key} value={key} />)}
+                  {subTopicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
                 </Picker>
               </View>
               

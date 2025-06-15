@@ -1,8 +1,9 @@
 import { Colors } from '@/constants/Colors';
-import { getSlipTestResults, setSelectedTask } from '@/store/liveMonitoringSlice';
-import React, { useEffect, useState } from 'react';
+import { getSlipTestResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import ClassPrep from '../dashboard/ClassPrep';
 
 interface AITaskCardProps {
   title: string;
@@ -10,37 +11,39 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const SlipTest = () => {
+const SlipTest = ({task}: any) => {
     const [isPressed, setIsPressed] = useState(false);
     const dispatch = useDispatch<any>()
-    const { selectedTaskSection, classId} = useSelector((state: any) => state.liveMonitor)
-    const getAttendanceData = async () => {
-        const reqObj: any = {classId}
-        dispatch(getSlipTestResults(reqObj))
-    }
+    const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
+    const classPrepRef = useRef<any>();
+    
     const onPress = () => {
-        getAttendanceData()
+        // getAttendanceData()
         console.log("button pressed ....")
+        setIsPressed(true)
+        classPrepRef.current?.doSomething()
     }
 
     const cardPressed = () => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('Slip Test'))
+        dispatch(setSelectedTaskId(task.task_id))
     }
     useEffect(() => {
         if(selectedTaskSection == 'Slip Test') {
-            getAttendanceData()
+            // getAttendanceData()
         }
 
     }, [selectedTaskSection])
     return (
+      <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : selectedTaskSection == 'Slip Test' ? 'green' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'Slip Test' && selectedTaskId == task.task_id) ? 'green' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/MileStone.png')} />
             </View>
             <Text style={styles.title}>{'Slip Test'}</Text>
-            <TouchableOpacity style={[styles.button]} 
+            <TouchableOpacity style={[styles.button, {backgroundColor: isPressed ? Colors.primaryColor : ''}]} 
                 onPress={onPress}
                 onPressIn={() => setIsPressed(true)}
                 onPressOut={() => setIsPressed(false)}
@@ -49,13 +52,15 @@ const SlipTest = () => {
             </TouchableOpacity>
         </View>
         </TouchableOpacity>
+        <ClassPrep ref={classPrepRef} />
+      </View>
     )
 };
 
 const styles = StyleSheet.create({
   card: {
-    width: 140,
-    marginHorizontal: 8,
+    width: 130,
+    // marginHorizontal: 8,
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 10,

@@ -88,9 +88,13 @@ const classSlice = createSlice({
       classTasks: [],
       classTimeline: [],
       loading: false,
-      error: null
+      error: null,
+      unAuthorised: false
     },
     reducers: {
+      setUnAuth: (state) => {
+        state.unAuthorised = false
+      },
     },
     extraReducers: (builder) => {
         builder
@@ -98,14 +102,26 @@ const classSlice = createSlice({
             state.loading = true;
         })
         .addCase(getLiveClass.fulfilled, (state, action) => {
-            console.log("action.payload")
+            console.log("action.payload live ")
             console.log(action.payload)
-            state.liveClass = action.payload;
-            state.loading = false;
+            if(action.payload == 401) {
+              console.log("welcome to un auth ....")
+              state.unAuthorised = true
+            } else {
+              state.liveClass = action.payload;
+              state.loading = false;
+            }
+            
         })
         .addCase(getLiveClass.rejected, (state, action) => {
           state.loading = false
           console.log("error in calling live class api")
+          console.log("action.payload")
+          console.log(action.payload)
+          if(action.payload == 401) {
+            console.log("welcome to un auth ....")
+            state.unAuthorised = true
+          }
         })
         .addCase(getScheduleClasses.pending, (state, action) => {
             state.loading = true
@@ -283,6 +299,6 @@ const classSlice = createSlice({
     },
 });
   
-export const { } = classSlice.actions;
+export const { setUnAuth } = classSlice.actions;
   
 export default classSlice.reducer;

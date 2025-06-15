@@ -22,6 +22,7 @@ const liveMonitoringSlice = createSlice({
     name: 'liveMonitoring',
     initialState: {
       selectedTaskSection: '',
+      selectedTaskId: '',
       studentsData: [],
       loading: false,
       error: null,
@@ -30,6 +31,9 @@ const liveMonitoringSlice = createSlice({
     reducers: {
         setSelectedTask: (state, action) => {
             state.selectedTaskSection = action.payload
+        },
+        setSelectedTaskId: (state, action) => {
+            state.selectedTaskId = action.payload
         },
         setClassId: (state, action) => {
             state.classId = action.payload
@@ -104,6 +108,6 @@ const liveMonitoringSlice = createSlice({
     },
 });
   
-export const { setSelectedTask, setClassId } = liveMonitoringSlice.actions;
+export const { setSelectedTask, setClassId, setSelectedTaskId } = liveMonitoringSlice.actions;
   
 export default liveMonitoringSlice.reducer;

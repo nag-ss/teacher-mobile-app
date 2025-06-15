@@ -1,8 +1,10 @@
 import { Colors } from '@/constants/Colors';
-import { getAITaskCheckResults, setSelectedTask } from '@/store/liveMonitoringSlice';
-import React, { useEffect } from 'react';
+import { getAITaskCheckResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import AiCheckModal from '../Modals/Modal_4_AICheckModal';
+import { addTaskToClass } from '@/store/classSlice';
 
 interface AITaskCardProps {
   title: string;
@@ -10,21 +12,30 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const AITask = () => {
+const AITask = ({task}: any) => {
     const dispatch = useDispatch<any>()
-    const { selectedTaskSection, classId} = useSelector((state: any) => state.liveMonitor)
+    const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
+    const {user} = useSelector((state: any) => state.user);
+    const {liveClass} = useSelector((state: any) => state.classes);
+
+    console.log("task")
+    console.log(task)
+    const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     const getAttendanceData = async () => {
         const reqObj: any = {classId}
         dispatch(getAITaskCheckResults(reqObj))
     }
     const onPress = () => {
-        getAttendanceData()
+        
         console.log("button pressed ....")
+        setShowModal4AICheckModal(true)
     }
 
     const cardPressed = () => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('AI Task'))
+        dispatch(setSelectedTaskId(task.task_id))
+        getAttendanceData()
     }
     useEffect(() => {
         if(selectedTaskSection == 'AI Task') {
@@ -32,25 +43,29 @@ const AITask = () => {
         }
 
     }, [selectedTaskSection])
+
+    
     return (
+      <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : selectedTaskSection == 'AI Task' ? 'green' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'AI Task' && selectedTaskId == task.task_id) ? 'green' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Note-taking.png')} />
             </View>
-            <Text style={styles.title}>{'Ratios Problem'}</Text>
+            <Text style={styles.title}>{task.title}</Text>
             <TouchableOpacity style={styles.button} onPress={onPress}>
-            <Text style={styles.buttonText}>{'Publish'}</Text>
+            <Text style={styles.buttonText}>{task.task_type == 'AICheck' ? 'Check' : 'Publish'}</Text>
             </TouchableOpacity>
         </View>
         </TouchableOpacity>
+      </View>
     )
 };
 
 const styles = StyleSheet.create({
   card: {
-    width: 140,
-    marginHorizontal: 8,
+    width: 130,
+    // marginHorizontal: 8,
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 10,

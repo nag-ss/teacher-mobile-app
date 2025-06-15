@@ -7,6 +7,8 @@ import { blue } from 'react-native-reanimated/lib/typescript/Colors';
 import { useDispatch, useSelector } from 'react-redux';
 import { getScheduleClasses } from '@/store/classSlice';
 import moment from 'moment';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar } from "react-native-calendars";
 
 /*const timelineData = [
   {
@@ -98,13 +100,30 @@ const onLayout = (event: LayoutChangeEvent): void => {
     const [timelineData, setTimelineData] = useState([])
     const [timeSlots, setTimeSlots] = useState<string[]>([])
     const timelineRef = useRef<any>()
+    const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
 
-    const getDetails = async () => {
-       await dispatch(getScheduleClasses())
+  const onDateChange = (selectedDate: any) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate);
+    console.log(currentDate)
+    getDetails(moment(currentDate).format('YYYY-MM-DD'))
+  };
+
+  const showDate = () => {
+    setShow(!show);
+  };
+
+    const getDetails = async (currentDate: string) => {
+      const reqObj: any = {
+        date: currentDate
+      }
+       await dispatch(getScheduleClasses(reqObj))
        
     }
     useEffect(() => {
-        getDetails()
+        getDetails(moment(new Date()).format('YYYY-MM-DD'))
     }, [])
 
     function generateTimeSlots(startTime: string, endTime: string, intervalMinutes: number) {
@@ -172,7 +191,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
                 var minutes = duration.asMinutes() % 60;
                 return {
-                    classId: timeline.class_id,
+                    classId: timeline.class_schedule_id,
                     time: startTimeStr + " - " + endTimeStr,
                     // subject: 'Biology - Cell Structure',
                     category: timeline.subject_name,
@@ -202,6 +221,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
         } else {
             const timeSlotsData = generateTimeSlots('8:00', '17:00', 15);
             setTimeSlots(timeSlotsData)
+            setTimelineData([])
         }
     }, [classTimeline])
 
@@ -214,9 +234,38 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     name="calendar-month"
                     size={20}
                     color={'gray' }
+                    onPress={showDate}
                     />
-                <Text style={styles.timelineDateText}>{moment(new Date()).format('YYYY-MM-DD')}</Text>
+                <Text style={styles.timelineDateText}>{moment(date).format('YYYY-MM-DD')}</Text>
+                
+                {show && (
+                  <View style={styles.calendarOverlay}>
+                    <Calendar
+                        onDayPress={(day: any) => {
+                          // setDate(day.dateString);
+                          // setShow(false);
+                          onDateChange(day.dateString)
+                        }}
+                        markedDates={{
+                          [date as any]: { selected: true, selectedColor: "green" },
+                        }}
+                        theme={{
+                          backgroundColor: '#ffffff',
+                          calendarBackground: '#ffffff',
+                          textSectionTitleColor: '#b6c1cd',
+                          selectedDayBackgroundColor: 'green',
+                          selectedDayTextColor: '#ffffff',
+                          todayTextColor: '#00adf5',
+                          dayTextColor: '#2d4150',
+                          textDisabledColor: '#dd99ee'
+                        }}
+                        
+                      />
+                  </View>
+                )}
+                
             </View>
+            
             
         </View>
         <View style={{flexDirection: 'row', height: '93%'}}>
@@ -268,7 +317,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                                 classesForTimeSlot.map((item: any, idx) => {
                                     // setNoClass(noClass + (item.classLength/15))
                                     noClass = noClass + (item.classLength/15) + 1
-                                    return (<TimelineCard idx={index+"-"+idx} item={item} height={item.classLength/15} />)
+                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} height={item.classLength/15} currentDate={date} />)
                                 })
                                 ) : noClass < 1 ? (
                                 
@@ -366,7 +415,7 @@ const styles = StyleSheet.create({
   },
   timelineDateText: {
     fontSize: 15,
-    marginLeft: 5
+    marginLeft: 10
   },
   customScrollBar: {
     // backgroundColor: '#ccc',
@@ -381,6 +430,17 @@ const styles = StyleSheet.create({
     // height: '100%',
     width: 8,
   },
+  calendarOverlay: {
+    position: "absolute",
+    top: 35, // adjust to place it below icon
+    zIndex: 999,
+    elevation: 10,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  }
 });
 
 export default TimelineWithClassDetails;

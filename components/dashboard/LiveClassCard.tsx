@@ -1,23 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Button, Badge } from 'react-native-elements';  // Import components from react-native-elements
 import { MaterialIcons } from '@expo/vector-icons'; // For the "Live" icon
 import SvgLoader from '@/utils/SvgLoader';
 import { useDispatch, useSelector } from 'react-redux';
-import { getLiveClass, getScheduleClasses } from '@/store/classSlice';
+import { getLiveClass, getScheduleClasses, setUnAuth } from '@/store/classSlice';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
+import { logout } from '@/store/authSlice';
+
+function useIntervalApi(callback: () => void, delay: number) {
+  const savedCallback = useRef<() => void>();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (!delay) return;
+
+    const tick = () => savedCallback.current?.();
+    const id = setInterval(tick, delay);
+
+    return () => clearInterval(id);
+  }, [delay]);
+}
+
 
 const LiveSessionCard = () => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>()
-  const { liveClass, classTimeline } = useSelector((state: any) => state.classes)
+  const { liveClass, classTimeline, unAuthorised } = useSelector((state: any) => state.classes)
   const [timelineData, setTimelineData] = useState([])
   const [nextClass, setNextClass] = useState<any>({})
   const [isnextClass, setIsNextClass] = useState<boolean>(false)
   const classData = {
-    "class_id": 0,
+    "class_schedule_id": 0,
     "date": "2025-05-05",
     "period": "string",
     "start_time": "06:03:29.464Z",
@@ -54,9 +73,18 @@ const LiveSessionCard = () => {
       setNextClass(liveClassDataRes.payload)
     }
   }
+  useIntervalApi(getDetails, 300000);
   useEffect(() => {
     getDetails()
   }, [])
+
+  useEffect(() => {
+    console.log("unAuthorised", unAuthorised)
+    if(unAuthorised) {
+      dispatch(setUnAuth())
+      dispatch(logout())
+    }
+  }, [unAuthorised])
 
   const getClassFromSchedule = async () => {
     console.log("next call")
@@ -86,12 +114,15 @@ const LiveSessionCard = () => {
 
   const navigateToMonitor = () => {
     console.log("calling nav ...")
-    dispatch(setSelectedTask('Attendance'))
-    dispatch(setClassId(nextClass.class_id ? nextClass.class_id : 92))
-    navigation.navigate('live-monitoring')
+    if(nextClass && nextClass.class_schedule_id) {
+      dispatch(setSelectedTask('Attendance'))
+      dispatch(setClassId(nextClass.class_schedule_id))
+      navigation.navigate('live-monitoring')
+    }
+    
   }
   return (
-    <View style={[styles.cardContainer, {opacity: nextClass.class_id ? 1 : 0.4 }]} pointerEvents={nextClass.class_id ? 'auto' : 'auto'}>
+    <View style={[styles.cardContainer, {opacity: nextClass.class_schedule_id ? 1 : 0.4 }]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
       <View style={styles.sessionDetails}>
         {
           isnextClass ? 
@@ -102,7 +133,7 @@ const LiveSessionCard = () => {
         <View style={styles.textContainer}>
           <Text style={styles.time}>
             {nextClass.start_time ? (moment(nextClass.start_time, 'HH:mm:ss').format('HH:mm a')) : moment().format('HH:mm a')} - 
-            {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
+             {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
           </Text>
           <View>
             <Text style={styles.subject}>

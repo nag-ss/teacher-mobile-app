@@ -9,7 +9,7 @@ const UpcomingTopics = () => (
   <View style={[styles.card, {flexDirection: 'row'}]}>
     <View style={styles.iconContent}>
         {/* <SvgLoader svgFilePath="iconUpcoming" width={50} height={50}  /> */}
-        <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Upcoming.png')} width={50} height={50}  />
+        <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Upcoming.png')}  />
     </View>
     <View style={{height: 60}}>
         <Text style={styles.title}>Upcoming Topics</Text>

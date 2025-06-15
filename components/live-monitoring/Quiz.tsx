@@ -1,8 +1,10 @@
 import { Colors } from '@/constants/Colors';
-import { getClassworkResults, setSelectedTask } from '@/store/liveMonitoringSlice';
-import React, { useEffect } from 'react';
+import { getClassworkResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import ClassworkCheckModal from '../Modals/ClassworkModal';
+import { addTaskToClass } from '@/store/classSlice';
 
 interface AITaskCardProps {
   title: string;
@@ -10,21 +12,28 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const Quiz = () => {
+const Quiz = ({task}: any) => {
     const dispatch = useDispatch<any>()
-    const { selectedTaskSection, classId} = useSelector((state: any) => state.liveMonitor)
+    const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
+    const {user} = useSelector((state: any) => state.user);
+    const {liveClass} = useSelector((state: any) => state.classes);
+
+    const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
+
     const getAttendanceData = async () => {
         const reqObj: any = {classId}
         dispatch(getClassworkResults(reqObj))
     }
     const onPress = () => {
-        getAttendanceData()
+      setShowModal4AICheckModal(true)
         console.log("button pressed ....")
     }
 
     const cardPressed = () => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('ClassWork'))
+        dispatch(setSelectedTaskId(task.task_id))
+        getAttendanceData()
     }
     useEffect(() => {
         if(selectedTaskSection == 'ClassWork') {
@@ -32,9 +41,11 @@ const Quiz = () => {
         }
 
     }, [selectedTaskSection])
+
     return (
+      <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : selectedTaskSection == 'ClassWork' ? 'green' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'ClassWork' && selectedTaskId == task.task_id) ? 'green' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Quiz.png')} />
             </View>
@@ -45,13 +56,14 @@ const Quiz = () => {
             </TouchableOpacity>
         </View>
         </TouchableOpacity>
+      </View>
     )
 };
 
 const styles = StyleSheet.create({
   card: {
-    width: 140,
-    marginHorizontal: 8,
+    width: 130,
+    // marginHorizontal: 8,
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 10,
