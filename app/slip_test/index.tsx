@@ -12,12 +12,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import QuestionCard from '@/components/PrepClass/QuestionCard';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import QuestionModal from '@/components/PrepClass/QuestionsModal';
-import { publishQuiz } from '@/store/classSlice';
-// import questions from '../../data/Questions';
+import { publishQuiz, getClassQuiz, deleteQuestion } from '@/store/classSlice';
+import questions from '../../data/Questions';
 
 const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const {new_quiz} = route.params;
-  // const new_quiz = true; 
+  // const new_quiz = true;
   const dispatch = useDispatch<any>();
   const { quiz_details } = useSelector((state: any) => state.classes);
   const {questions} = quiz_details;
@@ -25,6 +25,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const [isDeleteTaskModal, setDeleteTaskModal] = useState(false);
   const [isQuestionModal, setQuestionModal] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
+  const [questionIdToDelete, setQuestionIdToDelete] = useState(-1);
 
   const editQuestion = (id: number) => {
     const question = (questions.filter((q: { question_id: number; }) => q.question_id == id))[0]
@@ -36,18 +37,29 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
     console.log("The question to be replaced is " + id);
   } 
 
-  const deleteQuestion = (id: number) => {
+  const deleteClicked = (id: number) => {
+    setQuestionIdToDelete(id);
     setDeleteTaskModal(true);
   };
 
+  const confirmDelete = async() => {
+    console.log(quiz_details);
+    // Remove the hardcoded value
+    const quiz_id = quiz_details.quiz_id || 35;  
+    await dispatch(deleteQuestion(questionIdToDelete))
+    await dispatch(getClassQuiz(quiz_id));
+
+    setDeleteTaskModal(false);
+  }
+
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteQuestion} replaceQuestion={replaceQuestion} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceQuestion} />)
   }
 
   const publishQuizTask = async() => {
     const the_quiz = {
       start_time: quiz_details.start_date, 
-      quiz_id: 35, // Remove the hard-coded quiz value
+      quiz_id: quiz_details.quiz_id || 35, // Remove the hard-coded quiz value
       quiz_type: "SlipTest", 
       duration: quiz_details.duration, 
       division_id: 43
@@ -118,7 +130,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
         show={isDeleteTaskModal}
         resourceType='question'
         onCancel={() => setDeleteTaskModal(false)}
-        onDelete={() => setDeleteTaskModal(false)}
+        onDelete={confirmDelete}
       />
       <QuestionModal
         ques={selectedQuestion}

@@ -46,6 +46,10 @@ export const publishQuiz = createAsyncThunk('/quiz/publish_quiz', async (quiz: a
   return handleAuthApiCall(classService.publishQuiz, quiz, thunkAPI);
 });
 
+export const deleteQuestion = createAsyncThunk('/question/delete', async (question_id: number, thunkAPI) => {
+  return handleAuthApiCall(classService.deleteQuestion, question_id, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -241,6 +245,20 @@ const classSlice = createSlice({
         .addCase(publishQuiz.rejected, (state, action) => {
           state.loading = false
           console.log("Quiz could not be pubished");
+          console.log(action.payload)
+        })
+        .addCase(deleteQuestion.pending, (state, action) => {
+          state.loading = true
+          console.log("Question being Deleted")
+        })
+        .addCase(deleteQuestion.fulfilled, (state, action) => {
+          console.log("Question deleted successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(deleteQuestion.rejected, (state, action) => {
+          state.loading = false
+          console.log("Question delete failed");
           console.log(action.payload)
         })
     },
