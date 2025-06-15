@@ -38,8 +38,12 @@ export const updateSlipTest = createAsyncThunk<any>('/teacher/updateSlipTest', a
   return handleAuthApiCall(classService.updateSlipTest, reqData, thunkAPI);
 });
 
-export const getClassQuiz = createAsyncThunk('/teacher/getQuiiz', async (quiz_id: number, thunkAPI) => {
+export const getClassQuiz = createAsyncThunk('/teacher/getQuiz', async (quiz_id: number, thunkAPI) => {
   return handleAuthApiCall(classService.getClassQuiz, quiz_id, thunkAPI);
+});
+
+export const publishQuiz = createAsyncThunk('/quiz/publish_quiz', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.publishQuiz, quiz, thunkAPI);
 });
 
 const classSlice = createSlice({
@@ -223,6 +227,20 @@ const classSlice = createSlice({
         .addCase(getClassQuiz.rejected, (state, action) => {
           state.loading = false
           console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(publishQuiz.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz being published")
+        })
+        .addCase(publishQuiz.fulfilled, (state, action) => {
+          console.log("Quiz published")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(publishQuiz.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz could not be pubished");
           console.log(action.payload)
         })
     },

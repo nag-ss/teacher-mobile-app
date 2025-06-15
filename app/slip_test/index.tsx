@@ -12,10 +12,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import QuestionCard from '@/components/PrepClass/QuestionCard';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import QuestionModal from '@/components/PrepClass/QuestionsModal';
+import { publishQuiz } from '@/store/classSlice';
 // import questions from '../../data/Questions';
 
-const SlipTestPage = ({route} : any) => {
-  const {new_quiz} = route.params
+const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
+  const {new_quiz} = route.params;
+  // const new_quiz = true; 
   const dispatch = useDispatch<any>();
   const { quiz_details } = useSelector((state: any) => state.classes);
   const {questions} = quiz_details;
@@ -40,6 +42,19 @@ const SlipTestPage = ({route} : any) => {
 
   const renderQuestionCard = ({ item, index }: any) => {
     return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteQuestion} replaceQuestion={replaceQuestion} />)
+  }
+
+  const publishQuizTask = async() => {
+    const the_quiz = {
+      start_time: quiz_details.start_date, 
+      quiz_id: 35, // Remove the hard-coded quiz value
+      quiz_type: "SlipTest", 
+      duration: quiz_details.duration, 
+      division_id: 43
+    }
+    console.log(the_quiz);
+    await dispatch(publishQuiz(the_quiz));
+    navigation.navigate('Home');  
   }
 
   return (
@@ -92,7 +107,7 @@ const SlipTestPage = ({route} : any) => {
           </View>
 
           { new_quiz && (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24}}>
-            <TouchableOpacity style={styles.saveButton}>
+            <TouchableOpacity style={styles.saveButton} onPress={publishQuizTask}>
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
           </View>)}

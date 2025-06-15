@@ -8,7 +8,8 @@ import {
   EDIT_TEACHER_CLASS_TASK, 
   QUIZ_GENERATION_STATUS,
   GET_QUIZ,
-  UPDATE_QUIZ
+  UPDATE_QUIZ,
+  PUBLISH_QUIZ
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -154,6 +155,11 @@ const getClassQuiz = async(quiz_id: any, userToken: string) => {
   return await apiRequest(reqUrl, 'GET', quiz_id, userToken);
 }
 
+const publishQuiz = async(quiz: any, userToken: string) => {
+  const reqUrl = PUBLISH_QUIZ;
+  return await apiRequest(reqUrl, 'POST', quiz, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -164,7 +170,8 @@ const authService = {
     getSlipTestStatus, 
     addSlipTestToClass,
     updateSlipTest,
-    getClassQuiz
+    getClassQuiz,
+    publishQuiz
 };
 
 export default authService;
