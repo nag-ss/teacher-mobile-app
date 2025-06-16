@@ -68,6 +68,7 @@ interface ClassTaskCardPopProps {
   addTask: () => void;
   deleteTask: (task_id: number, task_type: string) => void;
   editTask: (task_id: number, task_type: string) => void;
+  viewQuiz: (quiz_id: number) => void;
 }
 
 // const tasks = [
@@ -85,7 +86,7 @@ const mapper: any = {
   AICheck: "AI Check"
 }
 
-const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask, deleteTask, editTask }: ClassTaskCardPopProps) => {
+const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask, deleteTask, editTask, viewQuiz }: ClassTaskCardPopProps) => {
   const tasksCount = classTasks.length;
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -133,9 +134,10 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
 
               {/* AI Assistant Image */}
               <View style={styles.aiImageContainer}>
-                <SvgLoader
-                  svgFilePath='aiAssistant' // Replace with your own logo
+                <Image
+                  source={require('../../assets/images/AI_Assistant_large.png')} // Replace with your actual image path
                   style={styles.aiAssistant}
+                  resizeMode="contain"
                 />
               </View>
 
@@ -152,7 +154,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                       <FlatList
                         data={classTasks}
                         keyExtractor={(item) => item.title}
-                        renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} deleteTask={deleteTask} editTask={editTask} />)}
+                        renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />)}
                       />
                     </View>
                   ) : (

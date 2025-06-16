@@ -26,10 +26,40 @@ export const editTeacherClassTask = createAsyncThunk('/teacher/editTeacherClassT
   return handleAuthApiCall(classService.editTeacherClassTask, task, thunkAPI);
 });
 
+export const getSlipTestStatus = createAsyncThunk('tasks/updateTask', async (quiz_id: number, thunkAPI) => {
+  return handleAuthApiCall(classService.getSlipTestStatus, quiz_id, thunkAPI);
+});
+
+export const addSlipTestToClass = createAsyncThunk<any>('/teacher/createSlipTest', async (reqData, thunkAPI) => {
+  return handleAuthApiCall(classService.addSlipTestToClass, reqData, thunkAPI);
+});
+
+export const updateSlipTest = createAsyncThunk<any>('/teacher/updateSlipTest', async (reqData, thunkAPI) => {
+  return handleAuthApiCall(classService.updateSlipTest, reqData, thunkAPI);
+});
+
+export const getClassQuiz = createAsyncThunk('/teacher/getQuiz', async (quiz_id: number, thunkAPI) => {
+  return handleAuthApiCall(classService.getClassQuiz, quiz_id, thunkAPI);
+});
+
+export const publishQuiz = createAsyncThunk('/quiz/publish_quiz', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.publishQuiz, quiz, thunkAPI);
+});
+
+export const deleteQuestion = createAsyncThunk('/question/delete', async (question_id: number, thunkAPI) => {
+  return handleAuthApiCall(classService.deleteQuestion, question_id, thunkAPI);
+});
+
+export const replaceQuestion = createAsyncThunk('/quiz/change_question', async (question: any, thunkAPI) => {
+  return handleAuthApiCall(classService.replaceQuestion, question, thunkAPI);
+});
+
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
       liveClass:  {},
+      quiz_details: {},
     //   liveClass: {
     //     "class_id": 0,
     //     "date": "2025-05-05",
@@ -165,7 +195,107 @@ const classSlice = createSlice({
           console.log("error api ")
           console.log(action.payload)
         })
-      
+        .addCase(getSlipTestStatus.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(getSlipTestStatus.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(getSlipTestStatus.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(addSlipTestToClass.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(addSlipTestToClass.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+          state.quiz_details = action.payload
+        })
+        .addCase(addSlipTestToClass.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(updateSlipTest.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(updateSlipTest.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+          state.quiz_details = action.payload
+        })
+        .addCase(updateSlipTest.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(getClassQuiz.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz fetch pending")
+        })
+        .addCase(getClassQuiz.fulfilled, (state, action) => {
+          console.log("Quiz fetch fulfilled")
+          console.log(action.payload)
+          state.loading = false;
+          state.quiz_details = action.payload
+        })
+        .addCase(getClassQuiz.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz fetch failed")
+          console.log(action.payload)
+        })
+        .addCase(publishQuiz.pending, (state, action) => {
+          state.loading = true
+          console.log("Quiz being published")
+        })
+        .addCase(publishQuiz.fulfilled, (state, action) => {
+          console.log("Quiz published")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(publishQuiz.rejected, (state, action) => {
+          state.loading = false
+          console.log("Quiz could not be pubished");
+          console.log(action.payload)
+        })
+        .addCase(deleteQuestion.pending, (state, action) => {
+          state.loading = true
+          console.log("Question being Deleted")
+        })
+        .addCase(deleteQuestion.fulfilled, (state, action) => {
+          console.log("Question deleted successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(deleteQuestion.rejected, (state, action) => {
+          state.loading = false
+          console.log("Question delete failed");
+          console.log(action.payload)
+        })
+        .addCase(replaceQuestion.pending, (state, action) => {
+          state.loading = true
+          console.log("Question being Replaced")
+        })
+        .addCase(replaceQuestion.fulfilled, (state, action) => {
+          console.log("Question replaced successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(replaceQuestion.rejected, (state, action) => {
+          state.loading = false
+          console.log("Question replace failed");
+          console.log(action.payload)
+        })
     },
 });
   

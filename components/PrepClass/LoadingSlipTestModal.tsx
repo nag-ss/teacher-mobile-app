@@ -8,41 +8,29 @@ import {
   Image,
 } from 'react-native';
 
-interface DeleteQuestionModalProps {
+interface LoadingSlipTestModalProps {
   show: boolean;
-  resourceType: string;
-  onCancel: () => void;
-  onDelete: () => void;
 }
 
-const DeleteQuestionModal: React.FC<DeleteQuestionModalProps> = ({ show, resourceType, onCancel, onDelete }) => {
+const LoadingSlipTestModal = ({ show }: LoadingSlipTestModalProps) => {
   return (
     <Modal visible={show} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <Image
-            source={require('../../assets/images/Deleted_large.png')} // Replace with your actual image path
+            source={require('../../assets/images/Loading.png')} // Replace with your actual image path
             style={styles.image}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Delete {resourceType == "task" ? "Task" : "Question"}?</Text>
-          <Text style={styles.subtitle}>Are you sure you want to proceed?</Text>
-
-          <View style={styles.buttonRow}>
-            <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
-              <Text style={styles.deleteButtonText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.title}>Generating your Test...</Text>
+          <Text style={styles.subtitle}>Please wait a moment - this may take up to 30 seconds.</Text>
         </View>
       </View>
     </Modal>
   );
 };
 
-export default DeleteQuestionModal;
+export default LoadingSlipTestModal;
 
 const styles = StyleSheet.create({
   overlay: {

@@ -35,14 +35,24 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
     }
   ]), []);
   
-  const [title, setTitle] = useState(selectedTask?.title || '');
+  const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
   const [selectedId, setSelectedId] = useState('exact');
   const [textInput, setTextInput] = useState('');
 
+  const cancelOrGoBack = () => {
+    if (selectedTask) {
+      onClose()
+    } else { 
+      goBack()
+    }
+  }
+
   useEffect(() => {
     if (selectedTask) {
       setTitle(selectedTask.title);
+    } else {
+      setTitle('');
     }
   }, [selectedTask]);
 
@@ -104,7 +114,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
 
           {/* Footer Buttons */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
+            <TouchableOpacity style={styles.cancelBtn} onPress={cancelOrGoBack}>
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.saveBtn} onPress={() => {

@@ -1,146 +1,118 @@
-export default questions = [
-  {
-    "question_id": 27,
-    "question_number": 1,
-    "title": "Definition of Probability Distribution",
-    "body": {
-      "Question": "What is a probability distribution in the context of probability theory?",
-      "Description": "Recall the basic concept that describes how probabilities are assigned to different outcomes of a random experiment."
+
+  export default questions = [
+    {
+      "question_id": 32,
+      "question_number": 1,
+      "title": "Evaluating Distribution Choice for Modeling Data",
+      "body": {
+        "Question": "Evaluate the suitability of using a Poisson distribution versus a Normal distribution to model the number of emails received per hour when the average rate is $\\lambda = 5$. Which distribution would you justify for this scenario and why?",
+        "Description": "Consider a process where emails arrive independently and randomly over time with an average rate $\\lambda = 5$ emails per hour."
+      },
+      "is_objective": true,
+      "difficulty_id": 5,
+      "blooms_level": "Evaluate",
+      "topic": "Probability",
+      "sub_topic": "Distributions",
+      "answer": {
+        "text": "A",
+        "explanation": "The Poisson distribution is appropriate for modeling the count of independent events occurring in a fixed interval with a known average rate $\\lambda$. Since the average number of emails per hour is $5$, which is relatively low, the Poisson distribution effectively models the discrete nature and variance of the data. The Normal distribution, while often used for large counts due to the Central Limit Theorem, may not capture the discrete and skewed nature of small count data as well as the Poisson distribution."
+      },
+      "choice_body": {
+        "A": "Use the Poisson distribution because it models discrete event counts effectively for $\\lambda = 5$.",
+        "B": "Use the Normal distribution because the average rate $\\lambda = 5$ is large enough to approximate the Poisson.",
+        "C": "Use the Normal distribution since emails per hour can be continuous and symmetric.",
+        "D": "Use neither distribution; a uniform distribution is better for modeling random email arrivals."
+      }
     },
-    "is_objective": true,
-    "difficulty_id": 1,
-    "blooms_level": "Remember",
-    "topic": "Probability",
-    "sub_topic": "Distributions",
-    "answer": {
-      "text": "A",
-      "explanation": "A probability distribution defines how probabilities are assigned to all possible outcomes of a random variable, ensuring the total probability sums to 1."
+    {
+      "question_id": 33,
+      "question_number": 2,
+      "title": "Definition of Probability Distribution",
+      "body": {
+        "Question": "What is a probability distribution in the context of probability theory?",
+        "Description": "Recall the basic concept related to how probabilities are assigned to outcomes of a random variable."
+      },
+      "is_objective": true,
+      "difficulty_id": 1,
+      "blooms_level": "Remember",
+      "topic": "Probability",
+      "sub_topic": "Distributions",
+      "answer": {
+        "text": "A",
+        "explanation": "A probability distribution defines the probabilities of all possible values of a random variable. Formally, it assigns a probability $P(X=x)$ to each outcome $x$ such that $0 \\leq P(X=x) \\leq 1$ and $\\sum_x P(X=x) = 1$."
+      },
+      "choice_body": {
+        "A": "A function that assigns probabilities to each possible outcome of a random variable",
+        "B": "A method for calculating the mean of a data set",
+        "C": "A technique used to collect data from experiments",
+        "D": "A graph that shows the relationship between two variables"
+      }
     },
-    "correct": 1,
-    "choice_body": [
-       "A function that assigns probabilities to each possible outcome of a random experiment",
-       "The average value of all possible outcomes",
-       "The sum of all possible outcomes",
-       "A measure of the spread of data around the mean"
-    ]
-  },
-  {
-    "question_id": 28,
-    "question_number": 2,
-    "title": "Evaluating the appropriateness of normal distribution for modeling data",
-    "body": {
-      "Question": "Evaluate the effectiveness of using a normal distribution to model the probability of outcomes when the data is heavily skewed to the right. Which statement best justifies your decision?",
-      "Description": "Consider a dataset where the variable $X$ exhibits significant right skewness. Assess the suitability of applying a normal distribution to represent the probability distribution of $X$."
+    {
+      "question_id": 34,
+      "question_number": 3,
+      "title": "Applying Normal Distribution to Find Probabilities",
+      "body": {
+        "Question": "A machine produces ball bearings with diameters that are normally distributed with mean $\\mu = 5$ mm and standard deviation $\\sigma = 0.1$ mm. How would you use the normal distribution to find the probability that a randomly selected ball bearing has a diameter between $4.9$ mm and $5.1$ mm?",
+        "Description": "Use the properties of the normal distribution to solve for $P(4.9 < X < 5.1)$ where $X$ is the diameter of the ball bearing."
+      },
+      "is_objective": true,
+      "difficulty_id": 3,
+      "blooms_level": "Apply",
+      "topic": "Probability",
+      "sub_topic": "Distributions",
+      "answer": {
+        "text": "A",
+        "explanation": "First, convert the raw values to standard normal $z$-scores: $$z_1 = \\frac{4.9 - 5}{0.1} = -1, \\quad z_2 = \\frac{5.1 - 5}{0.1} = 1.$$ Then, find the probability using standard normal distribution tables or a calculator: $$P(4.9 < X < 5.1) = P(-1 < Z < 1) = \\Phi(1) - \\Phi(-1) = 0.8413 - 0.1587 = 0.6826.$$ Thus, the probability is approximately $0.683$."
+      },
+      "choice_body": {
+        "A": "Calculate $P(4.9 < X < 5.1)$ by converting to $z$-scores: $z = \\frac{X - \\mu}{\\sigma}$ and using standard normal tables.",
+        "B": "Use the binomial distribution with $n=5$ and $p=0.1$ to estimate the probability.",
+        "C": "Apply the Poisson distribution with mean $\\lambda = 5$ to find the probability between $4.9$ and $5.1$.",
+        "D": "Calculate the probability directly from the uniform distribution between $4.9$ and $5.1$."
+      }
     },
-    "is_objective": true,
-    "difficulty_id": 5,
-    "blooms_level": "Evaluate",
-    "topic": "Probability",
-    "sub_topic": "Distributions",
-    "correct": 3,
-    "answer": {
-      "text": "D",
-      "explanation": "A normal distribution is symmetric and assumes data is evenly distributed around the mean. When the data is heavily right-skewed, the normal distribution poorly models the probability since it underestimates the likelihood of extreme high values. Therefore, option D correctly appraises that the normal distribution is inappropriate for such skewed data."
+    {
+      "question_id": 35,
+      "question_number": 4,
+      "title": "Understanding Probability Distributions",
+      "body": {
+        "Question": "Which of the following best describes the main purpose of a probability distribution in probability theory?",
+        "Description": "Consider that a probability distribution assigns probabilities to different possible outcomes of a random variable $X$."
+      },
+      "is_objective": true,
+      "difficulty_id": 2,
+      "blooms_level": "Understand",
+      "topic": "Probability",
+      "sub_topic": "Distributions",
+      "answer": {
+        "text": "A",
+        "explanation": "A probability distribution explains how probabilities are assigned to the possible values of a random variable $X$. Specifically, it describes the likelihood of each outcome occurring, ensuring that the sum of all probabilities is 1."
+      },
+      "choice_body": {
+        "A": "It explains how probabilities are assigned to the possible values of a random variable $X$.",
+        "B": "It calculates the exact outcome of a random experiment.",
+        "C": "It summarizes the total number of outcomes without considering probabilities.",
+        "D": "It determines the cause of randomness in an experiment."
+      }
     },
-    "choice_body": [
-       "The normal distribution is effective because it approximates any distribution with a large sample size due to the Central Limit Theorem.",
-       "It is appropriate since the mean and variance are sufficient statistics for modeling right-skewed data with a normal distribution.",
-       "Using a normal distribution is justified because skewness does not affect the probability estimates significantly.",
-       "The normal distribution is ineffective because it assumes symmetry, which contradicts the heavy right skewness observed."
-    ]
-  },
-  {
-    "question_id": 29,
-    "question_number": 3,
-    "title": "Analyzing Probability Distributions",
-    "body": {
-      "Question": "Analyze the key differences between discrete and continuous probability distributions. How do these differences affect the way probabilities are calculated and interpreted for each type of distribution?",
-      "Description": "In your response, compare characteristics such as the domain of the random variable, the representation of probabilities, and the use of probability mass functions versus probability density functions."
-    },
-    "is_objective": false,
-    "difficulty_id": 4,
-    "blooms_level": "Analyze",
-    "topic": "Probability",
-    "sub_topic": "Distributions",
-    "answer": {
-      "text": "Discrete probability distributions assign probabilities to countable outcomes, using a probability mass function (PMF) where $P(X = x_i)$ gives the probability of each specific outcome. Continuous probability distributions, however, deal with uncountably infinite outcomes over intervals, using a probability density function (PDF) $f(x)$, where probabilities are found by integrating over intervals: $P(a \\leq X \\leq b) = \\int_a^b f(x) \\, dx$.",
-      "explanation": "The key difference lies in the nature of the random variable's domain: discrete variables take distinct values allowing direct probability assignment via PMFs, while continuous variables take values over intervals, requiring calculation of probabilities as areas under the PDF curve. This affects interpretation—discrete probabilities are exact for individual points, but continuous probabilities for single points are zero and only intervals have non-zero probability. Thus, probability calculation shifts from summation in discrete cases to integration in continuous cases."
-    },
-    "choice_body": null
-  },
-  {
-    "question_id": 30,
-    "question_number": 4,
-    "title": "Understanding Probability Distributions",
-    "body": {
-      "Question": "Describe the main difference between a discrete probability distribution and a continuous probability distribution.",
-      "Description": "Consider how probability values are assigned to outcomes in distributions where the sample space is either countable or uncountable."
-    },
-    "is_objective": true,
-    "difficulty_id": 2,
-    "blooms_level": "Understand",
-    "topic": "Probability",
-    "sub_topic": "Distributions",
-    "correct": 0,
-    "answer": {
-      "text": "A",
-      "explanation": "A discrete probability distribution assigns probabilities to countable outcomes, such as integers, where $P(X=x)$ is defined for specific values of $x$. A continuous probability distribution assigns probabilities over an uncountable range of values, where individual outcomes have zero probability and probabilities are found over intervals using a probability density function (PDF)."
-    },
-    "choice_body": [
-       "Discrete distributions assign probabilities to countable outcomes, while continuous distributions assign probabilities over intervals of uncountable outcomes.",
-       "Discrete distributions have probabilities greater than 1, while continuous distributions always have probabilities less than 1.",
-       "Discrete distributions only describe events with two outcomes, whereas continuous distributions describe events with more than two outcomes.",
-       "Discrete distributions use probability density functions, while continuous distributions use probability mass functions."
-    ]
-  },
-  {
-    "question_id": 31,
-    "question_number": 5,
-    "title": "Applying the Binomial Distribution to a Probability Problem",
-    "body": {
-      "Question": "A factory produces light bulbs with a 5% defect rate. If you randomly select 10 bulbs, how would you use the binomial distribution to find the probability that exactly 2 bulbs are defective? Identify the correct probability expression.",
-      "Description": "Use the binomial distribution formula where $n$ is the number of trials, $k$ is the number of successes (defective bulbs), and $p$ is the probability of a defective bulb."
-    },
-    "is_objective": true,
-    "difficulty_id": 3,
-    "blooms_level": "Apply",
-    "topic": "Probability",
-    "sub_topic": "Distributions",
-    "correct": 0,
-    "answer": {
-      "text": "A",
-      "explanation": "The binomial distribution probability is given by $$P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}$$. Here, $n=10$, $k=2$, and $p=0.05$. Substituting these values gives $$P(X=2) = \\binom{10}{2} (0.05)^2 (0.95)^8$$."
-    },
-    "choice_body": [
-       "$\\binom{10}{2} (0.05)^2 (0.95)^8$",
-       "$\\binom{10}{2} (0.95)^2 (0.05)^8$",
-       "$\\binom{2}{10} (0.05)^{10} (0.95)^2$",
-       "$\\binom{8}{2} (0.05)^8 (0.95)^2$"
-    ]
-  },
-  {
-    "question_id": 32,
-    "question_number": 6,
-    "title": "Applying the Binomial Distribution to a Probability Problem",
-    "body": {
-      "Question": "When $a\\ne 0$, there are two solutions to \\(ax^2 + bx + c = 0\\) and they are",
-      "Description": "Use the binomial distribution formula where $n$ is the number of trials, $k$ is the number of successes (defective bulbs), and $p$ is the probability of a defective bulb."
-    },
-    "is_objective": true,
-    "difficulty_id": 3,
-    "blooms_level": "Apply",
-    "topic": "Probability",
-    "sub_topic": "Distributions",
-    "correct": 1,
-    "answer": {
-      "text": "B",
-      "explanation": "The binomial distribution probability is given by $$P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}$$. Here, $n=10$, $k=2$, and $p=0.05$. Substituting these values gives $$P(X=2) = \\binom{10}{2} (0.05)^2 (0.95)^8$$."
-    },
-    "choice_body": [
-      "$$x = {b \\pm \\sqrt{b^2-4ac} \\over 2a}$$",
-      "$$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}$$",
-      "$$x = {-a \\pm \\sqrt{b^2-4ac} \\over 2b}$$",
-      "$$x = {a \\pm \\sqrt{b^2-4ac} \\over 2b}$$"
-    ]
-  }
-];
+    {
+      "question_id": 36,
+      "question_number": 5,
+      "title": "Analyzing Probability Distributions",
+      "body": {
+        "Question": "Analyze how the properties of the binomial distribution differ from those of the normal distribution. In your response, compare their assumptions, shapes, and applications, and explain how the binomial distribution relates to the normal distribution under certain conditions.",
+        "Description": "Consider the parameters $n$ and $p$ for the binomial distribution, and the mean $\\mu$ and variance $\\sigma^2$ for the normal distribution. Discuss the connections between these distributions and when one can approximate the other."
+      },
+      "is_objective": false,
+      "difficulty_id": 4,
+      "blooms_level": "Analyze",
+      "topic": "Probability",
+      "sub_topic": "Distributions",
+      "answer": {
+        "text": "The binomial distribution is a discrete probability distribution with parameters $n$ (number of trials) and $p$ (probability of success), representing the number of successes in $n$ independent Bernoulli trials. It is defined only for integer values from 0 to $n$. The normal distribution is a continuous distribution characterized by mean $\\mu$ and variance $\\sigma^2$, with a symmetric bell-shaped curve defined for all real numbers.",
+        "explanation": "The binomial distribution assumes fixed $n$ independent trials with identical probability $p$, resulting in a discrete probability mass function. Its shape can be symmetric or skewed depending on $p$ and $n$. The normal distribution assumes continuous outcomes and is symmetric about the mean $\\mu$. When $n$ is large and $p$ is not too close to 0 or 1, the binomial distribution can be approximated by a normal distribution with mean $\\mu = np$ and variance $\\sigma^2 = np(1-p)$. This is due to the Central Limit Theorem, which states that sums of independent random variables tend toward a normal distribution. Thus, the normal distribution serves as a useful approximation to the binomial distribution in many practical settings."
+      },
+      "choice_body": null
+    }
+  ]

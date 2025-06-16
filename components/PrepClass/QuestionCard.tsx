@@ -4,9 +4,11 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  TouchableHighlight
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
 
 const { width } = Dimensions.get('window');
@@ -15,13 +17,14 @@ interface QuestionCardProps {
   item: any;
   index: number;
   activeDropdown: number;
+  newQuiz: boolean;
   setActiveDropdown: (id: number) => void;
   editQuestion: (id: number) => void;
   deleteQuestion: (id: number) => void;
   replaceQuestion: (id: number) => void;
 };
 
-const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuestion, deleteQuestion}: QuestionCardProps) => {
+const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion}: QuestionCardProps) => {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -30,63 +33,77 @@ const QuestionCard = ({item, index, activeDropdown, setActiveDropdown, editQuest
         </View>
         <MathJaxSvg 
           fontCache={true}
-          fontSize={16}
+          fontSize={12}
+          style={styles.questionText}
         >
           {item.body.Question}
         </MathJaxSvg>
-        
         <View style={styles.markBox}>
-          <Text style={styles.markText}>Marks - 0{item.marks}</Text>
+          <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
         </View>
-        <TouchableOpacity onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+        {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
           <Feather name="more-vertical" size={20} color="#4B5563" />
-        </TouchableOpacity>
+        </TouchableOpacity>)}
       </View>
+
+      {/* {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt}}>
+              {item.task_type != 'SlipTest' && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
+                <Text style={styles.actionButton}>Edit</Text>
+              </TouchableHighlight>)}
+              <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteTask(item.task_id, item.task_type)}>
+                <Text style={styles.actionButton}>Delete</Text>
+              </TouchableHighlight>
+            </View>)} */}
 
       {activeDropdown === index && (
         <View style={styles.dropdown}>
-          <TouchableOpacity onPress={() => editQuestion(item.question_id)} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => console.log(`Edit clicked on question ${item.question_id}`)} style={styles.dropdownItem}>
             <Text>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}} style={styles.dropdownItem}>
+          </TouchableHighlight>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => replaceQuestion(item.question_id)} style={styles.dropdownItem}>
             <Text>Replace</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>
+          </TouchableHighlight>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>
             <Text>Delete</Text>
-          </TouchableOpacity>
+          </TouchableHighlight>
         </View>
       )}
 
       {/* Subjective Answer */}
       {!item.is_objective && (
-        <View style={styles.answerBox}>
-          <Text>
-            <Text style={{ fontWeight: 'bold' }}>Answer: </Text>
+        <View style={{margin: 10}}>
+          <View style={styles.answerBox}>
+            <Text style={{ fontSize: 12 }}>Answer: </Text>
+            <MathJaxSvg
+              fontCache={true}
+              fontSize={12}
+            >
               {item.answer.explanation}
-          </Text>
+            </MathJaxSvg>
+          </View>
         </View>
       )}
 
       {/* Objective Options */}
       {item.is_objective && (
         <View style={styles.optionsGrid}>
-          {item.choice_body?.map((opt: string, idx: number) => (
+          {Object.keys(item.choice_body).map((key:string) => (
             <View
-              key={idx}
+              key={key}
               style={[
                 styles.optionBox,
-                idx === item.correct && {
+                key === item.answer?.text && {
                   borderColor: '#059669',
                 },
               ]}
             >
               <MathJaxSvg 
                 fontCache={true}
-                fontSize={16}
+                fontSize={12}
               >
-                {opt}
+                {item.choice_body[key]}
               </MathJaxSvg>
-              {idx === item.correct && <Feather name="check-circle" size={18} color="#059669" />}
+              {key === item.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black'  }} />}
             </View>
           ))}
         </View>
@@ -99,65 +116,70 @@ export default QuestionCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFF',
     borderRadius: 12,
-    padding: 16,
+    margin: 10,
     marginBottom: 20,
-    elevation: 1,
+    borderColor: '#E5E7EB',
+    borderWidth: 0.5,
   },
   cardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
+    margin: 10
   },
   indexBox: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#E5E7EB',
-    borderRadius: 999,
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderColor: '#E5E7EB',
+    borderWidth: 0.5,
     justifyContent: 'center',
     alignItems: 'center',
   },
   indexText: {
     fontWeight: 'bold',
-    color: '#374151',
   },
   questionText: {
     flex: 1,
     marginLeft: 10,
-    fontSize: 16,
   },
   markBox: {
-    backgroundColor: '#D1FAE5',
-    paddingHorizontal: 10,
+    borderColor: '#21c17c',
+    borderWidth: 0.6,
+    paddingHorizontal: 4,
     paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
+    borderRadius: 10,
+    marginRight: 6,
   },
   markText: {
-    color: '#047857',
-    fontWeight: '500',
+    fontSize: 9
   },
   dropdown: {
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    zIndex: 100,
+    display: 'flex', 
+    position: 'absolute', 
+    backgroundColor: 'white',
+    marginLeft: 610, 
+    borderWidth: 1, 
     borderRadius: 8,
-    backgroundColor: '#FFF',
-    display: 'flex',
+    marginTop: 40,
   },
   dropdownItem: {
     padding: 10,
-    flexDirection: 'row-reverse',
+    borderBottomWidth: 0.5
   },
   answerBox: {
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#f5f5f5',
+    borderColor: '#b8b8b8',
+    borderWidth: 0.5,
     borderRadius: 8,
     padding: 10,
     marginTop: 10,
   },
   optionsGrid: {
     marginTop: 10,
+    padding: 10
   },
   optionBox: {
     borderWidth: 1,

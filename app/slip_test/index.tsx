@@ -6,90 +6,157 @@ import {
   FlatList,
   StyleSheet,
   ScrollView,
+  Image,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import QuestionCard from '@/components/PrepClass/QuestionCard';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import QuestionModal from '@/components/PrepClass/QuestionsModal';
+import ReplaceQuestionModal from '@/components/PrepClass/ReplaceQuestionModal'
+import { publishQuiz, getClassQuiz, deleteQuestion, replaceQuestion } from '@/store/classSlice';
 import questions from '../../data/Questions';
 
-const SlipTestPage = () => {
+const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
+  const {new_quiz} = route.params;
+  // const new_quiz = true;
+  const dispatch = useDispatch<any>();
+  const { quiz_details } = useSelector((state: any) => state.classes);
+  const {questions} = quiz_details;
   const [activeDropdown, setActiveDropdown] = useState(-1);
-  const [isDeleteTaskModal, setDeleteTaskModal] = useState(false);
+  const [isDeleteQuestionModal, setDeleteQuestionModal] = useState(false);
   const [isQuestionModal, setQuestionModal] = useState(false);
+  const [isReplaceQuestionModal, setReplaceQuestionModal] = useState(false);
+
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
+  const [questionIdToDelete, setQuestionIdToDelete] = useState(-1);
+  const [questionIdToReplace, setQuestionIdToReplace] = useState(-1);
 
   const editQuestion = (id: number) => {
-    console.log("========================");
-    console.log(id);
-    console.log("========================");
-    const question = (questions.filter(q => q.question_id == id))[0]
+    const question = (questions.filter((q: { question_id: number; }) => q.question_id == id))[0]
     setSelectedQuestion(question);
     setQuestionModal(true);
   };
 
-  const replaceQuestion = (id: number) => {
-    console.log("The question to be replaced is " + id);
-  } 
-
-  const deleteQuestion = (id: number) => {
-    setDeleteTaskModal(true);
+  const deleteClicked = (id: number) => {
+    setQuestionIdToDelete(id);
+    setDeleteQuestionModal(true);
   };
 
+  const confirmDelete = async() => {
+    console.log(quiz_details);
+    // Remove the hardcoded value
+    const quiz_id = quiz_details.quiz_id || 35;  
+    await dispatch(deleteQuestion(questionIdToDelete))
+    await dispatch(getClassQuiz(quiz_id));
+
+    setDeleteQuestionModal(false);
+  }
+
+  const replaceClicked = (id: number) => {
+    console.log(id);
+    setQuestionIdToReplace(id);
+    setReplaceQuestionModal(true);
+  }
+
+  const confirmReplace = async() => {
+    const quiz_id = quiz_details.quiz_id || 35;
+    console.log(questionIdToReplace);
+    await dispatch(replaceQuestion({question_id: questionIdToReplace, additional_context: "I want this question changed"}))
+    await dispatch(getClassQuiz(quiz_id));
+    setReplaceQuestionModal(false);
+  }
+
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteQuestion} replaceQuestion={replaceQuestion} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} />)
+  }
+
+  const publishQuizTask = async() => {
+    const the_quiz = {
+      start_time: quiz_details.start_date, 
+      quiz_id: quiz_details.quiz_id || 35, // Remove the hard-coded quiz value
+      quiz_type: "SlipTest", 
+      duration: quiz_details.duration, 
+      division_id: 43
+    }
+    console.log(the_quiz);
+    await dispatch(publishQuiz(the_quiz));
+    navigation.navigate('Home');  
   }
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.pageTitle}>Slip Test Preview</Text>
-        <Text style={styles.subtext}>Review and finalize the test before publishing.</Text>
-
-        <FlatList
-          data={questions}
-          keyExtractor={(item) => item.question_id.toString()}
-          renderItem={renderQuestionCard}
-          scrollEnabled={false}
-        />
-
-        {/* Pagination */}
-        <View style={styles.pagination}>
-          <TouchableOpacity>
-            <Text style={styles.paginationText}>← Previous</Text>
-          </TouchableOpacity>
-          <View style={styles.pageNumbers}>
-            {[1, 2, '...', 9, 10].map((p, i) => (
-              <TouchableOpacity
-                key={i}
-                style={[
-                  styles.pageButton,
-                  p === 1 && { backgroundColor: '#10B981' },
-                ]}
-              >
-                <Text style={p === 1 ? styles.pageButtonTextActive : styles.pageButtonText}>{p}</Text>
-              </TouchableOpacity>
-            ))}
+        <View style={{display: 'flex', flexDirection:'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white', borderRadius: 10, marginBottom: 10}}>
+          <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+            <TouchableOpacity onPress={() => console.log("I was pressed")}>
+              <Image source={require('../../assets/images/back-icon.png')} style={{ width: 12, height: 12, marginRight: 5}} />
+            </TouchableOpacity>
+            <Text style={styles.pageTitle}>Slip Test Preview</Text>
           </View>
-          <TouchableOpacity>
-            <Text style={styles.paginationText}>Next →</Text>
-          </TouchableOpacity>
+          <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={{fontSize: 12, marginRight: 2}} >Topic:</Text>
+            <Text style={{fontSize: 12, fontWeight: 'bold', marginRight: 10}}>Newton's Laws of Motion</Text>
+            <Text style={{fontSize: 12, marginRight: 2}}>Subtopic:</Text>
+            <Text style={{fontWeight: 'bold', fontSize: 12}}>Third Laws & Applications</Text>
+            <Image source={require('../../assets/images/ss/Notification.png')} style={{ width: 22, height: 22}} />
+          </View>
         </View>
+        
+        <View style={{ backgroundColor: 'white', borderRadius: 10}}>
+          <Text style={{fontSize: 16, marginLeft: 20, fontWeight: 'bold', marginTop: 10}}>Questions</Text>
+          <FlatList
+            data={questions}
+            keyExtractor={(item) => item.question_id.toString()}
+            renderItem={renderQuestionCard}
+            scrollEnabled={false}
+          />
+          {/* Pagination */}
+          <View style={styles.pagination}>
+            <TouchableOpacity style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+              <Image source={require('../../assets/images/back-icon.png')} style={{width: 12, height: 12,  padding: 5}} />
+              <Text style={styles.paginationLeftText}>Previous</Text>
+            </TouchableOpacity>
+            <View style={styles.pageNumbers}>
+              {[1, 2, '...', 9, 10].map((p, i) => (
+                <TouchableOpacity
+                  key={i}
+                  style={p==1 ? styles.pageButtonActive : styles.pageButton}
+                >
+                  <Text style={p === 1 ? styles.pageButtonTextActive : styles.pageButtonText}>{String(p).padStart(2, '0')}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity style={{display: 'flex', flexDirection: 'row', alignItems: 'center', backgroundColor: '#21c17c', padding: 5, borderRadius: 4}}>
+              <Text style={styles.paginationRightText}>Next</Text>
+              <Image source={require('../../assets/images/arrow_forward_ios.png')} style={{width: 12, height: 12}} />
+            </TouchableOpacity>
+          </View>
 
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Save</Text>
-        </TouchableOpacity>
+          { new_quiz && (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24}}>
+            <TouchableOpacity style={styles.saveButton} onPress={publishQuizTask}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>)}
+        </View>
       </ScrollView>
 
       <DeleteQuestionModal
-        show={isDeleteTaskModal}
+        show={isDeleteQuestionModal}
         resourceType='question'
-        onCancel={() => setDeleteTaskModal(false)}
-        onDelete={() => setDeleteTaskModal(false)}
+        onCancel={() => setDeleteQuestionModal(false)}
+        onDelete={confirmDelete}
       />
       <QuestionModal
         ques={selectedQuestion}
         show={isQuestionModal}
         onCancel={() => setQuestionModal(false)}
+      />
+      
+      <ReplaceQuestionModal 
+        show={isReplaceQuestionModal}
+        resourceType='question'
+        onCancel={() => setReplaceQuestionModal(false)}
+        onReplace={confirmReplace}
       />
     </View>
   );
@@ -106,7 +173,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   pageTitle: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   subtext: {
@@ -119,11 +186,19 @@ const styles = StyleSheet.create({
   pagination: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
     alignItems: 'center',
+    marginLeft: 10,
+    marginRight: 10
   },
-  paginationText: {
-    color: '#6B7280',
+  paginationLeftText: {
+    marginLeft: 5,
+    fontSize: 11,
+    paddingRight: 5
+  },
+  paginationRightText: {
+    marginRight: 5,
+    fontSize: 11,
+    paddingLeft: 5
   },
   pageNumbers: {
     flexDirection: 'row',
@@ -132,25 +207,31 @@ const styles = StyleSheet.create({
   pageButton: {
     paddingHorizontal: 10,
     paddingVertical: 6,
+    marginHorizontal: 2,
+  },
+  pageButtonActive: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#21c17c',
     marginHorizontal: 2,
   },
   pageButtonText: {
-    color: '#374151',
+    fontSize: 10
   },
   pageButtonTextActive: {
     color: '#FFF',
+    fontSize: 10
   },
   saveButton: {
-    backgroundColor: '#10B981',
-    padding: 14,
+    backgroundColor: '#21c17c',
+    padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 24,
+    marginRight: 10
   },
   saveButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+    marginLeft: 50,
+    marginRight: 50
+  }
 });

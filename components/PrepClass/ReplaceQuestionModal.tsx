@@ -6,34 +6,38 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ActivityIndicator
 } from 'react-native';
+import { useSelector } from 'react-redux';
 
-interface DeleteQuestionModalProps {
+
+interface ReplaceQuestionModalProps {
   show: boolean;
   resourceType: string;
   onCancel: () => void;
-  onDelete: () => void;
+  onReplace: () => void;
 }
 
-const DeleteQuestionModal: React.FC<DeleteQuestionModalProps> = ({ show, resourceType, onCancel, onDelete }) => {
+const ReplaceQuestionModal: React.FC<ReplaceQuestionModalProps> = ({ show, resourceType, onCancel, onReplace }) => {
+  const { loading } = useSelector((state: any) => state.classes);
   return (
     <Modal visible={show} transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <Image
-            source={require('../../assets/images/Deleted_large.png')} // Replace with your actual image path
+            source={require('../../assets/images/Replace.png')} // Replace with your actual image path
             style={styles.image}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Delete {resourceType == "task" ? "Task" : "Question"}?</Text>
+          <Text style={styles.title}>Replace {resourceType == "task" ? "Task" : "Question"}?</Text>
           <Text style={styles.subtitle}>Are you sure you want to proceed?</Text>
-
+          {loading && (<ActivityIndicator />) }
           <View style={styles.buttonRow}>
-            <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
+            <TouchableOpacity onPress={onCancel} style={styles.cancelButton} disabled={loading}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onDelete} style={styles.deleteButton}>
-              <Text style={styles.deleteButtonText}>Delete</Text>
+            <TouchableOpacity onPress={onReplace} style={styles.deleteButton} disabled={loading}>
+              <Text style={styles.deleteButtonText}>Replace</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -42,7 +46,7 @@ const DeleteQuestionModal: React.FC<DeleteQuestionModalProps> = ({ show, resourc
   );
 };
 
-export default DeleteQuestionModal;
+export default ReplaceQuestionModal;
 
 const styles = StyleSheet.create({
   overlay: {
