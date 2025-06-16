@@ -79,6 +79,7 @@ const userSlice = createSlice({
           console.log(action.payload)
           state.userToken = action.payload.access_token
           AsyncStorage.setItem('userToken', action.payload.access_token);
+          AsyncStorage.setItem('userRefreshToken', action.payload.refresh_token);
       })
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false

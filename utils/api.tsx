@@ -25,7 +25,17 @@ const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => 
   return headers;
 };
 
-const apiRequest = async (endpoint: string, method: string, data: any, token: string | null = null, isFile: boolean = false) => {
+const refreshToken = async () => {
+  try {
+    const refreshToken = AsyncStorage.getItem('userRefreshToken')
+    const response = await axios.post(`${API_URL}auth/refresh`, {refresh_token: refreshToken}, { withCredentials: true });
+    return response.data;
+  } catch (err) {
+    throw new Error('Session expired. Please login again.');
+  }
+};
+
+const apiRequest = async (endpoint: string, method: string, data: any, token: string | null = null, isFile: boolean = false, retry: boolean = true) => {
   // const navigation = useNavigation<any>(); 
   // const dispatch = useDispatch<any>()
   
@@ -50,17 +60,22 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
     console.log("error in api page" )
     console.log(error.response)
     console.log(error.response.status)
-    if (error.response) {
-      if (error.response.status === 401) {
-        console.log("Unauthorized, navigating to login screen");
-        // await AsyncStorage.removeItem('user');
-        // await AsyncStorage.removeItem('userToken');
-        // await dispatch(logout())
-        // navigation.navigate('Login'); // Navigate to the Login screen
-        // navigation.navigate('Logout'); // Navigate to the Login screen
-        // throw new Error(error.response.status);
-        return error.response.status
+    if (error.response?.status === 401 && retry) {
+      try {
+        const newTokenData = await refreshToken();
+
+        // Save new token to storage (adjust as needed)
+        AsyncStorage.setItem('userToken', newTokenData.access_token);
+        AsyncStorage.setItem('userRefreshToken', newTokenData.refresh_token);
+
+        // Retry original request with new token
+        return await apiRequest(endpoint, method, data, newTokenData.access_token, isFile, false);
+      } catch (refreshErr) {
+        throw refreshErr;
       }
+    }
+    if (error.response) {
+      
       // Request made and server responded
       throw new Error(error.response.data.message || 'An error occurred');
       
