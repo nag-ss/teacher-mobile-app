@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Props {
   visible: boolean;
@@ -11,6 +12,15 @@ interface Props {
 
 const StudentModal = ({ visible, student, onClose }: Props) => {
   if (!student) return null;
+  const [token, setToken] = useState<string | null>(null)
+
+  const getToken = async () => {
+    const userToken = await AsyncStorage.getItem('userToken');
+    setToken(userToken)
+  }
+  useEffect(() => {
+    getToken()
+  }, [])
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -18,10 +28,14 @@ const StudentModal = ({ visible, student, onClose }: Props) => {
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeText}>✕</Text>
         </TouchableOpacity>
-        <WebView
+        {
+          token &&
+          <WebView
             style={styles.webViewContainer}
-            source={{ uri: 'https://www.google.com/' }}
+            source={{ uri: 'https://superstudent.z13.web.core.windows.net/?token='+token }}
         />
+        }
+        
         {/* Add more student info here */}
       </View>
     </Modal>

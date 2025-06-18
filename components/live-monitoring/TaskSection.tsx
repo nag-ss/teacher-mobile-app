@@ -48,6 +48,9 @@ const TaskSection = () => {
     if(classTasks && classTasks.length) {
       const tasksList = [attendanceTask, ...classTasks, addTaskCard];
       setTasks(tasksList)
+    } else {
+      const tasksList = [attendanceTask, addTaskCard];
+      setTasks(tasksList)
     }
 
   }, [classTasks])
