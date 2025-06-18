@@ -14,8 +14,8 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import {RadioButton} from 'react-native-radio-buttons-group';
 
-const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
-const subTopicsList = ["Sub Topic 1", "Sub Topic 2", "Sub Topic 3", "Sub Topic 4"]
+const topicsList = ["Integer", "Fractions and Decimals"]
+const subTopicsList = ["Properties: Associative, Distributive, Commutative", "Introduction", "Multiplication of Fractions", "Division of Fractions"]
 
 interface GenerateSlipTestModalProps { 
   topic: string; 
@@ -27,7 +27,6 @@ interface GenerateSlipTestModalProps {
   onClose: () => void; 
   clickedNext: () => void;
 }
-
 
 const GenerateSlipTestModal = ({
   topic, 

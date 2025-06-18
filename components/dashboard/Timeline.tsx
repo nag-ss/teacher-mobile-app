@@ -100,14 +100,16 @@ const onLayout = (event: LayoutChangeEvent): void => {
     const [timelineData, setTimelineData] = useState([])
     const [timeSlots, setTimeSlots] = useState<string[]>([])
     const timelineRef = useRef<any>()
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [show, setShow] = useState(false);
 
   const onDateChange = (selectedDate: any) => {
     const currentDate = selectedDate;
     setShow(false);
+    console.log("======================")
+    console.log(currentDate);
+    console.log("======================")
     setDate(currentDate);
-    console.log(currentDate)
     getDetails(moment(currentDate).format('YYYY-MM-DD'))
   };
 
@@ -315,9 +317,11 @@ const onLayout = (event: LayoutChangeEvent): void => {
                             <View key={index} style={styles.classWrapper}>
                                 {classesForTimeSlot.length > 0 ? (
                                 classesForTimeSlot.map((item: any, idx) => {
+                                    const relevant_class = classTimeline.filter((c: any) => c.class_schedule_id == item.classId)[0];
                                     // setNoClass(noClass + (item.classLength/15))
+                                    console.log(relevant_class);
                                     noClass = noClass + (item.classLength/15) + 1
-                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} height={item.classLength/15} currentDate={date} />)
+                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={item.classLength/15} currentDate={date} />)
                                 })
                                 ) : noClass < 1 ? (
                                 

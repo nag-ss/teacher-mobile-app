@@ -14,7 +14,7 @@ export const addTaskToClass = createAsyncThunk<any>('/teacher/createTeacherTasks
   return handleAuthApiCall(classService.addTaskToClass, reqData, thunkAPI);
 });
 
-export const getTeacherClassTasks = createAsyncThunk('/teacher/getTeacherClassTasks', async (reqData, thunkAPI) => {
+export const getTeacherClassTasks = createAsyncThunk('/teacher/getTeacherClassTasks', async (reqData: any, thunkAPI) => {
   return handleAuthApiCall(classService.getTeacherClassTasks, reqData, thunkAPI);
 });
 

@@ -7,17 +7,21 @@ import ClassPrep from './ClassPrep';
 import moment from 'moment';
 
 
-const TimelineCard = ({idx, item, height, currentDate}: any) => {
+const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
 
   const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
+  // const isLoad = true;
   const classPrepRef = useRef<any>();
 
   const openClassPrep = () => {
     console.log("welcome to class ....")
-    console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate)
-    if(moment(new Date()).format('YYYY-MM-DD') == currentDate) {
-      classPrepRef.current?.doSomething()
-    }
+    console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
+    // fetch class tasks
+    classPrepRef.current?.setSelectedClass()
+    // if(moment(new Date()).format('YYYY-MM-DD') == currentDate) {
+    //   console.log("I am in the if loop")
+      
+    // }
   }
 
   return (
@@ -36,7 +40,7 @@ const TimelineCard = ({idx, item, height, currentDate}: any) => {
             <Badge status="error" containerStyle={styles.liveBadge} />
         )}
         {isLoad ? 
-          <ClassPrep ref={classPrepRef} />
+          <ClassPrep item={item} selectedClass={selectedClass} ref={classPrepRef} />
         : null}
     </TouchableOpacity>
     

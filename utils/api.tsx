@@ -10,8 +10,8 @@ const API_URL = 'https://superslate-ss.onrender.com/';
 
 const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => {
   let headers: any = {
-    // 'Content-Type': endpoint == USER_LOGIN ? 'application/x-www-form-urlencoded' : 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': endpoint == USER_LOGIN ? 'application/x-www-form-urlencoded' : 'application/json',
+    // 'Content-Type': 'application/x-www-form-urlencoded',
     // 'accept': 'application/json'
   };
   if (token) {
