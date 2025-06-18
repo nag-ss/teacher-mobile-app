@@ -351,20 +351,20 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     setSubTopic(subTopic)
   }
 
-  const getDetails = async () => {
-    await dispatch(getLiveClass())
-    await dispatch(getScheduleClasses())
-    await dispatch(getTeacherClassTasks({
-      class_schedule_id: selectedClass.class_schedule_id,
-      teacher_id: user.id,
-      subject_id: selectedClass.subject_id,
-      division_id: selectedClass.division_id,
-    }))
-  };
+  // const getDetails = async () => {
+    // await dispatch(getLiveClass())
+    // await dispatch(getScheduleClasses())
+    // await dispatch(getTeacherClassTasks({
+    //   class_schedule_id: selectedClass.class_schedule_id,
+    //   teacher_id: user.id,
+    //   subject_id: selectedClass.subject_id,
+    //   division_id: selectedClass.division_id,
+    // }))
+  // };
   
-  useEffect(() => {
-    getDetails()
-  }, []);
+  // useEffect(() => {
+  //   getDetails()
+  // }, []);
 
   return (
     <View>
