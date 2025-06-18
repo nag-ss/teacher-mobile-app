@@ -21,7 +21,7 @@ const SlipTest = ({task}: any) => {
         // getAttendanceData()
         console.log("button pressed ....")
         setIsPressed(true)
-        classPrepRef.current?.doSomething()
+        classPrepRef.current?.setSelectedClass()
     }
 
     const cardPressed = () => {
@@ -52,7 +52,8 @@ const SlipTest = ({task}: any) => {
             </TouchableOpacity>
         </View>
         </TouchableOpacity>
-        <ClassPrep ref={classPrepRef} />
+        {/* To be fixed */}
+        <ClassPrep item={{}} selectedClass={{}} ref={classPrepRef} />
       </View>
     )
 };

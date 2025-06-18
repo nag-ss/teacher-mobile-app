@@ -54,12 +54,12 @@ const CustomDrawerContent = () => {
         <View style={[styles.submenuContent, pathname == '/Analytics' ? styles.selectedMenu : {}]}>
             <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/analytics-menu.png')} />
             <Text style={styles.menuText}>
-            {'Analitics'}
+            {'Analytics'}
             </Text>
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity 
+      {/* <TouchableOpacity 
         style={styles.iconItem} 
         onPress={() => navigation.navigate('Settings')}>
         <View style={[styles.submenuContent, pathname == '/Settings' ? styles.selectedMenu : {}]}>
@@ -68,7 +68,7 @@ const CustomDrawerContent = () => {
             {'Settings'}
             </Text>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity 
         style={styles.iconItem} 

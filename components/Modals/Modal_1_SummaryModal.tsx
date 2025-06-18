@@ -5,14 +5,15 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-na
 import { Picker } from '@react-native-picker/picker';
 // import { useDispatch, useSelector } from 'react-redux';
 
-const topicsList = ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
-const subTopicsList = ["Sub Topic 1", "Sub Topic 2", "Sub Topic 3", "Sub Topic 4"]
+const topicsList = ["Integer", "Fractions and Decimals"]
+const subTopicsList = ["Properties: Associative, Distributive, Commutative", "Introduction", "Multiplication of Fractions", "Division of Fractions"]
 
 interface ClassSummaryPopModalProps { 
   topic: string; 
   subTopic: string; 
   visible: boolean; 
-  selectedClass: any; 
+  selectedClass: any;
+  parentProps: any;
   updateTopic: (topic: string) => void;
   updateSubTopic: (subtopic: string) => void;
   onClose: () => void; 
@@ -25,6 +26,7 @@ export default function ClassSummaryPopModal({
   subTopic, 
   visible, 
   selectedClass,
+  parentProps,
   updateTopic,
   updateSubTopic, 
   onClose, 
@@ -63,7 +65,7 @@ export default function ClassSummaryPopModal({
                 <Text style={styles.detailText}>Section </Text> <Text style={styles.detailTextValues}>: {selectedClass.section_name}</Text>
               </View>
               <View style={styles.rowItem}>
-                <Text style={styles.detailText}>Subject </Text> <Text style={styles.detailTextValues}>: {selectedClass.subject_name}</Text>
+                <Text style={styles.detailText}>Subject </Text> <Text style={styles.detailTextValues}>: {parentProps.category}</Text>
               </View>
               
              
@@ -80,7 +82,7 @@ export default function ClassSummaryPopModal({
             <View style={styles.row}>
               <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} />
               <Text style={styles.label}>Time</Text>
-              <Text style={styles.value}>: {selectedClass.start_time} - {selectedClass.end_time}</Text>
+              <Text style={styles.value}>: {parentProps.time}</Text>
             </View>
           </View>
 

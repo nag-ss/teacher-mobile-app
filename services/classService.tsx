@@ -41,10 +41,12 @@ const getScheduleClasses = async (reqData: any, userToken: string) => {
 };
 
 const getTeacherClassTasks = async (reqData: any, userToken: string) => {
-  const class_id = reqData.class_schedule_id ?? 98 // My school (Super School)
-  const teacher_id = reqData.teacherId ?? 1 // Daljit Singh
-  const division_id = reqData.divisionId ?? 1
-  const subject_id = reqData.subjectId ?? 1
+  const class_id = reqData.class_schedule_id  // My school (Super School)
+  const teacher_id = reqData.teacher_id  // Daljit Singh
+  const division_id = reqData.division_id 
+  const subject_id = reqData.subject_id
+
+  console.log(class_id, teacher_id, subject_id, division_id);
 
   const reqUrl = GET_TEACHER_CLASS_TASKS + `?class_schedule_id=${class_id}&teacher_id=${teacher_id}&division_id=${division_id}&subject_id=${subject_id}`;
   return await apiRequest(reqUrl, 'GET', reqData, userToken);
