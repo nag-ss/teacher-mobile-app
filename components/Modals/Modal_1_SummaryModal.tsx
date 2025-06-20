@@ -3,10 +3,17 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Dropdown } from 'react-native-element-dropdown';
 // import { useDispatch, useSelector } from 'react-redux';
 
-const topicsList = ["Integer", "Fractions and Decimals"]
-const subTopicsList = ["Properties: Associative, Distributive, Commutative", "Introduction", "Multiplication of Fractions", "Division of Fractions"]
+const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
+const subTopicsList = [
+  {label: "Properties: Associative, Distributive, Commutative", value: "Properties: Associative, Distributive, Commutative"}, 
+  {label: "Introduction", value: "Introduction"}, 
+  {label: "Multiplication of Fractions", value: "Multiplication of Fractions"}, 
+  {label: "Division of Fractions", value: "Division of Fractions"},
+  {label: "Addition, Subtraction, Division, Multiplication", value: "Addition, Subtraction, Division, Multiplication"}
+]
 
 interface ClassSummaryPopModalProps { 
   topic: string; 
@@ -59,32 +66,31 @@ export default function ClassSummaryPopModal({
             <Text style={styles.subTitle}>Class Details</Text>
             <View style={styles.rowBetween}>
               <View style={styles.rowItem}>
-                <Text style={styles.detailText}>Grade </Text> <Text style={styles.detailTextValues}>: {selectedClass.division_name}</Text>
+                <Text style={styles.detailText}>Grade </Text> <Text style={styles.detailTextValues}>: {selectedClass?.division_name}</Text>
               </View>
               <View style={styles.rowItem}>
-                <Text style={styles.detailText}>Section </Text> <Text style={styles.detailTextValues}>: {selectedClass.section_name}</Text>
+                <Text style={styles.detailText}>Section </Text> <Text style={styles.detailTextValues}>: {selectedClass?.section_name}</Text>
               </View>
               <View style={styles.rowItem}>
                 <Text style={styles.detailText}>Subject </Text> <Text style={styles.detailTextValues}>: {parentProps.category}</Text>
               </View>
-              
-             
+            </View>
+            {/* Date and Time */}
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', marginLeft: -2, marginTop: 8}}>
+              <View style={styles.rowItem}>
+                {/* <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.iconSmall} /> */}
+                <Text style={{...styles.label, width: 45}}>Date</Text>
+                <Text style={styles.value}>: {selectedClass?.date}</Text>
+              </View>
+              <View style={styles.rowItem}>
+                {/* <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} /> */}
+                <Text style={{...styles.label, width: 55}}>Time</Text>
+                <Text style={styles.value}>: {parentProps.time}</Text>
+              </View>
             </View>
           </View>
 
-          {/* Date and Time */}
-          <View style={styles.rowBetween}>
-            <View style={styles.row}>
-              <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.icon} />
-              <Text style={styles.label}>Date</Text>
-              <Text style={styles.value}>: {selectedClass.date}</Text>
-            </View>
-            <View style={styles.row}>
-              <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} />
-              <Text style={styles.label}>Time</Text>
-              <Text style={styles.value}>: {parentProps.time}</Text>
-            </View>
-          </View>
+          
 
           {/* Set Topic Card */}
           <View style={styles.card}>
@@ -93,29 +99,45 @@ export default function ClassSummaryPopModal({
               
               <Text style={styles.label}>Topic </Text>
               <Text>:</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
+              <View style={styles.pickerWrapper}>
+                {/* <Picker
                   selectedValue={topic}
                   style={styles.picker}
                   onValueChange={(itemValue) => updateTopic(itemValue)}
                   mode="dropdown"
                 >
                   {topicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
-                </Picker>
+                </Picker> */}
+                <Dropdown
+                  data={topicsList}
+                  value={topic}
+                  onChange={(item) => updateTopic(item.value)}
+                  labelField="label"
+                  valueField="value"
+                  style={styles.picker}
+                />
               </View>
               
 
               <Text style={styles.label}>Sub Topic </Text>
               <Text>:</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
+              <View style={styles.pickerWrapper}>
+                {/* <Picker
                   selectedValue={subTopic}
                   style={styles.picker}
                   onValueChange={(itemValue) => updateSubTopic(itemValue)}
                   mode="dropdown"
                 >
                   {subTopicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
-                </Picker>
+                </Picker> */}
+                 <Dropdown
+                  data={subTopicsList}
+                  value={subTopic}
+                  onChange={(item) => updateSubTopic(item.value)}
+                  labelField="label"
+                  valueField="value"
+                  style={styles.picker}
+                />
               </View>
               
             </View>
@@ -152,10 +174,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 12,
+    marginVertical: 6,
   },
   rowItem:{
-    flexDirection: 'row'
+    flexDirection: 'row',
+    width: 230,
   },
   row: {
     flexDirection: 'row',
@@ -220,9 +243,17 @@ const styles = StyleSheet.create({
     borderWidth: 1, 
     borderRadius: 4,
   },
+  pickerBox: {
+    height: 100,
+    justifyContent: 'flex-end', // aligns picker to the bottom of the box
+    backgroundColor: '#e0e0e0',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
   picker: {
-    height: 54,
+    height: 60,
     width: 180,
+    padding: 10,
   },
   buttonContainer: {
     alignItems: 'flex-end',
@@ -240,5 +271,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#000',
     fontWeight: 'bold',
+  },
+  pickerWrapper: {
+    borderWidth: 0.5,
+    borderColor: '#999',
+    borderRadius: 8,
+    overflow: 'hidden'
   },
 });

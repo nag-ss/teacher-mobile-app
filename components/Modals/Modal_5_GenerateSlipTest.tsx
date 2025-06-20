@@ -13,9 +13,16 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import {RadioButton} from 'react-native-radio-buttons-group';
+import { Dropdown } from 'react-native-element-dropdown';
 
-const topicsList = ["Integer", "Fractions and Decimals"]
-const subTopicsList = ["Properties: Associative, Distributive, Commutative", "Introduction", "Multiplication of Fractions", "Division of Fractions"]
+const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
+const subTopicsList = [
+  {label: "Properties: Associative, Distributive, Commutative", value: "Properties: Associative, Distributive, Commutative"}, 
+  {label: "Introduction", value: "Introduction"}, 
+  {label: "Multiplication of Fractions", value: "Multiplication of Fractions"}, 
+  {label: "Division of Fractions", value: "Division of Fractions"},
+  {label: "Addition, Subtraction, Division, Multiplication", value: "Addition, Subtraction, Division, Multiplication"}
+]
 
 interface GenerateSlipTestModalProps { 
   topic: string; 
@@ -94,36 +101,51 @@ const GenerateSlipTestModal = ({
                   
               </View>
               {topicSelected && (
-                <View style={{display: 'flex', 'flexDirection': 'row', justifyContent: 'space-between'}}>            
+                <View style={{display: 'flex', 'flexDirection': 'row', justifyContent: 'space-between', alignItems: 'center'}}>            
                   <Text style={styles.label}>Topic :</Text>
                   <View style={styles.pickerContainer}>
-                    <Picker
+                    {/* <Picker
                       selectedValue={topic}
                       style={styles.picker}
                       onValueChange={(itemValue) => updateTopic(itemValue)}
                       mode="dropdown"
                     >
                       {topicsList.map((key)=> <Picker.Item label={key} value={key} />)}
-                    </Picker>
+                    </Picker> */}
+                    <Dropdown
+                      data={topicsList}
+                      value={topic}
+                      onChange={(item) => updateTopic(item.value)}
+                      labelField="label"
+                      valueField="value"
+                      style={styles.picker}
+                    />
                   </View>
                   
     
                   <Text style={styles.label}>Sub Topic :</Text>
                   <View style={styles.pickerContainer}>
-                    <Picker
+                    {/* <Picker
                       selectedValue={subTopic}
                       style={styles.picker}
                       onValueChange={(itemValue) => updateSubTopic(itemValue)}
                       mode="dropdown"
                     >
                       {subTopicsList.map((key)=> <Picker.Item label={key} value={key} />)}
-                    </Picker>
+                    </Picker> */}
+                    <Dropdown
+                      data={subTopicsList}
+                      value={subTopic}
+                      onChange={(item) => updateSubTopic(item.value)}
+                      labelField="label"
+                      valueField="value"
+                      style={styles.picker}
+                    />
                   </View>
                   
                 </View>
               )}
             </View>
-            
 
             {/* Upload Option */}
             <View style={styles.optionBox}>
@@ -272,8 +294,9 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   picker: {
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
+    height: 60,
+    width: 160,
+    padding: 10,
   },
   uploadPlaceholder: {
     borderWidth: 1,
@@ -303,6 +326,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   pickerContainer: {
-    width: 160,
+    borderWidth: 0.5,
+    borderColor: '#999',
+    borderRadius: 8,
+    overflow: 'hidden'
   },
+
 });

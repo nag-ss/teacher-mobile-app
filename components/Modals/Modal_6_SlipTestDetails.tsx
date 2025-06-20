@@ -13,7 +13,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import Slider from '@react-native-community/slider';
 import InputSpinner from "react-native-input-spinner";
-
+import { Dropdown } from 'react-native-element-dropdown';
 
 interface TestSettingsModalProps {
   visible: boolean; 
@@ -87,7 +87,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 <Text style={styles.marksTextStyle}><Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} /> Time</Text>
                 <Text style={styles.colonStyle}>:</Text>
                 <View style={styles.pickerWrapper}>
-                  <Picker
+                  {/* <Picker
                     selectedValue={duration}
                     onValueChange={(value) => setDuration(value)}
                     style={styles.picker}
@@ -96,13 +96,21 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                     {
                       timeData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
                     }
-                  </Picker>
+                  </Picker> */}
+                  <Dropdown
+                      data={timeData}
+                      value={duration}
+                      onChange={(value) => setDuration(value)}
+                      labelField="label"
+                      valueField="value"
+                      style={styles.picker}
+                    />
                 </View>
                 
                 <Text style={styles.marksTextStyle}><Image source={require('../../assets/images/ss/Marks.png')} style={styles.clockIcon} /> Marks</Text>
                 <Text style={styles.colonStyle}>:</Text>
-                <View style={styles.pickerWrapper}>
-                  <Picker
+                <View style={{...styles.pickerWrapper, padding: 0}}>
+                  {/* <Picker
                     selectedValue={marks}
                     onValueChange={(value) => setMarks(value)}
                     style={styles.picker}
@@ -112,9 +120,17 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                       marksData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
                     }
 
-                  </Picker>
+                  </Picker> */}
+                   <Dropdown
+                      data={marksData}
+                      value={marks}
+                      onChange={(value) => setMarks(value)}
+                      labelField="label"
+                      valueField="value"
+                      style={styles.picker}
+                    />
                 </View>
-                
+
               </View>
 
                 
@@ -280,7 +296,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    fontFamily: 'monserat'
   },
   subtitle: {
     color: '#6B7280',
@@ -315,14 +332,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
-  marksTextStyle: {
-    marginTop: 12
-  },
+  marksTextStyle: {},
   colonStyle:{
     fontWeight: 'bold',
-    marginTop: 12
   },
   pickerWrapper: {
     borderWidth: 0.5,
@@ -331,7 +346,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   picker: {
-    width: 150
+    width: 120,
+    height: 45,
+    padding: 10,
   },
   slider: {
     borderWidth: 1,

@@ -11,8 +11,6 @@ import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { 
-  getLiveClass, 
-  getScheduleClasses, 
   addTaskToClass, 
   getTeacherClassTasks, 
   deleteTeacherClassTask, 
@@ -38,7 +36,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
 
 
   const dispatch = useDispatch<any>();
-  const { classTimeline, classTasks } = useSelector((state: any) => state.classes);
+  const { classTasks } = useSelector((state: any) => state.classes);
   const {user} = useSelector((state: any) => state.user);
   
   const [selectedTask, setSelectedTask] = useState<any>(null);
@@ -65,6 +63,9 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
       subject_id: selectedClass.subject_id,
       division_id: selectedClass.division_id,
     }
+
+    setTopic(selectedClass?.class_details[0]?.topic)
+    setSubTopic(selectedClass?.class_details[0]?.sub_topic[0])
 
     await dispatch(getTeacherClassTasks(tasksObject))
     setShowModal1SummaryModal(true)
