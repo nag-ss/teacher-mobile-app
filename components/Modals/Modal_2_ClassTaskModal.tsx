@@ -99,7 +99,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 <TouchableOpacity onPress={goBack}>
                   <Image source={require('../../assets/images/back-icon.png')} style={styles.icon} />
                 </TouchableOpacity>  
-                <Text style={styles.sectionTitle}>{selectedClass.division_name} - Section {selectedClass.section_name}</Text>
+                <Text style={styles.sectionTitle}>{selectedClass?.division_name} - Section {selectedClass?.section_name}</Text>
               </View>
               <TouchableOpacity onPress={onClose}>
                 <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
@@ -146,9 +146,9 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
                       <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
-                        <Text style={{width: 40, textAlign: 'center', marginLeft: 20}}>Icon</Text>
-                        <Text style={{width: 290, textAlign: 'center'}}>Title</Text>
-                        <Text style={{width: 230, textAlign: 'center'}}>Category</Text>
+                        <Text style={{width: 50, textAlign: 'center', marginLeft: 20}}>Icon</Text>
+                        <Text style={{width: 300, textAlign: 'center'}}>Title</Text>
+                        <Text style={{width: 200, textAlign: 'center'}}>Category</Text>
                         <Text style={{width: 100, textAlign: 'center'}}>Action</Text>
                       </View>
                       <FlatList
@@ -230,12 +230,12 @@ const styles = StyleSheet.create({
     height: 24
   },
   icon: {
-    width: 32,
-    height: 32,
+    width: 16,
+    height: 16,
   },
   aiAssistant: {
-    width: 280,
-    height: 280,
+    width: 200,
+    height: 200,
   },
   topicContainer: {
     flexDirection: 'row',

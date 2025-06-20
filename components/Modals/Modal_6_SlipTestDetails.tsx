@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Modal,
   View,
@@ -11,7 +11,7 @@ import {
   Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import Slider from '@react-native-community/slider';
+import Slider, {MarkerProps, SliderProps} from '@react-native-community/slider';
 import InputSpinner from "react-native-input-spinner";
 import { Dropdown } from 'react-native-element-dropdown';
 
@@ -47,6 +47,15 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
   const [isSubjective, setIsSubjective] = useState(true);
 
   const totalQuestions = (isMCQ ? mcqCount : 0) + (isSubjective ? subCount : 0);
+
+  const renderStepMarker = useCallback(({index}: MarkerProps) => {
+    return  (
+      <View style={{marginTop: 12}}>
+        <Text style={{fontSize: 16, fontWeight: '900'}}>'</Text>
+        <Text style={{marginTop: -10, marginLeft: -2}}>{(index % 2 == 0) ? index:  ''}</Text>
+      </View>
+    );
+  }, []);
 
   useEffect(() => {
       if (selectedTask && selectedTask.task_type == 'SlipTest') {
@@ -84,8 +93,12 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
               <Text style={styles.sectionTitle}>Time & Marks Section</Text>
 
               <View style={styles.row}>
-                <Text style={styles.marksTextStyle}><Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} /> Time</Text>
-                <Text style={styles.colonStyle}>:</Text>
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                  <Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} />
+                  <Text style={styles.marksTextStyle}> Time</Text>
+                  <Text style={styles.colonStyle}>:</Text>
+                </View>
+                
                 <View style={styles.pickerWrapper}>
                   {/* <Picker
                     selectedValue={duration}
@@ -106,9 +119,12 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                       style={styles.picker}
                     />
                 </View>
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                  <Image source={require('../../assets/images/ss/Marks.png')} style={styles.clockIcon} />
+                  <Text style={styles.marksTextStyle}>Marks</Text>
+                  <Text style={styles.colonStyle}>:</Text>
+                </View>
                 
-                <Text style={styles.marksTextStyle}><Image source={require('../../assets/images/ss/Marks.png')} style={styles.clockIcon} /> Marks</Text>
-                <Text style={styles.colonStyle}>:</Text>
                 <View style={{...styles.pickerWrapper, padding: 0}}>
                   {/* <Picker
                     selectedValue={marks}
@@ -137,7 +153,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
             </View>
 
             {/* Difficulty */}
-            <View style={styles.section}>
+            <View style={{...styles.section, height: 100}}>
               <Text style={styles.sectionTitle}>
                 Difficulty Level -{' '}
                 <Text style={styles.difficultyText}>
@@ -152,16 +168,15 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
               /> */}
               <Slider
                 style={styles.slider}
-                minimumValue={1}
+                minimumValue={0}
                 maximumValue={10}
                 step={1}
                 value={difficulty}
-                onValueChange={(num) => setDifficulty(num)}
-                renderStepNumber
+                onSlidingComplete={(num) => setDifficulty(num)}
                 minimumTrackTintColor='#21c17c'
                 thumbTintColor='#21c17c'
+                StepMarker={renderStepMarker}
               />
-
             </View>
 
             {/* Number of Questions */}
@@ -307,7 +322,8 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    borderRadius: 8
   },
   clockIcon: {
     width: 16,
@@ -335,7 +351,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
-  marksTextStyle: {},
+  marksTextStyle: {
+    margin: 5
+  },
   colonStyle:{
     fontWeight: 'bold',
   },
@@ -349,16 +367,6 @@ const styles = StyleSheet.create({
     width: 120,
     height: 45,
     padding: 10,
-  },
-  slider: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 6,
-    padding: 3,
-    textAlign: 'center',
-    alignSelf: 'center',
-    marginTop: 10,
-    width: '95%',
   },
   scale: {
     flexDirection: 'row',
@@ -404,4 +412,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 6,
   },
+  slider: {
+    // transform: [{ scaleY: 1.5 }]
+  }
 });

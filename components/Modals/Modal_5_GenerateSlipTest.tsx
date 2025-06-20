@@ -68,16 +68,16 @@ const GenerateSlipTestModal = ({
               <View style={styles.detailGrid}>
                 <Text style={styles.detailItem}>Grade</Text>
                 <Text>
-                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass.division_name}</Text>
+                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass?.division_name}</Text>
                 </Text>
                 <Text style={styles.detailItem}>Section</Text>
                 <Text>
-                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass.section_name}</Text>
+                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass?.section_name}</Text>
                 </Text>
                 
                 <Text style={styles.detailItem}>Subject</Text>
                 <Text>
-                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass.subject_name}</Text>
+                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass?.subject_name}</Text>
                 </Text>
                 
               </View>
