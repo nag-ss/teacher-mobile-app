@@ -15,48 +15,12 @@ import {
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
 import TaskItem from '../PrepClass/TaskItem';
 import SvgLoader from '@/utils/SvgLoader';
+// import {Tasks} from '../../data/Tasks';
 
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
 const action_icon = require('../../assets/images/actions_icon.png');
 
-const tasks = [
-  {
-    index: 1,
-    icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Covalent Bond Worksheet',
-    task_type: 'Classwork',
-    action: '02-11-2024',
-  },
-  {
-    index: 2,
-    icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Periodic Table',
-    task_type: 'Quiz',
-    action: '02-11-2024',
-  },
-  {
-    index: 3,
-    icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Upload Notes on Hydrogen Bonds',
-    task_type: 'Classwork',
-    action: '02-11-2024',
-  },
-  {
-    index: 4,
-    icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Student Engagement',
-    task_type: 'AICheck',
-    action: '02-11-2024',
-  },
-  {
-    index: 5,
-    icon: require('../../assets/images/modal/calendar_month.png'),
-    title: 'Student Engagement Notes',
-    task_type: 'AICheck',
-    action: '02-11-2024',
-  },
-];
-
+const { width } = Dimensions.get('window');
 interface ClassTaskCardPopProps { 
   topic: string; 
   subTopic: string; 
@@ -88,6 +52,7 @@ const mapper: any = {
 
 const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask, deleteTask, editTask, viewQuiz }: ClassTaskCardPopProps) => {
   const tasksCount = classTasks.length;
+  // const tasksCount = Tasks.length;
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
@@ -99,7 +64,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 <TouchableOpacity onPress={goBack}>
                   <Image source={require('../../assets/images/back-icon.png')} style={styles.icon} />
                 </TouchableOpacity>  
-                <Text style={styles.sectionTitle}>{selectedClass.division_name} - Section {selectedClass.section_name}</Text>
+                <Text style={styles.sectionTitle}>{selectedClass?.division_name} - Section {selectedClass?.section_name}</Text>
               </View>
               <TouchableOpacity onPress={onClose}>
                 <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
@@ -141,15 +106,15 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 />
               </View>
 
-              <ScrollView>
+              <ScrollView style={{maxHeight: 200}}>
                 {
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
                       <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
-                        <Text style={{width: 40, textAlign: 'center', marginLeft: 20}}>Icon</Text>
-                        <Text style={{width: 290, textAlign: 'center'}}>Title</Text>
-                        <Text style={{width: 230, textAlign: 'center'}}>Category</Text>
-                        <Text style={{width: 100, textAlign: 'center'}}>Action</Text>
+                        <Text style={{width: 50, textAlign: 'center'}}>Icon</Text>
+                        <Text style={{width: 280, textAlign: 'center'}}>Title</Text>
+                        <Text style={{width: 250, textAlign: 'center'}}>Category</Text>
+                        <Text style={{width: 50, textAlign: 'center'}}>Action</Text>
                       </View>
                       <FlatList
                         data={classTasks}
@@ -195,7 +160,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
 
 export default ClassTaskCardPop;
 
-const { width } = Dimensions.get('window');
+
 
 const styles = StyleSheet.create({
   overlay: {
@@ -208,7 +173,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     borderRadius: 12,
     padding: 20,
-    width: width - 40,
+    width: '90%',
     maxHeight: '90%',
   },
   header: {
@@ -230,12 +195,12 @@ const styles = StyleSheet.create({
     height: 24
   },
   icon: {
-    width: 32,
-    height: 32,
+    width: 16,
+    height: 16,
   },
   aiAssistant: {
-    width: 280,
-    height: 280,
+    width: 200,
+    height: 200,
   },
   topicContainer: {
     flexDirection: 'row',
@@ -294,7 +259,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     borderRadius: 10,
     borderColor: 'grey',
-    height: 320,
   },
   addTaskContainer: {
     marginTop: 20,
