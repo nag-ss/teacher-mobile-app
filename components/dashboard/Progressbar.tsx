@@ -37,7 +37,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
 const styles = StyleSheet.create({
   container: {
     // width: '80%',
-    padding: 10,
+    padding: 15,
     // alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,

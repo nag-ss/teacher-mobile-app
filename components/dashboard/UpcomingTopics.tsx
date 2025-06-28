@@ -7,11 +7,14 @@ import { Colors } from '@/constants/Colors';
 
 const UpcomingTopics = () => (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={styles.iconContent}>
-        {/* <SvgLoader svgFilePath="iconUpcoming" width={50} height={50}  /> */}
-        <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Upcoming.png')}  />
+    <View style={styles.iconSection}>
+      <View style={styles.iconContent}>
+          {/* <SvgLoader svgFilePath="iconUpcoming" width={50} height={50}  /> */}
+          <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Upcoming.png')}  />
+      </View>
     </View>
-    <View style={{height: 60}}>
+    
+    <View style={{}}>
         <Text style={styles.title}>Upcoming Topics</Text>
         <Text>• Quadratic Equations</Text>
         <Text>• Trigonometry </Text>
@@ -41,6 +44,10 @@ const styles = StyleSheet.create({
   subTitle: {
     marginTop: 12,
     fontWeight: '600',
+  },
+  iconSection: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   iconContent: {
     height: 50, 

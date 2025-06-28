@@ -14,11 +14,14 @@ const RecentActivityCard = ({image, title, text}: any) => {
     }
     return (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={styles.iconContent}>
-        {/* <SvgLoader svgFilePath={image} width={50} height={50}  /> */}
-        <Image style={{width: 40, height: 40}} source={imgesUrls[image]} />
+    <View style={styles.iconSection}>
+      <View style={styles.iconContent}>
+          {/* <SvgLoader svgFilePath={image} width={50} height={50}  /> */}
+          <Image style={{width: 40, height: 40}} source={imgesUrls[image]} />
+      </View>
     </View>
-    <View style={{flex: 1, height: 50}}>
+    
+    <View style={{flex: 1}}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subTitle}>{text}</Text>
     </View>
@@ -29,6 +32,7 @@ const RecentActivityCard = ({image, title, text}: any) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
+    // backgroundColor: 'red',
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
@@ -48,6 +52,10 @@ const styles = StyleSheet.create({
   subTitle: {
     // marginTop: 10,
     fontSize: 10
+  },
+  iconSection: {
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   iconContent: {
     height: 50, 

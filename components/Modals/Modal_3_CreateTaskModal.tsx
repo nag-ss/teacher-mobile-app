@@ -72,7 +72,7 @@ const NewTaskModal = ({ visible, onClose, goBack, clickedNext }: {visible: boole
           {/* Task Options */}
           <ScrollView contentContainerStyle={styles.taskList}>
             {taskOptions.map((task, idx) => (
-              <TaskCard idx={idx} task={task} createTask={createTask} />
+              <TaskCard key={idx} idx={idx} task={task} createTask={createTask} />
             ))}
           </ScrollView>
 

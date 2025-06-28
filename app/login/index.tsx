@@ -40,12 +40,12 @@ const Login = () => {
           /> */}
             <Image style={{width: 34, height: 64}} source={require('@/assets/images/ss/s-logo.png')} />
         </View>
-        <Text style={styles.appName}>Super Slatee</Text>
+        <Text style={styles.appName}>Super Slate</Text>
       </View>
 
       <View style={styles.rightPanel}>
         <View style={styles.card}>
-          <Text style={styles.signInTitle}>Sign In</Text>
+          {/* <Text style={styles.signInTitle}>Sign In</Text> */}
 
           <Text style={styles.label}>Username</Text>
           <TextInput style={styles.input} placeholder="test@test.com" onChangeText={(uname) => setUsername(uname)} />

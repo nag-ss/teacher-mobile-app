@@ -38,7 +38,7 @@ const DashboardScreen = () => {
                     <ImportantAlerts />
                 </View>
             </View>
-            <View style={{paddingTop: 15}}>
+            <View style={{padding: 10}}>
                 <QuickActions />
             </View>
         </View>
@@ -72,22 +72,22 @@ const styles = StyleSheet.create({
   },
   liveCardContainer: {
     backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 12,
+    padding: 15,
+    borderRadius: 12
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 8,
+    // marginBottom: 5,
   },
   subTitle: {
-    marginTop: 12,
+    marginTop: 10,
     // fontWeight: '600',
   },
   classProgressContainer: {
     backgroundColor: '#fff',
     padding: 15,
-    paddingBottom: 5,
+    // paddingBottom: 5,
     // marginVertical: 10,
     borderRadius: 8,
     borderColor: 'lightgray',

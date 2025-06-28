@@ -68,7 +68,7 @@ const LiveSessionCard = () => {
       // await dispatch(getScheduleClasses())
       getClassFromSchedule()
     } else {
-      console.log("liveClassDataRes.payload")
+      console.log("liveClassDataRes.payload ----")
       console.log(liveClassDataRes.payload)
       setNextClass(liveClassDataRes.payload)
     }
@@ -104,9 +104,12 @@ const LiveSessionCard = () => {
             return { ...timeline, itemMinutes };
         }).filter((item: any) => item.itemMinutes > currentMinutes)
         .sort((a: any, b: any) => a.itemMinutes - b.itemMinutes);
-        setNextClass(timelineDataArray[0])
-        console.log(timelineDataArray[0])
-        setIsNextClass(true)
+        if(timelineDataArray.length) {
+          setNextClass(timelineDataArray[0])
+          console.log(timelineDataArray[0])
+          setIsNextClass(true)
+        }
+        
     } else {
         
     }
@@ -160,7 +163,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     borderRadius: 8,
-    borderColor: 'gray',
+    // borderColor: 'gray',
     borderWidth: 1,
     // opacity: 0.4
     

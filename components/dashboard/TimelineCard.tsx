@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 8,
     borderWidth: 1,
+    // borderColor: 'lightgray',
     justifyContent: 'center',
     // shadowColor: '#000',
     // shadowOffset: { width: 0, height: 1 },
