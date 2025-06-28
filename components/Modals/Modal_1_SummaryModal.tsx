@@ -1,19 +1,21 @@
 // Prep Class page 1
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
 // import { useDispatch, useSelector } from 'react-redux';
+import {Topics} from '../../data/Topic_SubTopic';
 
-const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
-const subTopicsList = [
-  {label: "Properties: Associative, Distributive, Commutative", value: "Properties: Associative, Distributive, Commutative"}, 
-  {label: "Introduction", value: "Introduction"}, 
-  {label: "Multiplication of Fractions", value: "Multiplication of Fractions"}, 
-  {label: "Division of Fractions", value: "Division of Fractions"},
-  {label: "Addition, Subtraction, Division, Multiplication", value: "Addition, Subtraction, Division, Multiplication"}
-]
+
+// const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
+// const subTopicsList = [
+//   {label: "Properties: Associative, Distributive, Commutative", value: "Properties: Associative, Distributive, Commutative"}, 
+//   {label: "Introduction", value: "Introduction"}, 
+//   {label: "Multiplication of Fractions", value: "Multiplication of Fractions"}, 
+//   {label: "Division of Fractions", value: "Division of Fractions"},
+//   {label: "Addition, Subtraction, Division, Multiplication", value: "Addition, Subtraction, Division, Multiplication"}
+// ]
 
 interface ClassSummaryPopModalProps { 
   topic: string; 
@@ -21,6 +23,7 @@ interface ClassSummaryPopModalProps {
   visible: boolean; 
   selectedClass: any;
   parentProps: any;
+  subTopicsList: any;
   updateTopic: (topic: string) => void;
   updateSubTopic: (subtopic: string) => void;
   onClose: () => void; 
@@ -34,15 +37,12 @@ export default function ClassSummaryPopModal({
   visible, 
   selectedClass,
   parentProps,
+  subTopicsList,
   updateTopic,
   updateSubTopic, 
   onClose, 
   clickedNext
 } : ClassSummaryPopModalProps) {
-  
-  
-  // const dispatch = useDispatch<any>()
-  
   
   return (
     <Modal
@@ -109,11 +109,11 @@ export default function ClassSummaryPopModal({
                   {topicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
                 </Picker> */}
                 <Dropdown
-                  data={topicsList}
+                  data={Topics}
                   value={topic}
-                  onChange={(item) => updateTopic(item.value)}
-                  labelField="label"
-                  valueField="value"
+                  onChange={(item) => updateTopic(item)}
+                  labelField="topic"
+                  valueField="topic"
                   style={styles.picker}
                 />
               </View>
@@ -133,9 +133,9 @@ export default function ClassSummaryPopModal({
                  <Dropdown
                   data={subTopicsList}
                   value={subTopic}
-                  onChange={(item) => updateSubTopic(item.value)}
-                  labelField="label"
-                  valueField="value"
+                  onChange={(item) => updateSubTopic(item.sub_topic)}
+                  labelField="sub_topic"
+                  valueField="sub_topic"
                   style={styles.picker}
                 />
               </View>

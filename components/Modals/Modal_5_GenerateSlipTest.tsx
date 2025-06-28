@@ -14,21 +14,23 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import {RadioButton} from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
+import {Topics} from '../../data/Topic_SubTopic';
 
-const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
-const subTopicsList = [
-  {label: "Properties: Associative, Distributive, Commutative", value: "Properties: Associative, Distributive, Commutative"}, 
-  {label: "Introduction", value: "Introduction"}, 
-  {label: "Multiplication of Fractions", value: "Multiplication of Fractions"}, 
-  {label: "Division of Fractions", value: "Division of Fractions"},
-  {label: "Addition, Subtraction, Division, Multiplication", value: "Addition, Subtraction, Division, Multiplication"}
-]
+// const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
+// const subTopicsList = [
+//   {label: "Properties: Associative, Distributive, Commutative", value: "Properties: Associative, Distributive, Commutative"}, 
+//   {label: "Introduction", value: "Introduction"}, 
+//   {label: "Multiplication of Fractions", value: "Multiplication of Fractions"}, 
+//   {label: "Division of Fractions", value: "Division of Fractions"},
+//   {label: "Addition, Subtraction, Division, Multiplication", value: "Addition, Subtraction, Division, Multiplication"}
+// ]
 
 interface GenerateSlipTestModalProps { 
   topic: string; 
   subTopic: string; 
   visible: boolean; 
-  selectedClass:any; 
+  selectedClass:any;
+  subTopicsList: any;
   updateTopic: (topic: string) => void;
   updateSubTopic: (subtopic: string) => void;
   onClose: () => void; 
@@ -40,6 +42,7 @@ const GenerateSlipTestModal = ({
   subTopic,
   visible,
   selectedClass,
+  subTopicsList,
   updateTopic,
   updateSubTopic,
   onClose,
@@ -113,11 +116,11 @@ const GenerateSlipTestModal = ({
                       {topicsList.map((key)=> <Picker.Item label={key} value={key} />)}
                     </Picker> */}
                     <Dropdown
-                      data={topicsList}
+                      data={Topics}
                       value={topic}
-                      onChange={(item) => updateTopic(item.value)}
-                      labelField="label"
-                      valueField="value"
+                      onChange={(item) => updateTopic(item)}
+                      labelField="topic"
+                      valueField="topic"
                       style={styles.picker}
                     />
                   </View>
@@ -136,9 +139,9 @@ const GenerateSlipTestModal = ({
                     <Dropdown
                       data={subTopicsList}
                       value={subTopic}
-                      onChange={(item) => updateSubTopic(item.value)}
-                      labelField="label"
-                      valueField="value"
+                      onChange={(item) => updateSubTopic(item.sub_topic)}
+                      labelField="sub_topic"
+                      valueField="sub_topic"
                       style={styles.picker}
                     />
                   </View>

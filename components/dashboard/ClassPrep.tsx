@@ -21,6 +21,7 @@ import {
 } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
+import {Topics} from '../../data/Topic_SubTopic';
 
 const topicsList = ["Integer", "Fractions and Decimals"]
 const subTopicsList = ["Properties: Associative, Distributive, Commutative", "Introduction", "Multiplication of Fractions", "Division of Fractions"]
@@ -40,8 +41,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   const {user} = useSelector((state: any) => state.user);
   
   const [selectedTask, setSelectedTask] = useState<any>(null);
-  const [topic, setTopic] = useState(topicsList[0]);
-  const [subTopic, setSubTopic] = useState(subTopicsList[0]);
+  const [topic, setTopic] = useState("");
+  const [subTopic, setSubTopic] = useState("");
   const [taskType, setTaskType] = useState("AICheck");
   const [taskIDToDelete, setTaskIDToDelete] = useState<number>(-1)
   const [taskIDToEdit, setTaskIDToEdit] = useState<number>(-1)
@@ -54,6 +55,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
   const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false)
   const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(false);
+  const [subTopicsList, setSubTopicsList] = useState<{ id: number; sub_topic: string }[]>([]);
 
   const setSelectedClass = async() => {
     console.log("Action from Parent!", "You triggered this from parent.");
@@ -65,8 +67,15 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     }
 
     setTopic(selectedClass?.class_details[0]?.topic)
+    console.log("The subtopic got set again")
+    console.log(selectedClass?.class_details[0]?.sub_topic[0])
     setSubTopic(selectedClass?.class_details[0]?.sub_topic[0])
-
+    const subtopics = Topics.filter(tp => tp.topic == selectedClass?.class_details[0]?.topic)[0].sub_topic;
+    console.log("============================")
+    console.log(subtopics)
+    console.log("============================")
+    
+    setSubTopicsList(subtopics)
     await dispatch(getTeacherClassTasks(tasksObject))
     setShowModal1SummaryModal(true)
   };
@@ -342,9 +351,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     setTaskToEmpty();
   }
   
-  const updateTopic = (topic: string) => {
+  const updateTopic = (item: any) => {
+    console.log("I got called to set the topic")
     console.log(topic)
-    setTopic(topic)
+    setTopic(item.topic)
+    const subtopics = Topics.filter(tp => tp.topic == item.topic)[0].sub_topic;
+    setSubTopicsList(subtopics);
   }
 
   const updateSubTopic = (subTopic: string) => {
@@ -369,11 +381,11 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
 
   return (
     <View>
-      <SummaryModal parentProps={item} topic={topic} subTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} />  
+      <SummaryModal parentProps={item} topic={topic} subTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} clickedNext={showDetailsModal} subTopicsList={subTopicsList} />  
       <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />
       <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
       <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
-      <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} />
+      <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} subTopicsList={subTopicsList} />
       <TestSettingsModal selectedTask={selectedTask} visible={showModal6SlipTestSettingsModal} onClose={closeModal6} generateSlipTest={saveSlipTestDetails} />
       <DeleteQuestionModal
           show={showDeleteQuestionModal}

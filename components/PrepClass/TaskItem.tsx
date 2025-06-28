@@ -6,16 +6,29 @@ import {
   Image,
   TouchableOpacity,
   TouchableHighlight,
+  Dimensions
 } from 'react-native';
 
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
 const action_icon = require('../../assets/images/actions_icon.png');
+const quiz_icon = require('../../assets/images/ss/quiz-2.png');
+const classwork_icon = require('../../assets/images/ss/description.png');
+const ai_check_icon = require('../../assets/images/ss/flag-3.png');
+
+const { width } = Dimensions.get('window');
 
 const mapper: any = {
   SlipTest: "Slip Test",
   Quiz: "Quiz",
   Classwork: "Classwork",
   AICheck: "AI Check"
+}
+
+const iconMapper: any = {
+  SlipTest: quiz_icon,
+  Quiz: quiz_icon,
+  Classwork: classwork_icon,
+  AICheck: ai_check_icon
 }
 
 interface TaskItemProps {
@@ -39,10 +52,14 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask, viewQuiz}: Tas
   } 
   return (
     <View style={styles.taskRow}>
-      <Image source={calendar_month_icon} style={{...styles.taskIcon, width: 40, marginLeft: 20}} />
-      <Text style={{...styles.taskCell, width: 300, fontWeight: 'bold'}}>{item.title}</Text>
-      <Text style={styles.taskCell}>{mapper[item.task_type] || 'Other'}</Text>
-      <TouchableOpacity onPress={() => setTaskOptionsVisible(val => !val)}>
+      <View style={{width: 50}}>
+        <View style={{ borderWidth: 1, borderRadius: 4, borderColor: "#21c17c", marginLeft: 20}}>
+          <Image source={iconMapper[item.task_type]} style={{...styles.taskIcon, width: 20, height: 20}} />
+        </View>
+      </View>
+      <Text style={{...styles.taskCell, width: 280, fontWeight: 'bold', textAlign: 'center'}}>{item.title}</Text>
+      <Text style={{...styles.taskCell, width: 250,textAlign: 'center'}}>{mapper[item.task_type] || 'Other'}</Text>
+      <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisible(val => !val)}>
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
       {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt, backgroundColor: 'white'}}>
@@ -73,12 +90,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     textAlign: 'center',
-    width: 230
   },
   taskIcon: {
-    width: 50,
-    height: 32,
-    marginHorizontal: 8,
+    margin: 2,
+    height: 30
   },
   actionBox: { 
     zIndex: 100,
