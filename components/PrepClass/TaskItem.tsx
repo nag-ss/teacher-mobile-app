@@ -49,7 +49,7 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask, viewQuiz}: Tas
     } else {
       mt = -80;
     }
-  } 
+  }  
   return (
     <View style={styles.taskRow}>
       <View style={{width: 50}}>
@@ -62,7 +62,7 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask, viewQuiz}: Tas
       <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisible(val => !val)}>
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
-      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt, backgroundColor: 'white'}}>
+      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt, backgroundColor: 'white' }}>
         <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     display: 'flex', 
     position: 'absolute', 
     backgroundColor: '#f5f5f5',
-    marginLeft: 580, 
+    marginLeft: 570, 
     borderWidth: 1, 
     borderRadius: 8 
   },

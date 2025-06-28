@@ -15,7 +15,7 @@ import {
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
 import TaskItem from '../PrepClass/TaskItem';
 import SvgLoader from '@/utils/SvgLoader';
-import {Tasks} from '../../data/Tasks';
+// import {Tasks} from '../../data/Tasks';
 
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
 const action_icon = require('../../assets/images/actions_icon.png');
@@ -51,8 +51,8 @@ const mapper: any = {
 }
 
 const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask, deleteTask, editTask, viewQuiz }: ClassTaskCardPopProps) => {
-  // const tasksCount = classTasks.length;
-  const tasksCount = Tasks.length;
+  const tasksCount = classTasks.length;
+  // const tasksCount = Tasks.length;
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.overlay}>
@@ -108,7 +108,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
 
               <ScrollView style={{maxHeight: 200}}>
                 {
-                  (Tasks.length > 0) ? (
+                  (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
                       <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
                         <Text style={{width: 50, textAlign: 'center'}}>Icon</Text>
@@ -117,7 +117,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                         <Text style={{width: 50, textAlign: 'center'}}>Action</Text>
                       </View>
                       <FlatList
-                        data={Tasks}
+                        data={classTasks}
                         keyExtractor={(item) => item.title}
                         renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />)}
                       />
