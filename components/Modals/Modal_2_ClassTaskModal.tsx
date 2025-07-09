@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
-    marginLeft: 40
+    marginLeft: 10,
   },
   topicRow: {
     flexDirection: 'row',
@@ -287,6 +287,7 @@ const styles = StyleSheet.create({
   },
   quickCards: {
     flexDirection: 'row',
+    padding: 10,
     justifyContent: 'space-around',
   },
   cardPlaceholder: {

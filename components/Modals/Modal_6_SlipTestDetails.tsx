@@ -97,54 +97,54 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                   <Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} />
                   <Text style={styles.marksTextStyle}> Time</Text>
                   <Text style={styles.colonStyle}>:</Text>
-                </View>
-                
-                <View style={styles.pickerWrapper}>
-                  {/* <Picker
-                    selectedValue={duration}
-                    onValueChange={(value) => setDuration(value)}
-                    style={styles.picker}
-                    mode='dropdown'
-                  >
-                    {
-                      timeData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
-                    }
-                  </Picker> */}
-                  <Dropdown
-                      data={timeData}
-                      value={duration}
-                      onChange={(value) => setDuration(value)}
-                      labelField="label"
-                      valueField="value"
+                  <View style={styles.pickerWrapper}>
+                    {/* <Picker
+                      selectedValue={duration}
+                      onValueChange={(value) => setDuration(value)}
                       style={styles.picker}
-                    />
+                      mode='dropdown'
+                    >
+                      {
+                        timeData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
+                      }
+                    </Picker> */}
+                    <Dropdown
+                        data={timeData}
+                        value={duration}
+                        onChange={(value) => setDuration(value)}
+                        labelField="label"
+                        valueField="value"
+                        style={styles.picker}
+                      />
+                  </View>
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   <Image source={require('../../assets/images/ss/Marks.png')} style={styles.clockIcon} />
                   <Text style={styles.marksTextStyle}>Marks</Text>
                   <Text style={styles.colonStyle}>:</Text>
-                </View>
                 
-                <View style={{...styles.pickerWrapper, padding: 0}}>
-                  {/* <Picker
-                    selectedValue={marks}
-                    onValueChange={(value) => setMarks(value)}
-                    style={styles.picker}
-                    mode='dropdown'
-                  >
-                    {
-                      marksData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
-                    }
-
-                  </Picker> */}
-                   <Dropdown
-                      data={marksData}
-                      value={marks}
-                      onChange={(value) => setMarks(value)}
-                      labelField="label"
-                      valueField="value"
+                
+                  <View style={{...styles.pickerWrapper, padding: 0}}>
+                    {/* <Picker
+                      selectedValue={marks}
+                      onValueChange={(value) => setMarks(value)}
                       style={styles.picker}
-                    />
+                      mode='dropdown'
+                    >
+                      {
+                        marksData.map((item) => <Picker.Item key={item.id} label={item.label} value={item.value} />)
+                      }
+
+                    </Picker> */}
+                    <Dropdown
+                        data={marksData}
+                        value={marks}
+                        onChange={(value) => setMarks(value)}
+                        labelField="label"
+                        valueField="value"
+                        style={styles.picker}
+                      />
+                  </View>
                 </View>
 
               </View>
@@ -361,7 +361,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#999',
     borderRadius: 8,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginLeft: 10
   },
   picker: {
     width: 120,
@@ -403,7 +404,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: {
-    marginTop: 10,
     alignItems: 'flex-end',
   },
   button: {

@@ -49,8 +49,8 @@ const GenerateSlipTestModal = ({
   clickedNext,
 }: GenerateSlipTestModalProps ) => {
   const [selectedOption, setSelectedOption] = useState<'topic' | 'upload'>();
-  const [topicSelected, setTopicSelected] = useState(false)
-  const [uploadSelected, setUploadSelected] = useState(false)
+  // const [topicSelected, setTopicSelected] = useState(false)
+  // const [uploadSelected, setUploadSelected] = useState(false)
   const [selectedId, setSelectedId] = useState<string | undefined>();
 
   return (
@@ -69,18 +69,20 @@ const GenerateSlipTestModal = ({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Class Details</Text>
               <View style={styles.detailGrid}>
-                <Text style={styles.detailItem}>Grade</Text>
                 <Text>
-                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass?.division_name}</Text>
-                </Text>
-                <Text style={styles.detailItem}>Section</Text>
-                <Text>
-                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass?.section_name}</Text>
+                  <Text style={styles.detailItem}>Grade {' '}</Text>
+                  <Text>: {' '}</Text><Text style={styles.detailValue}>{selectedClass?.division_name}</Text>
                 </Text>
                 
-                <Text style={styles.detailItem}>Subject</Text>
                 <Text>
-                  <Text>: {'  '}</Text><Text style={styles.detailValue}>{selectedClass?.subject_name}</Text>
+                  <Text style={styles.detailItem}>Section {' '}</Text>
+                  <Text>: {' '}</Text><Text style={styles.detailValue}>{selectedClass?.section_name}</Text>
+                </Text>
+                
+                
+                <Text>
+                  <Text style={styles.detailItem}>Subject {' '}</Text>
+                  <Text>: {' '}</Text><Text style={styles.detailValue}>{selectedClass?.subject_name}</Text>
                 </Text>
                 
               </View>
@@ -99,11 +101,11 @@ const GenerateSlipTestModal = ({
                     Generate a test by choosing a topic and sub-topic. The test will be automatically created using these topics.
                   </Text>
                 </View>
-                <RadioButton color="#21c17c" id='topic' onPress={() => setTopicSelected(val => !val)} selected={topicSelected} />
+                <RadioButton color="#21c17c" id='topic' onPress={(ev) => setSelectedOption('topic')} selected={selectedOption == "topic"} />
                 {/* <CheckBox checked={topicSelected} onPress={() => setTopicSelected(val => !val)}/> */}
                   
               </View>
-              {topicSelected && (
+              {selectedOption == "topic" && (
                 <View style={{display: 'flex', 'flexDirection': 'row', justifyContent: 'space-between', alignItems: 'center'}}>            
                   <Text style={styles.label}>Topic :</Text>
                   <View style={styles.pickerContainer}>
@@ -162,10 +164,10 @@ const GenerateSlipTestModal = ({
                   </Text>
                 </View>
                 
-                <RadioButton color="#21c17c" id='upload' onPress={() => setUploadSelected(val => !val)} selected={uploadSelected} />
+                <RadioButton color="#21c17c" id='upload' onPress={(ev) => setSelectedOption('upload')} selected={selectedOption == "upload"} />
               </View>
 
-              {uploadSelected && (
+              {selectedOption == "upload" && (
                 <View style={styles.uploadPlaceholder}>
                   <Text style={styles.uploadText}>📎 Upload file (simulated)</Text>
                 </View>
@@ -314,7 +316,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   footer: {
-    marginTop: 20,
     alignItems: 'flex-end',
   },
   nextButton: {
