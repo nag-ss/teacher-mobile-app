@@ -22,7 +22,7 @@ const taskOptions = [
       'Identify mistakes, patterns & improvement areas',
     ],
     svgIcon: 'aiCheck',
-    action: 'Set up',
+    action: 'Create',
   },
   {
     id: 'SlipTest',
@@ -42,7 +42,7 @@ const taskOptions = [
       'Define the question and check type to ensure accurate evaluation.',
     ],
     svgIcon: 'classUpload',
-    action: 'Set up',
+    action: 'Create',
   }
 ];
 
@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   icon: {
-    width: 32,
-    height: 32,
+    width: 20,
+    height: 20,
   },
   iconWrapper: {
     marginRight: 8,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   taskList: {
-    paddingBottom: 20,
+    // paddingBottom: 20,
   },
   footer: {
     alignItems: 'flex-end',

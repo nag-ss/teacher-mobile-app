@@ -62,7 +62,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>{taskType == 'AI' ? 'AI Check' : 'Class Work' }</Text>
+            <Text style={styles.title}>{taskType == 'AICheck' ? 'AI Check' : 'Class Work' }</Text>
             <TouchableOpacity onPress={onClose}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
@@ -229,7 +229,6 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 24,
   },
   cancelBtn: {
     paddingHorizontal: 24,
@@ -237,13 +236,13 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    width: 180,
+    width: 200,
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
-    width: 180
+    width: 200
   },
 });

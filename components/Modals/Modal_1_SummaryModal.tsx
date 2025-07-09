@@ -232,7 +232,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
     marginTop: 20,
-    elevation: 2,
   },
   cardTitle: {
     fontSize: 20,

@@ -162,6 +162,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     }
     await dispatch(getTeacherClassTasks(tasksObject))
     setShowModal4AICheckModal(false)
+    setShowModal2TasksModal(true)
   }
 
   const saveSlipTestDetails = async(slipTestDetails: any) => {
