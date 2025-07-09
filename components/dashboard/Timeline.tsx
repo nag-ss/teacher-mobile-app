@@ -323,7 +323,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                                 
                                 return item
                               }
-                              if(parseInt(classHour) === parseInt(slotHour)) {
+                              if(parseInt(classHour) === parseInt(slotHour) && parseInt(classMins)%15 != 0) {
                                 const slotMinutes = toMinutes(timeSlot);
                                 const targetMinutes = toMinutes(item.startTime);
                                 // const targetMinutes = toMinutes('18:50');
@@ -331,13 +331,13 @@ const onLayout = (event: LayoutChangeEvent): void => {
                                 const diff = (targetMinutes - slotMinutes);
                                 
                                 // let smallestDiff = Math.abs(toMinutes(closestSlot) - targetMinutes);
-                                let smallestDiff = 16;
-                                console.log(slotMinutes, targetMinutes, "-----------------", timeSlot, item.startTime, noClass)
-                                console.log(diff, smallestDiff, "-----------------")
+                                let smallestDiff = 14;
+                                // console.log(slotMinutes, targetMinutes, "-----------------", timeSlot, item.startTime, noClass)
+                                // console.log(diff, smallestDiff, "-----------------")
                                 if (diff > 0 && diff < smallestDiff) {
-                                  console.log("item +++++")
-                                console.log(item)
-                                console.log(noClass)
+                                  // console.log("item +++++")
+                                // console.log(item)
+                                // console.log(noClass)
                                   closestSlot = timeSlots[index];
                                   return item
                                   
@@ -345,17 +345,19 @@ const onLayout = (event: LayoutChangeEvent): void => {
                               }
                             
                             });
-                            console.log(classesForTimeSlot.length)
+                            // console.log(classesForTimeSlot.length, timeSlot, noClass)
                             if(noClass > 0) noClass = noClass-1
+                            if(noClass < 0) noClass = 0
                             return (
                             <View key={index} style={styles.classWrapper}>
                                 {classesForTimeSlot.length > 0 ? (
                                 classesForTimeSlot.map((item: any, idx) => {
                                     const relevant_class = classTimeline.filter((c: any) => c.class_schedule_id == item.classId)[0];
                                     // setNoClass(noClass + (item.classLength/15))
+                                    console.log("relevant_class");
                                     console.log(relevant_class);
                                     // noClass = noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1
-                                    noClass = Math.floor(noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1)
+                                    noClass = Math.floor(noClass + (item.classLength == 15 ? 0 : item.classLength/15) )
                                     return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={item.classLength/15} currentDate={date} />)
                                 })
                                 ) : noClass < 1 ? (
