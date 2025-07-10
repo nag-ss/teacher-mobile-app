@@ -162,7 +162,9 @@ const getClassQuiz = async(quiz_id: any, userToken: string) => {
 }
 
 const publishQuiz = async(quiz: any, userToken: string) => {
-  const reqUrl = PUBLISH_QUIZ;
+  const {task_id} = quiz;
+  const reqUrl = `${PUBLISH_QUIZ}/${task_id}`;
+  delete quiz.task_id;
   return await apiRequest(reqUrl, 'POST', quiz, userToken);
 }
 

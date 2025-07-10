@@ -73,12 +73,12 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const publishQuizTask = async() => {
     const the_quiz = {
       start_time: quiz_details.start_date, 
-      quiz_id: quiz_details.quiz_id || 35, // Remove the hard-coded quiz value
+      quiz_id: quiz_details.quiz_id, // Remove the hard-coded quiz value
       quiz_type: "SlipTest", 
       duration: quiz_details.duration, 
-      division_id: 43
+      division_id: 43,
+      task_id: quiz_details.task_id
     }
-    console.log(the_quiz);
     await dispatch(publishQuiz(the_quiz));
     navigation.navigate('Home');  
   }
