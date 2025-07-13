@@ -22,7 +22,7 @@ const RecentActivityCard = ({image, title, text}: any) => {
     </View>
     
     <View style={{flex: 1}}>
-        <Text style={styles.title}>{title}</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>{title}</Text>
         <Text style={styles.subTitle}>{text}</Text>
     </View>
     
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     fontSize: 10
   },
   iconSection: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    // justifyContent: 'center', 
+    // alignItems: 'center', 
   },
   iconContent: {
     height: 50, 

@@ -3,13 +3,15 @@ import SvgLoader from '@/utils/SvgLoader';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 const Login = () => {
     const dispatch = useDispatch<any>()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const { userToken } = useSelector((state: any) => state.user)
+    const [showPassword, setShowPassword] = useState(false);
+    const { userToken, error } = useSelector((state: any) => state.user)
 
     const loginAction = async () => {
         const loginReqObj: any = {
@@ -38,7 +40,8 @@ const Login = () => {
             style={styles.logo}
             resizeMode="contain"
           /> */}
-            <Image style={{width: 34, height: 64}} source={require('@/assets/images/ss/s-logo.png')} />
+            {/* <Image style={{width: 34, height: 64}} source={require('@/assets/images/ss/s-logo.png')} /> */}
+            <Image style={{width: 250, height: 250}} source={require('@/assets/images/ss/Logo_F2.png')} />
         </View>
         <Text style={styles.appName}>Super Slate</Text>
       </View>
@@ -47,16 +50,43 @@ const Login = () => {
         <View style={styles.card}>
           {/* <Text style={styles.signInTitle}>Sign In</Text> */}
 
+          {
+            error ?
+            <View>
+              <Text style={styles.errorMsg}>{error}</Text>
+          </View> : null
+          }
+          
           <Text style={styles.label}>Username</Text>
           <TextInput style={styles.input} placeholder="test@test.com" onChangeText={(uname) => setUsername(uname)} />
 
           <Text style={styles.label}>Password</Text>
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder="password"
             secureTextEntry
             onChangeText={(uname) => setPassword(uname)}
-          />
+          /> */}
+          <View style={styles.passContainer}>
+            <TextInput
+              style={styles.pinput}
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.iconContainer}
+            >
+              <MaterialCommunityIcons
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#888"
+              />
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity style={styles.button} onPress={() => loginAction()}>
             <Text style={styles.buttonText}>Sign In</Text>
@@ -82,10 +112,10 @@ const styles = StyleSheet.create({
       borderRadius: width > 768 ? 20 : 0,
     },
     logoCircle: {
-      backgroundColor: '#1e1e1e',
-      width: 120,
-      height: 120,
-      borderRadius: 60,
+      // backgroundColor: '#1e1e1e',
+      width: 250,
+      height: 250,
+      borderRadius: 150,
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: 20,
@@ -95,7 +125,7 @@ const styles = StyleSheet.create({
       height: 80,
     },
     appName: {
-      fontSize: 22,
+      fontSize: 30,
       fontWeight: 'bold',
       color: '#000',
     },
@@ -145,5 +175,26 @@ const styles = StyleSheet.create({
       color: '#fff',
       fontWeight: '600',
     },
+    passContainer: {
+      flexDirection: 'row',
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 8,
+      alignItems: 'center',
+      paddingHorizontal: 10,
+      marginVertical: 12,
+    },
+    pinput: {
+      flex: 1,
+      paddingVertical: 10,
+      fontSize: 16,
+    },
+    iconContainer: {
+      paddingLeft: 8,
+      paddingVertical: 10,
+    },
+    errorMsg: {
+      color: 'red'
+    }
   });
 export default Login;

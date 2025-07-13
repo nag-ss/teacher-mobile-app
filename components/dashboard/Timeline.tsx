@@ -122,6 +122,8 @@ const onLayout = (event: LayoutChangeEvent): void => {
       const reqObj: any = {
         date: currentDate
       }
+      console.log("get classes by date")
+      console.log(reqObj)
        await dispatch(getScheduleClasses(reqObj))
        
     }

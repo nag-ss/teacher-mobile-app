@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Button, Badge } from 'react-native-elements';  // Import components from react-native-elements
 import { MaterialIcons } from '@expo/vector-icons'; // For the "Live" icon
 import SvgLoader from '@/utils/SvgLoader';
@@ -145,12 +145,15 @@ const LiveSessionCard = () => {
             <Text style={styles.category}>{nextClass.subject_name}</Text>
           </View>
           
-          <Button
+          {/* <Button
             title={isnextClass ? 'Upcoming' : "Join now"}
             buttonStyle={styles.joinButton}
             titleStyle={styles.buttonTitle}
             onPress={navigateToMonitor}
-          />
+          /> */}
+          <TouchableOpacity style={styles.joinButton} onPress={navigateToMonitor}>
+            <Text style={styles.buttonTitle}>{isnextClass ? 'Upcoming' : "Join now"}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -210,6 +213,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#21C17C',
     borderRadius: 8,
     marginTop: 15,
+    width: 170,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 40
   },
   buttonTitle: {
     fontSize: 16,

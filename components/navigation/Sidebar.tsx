@@ -19,7 +19,7 @@ const CustomDrawerContent = () => {
         onPress={() => navigation.navigate('Home')}>
         <View style={styles.menuContent}>
             {/* <SvgLoader svgFilePath="logo" width={50} height={50} /> */}
-            <Image  style={[styles.iconStyle, {width: 60, height: 60}]} source={require('../../assets/images/ss/Logo.png')} />
+            <Image  style={[styles.iconStyle, {width: 60, height: 60}]} source={require('../../assets/images/ss/Logo_F2.png')} />
             <Text style={{fontSize: 25}}>
             {'Super Slate'}
             </Text>

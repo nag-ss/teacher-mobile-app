@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   iconSection: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    // justifyContent: 'center', 
+    // alignItems: 'center', 
   },
   iconContent: {
     height: 50, 

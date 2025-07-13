@@ -73,9 +73,11 @@ const userSlice = createSlice({
         })
         .addCase(userLogin.pending, (state, action) => {
           state.loading = true
+          state.error = null
           console.log("calling login api")
         })
       .addCase(userLogin.fulfilled, (state, action) => {
+          console.log("login action.payload ....")
           console.log(action.payload)
           state.userToken = action.payload.access_token
           AsyncStorage.setItem('userToken', action.payload.access_token);
@@ -83,8 +85,10 @@ const userSlice = createSlice({
       })
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false
-        console.log("error api ")
+        console.log("error login api ")
         console.log(action.payload)
+        const msg: any = "Username or Passewrd is wrong"
+        state.error = msg
       })
         .addCase(userDetails.pending, (state, action) => {
             state.loading = true
