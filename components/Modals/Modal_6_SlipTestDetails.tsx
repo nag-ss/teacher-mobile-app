@@ -111,7 +111,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                     <Dropdown
                         data={timeData}
                         value={duration}
-                        onChange={(value) => setDuration(value)}
+                        onChange={(item) => setDuration(item.value)}
                         labelField="label"
                         valueField="value"
                         style={styles.picker}
@@ -139,7 +139,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                     <Dropdown
                         data={marksData}
                         value={marks}
-                        onChange={(value) => setMarks(value)}
+                        onChange={(item) => setMarks(item.value)}
                         labelField="label"
                         valueField="value"
                         style={styles.picker}

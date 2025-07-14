@@ -18,7 +18,8 @@ import {
   addSlipTestToClass,
   updateSlipTest, 
   getClassQuiz,
-  getClassTopicSubTopics
+  getClassTopicSubTopics,
+  setClassTopicSubTopic
 } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
@@ -52,7 +53,6 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
   const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false)
   const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(false);
-  const [subTopicsList, setSubTopicsList] = useState<{ id: number; sub_topic: string }[]>([]);
 
   const setSelectedClass = async() => {
     console.log("Action from Parent!", "You triggered this from parent.");
@@ -83,12 +83,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   }));
       
   const setTopicSubTopicAndMoveToNext = async(topic: any, subTopic: any) => {
-    // await setClassTopic(topic)
-    console.log(topic, subTopic)
-    // TODO: Set the class topic to backend
+    await dispatch(setClassTopicSubTopic({
+      class_schedule_id: selectedClass.class_schedule_id,
+      subject_topic_id: subTopic.id
+    }))
     setTopic(topic.topic)
     setSubTopic(subTopic.sub_topic)
-    setSubTopicsList(topic.sub_topic)
     setShowModal1SummaryModal(false)
     setShowModal2TasksModal(true)
   }
@@ -357,11 +357,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   }
   
   const updateTopic = (item: any) => {
-    console.log("I got called to set the topic")
-    console.log(topic)
     setTopic(item.topic)
-    const subtopics = topics.filter((tp: { topic: String; }) => tp.topic == item.topic)[0].sub_topic;
-    setSubTopicsList(subtopics);
   }
 
   const updateSubTopic = (subTopic: string) => {
@@ -390,7 +386,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
       <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />
       <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
       <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
-      <GenerateSlipTestModal topic={topic} subTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} topicsList={topics} />
+      <GenerateSlipTestModal selectedTopic={topic} selectedSubTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} topicsList={topics} />
       <TestSettingsModal selectedTask={selectedTask} visible={showModal6SlipTestSettingsModal} onClose={closeModal6} generateSlipTest={saveSlipTestDetails} />
       <DeleteQuestionModal
           show={showDeleteQuestionModal}

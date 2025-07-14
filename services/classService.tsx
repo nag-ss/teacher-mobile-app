@@ -12,7 +12,8 @@ import {
   PUBLISH_QUIZ,
   DELETE_QUESTION,
   REPLACE_QUESTION,
-  GET_TOPIC_SUBTOPICS
+  GET_TOPIC_SUBTOPICS,
+  SET_TOPIC_SUBTOPIC
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -184,6 +185,11 @@ const getClassTopicSubTopics = async(classParams: any, userToken: string) => {
   return await apiRequest(reqUrl, 'GET', classParams, userToken);
 }
 
+const setClassTopicSubTopic = async(params: any, userToken: string) => {
+  const reqUrl = SET_TOPIC_SUBTOPIC;
+  return await apiRequest(reqUrl, 'POST', params, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -198,7 +204,8 @@ const authService = {
     publishQuiz,
     deleteQuestion,
     replaceQuestion, 
-    getClassTopicSubTopics
+    getClassTopicSubTopics,
+    setClassTopicSubTopic
 };
 
 export default authService;

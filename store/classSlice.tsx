@@ -58,6 +58,10 @@ export const getClassTopicSubTopics = createAsyncThunk('/quiz/get_topic_subtopic
   return handleAuthApiCall(classService.getClassTopicSubTopics, reqData, thunkAPI);
 });
 
+export const setClassTopicSubTopic = createAsyncThunk('/quiz/set_class_schedule_topic', async (reqData: any, thunkAPI) => {
+  return handleAuthApiCall(classService.setClassTopicSubTopic, reqData, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -311,6 +315,20 @@ const classSlice = createSlice({
         .addCase(getClassTopicSubTopics.rejected, (state, action) => {
           state.loading = false
           console.log("Topics fetch failed");
+          console.log(action.payload)
+        })
+        .addCase(setClassTopicSubTopic.pending, (state, action) => {
+          state.loading = true
+          console.log("Topic set pending")
+        })
+        .addCase(setClassTopicSubTopic.fulfilled, (state, action) => {
+          console.log("Topic set successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(setClassTopicSubTopic.rejected, (state, action) => {
+          state.loading = false
+          console.log("Topic set failed");
           console.log(action.payload)
         })
     },
