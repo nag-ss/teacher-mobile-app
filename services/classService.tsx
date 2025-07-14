@@ -11,11 +11,12 @@ import {
   UPDATE_QUIZ,
   PUBLISH_QUIZ,
   DELETE_QUESTION,
-  REPLACE_QUESTION
+  REPLACE_QUESTION,
+  GET_TOPIC_SUBTOPICS
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
-const RETRY_LIMIT = 5;
+const RETRY_LIMIT = 12;
 const RETRY_DELAY_MS = 10000;
 const FIRST_RETRY_DELAY_MS = 5000;
 const COMPLETED_STATUS = 'completed';
@@ -178,6 +179,11 @@ const replaceQuestion = async(question: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', question, userToken);
 }
 
+const getClassTopicSubTopics = async(classParams: any, userToken: string) => {
+  const reqUrl = `${GET_TOPIC_SUBTOPICS}?subject_id=${classParams.subject_id}&division_id=${classParams.division_id}`;
+  return await apiRequest(reqUrl, 'GET', classParams, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -191,7 +197,8 @@ const authService = {
     getClassQuiz,
     publishQuiz,
     deleteQuestion,
-    replaceQuestion
+    replaceQuestion, 
+    getClassTopicSubTopics
 };
 
 export default authService;

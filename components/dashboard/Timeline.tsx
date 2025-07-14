@@ -307,17 +307,17 @@ const onLayout = (event: LayoutChangeEvent): void => {
                         {timeSlots.map((timeSlot, index) => {
                             // Find the classes that start at or after the current time slot
                             const classesForTimeSlot = timelineData.filter((item: any) => {
-                            // Check if class starts at or after the current time slot
-                            const [classHour, classMins] = item.startTime.split(':');
-                            const [slotHour, slotMins] = timeSlot.split(':');
-                            return (parseInt(classHour) === parseInt(slotHour) && parseInt(classMins) === parseInt(slotMins));
+                              // Check if class starts at or after the current time slot
+                              const [classHour, classMins] = item.startTime.split(':');
+                              const [slotHour, slotMins] = timeSlot.split(':');
+                              return (parseInt(classHour) === parseInt(slotHour) && parseInt(classMins) === parseInt(slotMins));
                             });
                             if(noClass > 0) noClass = noClass-1
                             return (
                             <View key={index} style={styles.classWrapper}>
                                 {classesForTimeSlot.length > 0 ? (
                                 classesForTimeSlot.map((item: any, idx) => {
-                                    const relevant_class = classTimeline.filter((c: any) => c.class_schedule_id == item.classId)[0];
+                                    const relevant_class = classTimeline.find((c: any) => c.class_schedule_id == item.classId);
                                     // setNoClass(noClass + (item.classLength/15))
                                     console.log(relevant_class);
                                     noClass = noClass + (item.classLength/15) + 1

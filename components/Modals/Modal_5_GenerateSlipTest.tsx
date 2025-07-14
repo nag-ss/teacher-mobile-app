@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -14,7 +14,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import {RadioButton} from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
-import {Topics} from '../../data/Topic_SubTopic';
+// import {Topics} from '../../data/Topic_SubTopic';
 
 // const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
 // const subTopicsList = [
@@ -26,11 +26,11 @@ import {Topics} from '../../data/Topic_SubTopic';
 // ]
 
 interface GenerateSlipTestModalProps { 
-  topic: string; 
-  subTopic: string; 
+  topic: any; 
+  subTopic: any; 
   visible: boolean; 
   selectedClass:any;
-  subTopicsList: any;
+  topicsList: any;
   updateTopic: (topic: string) => void;
   updateSubTopic: (subtopic: string) => void;
   onClose: () => void; 
@@ -38,11 +38,9 @@ interface GenerateSlipTestModalProps {
 }
 
 const GenerateSlipTestModal = ({
-  topic, 
-  subTopic,
   visible,
   selectedClass,
-  subTopicsList,
+  topicsList,
   updateTopic,
   updateSubTopic,
   onClose,
@@ -51,7 +49,16 @@ const GenerateSlipTestModal = ({
   const [selectedOption, setSelectedOption] = useState<'topic' | 'upload'>();
   // const [topicSelected, setTopicSelected] = useState(false)
   // const [uploadSelected, setUploadSelected] = useState(false)
+  const [topic, setTopic] = useState(null);
+  const [subTopic, setSubTopic] = useState(null);
   const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [subTopics, setSubTopics] = useState([]);
+
+  useEffect(() => {
+    setTopic(topic);
+    setSubTopic(subTopic);
+    setSubTopics(subTopics)
+  }, [topic, subTopic, subTopics]);
 
   return (
     <Modal visible={visible} animationType="fade" transparent>
@@ -118,7 +125,7 @@ const GenerateSlipTestModal = ({
                       {topicsList.map((key)=> <Picker.Item label={key} value={key} />)}
                     </Picker> */}
                     <Dropdown
-                      data={Topics}
+                      data={topicsList}
                       value={topic}
                       onChange={(item) => updateTopic(item)}
                       labelField="topic"
@@ -139,7 +146,7 @@ const GenerateSlipTestModal = ({
                       {subTopicsList.map((key)=> <Picker.Item label={key} value={key} />)}
                     </Picker> */}
                     <Dropdown
-                      data={subTopicsList}
+                      data={[]}
                       value={subTopic}
                       onChange={(item) => updateSubTopic(item.sub_topic)}
                       labelField="sub_topic"

@@ -54,12 +54,16 @@ export const replaceQuestion = createAsyncThunk('/quiz/change_question', async (
   return handleAuthApiCall(classService.replaceQuestion, question, thunkAPI);
 });
 
+export const getClassTopicSubTopics = createAsyncThunk('/quiz/get_topic_subtopic', async (reqData: any, thunkAPI) => {
+  return handleAuthApiCall(classService.getClassTopicSubTopics, reqData, thunkAPI);
+});
 
 const classSlice = createSlice({
     name: 'class',
     initialState: {
       liveClass:  {},
       quiz_details: {},
+      topics: [],
     //   liveClass: {
     //     "class_id": 0,
     //     "date": "2025-05-05",
@@ -294,6 +298,21 @@ const classSlice = createSlice({
         .addCase(replaceQuestion.rejected, (state, action) => {
           state.loading = false
           console.log("Question replace failed");
+          console.log(action.payload)
+        })
+        .addCase(getClassTopicSubTopics.pending, (state, action) => {
+          state.loading = true
+          console.log("Topics beings fetched")
+        })
+        .addCase(getClassTopicSubTopics.fulfilled, (state, action) => {
+          console.log("Topics fetched successfully")
+          console.log(action.payload)
+          state.loading = false;
+          state.topics = action.payload
+        })
+        .addCase(getClassTopicSubTopics.rejected, (state, action) => {
+          state.loading = false
+          console.log("Topics fetch failed");
           console.log(action.payload)
         })
     },

@@ -16,3 +16,4 @@ export const UPDATE_QUIZ = 'teacher/edit_teacher_task';
 export const PUBLISH_QUIZ = 'quiz/publish_quiz';
 export const DELETE_QUESTION = 'quiz/delete_question';
 export const REPLACE_QUESTION = 'quiz/change_question';
+export const GET_TOPIC_SUBTOPICS = 'masters/get_topic_subtopic';

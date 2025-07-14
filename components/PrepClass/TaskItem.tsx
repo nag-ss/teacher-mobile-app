@@ -34,22 +34,13 @@ const iconMapper: any = {
 interface TaskItemProps {
   item: any;
   index: number;
-  tasksCount: number;
   viewQuiz: (id: number) => void;
   deleteTask: (id: number, type: string) => void;
   editTask: (id: number, type: string) => void;
 };
 
-const TaskItem = ({item, index, tasksCount, deleteTask, editTask, viewQuiz}: TaskItemProps) => {
+const TaskItem = ({item, index, deleteTask, editTask, viewQuiz}: TaskItemProps) => {
   const [taskOptionsVisible, setTaskOptionsVisible] = useState(false);
-  let mt = 50;
-  if (index==tasksCount - 1 || index == tasksCount - 2) {
-    if (item.task_type == "SlipTest"){
-      mt = -120;
-    } else {
-      mt = -80;
-    }
-  }  
   return (
     <View style={styles.taskRow}>
       <View style={{width: 50}}>
@@ -62,7 +53,7 @@ const TaskItem = ({item, index, tasksCount, deleteTask, editTask, viewQuiz}: Tas
       <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisible(val => !val)}>
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
-      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt, backgroundColor: 'white' }}>
+      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: 50, backgroundColor: 'white' }}>
         <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>

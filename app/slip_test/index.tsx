@@ -17,7 +17,7 @@ import { publishQuiz, getClassQuiz, deleteQuestion, replaceQuestion } from '@/st
 import questions from '../../data/Questions';
 
 const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
-  const {new_quiz} = route.params;
+  const {new_quiz, selectedClass} = route.params;
   // const new_quiz = true;
   const dispatch = useDispatch<any>();
   const { quiz_details } = useSelector((state: any) => state.classes);
@@ -45,7 +45,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const confirmDelete = async() => {
     console.log(quiz_details);
     // Remove the hardcoded value
-    const quiz_id = quiz_details.quiz_id || 35;  
+    const quiz_id = quiz_details.quiz_id;  
     await dispatch(deleteQuestion(questionIdToDelete))
     await dispatch(getClassQuiz(quiz_id));
 
@@ -73,10 +73,10 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const publishQuizTask = async() => {
     const the_quiz = {
       start_time: quiz_details.start_date, 
-      quiz_id: quiz_details.quiz_id, // Remove the hard-coded quiz value
+      quiz_id: quiz_details.quiz_id, 
       quiz_type: "SlipTest", 
       duration: quiz_details.duration, 
-      division_id: 43,
+      division_id: selectedClass.division_id,
       task_id: quiz_details.task_id
     }
     await dispatch(publishQuiz(the_quiz));
@@ -95,9 +95,9 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
           </View>
           <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
             <Text style={{fontSize: 12, marginRight: 2}} >Topic:</Text>
-            <Text style={{fontSize: 12, fontWeight: 'bold', marginRight: 10}}>Newton's Laws of Motion</Text>
+            <Text style={{fontSize: 12, fontWeight: 'bold', marginRight: 10}}>{quiz_details.topic}</Text>
             <Text style={{fontSize: 12, marginRight: 2}}>Subtopic:</Text>
-            <Text style={{fontWeight: 'bold', fontSize: 12}}>Third Laws & Applications</Text>
+            <Text style={{fontWeight: 'bold', fontSize: 12}}>{quiz_details.sub_topic}</Text>
             <Image source={require('../../assets/images/ss/Notification.png')} style={{ width: 22, height: 22}} />
           </View>
         </View>

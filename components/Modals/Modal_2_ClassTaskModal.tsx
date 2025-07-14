@@ -106,7 +106,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 />
               </View>
 
-              <ScrollView style={{maxHeight: 200}}>
+              <ScrollView style={{maxHeight: 200, overflow: 'visible'}}>
                 {
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
@@ -116,11 +116,15 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                         <Text style={{width: 250, textAlign: 'center'}}>Category</Text>
                         <Text style={{width: 50, textAlign: 'center'}}>Action</Text>
                       </View>
-                      <FlatList
+                      {/* <FlatList
                         data={classTasks}
                         keyExtractor={(item) => item.title}
                         renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />)}
-                      />
+                      /> */}
+                      {classTasks.map((task) => {
+                        return (<TaskItem item={task} index={task.task_id} key={task.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />)
+                      })}
+
                     </View>
                   ) : (
                     <View>

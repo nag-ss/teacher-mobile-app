@@ -5,7 +5,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-na
 import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
 // import { useDispatch, useSelector } from 'react-redux';
-import {Topics} from '../../data/Topic_SubTopic';
+// import {Topics} from '../../data/Topic_SubTopic';
 
 
 // const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
@@ -18,31 +18,37 @@ import {Topics} from '../../data/Topic_SubTopic';
 // ]
 
 interface ClassSummaryPopModalProps { 
-  topic: string; 
-  subTopic: string; 
   visible: boolean; 
   selectedClass: any;
   parentProps: any;
-  subTopicsList: any;
-  updateTopic: (topic: string) => void;
-  updateSubTopic: (subtopic: string) => void;
+  topicsList: any;
+  // updateTopic: (topic: string) => void;
+  // updateSubTopic: (subtopic: string) => void;
   onClose: () => void; 
-  clickedNext: () => void;
+  setTopicSubTopicAndMoveToNext: (topic: any, subTopic: any) => void;
 }
 
 
 export default function ClassSummaryPopModal({ 
-  topic, 
-  subTopic, 
   visible, 
   selectedClass,
   parentProps,
-  subTopicsList,
-  updateTopic,
-  updateSubTopic, 
+  topicsList,
   onClose, 
-  clickedNext
+  setTopicSubTopicAndMoveToNext
 } : ClassSummaryPopModalProps) {
+
+  const [subTopics, setSubTopics] = useState([]);
+  const [topic, setTopic] = useState(null);
+  const [subTopic, setSubTopic] = useState(null);
+
+  const setSubTopicAndUpdateTopic = (tp: any) => {
+    console.log(tp);
+    // setSubTopics(s_topics);
+    console.log(tp.sub_topic);
+    setSubTopics(tp.sub_topic)
+    setTopic(tp)
+  }
   
   return (
     <Modal
@@ -109,9 +115,9 @@ export default function ClassSummaryPopModal({
                   {topicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
                 </Picker> */}
                 <Dropdown
-                  data={Topics}
+                  data={topicsList}
                   value={topic}
-                  onChange={(item) => updateTopic(item)}
+                  onChange={(tp) => setSubTopicAndUpdateTopic(tp)}
                   labelField="topic"
                   valueField="topic"
                   style={styles.picker}
@@ -131,9 +137,9 @@ export default function ClassSummaryPopModal({
                   {subTopicsList.map((key)=> <Picker.Item key={key} label={key} value={key} />)}
                 </Picker> */}
                  <Dropdown
-                  data={subTopicsList}
+                  data={subTopics}
                   value={subTopic}
-                  onChange={(item) => updateSubTopic(item.sub_topic)}
+                  onChange={(item) => setSubTopic(item)}
                   labelField="sub_topic"
                   valueField="sub_topic"
                   style={styles.picker}
@@ -145,7 +151,7 @@ export default function ClassSummaryPopModal({
 
           {/* Next Button */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={clickedNext} style={styles.nextButton}>
+            <TouchableOpacity onPress={() => setTopicSubTopicAndMoveToNext(topic, subTopic)} style={styles.nextButton}>
               <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
           </View>
