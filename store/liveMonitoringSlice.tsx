@@ -46,7 +46,7 @@ const liveMonitoringSlice = createSlice({
             state.studentsData = []
         })
         .addCase(getAttendance.fulfilled, (state, action) => {
-            console.log("action.payload")
+            console.log("action.payload attendance ...")
             console.log(action.payload)
             if(action.payload.detail == undefined) {
                 state.studentsData = action.payload;
@@ -55,7 +55,7 @@ const liveMonitoringSlice = createSlice({
         })
         .addCase(getAttendance.rejected, (state, action) => {
           state.loading = false
-          console.log("error in calling live class api")
+          console.log("error in calling attendance data api")
         })
         .addCase(getAITaskCheckResults.pending, (state) => {
             state.loading = true;

@@ -7,11 +7,14 @@ import { Colors } from '@/constants/Colors';
 
 const CompletedTopics = () => (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={styles.iconContent}>
-        {/* <SvgLoader svgFilePath="iconCompleted" width={50} height={50}  /> */}
-        <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Completed.png')} />
+    <View style={styles.iconSection}>
+      <View style={styles.iconContent}>
+          {/* <SvgLoader svgFilePath="iconCompleted" width={50} height={50}  /> */}
+          <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Completed.png')} />
+      </View>
     </View>
-    <View style={{height: 60}}>
+    
+    <View style={{}}>
         <Text style={styles.title}>Completed Topics</Text>
         <Text>• Pythagorean Theorem</Text>
     </View>
@@ -40,6 +43,10 @@ const styles = StyleSheet.create({
   subTitle: {
     marginTop: 12,
     fontWeight: '600',
+  },
+  iconSection: {
+    // justifyContent: 'center', 
+    // alignItems: 'center', 
   },
   iconContent: {
       height: 50, 

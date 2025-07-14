@@ -129,17 +129,15 @@ const classSlice = createSlice({
         })
         .addCase(getScheduleClasses.pending, (state, action) => {
             state.loading = true
-            console.log("calling login api")
           })
         .addCase(getScheduleClasses.fulfilled, (state, action) => {
-            console.log("action.payload")
+            console.log("action.payload classes ")
             console.log(action.payload)
             state.classTimeline = action.payload
             
         })
         .addCase(getScheduleClasses.rejected, (state, action) => {
           state.loading = false
-          console.log("error api ")
           console.log(action.payload)
         })
         .addCase(getTeacherClassTasks.pending, (state,action) => {

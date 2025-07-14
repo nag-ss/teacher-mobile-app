@@ -21,6 +21,7 @@ const StudentGrid = () => {
     setModalVisible(false);
     setSelectedStudent(null);
   };
+  console.log(studentsData)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Students Overview</Text>

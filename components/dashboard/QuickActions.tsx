@@ -5,7 +5,7 @@ import { Button } from 'react-native-elements';
 
 const QuickActions = () => (
     <View style={styles.container}>
-        <Text style={{paddingTop: 10, fontWeight: 'bold', fontSize: 16}}>Quick Actions</Text>
+        <Text style={styles.headerText}>Quick Actions</Text>
         <View style={styles.cardsContainer}>
             <View style={styles.card}>
                 <View style={{flexDirection: 'row'}}>
@@ -41,29 +41,36 @@ const QuickActions = () => (
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        paddingHorizontal: 16,
-        marginHorizontal: 16,
+        // backgroundColor: 'red',
+        // paddingHorizontal: 16,
+        // marginHorizontal: 16,
         marginBottom: 5,
         borderRadius: 10,
-        // padding
+        padding: 15
+    },
+    headerText: {
+      padding:5, 
+      fontWeight: 'bold', 
+      fontSize: 16
     },
   cardsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     // marginTop: 10,
-    padding: 16,
+    // padding: 5,
+    // backgroundColor: 'red'
     // paddingBottom: 5,
     // backgroundColor: 'red'
   },
   card: {
-    // flex: 1,
-    // backgroundColor: '#fff',
+    flex: 1,
+    // backgroundColor: 'red',
     padding: 16,
     borderRadius: 12,
     marginHorizontal: 8,
     borderWidth: 1,
     borderColor: 'lightgray',
-    width: '31%'
+    // width: '33%'
 
   },
   title: {

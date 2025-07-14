@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Button, Badge } from 'react-native-elements';  // Import components from react-native-elements
 import { MaterialIcons } from '@expo/vector-icons'; // For the "Live" icon
 import SvgLoader from '@/utils/SvgLoader';
@@ -68,7 +68,7 @@ const LiveSessionCard = () => {
       // await dispatch(getScheduleClasses())
       getClassFromSchedule()
     } else {
-      console.log("liveClassDataRes.payload")
+      console.log("liveClassDataRes.payload ----")
       console.log(liveClassDataRes.payload)
       setNextClass(liveClassDataRes.payload)
     }
@@ -104,9 +104,12 @@ const LiveSessionCard = () => {
             return { ...timeline, itemMinutes };
         }).filter((item: any) => item.itemMinutes > currentMinutes)
         .sort((a: any, b: any) => a.itemMinutes - b.itemMinutes);
-        setNextClass(timelineDataArray[0])
-        console.log(timelineDataArray[0])
-        setIsNextClass(true)
+        if(timelineDataArray.length) {
+          setNextClass(timelineDataArray[0])
+          console.log(timelineDataArray[0])
+          setIsNextClass(true)
+        }
+        
     } else {
         
     }
@@ -142,12 +145,15 @@ const LiveSessionCard = () => {
             <Text style={styles.category}>{nextClass.subject_name}</Text>
           </View>
           
-          <Button
+          {/* <Button
             title={isnextClass ? 'Upcoming' : "Join now"}
             buttonStyle={styles.joinButton}
             titleStyle={styles.buttonTitle}
             onPress={navigateToMonitor}
-          />
+          /> */}
+          <TouchableOpacity style={styles.joinButton} onPress={navigateToMonitor}>
+            <Text style={styles.buttonTitle}>{isnextClass ? 'Upcoming' : "Join now"}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -160,7 +166,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     borderRadius: 8,
-    borderColor: 'gray',
+    // borderColor: 'gray',
     borderWidth: 1,
     // opacity: 0.4
     
@@ -207,6 +213,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#21C17C',
     borderRadius: 8,
     marginTop: 15,
+    width: 170,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 40
   },
   buttonTitle: {
     fontSize: 16,

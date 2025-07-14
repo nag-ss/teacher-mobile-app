@@ -63,6 +63,7 @@ import { Calendar } from "react-native-calendars";
 const TimelineWithClassDetails = () => {
     // const [noClass, setNoClass] = useState(0)
     let noClass = 0
+    let closestSlot = '08:00'
     const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
   const [visibleScrollBarHeight, setVisibleScrollBarHeight] = useState(0);
   const scrollIndicator = useRef(new Animated.Value(0)).current;
@@ -121,6 +122,8 @@ const onLayout = (event: LayoutChangeEvent): void => {
       const reqObj: any = {
         date: currentDate
       }
+      console.log("get classes by date")
+      console.log(reqObj)
        await dispatch(getScheduleClasses(reqObj))
        
     }
@@ -191,7 +194,8 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
                 var duration = moment.duration(endTime.diff(startTime));
 
-                var minutes = duration.asMinutes() % 60;
+                // var minutes = duration.asMinutes() % 60;
+                var minutes = duration.asMinutes()
                 return {
                     classId: timeline.class_schedule_id,
                     time: startTimeStr + " - " + endTimeStr,
@@ -210,6 +214,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
             // const timeSlotsData = generateTimeSlots(firstClassTime, lastClassTime, 15);
             const timeSlotsData = generateTimeSlots('8:00', lastClassTime, 15);
             setTimeSlots(timeSlotsData)
+            closestSlot = timeSlots[0];
             const preTime = getLastQuarterHour()
             const ind = timeSlotsData.indexOf(preTime)
             console.log("preTime")
@@ -223,13 +228,18 @@ const onLayout = (event: LayoutChangeEvent): void => {
         } else {
             const timeSlotsData = generateTimeSlots('8:00', '17:00', 15);
             setTimeSlots(timeSlotsData)
+            closestSlot = timeSlots[0];
             setTimelineData([])
         }
     }, [classTimeline])
 
+    const toMinutes = (time: string) => {
+      const [h, m] = time.split(':').map(Number);
+      return h * 60 + m;
+    };
   return (
-    <View style={{flex: 1, flexDirection: 'column'}}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, marginTop: 10, marginBottom: 10}}> 
+    <View style={styles.mainContainer}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10}}> 
             <Text style={styles.timelineText}>Today's Timeline</Text>
             <View style={{flexDirection: 'row', borderWidth: 1, borderColor: 'grey', borderRadius: 5, paddingHorizontal: 20, paddingVertical: 5}}>
                 <MaterialIcons
@@ -238,7 +248,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     color={'gray' }
                     onPress={showDate}
                     />
-                <Text style={styles.timelineDateText}>{moment(date).format('YYYY-MM-DD')}</Text>
+                <Text style={styles.timelineDateText}>{moment(date).format('DD-MM-YYYY')}</Text>
                 
                 {show && (
                   <View style={styles.calendarOverlay}>
@@ -270,7 +280,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
             
             
         </View>
-        <View style={{flexDirection: 'row', height: '93%'}}>
+        <View style={{flexDirection: 'row', height: '93%', marginTop: 10}}>
             <ScrollView  
                 // persistentScrollbar={true} style={{}} indicatorStyle='black' scrollEventThrottle={25} 
                 contentContainerStyle={{ paddingRight: 14 }}
@@ -304,23 +314,52 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     {/* Right Column with Class Details */}
                     <View style={styles.rightColumn}>
                         <ScrollView style={styles.classColumn}>
-                        {timeSlots.map((timeSlot, index) => {
+                        {
+                        timeSlots.map((timeSlot, index) => {
                             // Find the classes that start at or after the current time slot
                             const classesForTimeSlot = timelineData.filter((item: any) => {
                               // Check if class starts at or after the current time slot
                               const [classHour, classMins] = item.startTime.split(':');
                               const [slotHour, slotMins] = timeSlot.split(':');
-                              return (parseInt(classHour) === parseInt(slotHour) && parseInt(classMins) === parseInt(slotMins));
+                              if((parseInt(classHour) === parseInt(slotHour) && parseInt(classMins) === parseInt(slotMins))) {
+                                
+                                return item
+                              }
+                              if(parseInt(classHour) === parseInt(slotHour) && parseInt(classMins)%15 != 0) {
+                                const slotMinutes = toMinutes(timeSlot);
+                                const targetMinutes = toMinutes(item.startTime);
+                                // const targetMinutes = toMinutes('18:50');
+                                // const diff = Math.abs(slotMinutes - targetMinutes);
+                                const diff = (targetMinutes - slotMinutes);
+                                
+                                // let smallestDiff = Math.abs(toMinutes(closestSlot) - targetMinutes);
+                                let smallestDiff = 14;
+                                // console.log(slotMinutes, targetMinutes, "-----------------", timeSlot, item.startTime, noClass)
+                                // console.log(diff, smallestDiff, "-----------------")
+                                if (diff > 0 && diff < smallestDiff) {
+                                  // console.log("item +++++")
+                                // console.log(item)
+                                // console.log(noClass)
+                                  closestSlot = timeSlots[index];
+                                  return item
+                                  
+                                }
+                              }
+                            
                             });
+                            // console.log(classesForTimeSlot.length, timeSlot, noClass)
                             if(noClass > 0) noClass = noClass-1
+                            if(noClass < 0) noClass = 0
                             return (
                             <View key={index} style={styles.classWrapper}>
                                 {classesForTimeSlot.length > 0 ? (
                                 classesForTimeSlot.map((item: any, idx) => {
                                     const relevant_class = classTimeline.find((c: any) => c.class_schedule_id == item.classId);
                                     // setNoClass(noClass + (item.classLength/15))
+                                    console.log("relevant_class");
                                     console.log(relevant_class);
-                                    noClass = noClass + (item.classLength/15) + 1
+                                    // noClass = noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1
+                                    noClass = Math.floor(noClass + (item.classLength == 15 ? 0 : item.classLength/15) )
                                     return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={item.classLength/15} currentDate={date} />)
                                 })
                                 ) : noClass < 1 ? (
@@ -356,6 +395,14 @@ const onLayout = (event: LayoutChangeEvent): void => {
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1, 
+    flexDirection: 'column', 
+    marginTop: 10, 
+    marginBottom: 10,
+    // backgroundColor: 'red',
+    paddingLeft: 15
+  },
   container: {
     flexDirection: 'row',
     marginTop: 20,

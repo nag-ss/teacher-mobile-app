@@ -45,7 +45,7 @@ const Quiz = ({task}: any) => {
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'ClassWork' && selectedTaskId == task.task_id) ? 'green' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'ClassWork' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Quiz.png')} />
             </View>

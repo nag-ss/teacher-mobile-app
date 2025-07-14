@@ -58,10 +58,12 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
     return response.data;
   } catch (error: any) {
     console.log("error in api page" )
+    console.log(`${API_URL}${endpoint}`)
     console.log(error.response)
     console.log(error.response.status)
     if (error.response?.status === 401 && retry) {
       try {
+        console.log("calling refresh token ")
         const newTokenData = await refreshToken();
 
         // Save new token to storage (adjust as needed)

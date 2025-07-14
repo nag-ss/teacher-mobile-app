@@ -34,7 +34,7 @@ const Attendance = () => {
     }, [selectedTaskSection])
     return (
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : selectedTaskSection == 'Attendance' ? 'green' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : selectedTaskSection == 'Attendance' ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/MileStone.png')} />
             </View>

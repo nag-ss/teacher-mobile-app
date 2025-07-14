@@ -11,6 +11,8 @@ interface StudentCardProps {
 const StudentCard = (studentData: any) => {
     const stdNo = studentData.student.student_id
     const student = studentData.student
+    console.log("student")
+    console.log(student)
     return (
   <TouchableOpacity style={styles.card} onPress={() => studentData.showStudentInfo()}>
     <View style={styles.iconView}>

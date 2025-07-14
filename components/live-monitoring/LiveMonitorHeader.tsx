@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View , Text} from 'react-native';
+import { ScrollView, StyleSheet, View , Text, TouchableOpacity, Image} from 'react-native';
 import TaskSection from '@/components/live-monitoring/TaskSection';
 import StudentGrid from '@/components/live-monitoring/StudentGrid';
 import AICheckSummary from '@/components/live-monitoring/AICheckSummary';
@@ -12,7 +12,7 @@ const LiveMonitorHeader = () => {
 
   const { studentsData } = useSelector((state: any) => state.liveMonitor)
   const { liveClass } = useSelector((state: any) => state.classes)
-
+    const navigation = useNavigation<any>()
   useEffect(() => {
         setActiveStudentsCount(0)
         if(studentsData.length) {
@@ -32,11 +32,16 @@ const LiveMonitorHeader = () => {
         console.log("liveClass")
         console.log(liveClass)
     }, [studentsData])
-  
+  const gotoHome = () => {
+    navigation.navigate('Home')
+  }
   return (
     <View style={styles.headerContainer}>
-        <View>
-            <Text>{((liveClass && liveClass.division_name) ? liveClass.division_name : 'VII - 8 ') + " - " + ((liveClass && liveClass.subject_name) ? liveClass.subject_name : 'Physics')}</Text>
+        <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity onPress={gotoHome} style={{marginTop: 0}}>
+                <Image style={{width: 30, height: 30}} source={require('../../assets/images/ss/left-arrow.png')} />
+            </TouchableOpacity>
+            <Text style={{marginTop: 3}}>{((liveClass && liveClass.division_name) ? liveClass.division_name : 'VII - 8 ') + " - " + ((liveClass && liveClass.subject_name) ? liveClass.subject_name : 'Physics')}</Text>
         </View>
         <View>
             <Text>Students {`${activeStudentsCount} / ${totalStudentsCount}`}</Text>

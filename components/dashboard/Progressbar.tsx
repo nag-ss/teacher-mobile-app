@@ -8,11 +8,11 @@ interface ProgressBarProps {
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
   const getSegmentColor = (index: number) => {
     if (progress >= (index + 1) * 10) {
-      return 'green'; 
+      return '#21C17C'; 
     } else if (progress >= index * 10) {
-      return 'yellow'; 
+      return '#FFB61D'; 
     } else {
-      return 'gray'; 
+      return 'lightgray'; 
     }
   };
 
@@ -25,6 +25,10 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
             key={index}
             style={[
               styles.segment,
+              {borderTopLeftRadius: index == 0 ? 5 : 0},
+              {borderBottomLeftRadius: index == 0 ? 5 : 0},
+              {borderTopRightRadius: index == 9 ? 5 : 0},
+              {borderBottomRightRadius: index == 9 ? 5 : 0},
               { backgroundColor: getSegmentColor(index) },
             ]}
           />
@@ -37,7 +41,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
 const styles = StyleSheet.create({
   container: {
     // width: '80%',
-    padding: 10,
+    padding: 15,
     // alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -58,14 +62,14 @@ const styles = StyleSheet.create({
   progressBar: {
     flexDirection: 'row',
     width: '100%',
-    height: 10,
+    height: 18,
     borderRadius: 5,
     overflow: 'hidden',
   },
   segment: {
     flex: 1,
     margin: 1,
-    borderRadius: 5,
+    // borderRadius: 5
   },
 });
 
