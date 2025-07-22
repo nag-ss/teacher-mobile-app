@@ -10,6 +10,7 @@ import TestSettingsModal from '@/components/Modals/Modal_6_SlipTestDetails';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
 import { 
   addTaskToClass, 
   getTeacherClassTasks, 
@@ -178,8 +179,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
         const quizDetails: any = {
           title: selectedTask.title, 
           task_type: "SlipTest", 
-          start_date: "2025-06-20",
-          end_date: "2025-06-20",
+          start_date: selectedTask.start_date,
+          end_date: selectedTask.end_date,
           quiz_id: selectedTask.quiz_id,
           task_id: selectedTask.task_id,
           instructions: {
@@ -195,7 +196,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
           class_schedule_id: selectedTask.class_schedule_id,
           quiz: {
             title: selectedTask.quiz_details.title,
-            start_date: "2025-06-20T07:07:22.632Z", // Change the hard coded start date
+            start_date: selectedTask.quiz_details.start_date, // Change the hard coded start date
             duration: slipTestDetails.duration,
             is_auto: true,
             asset_link: {},
@@ -226,8 +227,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
         const quizDetails: any = {
           title: quiz_title, 
           task_type: "SlipTest", 
-          start_date: "2025-06-20",
-          end_date: "2025-06-20",
+          start_date: moment().format("YYYY-MM-DD"),
+          end_date: moment().add(10, 'days').format("YYYY-MM-DD"),
           instructions: {
             objective_questions: slipTestDetails.mcqCount,
             subjective_questions: slipTestDetails.subCount,
@@ -241,7 +242,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
           class_schedule_id: selectedClass.class_schedule_id,
           quiz: {
             title: quiz_title,
-            start_date: "2025-06-20T07:07:22.632Z", // Change the hard coded start date
+            start_date: moment().toISOString(), // Change the hard coded start date
             duration: slipTestDetails.duration,
             is_auto: true,
             asset_link: {},
