@@ -14,8 +14,8 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   const classPrepRef = useRef<any>();
 
   const openClassPrep = () => {
-    console.log("welcome to class ....")
-    console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
+    // console.log("welcome to class ....")
+    // console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
     // fetch class tasks
     classPrepRef.current?.setSelectedClass()
     // if(moment(new Date()).format('YYYY-MM-DD') == currentDate) {

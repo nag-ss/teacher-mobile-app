@@ -21,13 +21,13 @@ const StudentGrid = () => {
     setModalVisible(false);
     setSelectedStudent(null);
   };
-  console.log(studentsData)
+  // console.log(studentsData)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Students Overview</Text>
       <ScrollView contentContainerStyle={styles.grid}>
         {studentsData.map((student: any, i: number) => (
-          <StudentCard key={i} student={student} showStudentInfo={() => openStudentModal(student)} />
+          <StudentCard key={student.student_id+"_"+i} student={student} showStudentInfo={() => openStudentModal(student)} />
         ))}
       </ScrollView>
       <StudentModal

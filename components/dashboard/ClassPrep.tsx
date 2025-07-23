@@ -69,14 +69,14 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     await dispatch(getTeacherClassTasks(tasksObject))
     await dispatch(getClassTopicSubTopics({subject_id: selectedClass.subject_id, division_id: selectedClass.division_id}))
     
-    if (selectedClass?.class_details[0]?.topic) {
-      setTopic(selectedClass?.class_details[0]?.topic)
-      setSubTopic(selectedClass?.class_details[0]?.sub_topic[0])
-      setShowModal2TasksModal(true) 
-    } else {
-      setShowModal1SummaryModal(true)
-    }
-    
+    // if (selectedClass?.class_details[0]?.topic) {
+    //   setTopic(selectedClass?.class_details[0]?.topic)
+    //   setSubTopic(selectedClass?.class_details[0]?.sub_topic[0])
+    //   setShowModal2TasksModal(true) 
+    // } else {
+    //   setShowModal1SummaryModal(true)
+    // }
+    setShowModal1SummaryModal(true) 
   };
     
   useImperativeHandle(ref, () => ({

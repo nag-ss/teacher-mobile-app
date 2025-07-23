@@ -15,6 +15,7 @@ const SlipTest = ({task}: any) => {
     const [isPressed, setIsPressed] = useState(false);
     const dispatch = useDispatch<any>()
     const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
+    const { liveClass } = useSelector((state: any) => state.classes)
     const classPrepRef = useRef<any>();
     
     const onPress = () => {
@@ -53,7 +54,7 @@ const SlipTest = ({task}: any) => {
         </View>
         </TouchableOpacity>
         {/* To be fixed */}
-        <ClassPrep item={{}} selectedClass={{}} ref={classPrepRef} />
+        <ClassPrep item={{}} selectedClass={liveClass} ref={classPrepRef} />
       </View>
     )
 };

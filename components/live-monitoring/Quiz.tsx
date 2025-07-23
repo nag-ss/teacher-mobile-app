@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import ClassworkCheckModal from '../Modals/ClassworkModal';
-import { addTaskToClass } from '@/store/classSlice';
+import { addTaskToClass, publishQuiz } from '@/store/classSlice';
 
 interface AITaskCardProps {
   title: string;
@@ -42,10 +42,21 @@ const Quiz = ({task}: any) => {
 
     }, [selectedTaskSection])
 
-    const publishQuiz = async () => {
+    const publishQuizFun = async () => {
       console.log("task")
       console.log(task)
-
+      const now = new Date();
+      const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
+      const the_quiz = {
+        start_time: fiveMinutesLater.toISOString(), 
+        quiz_id: task?.quiz_id, 
+        quiz_type: task?.quiz_details?.quiz_type ? task?.quiz_details?.quiz_type : "SlipTest", 
+        duration: task?.quiz_details?.duration, 
+        division_id: liveClass.division_id,
+        task_id: task.task_id
+      }
+      await dispatch(publishQuiz(the_quiz));
+      setShowModal4AICheckModal(false)
     }
     return (
       <View>
@@ -78,7 +89,7 @@ const Quiz = ({task}: any) => {
                 <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal4AICheckModal(false)}>
                   <Text>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.saveBtn} onPress={publishQuiz}>
+                <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>
                   <Text style={{ color: 'white' }}>Start Now</Text>
                 </TouchableOpacity>
               </View>
