@@ -71,15 +71,15 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   }
 
   const publishQuizTask = async() => {
-    const the_quiz = {
-      start_time: quiz_details.start_date, 
-      quiz_id: quiz_details.quiz_id, 
-      quiz_type: "SlipTest", 
-      duration: quiz_details.duration, 
-      division_id: selectedClass.division_id,
-      task_id: quiz_details.task_id
-    }
-    await dispatch(publishQuiz(the_quiz));
+    // const the_quiz = {
+    //   start_time: quiz_details.start_date, 
+    //   quiz_id: quiz_details.quiz_id, 
+    //   quiz_type: "SlipTest", 
+    //   duration: quiz_details.duration, 
+    //   division_id: selectedClass.division_id,
+    //   task_id: quiz_details.task_id
+    // }
+    // await dispatch(publishQuiz(the_quiz));
     navigation.navigate('Home');  
   }
 
