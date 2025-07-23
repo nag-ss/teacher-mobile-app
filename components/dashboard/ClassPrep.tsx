@@ -222,8 +222,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
         };
         await dispatch(updateSlipTest(quizDetails));
       } else {
-        console.log('I am creating a quiz')
-        const quiz_title = `Slip Test ${Math.floor(Math.random() * 1000)}`
+        console.log('I am creating a quiz');
+        const quiz_title = `Slip Test ${Math.floor(Math.random() * 1000)}`;
         const quizDetails: any = {
           title: quiz_title, 
           task_type: "SlipTest", 
@@ -242,7 +242,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
           class_schedule_id: selectedClass.class_schedule_id,
           quiz: {
             title: quiz_title,
-            start_date: moment().toISOString(), // Change the hard coded start date
+            start_date: moment().format().split("+")[0],
             duration: slipTestDetails.duration,
             is_auto: true,
             asset_link: {},
