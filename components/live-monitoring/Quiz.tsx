@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-na
 import { useDispatch, useSelector } from 'react-redux';
 import ClassworkCheckModal from '../Modals/ClassworkModal';
 import { addTaskToClass, publishQuiz } from '@/store/classSlice';
+import moment from 'moment-timezone';
 
 interface AITaskCardProps {
   title: string;
@@ -45,10 +46,13 @@ const Quiz = ({task}: any) => {
     const publishQuizFun = async () => {
       console.log("task")
       console.log(task)
-      const now = new Date();
-      const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
+      // const now = new Date();
+      // const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
+      const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(5, 'minutes');
+      const formatted = fiveMinutesLaterIST.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+
       const the_quiz = {
-        start_time: fiveMinutesLater.toISOString(), 
+        start_time: formatted, 
         quiz_id: task?.quiz_id, 
         quiz_type: task?.quiz_details?.quiz_type ? task?.quiz_details?.quiz_type : "SlipTest", 
         duration: task?.quiz_details?.duration, 

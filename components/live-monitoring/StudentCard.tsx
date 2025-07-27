@@ -23,6 +23,13 @@ const StudentCard = (studentData: any) => {
         <Text style={styles.status}>Status: {student.status}</Text>
     </View>
     {
+        (student.task_type == 'SlipTest') ?
+        <View style={styles.statusContainer}>
+            <ProgressCircle progress={(student.score/10)*100} size={40} strokeWidth={4} />
+        </View>
+        : null
+    }
+    {
         (student.task_type == 'Classwork') ?
         <View style={styles.statusContainer}>
             <ProgressCircle progress={(student.score/10)*100} size={40} strokeWidth={4} />
