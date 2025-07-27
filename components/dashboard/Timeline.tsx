@@ -356,8 +356,8 @@ const onLayout = (event: LayoutChangeEvent): void => {
                                 classesForTimeSlot.map((item: any, idx) => {
                                     const relevant_class = classTimeline.find((c: any) => c.class_schedule_id == item.classId);
                                     // setNoClass(noClass + (item.classLength/15))
-                                    console.log("relevant_class");
-                                    console.log(relevant_class);
+                                    // console.log("relevant_class");
+                                    // console.log(relevant_class);
                                     // noClass = noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1
                                     noClass = Math.floor(noClass + (item.classLength == 15 ? 0 : item.classLength/15) )
                                     return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={item.classLength/15} currentDate={date} />)

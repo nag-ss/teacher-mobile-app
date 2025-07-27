@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import AttendanceMonitoring from './AttendanceMonitoring';
 import AITask from './AITask';
@@ -7,6 +7,7 @@ import SlipTest from './SlipTest';
 import Attendance from './Attendance';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTeacherClassTasks } from '@/store/classSlice';
+import { useFocusEffect } from '@react-navigation/native';
 
 const tasks = [
   { title: 'Attendance Monitoring', action: 'Check' },
@@ -21,9 +22,11 @@ const TaskSection = () => {
   const { liveClass, classTimeline, classTasks } = useSelector((state: any) => state.classes);
   const [tasks, setTasks] = useState<any>([])
   const attendanceTask = {
+    "id": "Attendance",
     "task_type": "Attendance"
   }
   const addTaskCard = {
+    "id": "AddTask",
     "task_type": "AddTask"
   }
   
@@ -32,17 +35,24 @@ const TaskSection = () => {
   const getTasksListData = async () => {
     let reqObj: any = {
       class_schedule_id : liveClass.class_schedule_id,
-      teacherId: liveClass.teacher_id,
-      divisionId: liveClass.division_id,
-      subjectId: liveClass.subject_id
+      teacher_id: liveClass.teacher_id,
+      division_id: liveClass.division_id,
+      subject_id: liveClass.subject_id
 
     }
+    console.log("calling tasks from home ")
+    console.log(reqObj)
     await dispatch(getTeacherClassTasks(reqObj))
   }
   
-  useEffect(() => {
+  /*useEffect(() => {
     getTasksListData()
-  }, [])
+  }, [])*/
+
+  useFocusEffect(useCallback(() => {
+      getTasksListData()
+    }, [])
+    )
 
   useEffect(() => {
     if(classTasks && classTasks.length) {

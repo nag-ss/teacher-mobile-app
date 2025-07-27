@@ -1,10 +1,10 @@
 import { Colors } from '@/constants/Colors';
-import { getClassworkResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getSlipTestResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import ClassworkCheckModal from '../Modals/ClassworkModal';
-import { addTaskToClass } from '@/store/classSlice';
+import { addTaskToClass, publishQuiz } from '@/store/classSlice';
 
 interface AITaskCardProps {
   title: string;
@@ -22,7 +22,7 @@ const Quiz = ({task}: any) => {
 
     const getAttendanceData = async () => {
         const reqObj: any = {classId}
-        dispatch(getClassworkResults(reqObj))
+        dispatch(getSlipTestResults(reqObj))
     }
     const onPress = () => {
       setShowModal4AICheckModal(true)
@@ -42,6 +42,22 @@ const Quiz = ({task}: any) => {
 
     }, [selectedTaskSection])
 
+    const publishQuizFun = async () => {
+      console.log("task")
+      console.log(task)
+      const now = new Date();
+      const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
+      const the_quiz = {
+        start_time: fiveMinutesLater.toISOString(), 
+        quiz_id: task?.quiz_id, 
+        quiz_type: task?.quiz_details?.quiz_type ? task?.quiz_details?.quiz_type : "SlipTest", 
+        duration: task?.quiz_details?.duration, 
+        division_id: liveClass.division_id,
+        task_id: task.task_id
+      }
+      await dispatch(publishQuiz(the_quiz));
+      setShowModal4AICheckModal(false)
+    }
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
@@ -56,6 +72,30 @@ const Quiz = ({task}: any) => {
             </TouchableOpacity>
         </View>
         </TouchableOpacity>
+        {/* <ClassworkCheckModal visible={showModal4AICheckModal} onClose={publishQuiz} goBack={publishQuiz} saveAICheckDetails={selectedTaskSection} /> */}
+        <Modal visible={showModal4AICheckModal} transparent animationType="fade">
+          <View style={styles.overlay}>
+            <View style={styles.modalContainer}>
+              <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <Image source={require('../../assets/images/ss/QuizIcon.png')} style={styles.iconImg} />
+                </View>
+                <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                  <Text style={styles.mainText}>Start Quiz</Text>
+                  <Text style={styles.subText}>Are you sure you want to proceed?</Text>
+                </View>
+              </View>
+              <View style={styles.footer}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal4AICheckModal(false)}>
+                  <Text>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>
+                  <Text style={{ color: 'white' }}>Start Now</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     )
 };
@@ -90,7 +130,47 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     width: 50
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    width: '50%',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 24,
+  },
+  cancelBtn: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderColor: '#D1D5DB',
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  saveBtn: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    backgroundColor: '#10B981',
+    borderRadius: 8,
+  },
+  iconImg: {
+
+  },
+  mainText: {
+    fontSize: 20
+  },
+  subText: {
+    fontSize: 16
   }
+
 });
 
 export default Quiz;

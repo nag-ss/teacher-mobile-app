@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Button, Badge } from 'react-native-elements';  // Import components from react-native-elements
 import { MaterialIcons } from '@expo/vector-icons'; // For the "Live" icon
@@ -6,7 +6,7 @@ import SvgLoader from '@/utils/SvgLoader';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLiveClass, getScheduleClasses, setUnAuth } from '@/store/classSlice';
 import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
 
@@ -74,9 +74,15 @@ const LiveSessionCard = () => {
     }
   }
   useIntervalApi(getDetails, 300000);
-  useEffect(() => {
+  // useEffect(() => {
+  //   getDetails()
+  // }, [])
+
+  useFocusEffect(useCallback(() => {
+    console.log("calling focus effect ....")
     getDetails()
   }, [])
+  )
 
   useEffect(() => {
     console.log("unAuthorised", unAuthorised)

@@ -76,7 +76,6 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     } else {
       setShowModal1SummaryModal(true)
     }
-    
   };
     
   useImperativeHandle(ref, () => ({
