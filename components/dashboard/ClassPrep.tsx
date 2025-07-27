@@ -172,6 +172,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   const saveSlipTestDetails = async(slipTestDetails: any) => {
       setShowModal6SlipTestSettingsModal(false)
       setShowLoadingQuizModal(true)
+      let difficulty = slipTestDetails.difficulty;
+      if (difficulty > 6) {
+        difficulty = 6
+      } else if (difficulty == 0) {
+        difficulty = 1
+      }
       if (selectedTask && selectedTask.task_type == 'SlipTest') {
         console.log('I am editing a quiz');
         console.log(selectedTask);
@@ -199,14 +205,14 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
             duration: slipTestDetails.duration,
             is_auto: true,
             asset_link: {},
-            // topic: topic,
-            topic: 'Integer',
-            // sub_topic: subTopic,
-            sub_topic: 'Addition, Subtraction, Division, Multiplication',
+            topic: topic,
+            // topic: 'Integer',
+            sub_topic: subTopic,
+            // sub_topic: 'Addition, Subtraction, Division, Multiplication',
             skills: {},
             quiz_type: "SlipTest",
             is_public: true,
-            difficulty_id: slipTestDetails.difficulty, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
+            difficulty_id: difficulty, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
             school_id: user.school_id,
             division_id: selectedClass.division_id,
             subject_id: selectedClass.subject_id,
@@ -245,14 +251,14 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
             duration: slipTestDetails.duration,
             is_auto: true,
             asset_link: {},
-            // topic: topic,
-            topic: 'Integer',
-            // sub_topic: subTopic,
-            sub_topic: 'Addition, Subtraction, Division, Multiplication',
+            topic: topic,
+            // topic: 'Integer',
+            sub_topic: subTopic,
+            // sub_topic: 'Addition, Subtraction, Division, Multiplication',
             skills: {},
             quiz_type: "SlipTest",
             is_public: true,
-            difficulty_id: (slipTestDetails.difficulty <= 7) ? slipTestDetails.difficulty: 7, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
+            difficulty_id: difficulty, // Set difficulty to that coming from the UI,not set since the backend only has difficulty upto 7 
             school_id: user.school_id,
             division_id: selectedClass.division_id,
             subject_id: selectedClass.subject_id,
