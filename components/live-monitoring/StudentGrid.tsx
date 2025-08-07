@@ -7,14 +7,17 @@ import StudentModal from './StudentModal';
 const students = new Array(45).fill({ student_name: 'Akshay Sharma', status: 'Active' });
 
 const StudentGrid = () => {
-    const { studentsData } = useSelector((state: any) => state.liveMonitor)
+    const { studentsData, selectedTaskSection } = useSelector((state: any) => state.liveMonitor)
     const [selectedStudent, setSelectedStudent] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const openStudentModal = (student: any) => {
-    console.log("calling modal ....")
-    setSelectedStudent(student);
-    setModalVisible(true);
+    if(selectedTaskSection == 'Attendance') {
+      console.log("calling modal ....")
+      setSelectedStudent(student);
+      setModalVisible(true);
+    }
+    
   };
 
   const closeModal = () => {

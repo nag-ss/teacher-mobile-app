@@ -25,7 +25,7 @@ const StudentCard = (studentData: any) => {
     {
         (student.task_type == 'SlipTest') ?
         <View style={styles.statusContainer}>
-            <ProgressCircle progress={(student.score/10)*100} size={40} strokeWidth={4} />
+            <ProgressCircle progress={Math.round(parseFloat(student.percentage))} size={40} strokeWidth={4} />
         </View>
         : null
     }

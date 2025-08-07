@@ -13,7 +13,7 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const Quiz = ({task}: any) => {
+const Quiz = ({task, refreshTasks}: any) => {
     const dispatch = useDispatch<any>()
     const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
     const {user} = useSelector((state: any) => state.user);
@@ -21,8 +21,8 @@ const Quiz = ({task}: any) => {
 
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
 
-    const getAttendanceData = async () => {
-        const reqObj: any = {classId}
+    const getAttendanceData = async (taskId: number) => {
+        const reqObj: any = {classId, taskId}
         dispatch(getSlipTestResults(reqObj))
     }
     const onPress = () => {
@@ -32,13 +32,13 @@ const Quiz = ({task}: any) => {
 
     const cardPressed = () => {
         console.log("card pressed ....")
-        dispatch(setSelectedTask('ClassWork'))
+        dispatch(setSelectedTask('SlipTest'))
         dispatch(setSelectedTaskId(task.task_id))
-        getAttendanceData()
+        getAttendanceData(task.task_id)
     }
     useEffect(() => {
-        if(selectedTaskSection == 'ClassWork') {
-            getAttendanceData()
+        if(selectedTaskSection == 'SlipTest') {
+            getAttendanceData(task.task_id)
         }
 
     }, [selectedTaskSection])
@@ -60,20 +60,30 @@ const Quiz = ({task}: any) => {
         task_id: task.task_id
       }
       await dispatch(publishQuiz(the_quiz));
+      await refreshTasks()
       setShowModal4AICheckModal(false)
+
     }
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'ClassWork' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'SlipTest' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Quiz.png')} />
             </View>
             
             <Text style={styles.title}>{'Quiz'}</Text>
-            <TouchableOpacity style={styles.button} onPress={onPress}>
-            <Text style={styles.buttonText}>{'Start'}</Text>
+            {
+              !task.published_quiz_id ?
+              <TouchableOpacity style={styles.button} onPress={onPress}>
+              <Text style={styles.buttonText}>{'Start'}</Text>
             </TouchableOpacity>
+            :
+            <TouchableOpacity style={styles.button} onPress={cardPressed}>
+              <Text style={styles.buttonText}>{'Review'}</Text>
+            </TouchableOpacity>
+            }
+            
         </View>
         </TouchableOpacity>
         {/* <ClassworkCheckModal visible={showModal4AICheckModal} onClose={publishQuiz} goBack={publishQuiz} saveAICheckDetails={selectedTaskSection} /> */}

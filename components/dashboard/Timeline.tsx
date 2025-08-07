@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; 
 import TimelineCard from './TimelineCard';
@@ -9,6 +9,7 @@ import { getScheduleClasses } from '@/store/classSlice';
 import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from "react-native-calendars";
+import { useFocusEffect } from '@react-navigation/native';
 
 /*const timelineData = [
   {
@@ -127,9 +128,16 @@ const onLayout = (event: LayoutChangeEvent): void => {
        await dispatch(getScheduleClasses(reqObj))
        
     }
-    useEffect(() => {
+
+    useFocusEffect(useCallback(() => {
+        console.log("calling focus effect ....")
         getDetails(moment(new Date()).format('YYYY-MM-DD'))
-    }, [])
+      }, [])
+      )
+
+    /*useEffect(() => {
+        getDetails(moment(new Date()).format('YYYY-MM-DD'))
+    }, [])*/
 
     function generateTimeSlots(startTime: string, endTime: string, intervalMinutes: number) {
         const slots = [];

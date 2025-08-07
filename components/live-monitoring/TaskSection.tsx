@@ -113,7 +113,7 @@ const TaskSection = () => {
                   } else if(item.task_type == 'Classwork') {
                     return (<AITask task={item} /> )
                   } else if(item.task_type == 'SlipTest') {
-                    return (<Quiz task={item} /> )
+                    return (<Quiz task={item} refreshTasks={getTasksListData} /> )
                   } else if(item.task_type == 'Attendance') {
                     return (<Attendance /> )
                   } else if(item.task_type == 'AddTask') {
