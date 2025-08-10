@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   cancelBtn: {
     paddingHorizontal: 24,

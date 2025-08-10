@@ -121,6 +121,7 @@ export default function ClassSummaryPopModal({
                   labelField="topic"
                   valueField="topic"
                   style={styles.picker}
+                  iconStyle={{width: 30, height:30}}
                 />
               </View>
               
@@ -143,6 +144,7 @@ export default function ClassSummaryPopModal({
                   labelField="sub_topic"
                   valueField="sub_topic"
                   style={styles.picker}
+                  iconStyle={{width: 30, height:30}}
                 />
               </View>
               

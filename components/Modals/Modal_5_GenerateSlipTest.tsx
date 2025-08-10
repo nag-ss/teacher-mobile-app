@@ -115,13 +115,19 @@ const GenerateSlipTestModal = ({
 
             <View  style={styles.optionBox}>
               <View style={styles.optionBoxMainContent}>
-                <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
                 <View>
-                  <Text style={styles.optionTitle}>Topic</Text>
-                  <Text style={styles.optionDescription}>
-                    Generate a test by choosing a topic and sub-topic. The test will be automatically created using these topics.
-                  </Text>
+                  <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
+                    <View style={{marginLeft: 10}}>
+                      <Text style={styles.optionTitle}>Topic</Text>
+                      <Text style={styles.optionDescription}>
+                        Generate a test by choosing a topic and sub-topic. The test will be automatically created using these topics.
+                      </Text>
+                    </View>
+                  </View>
+                    
                 </View>
+                
                 <RadioButton color="#21c17c" id='topic' onPress={(ev) => setSelectedOption('topic')} selected={selectedOption == "topic"} />
                 {/* <CheckBox checked={topicSelected} onPress={() => setTopicSelected(val => !val)}/> */}
                   
@@ -145,6 +151,7 @@ const GenerateSlipTestModal = ({
                       labelField="topic"
                       valueField="topic"
                       style={styles.picker}
+                      iconStyle={{width: 30, height:30}}
                     />
                   </View>
                   
@@ -166,6 +173,7 @@ const GenerateSlipTestModal = ({
                       labelField="sub_topic"
                       valueField="sub_topic"
                       style={styles.picker}
+                      iconStyle={{width: 30, height:30}}
                     />
                   </View>
                   
@@ -177,13 +185,16 @@ const GenerateSlipTestModal = ({
             <View style={styles.optionBox}>
               
               <View style={styles.optionBoxMainContent}>
-                <Image source={require('../../assets/images/ss/Upload-materials.png')} style={styles.icon} />
-                <View>
-                  <Text style={styles.optionTitle}>Upload</Text>
-                  <Text style={styles.optionDescription}>
-                    Upload your own test, learning material, or classwork to generate a test from its content.
-                  </Text>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                  <Image source={require('../../assets/images/ss/Upload-materials.png')} style={styles.icon} />
+                  <View style={{marginLeft: 10}}>
+                    <Text style={styles.optionTitle}>Upload</Text>
+                    <Text style={styles.optionDescription}>
+                      Upload your own test, learning material, or classwork to generate a test from its content.
+                    </Text>
+                  </View>
                 </View>
+                
                 
                 <RadioButton color="#21c17c" id='upload' onPress={(ev) => setSelectedOption('upload')} selected={selectedOption == "upload"} />
               </View>
@@ -238,8 +249,8 @@ const styles = StyleSheet.create({
     height: 24
   },
   icon: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     borderColor: '#21c17c',
     borderRadius: 6,
     borderWidth: 2,

@@ -81,18 +81,17 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
+    justifyContent: 'space-between', 
   },
   cancelButton: {
-    paddingHorizontal: 20,
+    paddingHorizontal:20,
     paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
     marginRight: 8,
-    width: 120,
+    width: 140,
   },
   cancelButtonText: {
     color: '#333',
@@ -100,11 +99,11 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   deleteButton: {
-    width: 120,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: '#21c17c',
+    width: 140,
   },
   deleteButtonText: {
     fontSize: 14,

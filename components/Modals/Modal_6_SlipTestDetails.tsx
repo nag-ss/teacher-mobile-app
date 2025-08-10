@@ -198,7 +198,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                       onIncrease={() => setMcqCount((prev: number) => prev + 1)}
                       onDecrease={() => setMcqCount((prev: number) => prev - 1)}              
                       height={40}
-                      color='#8080801A'
+                      color='white'
                       colorPress='#BDEDD7'
                       buttonTextColor='#808080'
                     />;
@@ -236,7 +236,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                       onIncrease={() => setSubCount((prev: number) => prev + 1)}
                       onDecrease={() => setSubCount((prev: number) => prev - 1)}
                       height={40}
-                      color='#8080801A'
+                      color='white'
                       colorPress='#BDEDD7'
                       buttonTextColor='#808080'
                     />;

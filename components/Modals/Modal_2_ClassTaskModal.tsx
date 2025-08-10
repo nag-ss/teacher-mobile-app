@@ -15,6 +15,7 @@ import {
 import UploadMaterialsCard from '../PrepClass/UploadMaterial';
 import TaskItem from '../PrepClass/TaskItem';
 import SvgLoader from '@/utils/SvgLoader';
+import QuickActions from '../dashboard/QuickActions';
 // import {Tasks} from '../../data/Tasks';
 
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
@@ -83,7 +84,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
               </View>
               
               
-              <TouchableOpacity style={styles.editButton}>
+              <TouchableOpacity style={styles.editButton} onPress={goBack}>
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
             </View>
@@ -106,13 +107,13 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 />
               </View>
 
-              <ScrollView style={{maxHeight: 200, overflow: 'visible'}}>
+              <ScrollView style={{maxHeight: 200, overflow: 'visible', padding: 10}}>
                 {
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
                       <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
                         <Text style={{width: 50, textAlign: 'center'}}>Icon</Text>
-                        <Text style={{width: 280, textAlign: 'center'}}>Title</Text>
+                        <Text style={{width: 260, textAlign: 'center'}}>Title</Text>
                         <Text style={{width: 250, textAlign: 'center'}}>Category</Text>
                         <Text style={{width: 50, textAlign: 'center'}}>Action</Text>
                       </View>
@@ -141,20 +142,23 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                   <Text style={styles.addButtonText}>+ Add a Task</Text>
                 </TouchableOpacity>
               </View>
-
+            </View>
+            
+            <View style={{marginTop: 10}}>
+              <QuickActions />
             </View>
             
 
             {/* Quick Actions */}
-            <View style={styles.quickActions}>
+            {/* <View style={styles.quickActions}>
               <Text style={styles.quickActionsTitle}>Quick Actions</Text>
               <View style={styles.quickCards}>
-                {/* You can replace these with real components if needed */}
                 <UploadMaterialsCard title='Upload Material' />
                 <UploadMaterialsCard title='Home Work'/>
                 <UploadMaterialsCard title='Assignment'/>
               </View>
-            </View>
+            </View> */}
+            
           </View>
         </View>
       </View>
@@ -211,7 +215,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
-    marginLeft: 10,
+    marginLeft: 6,
   },
   topicRow: {
     flexDirection: 'row',
