@@ -220,7 +220,8 @@ const onLayout = (event: LayoutChangeEvent): void => {
             const firstClassTime = moment(classTimeline[0].start_time, 'HH:mm:ss').format('HH:mm')
             const lastClassTime = moment(classTimeline[classTimeline.length-1].end_time, 'HH:mm:ss').format('HH:mm')
             // const timeSlotsData = generateTimeSlots(firstClassTime, lastClassTime, 15);
-            const timeSlotsData = generateTimeSlots('8:00', lastClassTime, 15);
+            // const timeSlotsData = generateTimeSlots('8:00', lastClassTime, 15);
+            const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
             setTimeSlots(timeSlotsData)
             closestSlot = timeSlots[0];
             const preTime = getLastQuarterHour()
@@ -231,13 +232,23 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
             console.log("timeSlotsData")
             console.log(timeSlotsData)
-            let y= ind*100;
+            let y= ind*50;
             timelineRef.current.scrollTo({x: 0, y, animated: true});
         } else {
-            const timeSlotsData = generateTimeSlots('8:00', '17:00', 15);
+            const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
             setTimeSlots(timeSlotsData)
             closestSlot = timeSlots[0];
             setTimelineData([])
+            const preTime = getLastQuarterHour()
+            const ind = timeSlotsData.indexOf(preTime)
+            console.log("preTime")
+            console.log(preTime)
+            console.log(ind)
+
+            console.log("timeSlotsData")
+            console.log(timeSlotsData)
+            let y= ind*50;
+            timelineRef.current.scrollTo({x: 0, y, animated: true});
         }
     }, [classTimeline])
 

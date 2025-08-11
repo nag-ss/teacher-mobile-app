@@ -9,20 +9,87 @@ import {
   Image,
   Switch,
 } from 'react-native';
+import { RotateInDownLeft } from 'react-native-reanimated';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 interface AiCheckModalProps {
-  visible: boolean; 
+  visible: boolean;
+  taskType: string;
+  selectedTask: any;
   onClose: () => void;
   goBack: () => void; 
   saveAICheckDetails: (AICheckDetails:any) => void;
 }
 
-const ClassworkCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
   const [matchType, setMatchType] = useState({ exact: false, approximate: false });
   const [textInput, setTextInput] = useState('');
 
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedMarks, setSelectedMarks] = useState(null);
+  const [showMandatoryMsg, setShowMandatoryMsg] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+    // Options for the Grade and Section
+  const timeOptions = [
+    { label: '5 Mins', value: 5 },
+    { label: '10 Mins', value: 10 },
+    { label: '15 Mins', value: 15 },
+    { label: '20 Mins', value: 20 },
+    { label: '25 Mins', value: 25 },
+    { label: '30 Mins', value: 30 },
+    { label: '35 Mins', value: 35 },
+    { label: '40 Mins', value: 40 },
+    { label: '45 Mins', value: 45 },
+    { label: '50 Mins', value: 50 },
+    { label: '55 Mins', value: 55 },
+    
+  ];
+
+  const marksOptions = [
+    { label: '5', value: 5 },
+    { label: '10', value: 10 },
+    { label: '15', value: 15 },
+    { label: '20', value: 20 },
+    { label: '25', value: 25 },
+    { label: '30', value: 30 },
+    { label: '35', value: 35 },
+    { label: '40', value: 40 },
+    { label: '45', value: 45 },
+    { label: '50', value: 50 },
+    { label: '55', value: 55 },
+    { label: '60', value: 60 },
+    { label: '65', value: 65 },
+    { label: '70', value: 70 },
+    { label: '75', value: 75 },
+    { label: '80', value: 80 },
+    { label: '85', value: 85 },
+    { label: '90', value: 90 },
+    { label: '95', value: 95 },
+    { label: '100', value: 100 },
+    
+  ];
+  
+  const [marksOpen, setMarksOpen] = useState(false);
+  const [timeOpen, setTimeOpen] = useState(false);
+
+  const saveClassWork = async () => {
+    if(!title || !matchType || !selectedMarks || !selectedTime || !textInput) {
+      setShowMandatoryMsg(true)
+    } else {
+      setShowMandatoryMsg(false)
+      setIsDisabled(true)
+      await saveAICheckDetails({title, matchType, time: selectedTime, total_marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
+      setTitle(''), 
+      setMatchType({exact: false, approximate: false})
+      setSelectedMarks(null)
+      setSelectedTime(null)
+      setTextInput('')
+      setIsDisabled(false)
+    }
+    
+  }
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -37,7 +104,7 @@ const ClassworkCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: A
 
           {/* Title Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Title</Text>
+            <Text style={styles.label}>*Title</Text>
             <TextInput
               value={title}
               onChangeText={setTitle}
@@ -47,10 +114,61 @@ const ClassworkCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: A
           </View>
 
           {/* Check Type */}
-          <View style={styles.inputGroup}>
+          {/* <View style={styles.inputGroup}>
             <Text style={styles.label}>Check Type</Text>
             <View style={styles.checkTypeContainer}>
               <Text>{checkType}</Text>
+            </View>
+          </View> */}
+
+          <View style={[styles.inputGroup, styles.marksSection]}>
+            <View style={{width: '49%', flexDirection: 'row',  justifyContent: 'space-between'}}>
+              <View>
+                <Text style={styles.marksLabel}>*Time:</Text>
+              </View>
+              <View style={{ width: '80%',}}>
+                <DropDownPicker
+                  placeholder="Select Time"
+                  placeholderStyle={{ fontSize: 12 }}
+                  open={timeOpen}
+                  value={selectedTime}
+                  items={timeOptions}
+                  setOpen={setTimeOpen}
+                  setValue={setSelectedTime}
+                  // setItems={setItems}
+                  style={{
+                    borderColor: 'lightgray',      
+                    borderRadius: 8,           
+                  }}
+                  dropDownContainerStyle={{
+                    borderColor: 'lightgray'      
+                  }}
+                />
+              </View>
+            </View>
+            <View style={{width: '49%', flexDirection: 'row',  justifyContent: 'space-between'}}>
+              <View>
+                <Text style={styles.marksLabel}>*Total Marks:</Text>
+              </View>
+              <View style={{ width: '70%',}}>
+                <DropDownPicker
+                  placeholder="Select Marks"
+                  placeholderStyle={{ fontSize: 12 }}
+                  open={marksOpen}
+                  value={selectedMarks}
+                  items={marksOptions}
+                  setOpen={setMarksOpen}
+                  setValue={setSelectedMarks}
+                  // setItems={setItems}
+                  style={{
+                    borderColor: 'lightgray',      
+                    borderRadius: 8,           
+                  }}
+                  dropDownContainerStyle={{
+                    borderColor: 'lightgray'      
+                  }}
+                />
+              </View>
             </View>
           </View>
 
@@ -78,7 +196,7 @@ const ClassworkCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: A
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Text Input</Text>
+            <Text style={styles.label}>*Text Input</Text>
             <TextInput
               value={textInput}
               onChangeText={setTextInput}
@@ -87,21 +205,24 @@ const ClassworkCheckModal = ({ visible, onClose, goBack, saveAICheckDetails }: A
               style={styles.textArea}
             />
           </View>
-
+          {
+            showMandatoryMsg ? 
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={{color: 'red'}}>Please fill all the details</Text>
+            </View> : null
+          }
           {/* Footer Buttons */}
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
               <Text>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveBtn} onPress={() => {
-              saveAICheckDetails({title,  checkType, matchType, textInput }),
-              setTitle(''), 
-              setMatchType({exact: false, approximate: false})
-              setTextInput('')
+            <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={() => {
+              saveClassWork()
             }}>
               <Text style={{ color: 'white' }}>Save</Text>
             </TouchableOpacity>
           </View>
+          
         </View>
       </View>
     </Modal>
@@ -216,4 +337,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#10B981',
     borderRadius: 8,
   },
+  marksSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  marksLabel: {
+    marginTop: 15,
+    marginRight: 15
+  }
 });

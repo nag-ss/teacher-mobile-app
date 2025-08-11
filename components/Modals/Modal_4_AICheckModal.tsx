@@ -39,6 +39,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   const [checkType] = useState('Custom (Manual Input)');
   const [selectedId, setSelectedId] = useState('exact');
   const [textInput, setTextInput] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const cancelOrGoBack = () => {
     if (selectedTask) {
@@ -56,6 +57,13 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
     }
   }, [selectedTask]);
 
+  const saveTask = async () => {
+    setIsDisabled(true)
+    await saveAICheckDetails({title, checkType, selectedId, textInput, taskId: selectedTask?.task_id })
+    setTitle('')
+    setTextInput('')
+    setIsDisabled(false)
+  }
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -117,10 +125,8 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
             <TouchableOpacity style={styles.cancelBtn} onPress={cancelOrGoBack}>
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.saveBtn} onPress={() => {
-              saveAICheckDetails({title, checkType, selectedId, textInput, taskId: selectedTask?.task_id }),
-              setTitle(''), 
-              setTextInput('')
+            <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={() => {
+              saveTask()
             }}>
               <Text style={{ textAlign: 'center' }}>Save</Text>
             </TouchableOpacity>
