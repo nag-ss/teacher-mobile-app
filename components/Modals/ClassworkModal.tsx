@@ -80,7 +80,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     } else {
       setShowMandatoryMsg(false)
       setIsDisabled(true)
-      await saveAICheckDetails({title, matchType, time: selectedTime, total_marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
+      await saveAICheckDetails({title, matchType, time: selectedTime, marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
       setTitle(''), 
       setMatchType({exact: false, approximate: false})
       setSelectedMarks(null)
