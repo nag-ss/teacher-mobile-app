@@ -8,6 +8,7 @@ import Attendance from './Attendance';
 import { useDispatch, useSelector } from 'react-redux';
 import { getTeacherClassTasks } from '@/store/classSlice';
 import { useFocusEffect } from '@react-navigation/native';
+import ClassWork from './ClassWork';
 
 const tasks = [
   { title: 'Attendance Monitoring', action: 'Check' },
@@ -111,7 +112,7 @@ const TaskSection = () => {
                   if(item.task_type == 'AICheck') {
                     return (<AITask task={item} /> )
                   } else if(item.task_type == 'Classwork') {
-                    return (<AITask task={item} /> )
+                    return (<ClassWork task={item} refreshTasks={getTasksListData} /> )
                   } else if(item.task_type == 'SlipTest') {
                     return (<Quiz task={item} refreshTasks={getTasksListData} /> )
                   } else if(item.task_type == 'Attendance') {

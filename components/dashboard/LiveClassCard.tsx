@@ -131,7 +131,7 @@ const LiveSessionCard = () => {
     
   }
   return (
-    <View style={[styles.cardContainer, {opacity: nextClass.class_schedule_id ? 1 : 0.4 }]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
+    <View style={[styles.cardContainer, {opacity: nextClass.class_schedule_id ? 1 : 0.2 }]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
       <View style={styles.sessionDetails}>
         {
           isnextClass ? 

@@ -1,10 +1,10 @@
 import { Colors } from '@/constants/Colors';
-import { getSlipTestResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getAITaskCheckResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import ClassworkCheckModal from '../Modals/ClassworkModal';
-import { addTaskToClass, publishQuiz } from '@/store/classSlice';
+import AiCheckModal from '../Modals/Modal_4_AICheckModal';
+import { addTaskToClass, publishClasswork } from '@/store/classSlice';
 import moment from 'moment-timezone';
 
 interface AITaskCardProps {
@@ -13,102 +13,92 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const Quiz = ({task, refreshTasks}: any) => {
+const ClassWork = ({task, refreshTasks}: any) => {
     const dispatch = useDispatch<any>()
     const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
     const {user} = useSelector((state: any) => state.user);
     const {liveClass} = useSelector((state: any) => state.classes);
 
+    console.log("task")
+    console.log(task)
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
-
-    const getAttendanceData = async (taskId: number) => {
-        const reqObj: any = {classId, taskId}
-        dispatch(getSlipTestResults(reqObj))
+    const getAttendanceData = async () => {
+        const reqObj: any = {classId}
+        dispatch(getAITaskCheckResults(reqObj))
     }
     const onPress = () => {
-      setShowModal4AICheckModal(true)
+        
         console.log("button pressed ....")
+        setShowModal4AICheckModal(true)
     }
 
     const cardPressed = () => {
         console.log("card pressed ....")
-        dispatch(setSelectedTask('SlipTest'))
+        dispatch(setSelectedTask('AI Task'))
         dispatch(setSelectedTaskId(task.task_id))
-        getAttendanceData(task.task_id)
+        getAttendanceData()
     }
     useEffect(() => {
-        if(selectedTaskSection == 'SlipTest') {
-            getAttendanceData(task.task_id)
+        if(selectedTaskSection == 'AI Task') {
+            getAttendanceData()
         }
 
     }, [selectedTaskSection])
 
     const publishQuizFun = async () => {
-      console.log("task")
-      console.log(task)
-      // const now = new Date();
-      // const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
-      const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(5, 'minutes');
-      const formatted = fiveMinutesLaterIST.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
 
-      const the_quiz = {
-        start_time: formatted, 
-        quiz_id: task?.quiz_id, 
-        quiz_type: task?.quiz_details?.quiz_type ? task?.quiz_details?.quiz_type : "SlipTest", 
-        duration: task?.quiz_details?.duration, 
-        division_id: liveClass.division_id,
-        task_id: task.task_id
-      }
-      await dispatch(publishQuiz(the_quiz));
-      await refreshTasks()
-      setShowModal4AICheckModal(false)
-
+          const classworkReq = {
+            task_id: task.task_id
+          }
+          console.log(classworkReq)
+          await dispatch(publishClasswork(classworkReq));
+          await refreshTasks()
+          setShowModal4AICheckModal(false)
+    
     }
+    
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'SlipTest' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'AI Task' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.imageSection}>
-                <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Quiz.png')} />
+                <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Note-taking.png')} />
             </View>
-            
-            <Text style={styles.title}>{'Quiz'}</Text>
+            <Text style={styles.title}>{task.title}</Text>
             {
               !task.published_quiz_id ?
-              <TouchableOpacity style={styles.button} onPress={onPress}>
-              <Text style={styles.buttonText}>{'Start'}</Text>
-            </TouchableOpacity>
-            :
-            <TouchableOpacity style={styles.button} onPress={cardPressed}>
-              <Text style={styles.buttonText}>{'Results'}</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={onPress}>
+                <Text style={styles.buttonText}>{'Publish'}</Text>
+                </TouchableOpacity>
+                :
+                <TouchableOpacity style={styles.button} onPress={cardPressed}>
+                <Text style={styles.buttonText}>{'View Results'}</Text>
+                </TouchableOpacity>
             }
-            
         </View>
         </TouchableOpacity>
-        {/* <ClassworkCheckModal visible={showModal4AICheckModal} onClose={publishQuiz} goBack={publishQuiz} saveAICheckDetails={selectedTaskSection} /> */}
         <Modal visible={showModal4AICheckModal} transparent animationType="fade">
-          <View style={styles.overlay}>
+            <View style={styles.overlay}>
             <View style={styles.modalContainer}>
-              <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Image source={require('../../assets/images/ss/QuizIcon.png')} style={styles.iconImg} />
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <Image source={require('../../assets/images/ss/PublishClasswork.png')} style={styles.iconImg} />
                 </View>
                 <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                  <Text style={styles.mainText}>Start Quiz</Text>
-                  <Text style={styles.subText}>Are you sure you want to proceed?</Text>
+                    <Text style={styles.mainText}>Publish Classwork</Text>
+                    <Text style={styles.subText}>Are you sure you want to proceed?</Text>
                 </View>
-              </View>
-              <View style={styles.footer}>
+                </View>
+                <View style={styles.footer}>
                 <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal4AICheckModal(false)}>
-                  <Text>Cancel</Text>
+                    <Text>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>
-                  <Text style={{ color: 'white' }}>Start Now</Text>
+                    <Text style={{ color: 'white' }}>Publish</Text>
                 </TouchableOpacity>
-              </View>
+                </View>
             </View>
-          </View>
+            </View>
         </Modal>
       </View>
     )
@@ -184,7 +174,6 @@ const styles = StyleSheet.create({
   subText: {
     fontSize: 16
   }
-
 });
 
-export default Quiz;
+export default ClassWork;

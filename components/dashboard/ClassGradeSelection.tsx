@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { useSelector } from 'react-redux';
 
 const ClassGradeSelection = () => {
-  const [selectedGrade, setSelectedGrade] = useState(null);
-  const [selectedSection, setSelectedSection] = useState(null);
+  const { liveClass } = useSelector((state: any) => state.classes)
+  const [selectedGrade, setSelectedGrade] = useState(liveClass?.division_name ?? null);
+  const [selectedSection, setSelectedSection] = useState(liveClass?.section_name ?? null);
   // Options for the Grade and Section
   const gradeOptions = [
-    { label: 'Grade VII', value: 'Grade VII' },
-    { label: 'Grade VIII', value: 'Grade VIII' },
-    { label: 'Grade IX', value: 'Grade IX' },
+    { label: 'Grade VII', value: 'Class 7' },
+    { label: 'Grade VIII', value: 'Class 8' },
+    { label: 'Grade IX', value: 'Class 9' },
+    { label: 'Grade X', value: 'Class 10' },
   ];
 
   const sectionOptions = [
-    { label: 'Section A', value: 'Section A' },
-    { label: 'Section B', value: 'Section B' },
-    { label: 'Section C', value: 'Section C' },
+    { label: 'Section A', value: 'A' },
+    { label: 'Section B', value: 'B' },
+    { label: 'Section C', value: 'C' },
   ];
 
   const [open, setOpen] = useState(false);
@@ -27,7 +30,12 @@ const ClassGradeSelection = () => {
     { label: 'Option 2', value: 'option2' }
   ]);
 
-  
+  useEffect(() => {
+    if(liveClass) {
+      setSelectedGrade(liveClass.division_name)
+      setSelectedSection(liveClass.section_name)
+    }
+  }, [liveClass])
   return (
     <View style={styles.container}>
       <View style={styles.dropdownContainer}>
@@ -59,6 +67,7 @@ const ClassGradeSelection = () => {
           dropDownContainerStyle={{
             borderColor: 'lightgray'       // 👉 Dropdown list border
           }}
+          disabled={true}
         />
         </View>
         <View style={styles.dropdownContainer}>
@@ -88,6 +97,7 @@ const ClassGradeSelection = () => {
           dropDownContainerStyle={{
             borderColor: 'lightgray'       // 👉 Dropdown list border
           }}
+          disabled={true}
           // setItems={setItems}
         />
       </View>

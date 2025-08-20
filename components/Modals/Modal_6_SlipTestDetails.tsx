@@ -23,17 +23,19 @@ interface TestSettingsModalProps {
 }
 
 const timeData = [
-  {id: 1,value: 15, label: '15 mins'},
-  {id: 2,value: 30, label: '30 mins'},
-  {id: 3,value: 45, label: '45 mins'},
-  {id: 4,value: 60, label: '60 mins'},
+  {id: 1,value: 10, label: '10 mins'},
+  {id: 2,value: 15, label: '15 mins'},
+  {id: 3,value: 30, label: '30 mins'},
+  {id: 4,value: 45, label: '45 mins'},
+  {id: 5,value: 60, label: '60 mins'},
 ];
 
 const marksData = [
-  {id: 1,value: 20, label: '20'},
-  {id: 2,value: 50, label: '50'},
-  {id: 3,value: 60, label: '60'},
-  {id: 4,value: 100, label: '100'},
+  {id: 1,value: 10, label: '10'},
+  {id: 2,value: 20, label: '20'},
+  {id: 3,value: 50, label: '50'},
+  {id: 4,value: 60, label: '60'},
+  {id: 5,value: 100, label: '100'},
 ]
 
 
@@ -65,8 +67,8 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
         setSubCount(selectedTask.instructions?.subjective_questions);
         setMcqCount(selectedTask.instructions?.objective_questions);
       } else {
-        setDuration(15);
-        setMarks(50);
+        setDuration(10);
+        setMarks(10);
         setDifficulty(5);
         setSubCount(2);
         setMcqCount(3);

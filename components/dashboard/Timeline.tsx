@@ -204,14 +204,19 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
                 // var minutes = duration.asMinutes() % 60;
                 var minutes = duration.asMinutes()
+                const start_date_time = moment(timeline.date + " " +timeline.start_time)
+                const end_date_time = moment(timeline.date + " " +timeline.end_time)
+                const now = moment(new Date())
+                now.isSameOrAfter(end_date_time)
                 return {
                     classId: timeline.class_schedule_id,
                     time: startTimeStr + " - " + endTimeStr,
                     // subject: 'Biology - Cell Structure',
                     category: timeline.subject_name,
-                    live: false,
+                    live: (now.isSameOrBefore(end_date_time) && now.isSameOrAfter(start_date_time)),
                     startTime: startTimeStr, 
-                    classLength: minutes
+                    classLength: minutes,
+                    isClassOver: now.isSameOrAfter(end_date_time)
                 }
             })
             console.log("timelineDataArray")
@@ -267,7 +272,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     color={'gray' }
                     onPress={showDate}
                     />
-                <Text style={styles.timelineDateText}>{moment(date).format('DD-MM-YYYY')}</Text>
+                <Text style={styles.timelineDateText} onPress={showDate} >{moment(date).format('DD-MM-YYYY')}</Text>
                 
                 {show && (
                   <View style={styles.calendarOverlay}>

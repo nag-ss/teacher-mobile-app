@@ -17,15 +17,21 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
     // console.log("welcome to class ....")
     // console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
     // fetch class tasks
-    classPrepRef.current?.setSelectedClass()
+    console.log(item)
+    if(!item.isClassOver) {
+      classPrepRef.current?.setSelectedClass()
+    }
+    
     // if(moment(new Date()).format('YYYY-MM-DD') == currentDate) {
     //   console.log("I am in the if loop")
       
     // }
   }
 
+
+
   return (
-    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*50}]} onPress={openClassPrep}>
+    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*50, backgroundColor: item.isClassOver ? '#D3D3D3' : '#fff'}]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
             <Image style={{width: height == 1 ? 45 : 65, height: height == 1 ? 45 : 70}} source={require('../../assets/images/ss/Chemistry.png')} />

@@ -87,7 +87,7 @@ const userSlice = createSlice({
         state.loading = false
         console.log("error login api ")
         console.log(action.payload)
-        const msg: any = "Username or Passewrd is wrong"
+        const msg: any = "Username or Password is wrong"
         state.error = msg
       })
         .addCase(userDetails.pending, (state, action) => {

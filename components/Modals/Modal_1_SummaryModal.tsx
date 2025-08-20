@@ -72,26 +72,29 @@ export default function ClassSummaryPopModal({
             <Text style={styles.subTitle}>Class Details</Text>
             <View style={styles.rowBetween}>
               <View style={styles.rowItem}>
-                <Text style={styles.detailText}>Grade </Text> <Text style={styles.detailTextValues}>: {selectedClass?.division_name}</Text>
+                <Text style={styles.detailText}>Grade :</Text> 
+                <Text style={styles.detailTextValues}>{selectedClass?.division_name}</Text>
               </View>
               <View style={styles.rowItem}>
-                <Text style={styles.detailText}>Section </Text> <Text style={styles.detailTextValues}>: {selectedClass?.section_name}</Text>
+                <Text style={styles.detailText}>Section :</Text> 
+                <Text style={styles.detailTextValues}> {selectedClass?.section_name}</Text>
               </View>
               <View style={styles.rowItem}>
-                <Text style={styles.detailText}>Subject </Text> <Text style={styles.detailTextValues}>: {parentProps.category}</Text>
+                <Text style={styles.detailText}>Subject :</Text> 
+                <Text style={styles.detailTextValues}> {parentProps.category}</Text>
               </View>
             </View>
             {/* Date and Time */}
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', marginLeft: -2, marginTop: 8}}>
               <View style={styles.rowItem}>
                 {/* <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.iconSmall} /> */}
-                <Text style={{...styles.label, width: 45}}>Date</Text>
-                <Text style={styles.value}>: {selectedClass?.date}</Text>
+                <Text style={[styles.label, {width: 45}]}>Date:</Text>
+                <Text style={styles.value}> {selectedClass?.date}</Text>
               </View>
               <View style={styles.rowItem}>
                 {/* <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} /> */}
-                <Text style={{...styles.label, width: 55}}>Time</Text>
-                <Text style={styles.value}>: {parentProps.time}</Text>
+                <Text style={[styles.label, {width: 55}]}>Time:</Text>
+                <Text style={styles.value}> {parentProps.time}</Text>
               </View>
             </View>
           </View>

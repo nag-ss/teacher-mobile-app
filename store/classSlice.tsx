@@ -62,6 +62,10 @@ export const setClassTopicSubTopic = createAsyncThunk('/quiz/set_class_schedule_
   return handleAuthApiCall(classService.setClassTopicSubTopic, reqData, thunkAPI);
 });
 
+export const publishClasswork = createAsyncThunk('/quiz/publishClasswork', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.publishClasswork, quiz, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {

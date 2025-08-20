@@ -13,7 +13,8 @@ import {
   DELETE_QUESTION,
   REPLACE_QUESTION,
   GET_TOPIC_SUBTOPICS,
-  SET_TOPIC_SUBTOPIC
+  SET_TOPIC_SUBTOPIC,
+  PUBLISH_CLASSWORK
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -170,6 +171,13 @@ const publishQuiz = async(quiz: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', quiz, userToken);
 }
 
+const publishClasswork = async(quiz: any, userToken: string) => {
+  const {task_id} = quiz;
+  const reqUrl = `${PUBLISH_CLASSWORK}/${task_id}`;
+  delete quiz.task_id;
+  return await apiRequest(reqUrl, 'POST', quiz, userToken);
+}
+
 const deleteQuestion = async(questionId: number, userToken: string) => {
   const reqUrl = `${DELETE_QUESTION}/${questionId}`;
   return await apiRequest(reqUrl, 'DELETE', questionId, userToken);
@@ -205,7 +213,8 @@ const authService = {
     deleteQuestion,
     replaceQuestion, 
     getClassTopicSubTopics,
-    setClassTopicSubTopic
+    setClassTopicSubTopic,
+    publishClasswork
 };
 
 export default authService;
