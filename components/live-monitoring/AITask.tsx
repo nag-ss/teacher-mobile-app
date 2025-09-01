@@ -53,7 +53,7 @@ const AITask = ({task}: any) => {
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Note-taking.png')} />
             </View>
             <Text style={styles.title}>{task.title}</Text>
-            <TouchableOpacity style={styles.button} onPress={onPress}>
+            <TouchableOpacity style={styles.button} onPress={cardPressed}>
             <Text style={styles.buttonText}>{task.task_type == 'AICheck' ? 'Check' : 'Publish'}</Text>
             </TouchableOpacity>
         </View>

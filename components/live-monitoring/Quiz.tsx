@@ -72,7 +72,7 @@ const Quiz = ({task, refreshTasks}: any) => {
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Quiz.png')} />
             </View>
             
-            <Text style={styles.title}>{'Quiz'}</Text>
+            <Text style={styles.title} numberOfLines={1}>{task.title}</Text>
             {
               !task.published_quiz_id ?
               <TouchableOpacity style={styles.button} onPress={onPress}>
@@ -127,7 +127,10 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray'
   },
   icon: { fontSize: 24 },
-  title: { fontSize: 14, fontWeight: '600', marginVertical: 10, height: 40 },
+  title: { 
+    fontSize: 14, fontWeight: '600', marginVertical: 10, height: 40
+    
+  },
   button: {
     borderWidth: 1,
     borderColor: Colors.primaryColor,

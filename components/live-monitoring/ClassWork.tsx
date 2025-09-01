@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getAITaskCheckResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getClassworkResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,9 +22,10 @@ const ClassWork = ({task, refreshTasks}: any) => {
     console.log("task")
     console.log(task)
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
-    const getAttendanceData = async () => {
-        const reqObj: any = {classId}
-        dispatch(getAITaskCheckResults(reqObj))
+    
+    const getClassworkData = async () => {
+        const reqObj: any = {classId, taskId: task.task_id}
+        dispatch(getClassworkResults(reqObj))
     }
     const onPress = () => {
         
@@ -34,14 +35,14 @@ const ClassWork = ({task, refreshTasks}: any) => {
 
     const cardPressed = () => {
         console.log("card pressed ....")
-        dispatch(setSelectedTask('AI Task'))
+        dispatch(setSelectedTask('Classwork'))
         dispatch(setSelectedTaskId(task.task_id))
-        getAttendanceData()
+        getClassworkData()
     }
     useEffect(() => {
-        if(selectedTaskSection == 'AI Task') {
-            getAttendanceData()
-        }
+        // if(selectedTaskSection == 'Classwork') {
+        //     getAttendanceData()
+        // }
 
     }, [selectedTaskSection])
 
@@ -60,19 +61,19 @@ const ClassWork = ({task, refreshTasks}: any) => {
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'AI Task' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'Classwork' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Note-taking.png')} />
             </View>
-            <Text style={styles.title}>{task.title}</Text>
+            <Text style={styles.title} numberOfLines={1}>{task.title}</Text>
             {
-              !task.published_quiz_id ?
+              !task.published_work_id ?
                 <TouchableOpacity style={styles.button} onPress={onPress}>
                 <Text style={styles.buttonText}>{'Publish'}</Text>
                 </TouchableOpacity>
                 :
                 <TouchableOpacity style={styles.button} onPress={cardPressed}>
-                <Text style={styles.buttonText}>{'View Results'}</Text>
+                <Text style={styles.buttonText}>{'Results'}</Text>
                 </TouchableOpacity>
             }
         </View>

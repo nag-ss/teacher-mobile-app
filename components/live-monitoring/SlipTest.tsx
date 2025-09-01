@@ -43,7 +43,7 @@ const SlipTest = ({task}: any) => {
             <View style={styles.imageSection}>
                 <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/MileStone.png')} />
             </View>
-            <Text style={styles.title}>{'Slip Test'}</Text>
+            <Text style={styles.title}>{'Tasks'}</Text>
             <TouchableOpacity style={[styles.button, {backgroundColor: isPressed ? Colors.primaryColor : ''}]} 
                 onPress={onPress}
                 onPressIn={() => setIsPressed(true)}

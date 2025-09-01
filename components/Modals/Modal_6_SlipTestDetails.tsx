@@ -47,6 +47,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
   const [subCount, setSubCount] = useState(0);
   const [isMCQ, setIsMCQ] = useState(true);
   const [isSubjective, setIsSubjective] = useState(true);
+  const [title, setTitle] = useState('');
 
   const totalQuestions = (isMCQ ? mcqCount : 0) + (isSubjective ? subCount : 0);
 
@@ -89,6 +90,15 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
               <Text style={styles.subtitle}>Customize test parameters before generating questions.</Text>
             </View>
             
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Title</Text>
+              <TextInput
+                value={title}
+                onChangeText={setTitle}
+                placeholder="Enter Test title"
+                style={styles.textInput}
+              />
+            </View>
 
             {/* Time & Marks */}
             <View style={styles.section}>
@@ -259,7 +269,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
             {/* Submit Button */}
             <View style={styles.footer}>
               <TouchableOpacity style={styles.button} onPress={() => {
-                generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions})
+                generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions, title})
               }}>
                 <Text>Generate Test</Text>
               </TouchableOpacity>
@@ -416,5 +426,31 @@ const styles = StyleSheet.create({
   },
   slider: {
     // transform: [{ scaleY: 1.5 }]
-  }
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 6,
+  },
+  textInput: {
+    backgroundColor: '#F3F4F6',
+    borderColor: '#D1D5DB',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 14,
+  },
+  textArea: {
+    backgroundColor: '#F5F5F6',
+    borderColor: '#D1D5DB',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 14,
+    height: 100,
+    textAlignVertical: 'top',
+    margin: 10
+  },
 });

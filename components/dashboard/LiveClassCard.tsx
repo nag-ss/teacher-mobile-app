@@ -131,18 +131,23 @@ const LiveSessionCard = () => {
     
   }
   return (
-    <View style={[styles.cardContainer, {opacity: nextClass.class_schedule_id ? 1 : 0.2 }]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
+    <View style={[styles.cardContainer, {opacity: nextClass.class_schedule_id ? 1 : 1 }]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
       <View style={styles.sessionDetails}>
         {
-          isnextClass ? 
+          (isnextClass) ? 
           <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/UpcomingClass.png')} />
+        : 
+        !nextClass.class_schedule_id ? 
+        <Image style={{width: 150, height: 150, borderRadius: 100}} source={require('../../assets/images/ss/women-with-yoga.png')} />
         : <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/LiveClass.png')} />
         }
         
-        <View style={styles.textContainer}>
+        {
+        nextClass.class_schedule_id ?
+          <View style={styles.textContainer}>
           <Text style={styles.time}>
             {nextClass.start_time ? (moment(nextClass.start_time, 'HH:mm:ss').format('HH:mm a')) : moment().format('HH:mm a')} - 
-             {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
+            {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
           </Text>
           <View>
             <Text style={styles.subject}>
@@ -150,17 +155,28 @@ const LiveSessionCard = () => {
             </Text>
             <Text style={styles.category}>{nextClass.subject_name}</Text>
           </View>
-          
-          {/* <Button
-            title={isnextClass ? 'Upcoming' : "Join now"}
-            buttonStyle={styles.joinButton}
-            titleStyle={styles.buttonTitle}
-            onPress={navigateToMonitor}
-          /> */}
           <TouchableOpacity style={styles.joinButton} onPress={navigateToMonitor}>
             <Text style={styles.buttonTitle}>{isnextClass ? 'Upcoming' : "Join now"}</Text>
           </TouchableOpacity>
         </View>
+        :
+        <View style={styles.textContainer}>
+          <View>
+            
+          </View>
+          <View>
+            <Text style={styles.subject}>
+              No Classes found today
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <Text style={styles.category}>Chill until then!</Text>
+            </View>
+          </View>
+          
+          
+        </View>
+      }
+        
       </View>
     </View>
   );

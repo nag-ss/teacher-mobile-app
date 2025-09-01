@@ -271,7 +271,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
         await dispatch(updateSlipTest(quizDetails));
       } else {
         console.log('I am creating a quiz');
-        const quiz_title = `Slip Test ${Math.floor(Math.random() * 1000)}`;
+        // const quiz_title = `Slip Test ${Math.floor(Math.random() * 1000)}`;
+        const quiz_title = slipTestDetails.title;
         const quizDetails: any = {
           title: quiz_title, 
           task_type: "SlipTest", 
