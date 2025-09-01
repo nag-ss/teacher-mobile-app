@@ -65,12 +65,13 @@ const LiveSessionCard = () => {
     console.log("liveClassDataRes.payload")
     console.log(liveClassDataRes.payload)
     if(!liveClassDataRes.payload) {
-      // await dispatch(getScheduleClasses())
+      
       getClassFromSchedule()
     } else {
       console.log("liveClassDataRes.payload ----")
       console.log(liveClassDataRes.payload)
       setNextClass(liveClassDataRes.payload)
+      // getClassFromSchedule()
     }
   }
   useIntervalApi(getDetails, 300000);
@@ -94,6 +95,13 @@ const LiveSessionCard = () => {
 
   const getClassFromSchedule = async () => {
     console.log("next call")
+    console.log(classTimeline)
+    const reqObj: any = {
+      date: moment(new Date()).format('YYYY-MM-DD')
+    }
+    let schClassesRes = await dispatch(getScheduleClasses(reqObj))
+    console.log(" shcedule paylod ")
+    console.log(schClassesRes.payload)
     if(classTimeline && classTimeline.length) {
       console.log("am in liv sc")
       const now = new Date();

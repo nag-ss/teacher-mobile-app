@@ -34,13 +34,22 @@ const iconMapper: any = {
 interface TaskItemProps {
   item: any;
   index: number;
+  noTasks: number;
+  noTask: number;
+  selectedTaskId: number;
   viewQuiz: (id: number) => void;
   deleteTask: (id: number, type: string) => void;
   editTask: (id: number, type: string) => void;
+  setSelectedTaskId: (id: number) => void;
 };
 
-const TaskItem = ({item, index, deleteTask, editTask, viewQuiz}: TaskItemProps) => {
+const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz, setSelectedTaskId, selectedTaskId}: TaskItemProps) => {
   const [taskOptionsVisible, setTaskOptionsVisible] = useState(false);
+  const isLastItem = noTask === noTasks - 1;
+  const setTaskOptionsVisibleOption = () => {
+    setTaskOptionsVisible(!taskOptionsVisible)
+    setSelectedTaskId(item.task_id)
+  }
   return (
     <View style={styles.taskRow}>
       <View style={{width: 50}}>
@@ -50,10 +59,12 @@ const TaskItem = ({item, index, deleteTask, editTask, viewQuiz}: TaskItemProps) 
       </View>
       <Text style={{...styles.taskCell, width: 280, fontWeight: 'bold', textAlign: 'center'}}>{item.title}</Text>
       <Text style={{...styles.taskCell, width: 250,textAlign: 'center'}}>{mapper[item.task_type] || 'Other'}</Text>
-      <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisible(val => !val)}>
+      <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisibleOption()}>
         <Image source={action_icon} style={styles.taskIcon} />
       </TouchableOpacity>
-      {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: 50, backgroundColor: 'white' }}>
+      
+      
+      {(taskOptionsVisible && selectedTaskId == item.task_id) && (<View style={[styles.dropdown, isLastItem ? styles.dropdownAbove : styles.dropdownBelow]}>
         <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
           <Text style={styles.actionButton}>Edit</Text>
         </TouchableHighlight>
@@ -98,8 +109,22 @@ const styles = StyleSheet.create({
   actionButton: {
     margin: 12, 
     textAlign: 'left' 
-  } 
-
+  } ,
+  // dropdown: { position: 'absolute', right: 30, top: 30, backgroundColor: '#fff', elevation: 5, zIndex: 1 }
+  dropdown: {
+    position: 'absolute',
+    backgroundColor: '#fff',
+    elevation: 5,
+    zIndex: 1,
+  },
+  dropdownBelow: {
+    top: 30,
+    right: 30,
+  },
+  dropdownAbove: {
+    bottom: 30,
+    right: 30,
+  },
 })
 
 export default TaskItem;

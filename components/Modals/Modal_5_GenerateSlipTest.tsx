@@ -48,7 +48,7 @@ const GenerateSlipTestModal = ({
   onClose,
   clickedNext,
 }: GenerateSlipTestModalProps ) => {
-  const [selectedOption, setSelectedOption] = useState<'topic' | 'upload'>();
+  const [selectedOption, setSelectedOption] = useState<'topic' | 'upload'>('topic');
   // const [topicSelected, setTopicSelected] = useState(false)
   // const [uploadSelected, setUploadSelected] = useState(false)
   const [topic, setTopic] = useState(String);

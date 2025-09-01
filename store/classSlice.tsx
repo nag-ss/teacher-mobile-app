@@ -139,7 +139,7 @@ const classSlice = createSlice({
             state.loading = true
           })
         .addCase(getScheduleClasses.fulfilled, (state, action) => {
-            console.log("action.payload classes ")
+            console.log("action.payload schedule classes ")
             console.log(action.payload)
             state.classTimeline = action.payload
             

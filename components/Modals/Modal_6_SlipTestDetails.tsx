@@ -15,6 +15,8 @@ import Slider, {MarkerProps, SliderProps} from '@react-native-community/slider';
 import InputSpinner from "react-native-input-spinner";
 import { Dropdown } from 'react-native-element-dropdown';
 
+const squareThumb = require('../../assets/images/ss/Sliderbutton.png');
+
 interface TestSettingsModalProps {
   visible: boolean; 
   selectedTask: any,
@@ -52,12 +54,21 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
   const totalQuestions = (isMCQ ? mcqCount : 0) + (isSubjective ? subCount : 0);
 
   const renderStepMarker = useCallback(({index}: MarkerProps) => {
-    return  (
-      <View style={{marginTop: 12}}>
-        <Text style={{fontSize: 16, fontWeight: '900'}}>'</Text>
-        <Text style={{marginTop: -10, marginLeft: -2}}>{(index % 2 == 0) ? index:  ''}</Text>
-      </View>
-    );
+    const maxIndex = 10;
+
+  let translateX = 0;
+  if (index < 5) {
+    translateX = -10+index+2;
+  } else if (index > 5) {
+    translateX = index;
+  }
+
+  return (
+    <View style={{ marginTop: 15, alignItems: 'center', transform: [{ translateX }] }}>
+      <Text style={{ fontSize: 16, fontWeight: '900' }}>'</Text>
+      <Text style={{ marginTop: -10 }}>{index % 2 === 0 ? index : ''}</Text>
+    </View>
+  );
   }, []);
 
   useEffect(() => {
@@ -90,13 +101,13 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
               <Text style={styles.subtitle}>Customize test parameters before generating questions.</Text>
             </View>
             
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Title</Text>
+            <View style={[styles.inputGroup, styles.section, {backgroundColor: 'white'}]}>
+              <Text style={[styles.label, styles.sectionTitle,]}>Title</Text>
               <TextInput
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Enter Test title"
-                style={styles.textInput}
+                style={[styles.textInput, {backgroundColor: 'white'}]}
               />
             </View>
 
@@ -178,17 +189,25 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 onChangeText={(val) => setDifficulty(Math.max(0, Math.min(10, Number(val))))}
                 keyboardType="numeric"
               /> */}
-              <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={10}
-                step={1}
-                value={difficulty}
-                onSlidingComplete={(num) => setDifficulty(num)}
-                minimumTrackTintColor='#21c17c'
-                thumbTintColor='#21c17c'
-                StepMarker={renderStepMarker}
-              />
+
+              <View style={styles.container}>
+                <View style={styles.trackBackground} />
+                <Slider
+                  style={styles.slider}
+                  minimumValue={0}
+                  maximumValue={10}
+                  step={1}
+                  value={difficulty}
+                  onSlidingComplete={(num) => setDifficulty(num)}
+                  minimumTrackTintColor="transparent"
+                  maximumTrackTintColor="transparent"
+                  thumbTintColor="#21c17c"
+                  thumbImage={squareThumb} 
+                  StepMarker={renderStepMarker}
+                />
+                
+              </View>
+              
             </View>
 
             {/* Number of Questions */}
@@ -424,9 +443,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 6,
   },
-  slider: {
-    // transform: [{ scaleY: 1.5 }]
-  },
+  // slider: {
+  //   // transform: [{ scaleY: 1.5 }]
+  // },
   inputGroup: {
     marginBottom: 16,
   },
@@ -452,5 +471,23 @@ const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: 'top',
     margin: 10
+  },
+  container: {
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+  },
+  trackBackground: {
+    position: 'absolute',
+    height: 10,  // thickness of the track line
+    borderRadius: 5,
+    backgroundColor: '#21c17c',
+    width: '100%',
+    top: '50%',
+    marginTop: 0, // half of trackBackground height to center vertically
+  },
+  slider: {
+    width: '100%',
+    height: 40, // overall slider height to control thumb size
   },
 });

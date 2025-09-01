@@ -24,11 +24,11 @@ interface AiCheckModalProps {
 const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
-  const [matchType, setMatchType] = useState({ exact: false, approximate: false });
+  const [matchType, setMatchType] = useState({ exact: true, approximate: false });
   const [textInput, setTextInput] = useState('');
 
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [selectedMarks, setSelectedMarks] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(5);
+  const [selectedMarks, setSelectedMarks] = useState(5);
   const [showMandatoryMsg, setShowMandatoryMsg] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
     // Options for the Grade and Section
@@ -83,8 +83,8 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
       await saveAICheckDetails({title, matchType, time: selectedTime, marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
       setTitle(''), 
       setMatchType({exact: false, approximate: false})
-      setSelectedMarks(null)
-      setSelectedTime(null)
+      setSelectedMarks(5)
+      setSelectedTime(5)
       setTextInput('')
       setIsDisabled(false)
     }

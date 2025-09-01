@@ -53,6 +53,7 @@ const mapper: any = {
 
 const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks, onClose, goBack, addTask, deleteTask, editTask, viewQuiz }: ClassTaskCardPopProps) => {
   const tasksCount = classTasks.length;
+  const [selectedTaskId, setSelectedTaskId] = useState(0)
   // const tasksCount = Tasks.length;
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
@@ -107,7 +108,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 />
               </View>
 
-              <ScrollView style={{maxHeight: 200, overflow: 'visible', padding: 10}}>
+              <ScrollView style={{maxHeight: 200, padding: 10}}>
                 {
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
@@ -122,14 +123,14 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                         keyExtractor={(item) => item.title}
                         renderItem={({ item, index }) => (<TaskItem item={item} index={index} tasksCount={tasksCount} key={item.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />)}
                       /> */}
-                      {classTasks.map((task) => {
-                        return (<TaskItem item={task} index={task.task_id} key={task.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />)
+                      {classTasks.map((task, i) => {
+                        return (<TaskItem noTasks={classTasks.length} noTask={i} item={task} index={task.task_id} key={task.task_id} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} selectedTaskId={selectedTaskId} setSelectedTaskId={setSelectedTaskId} />)
                       })}
 
                     </View>
                   ) : (
                     <View>
-                      <Text style={styles.aiSubtitle}> No tasts yet! Start by adding a task.</Text>
+                      <Text style={styles.aiSubtitle}> No tasks yet! Start by adding a task.</Text>
                     </View>
                     
                   )
