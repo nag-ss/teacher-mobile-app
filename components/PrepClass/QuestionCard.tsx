@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  TouchableHighlight
+  TouchableHighlight,
+  Pressable
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -25,26 +26,30 @@ interface QuestionCardProps {
 };
 
 const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion}: QuestionCardProps) => {
+  
   return (
     <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View style={styles.indexBox}>
-          <Text style={styles.indexText}>{String(index + 1).padStart(2, '0')}</Text>
+      <Pressable onPress={() => setActiveDropdown(-1)}>
+        <View style={styles.cardHeader}>
+          <View style={styles.indexBox}>
+            <Text style={styles.indexText}>{String(index + 1).padStart(2, '0')}</Text>
+          </View>
+          <MathJaxSvg 
+            fontCache={true}
+            fontSize={12}
+            style={styles.questionText}
+          >
+            {item.body.Question}
+          </MathJaxSvg>
+          <View style={styles.markBox}>
+            <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
+          </View>
+          {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+            <Feather name="more-vertical" size={20} color="#4B5563" />
+          </TouchableOpacity>)}
         </View>
-        <MathJaxSvg 
-          fontCache={true}
-          fontSize={12}
-          style={styles.questionText}
-        >
-          {item.body.Question}
-        </MathJaxSvg>
-        <View style={styles.markBox}>
-          <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
-        </View>
-        {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
-          <Feather name="more-vertical" size={20} color="#4B5563" />
-        </TouchableOpacity>)}
-      </View>
+      </Pressable>
+      
 
       {/* {taskOptionsVisible && (<View style={{...styles.actionBox, marginTop: mt}}>
               {item.task_type != 'SlipTest' && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>

@@ -87,14 +87,6 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
             />
           </View>
 
-          {/* Check Type */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Check Type</Text>
-            <View style={styles.checkTypeContainer}>
-              <Text>{checkType}</Text>
-            </View>
-          </View>
-
           {/* Match Type */}
           <View style={styles.matchTypeRow}>
             <RadioGroup 

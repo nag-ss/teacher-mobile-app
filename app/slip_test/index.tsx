@@ -64,6 +64,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
     await dispatch(replaceQuestion({question_id: questionIdToReplace, additional_context: "I want this question changed"}))
     await dispatch(getClassQuiz(quiz_id));
     setReplaceQuestionModal(false);
+    setActiveDropdown(-1);
   }
 
   const renderQuestionCard = ({ item, index }: any) => {
@@ -80,7 +81,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
     //   task_id: quiz_details.task_id
     // }
     // await dispatch(publishQuiz(the_quiz));
-    navigation.navigate('Home');  
+    navigation.navigate('Home', {selectedClass: selectedClass});  
   }
 
   return (
@@ -111,7 +112,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
             scrollEnabled={false}
           />
           {/* Pagination */}
-          <View style={styles.pagination}>
+          {/* <View style={styles.pagination}>
             <TouchableOpacity style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
               <Image source={require('../../assets/images/back-icon.png')} style={{width: 12, height: 12,  padding: 5}} />
               <Text style={styles.paginationLeftText}>Previous</Text>
@@ -130,7 +131,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
               <Text style={styles.paginationRightText}>Next</Text>
               <Image source={require('../../assets/images/arrow_forward_ios.png')} style={{width: 12, height: 12}} />
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           { new_quiz && (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24}}>
             <TouchableOpacity style={styles.saveButton} onPress={publishQuizTask}>
