@@ -37,6 +37,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
             <Image style={{width: height == 1 ? 45 : 65, height: height == 1 ? 45 : 70}} source={require('../../assets/images/ss/Chemistry.png')} />
             <View style={{marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'space-between'}}>
                 <Text style={styles.classTime}>{item.time}</Text>
+                <Text style={styles.topic}>{selectedClass?.class_details[0]?.topic} - {selectedClass?.class_details[0]?.sub_topic[0]}</Text>
                 <Text style={styles.classSubject}>{item.subject}</Text>
                 <Text style={styles.classCategory}>{item.category}</Text>
             </View>
@@ -86,6 +87,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     marginTop: 5,
+  },
+  topic: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    width: 250
   },
   liveBadge: {
     position: 'absolute',
