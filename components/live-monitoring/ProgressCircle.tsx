@@ -6,17 +6,20 @@ interface ProgressCircleProps {
   progress: number; // between 0 and 100
   size?: number;
   strokeWidth?: number;
+  color?: string;
 }
 
 const ProgressCircle = ({
   progress,
   size = 80,
   strokeWidth = 8,
+  color = ''
 }: ProgressCircleProps) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
-  const strokeColor = progress >= 60 ? "#4CAF50" : (progress >= 40 ? 'orange' : 'red')
+  const strokeColor = color ? color.toLowerCase() : (progress >= 60 ? "#4CAF50" : (progress >= 40 ? 'orange' : 'red'))
+  console.log("stroke color === ", strokeColor)
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>

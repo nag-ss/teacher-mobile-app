@@ -37,12 +37,22 @@ const StudentCard = (studentData: any) => {
         : null
     }
     {
-        (student.task_type == 'AICheck') ?
+        (student.task_type == 'AICheck' && student.match_type == 'exact') ?
         <View style={styles.statusContainer}>
             {
-                student.exact_match ? 
-                <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Correct.png')} />
-                : <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/close.png')} />
+                student.exact.color == 'Red' ? 
+                <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/close.png')} />
+                : <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Correct.png')} />
+            }
+            
+        </View>
+        : null
+    }
+    {
+        (student.task_type == 'AICheck' && student.match_type == 'approx') ?
+        <View style={styles.statusContainer}>
+            {
+                <ProgressCircle progress={Math.round(parseFloat(student.approx.score))} size={40} strokeWidth={4} color={student.approx.color} />
             }
             
         </View>

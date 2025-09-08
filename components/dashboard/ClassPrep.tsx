@@ -66,6 +66,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
       division_id: selectedClass.division_id,
     }
 
+    console.log("selectedClass");
     console.log(selectedClass);
 
     await dispatch(getTeacherClassTasks(tasksObject))

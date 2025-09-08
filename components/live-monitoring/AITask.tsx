@@ -22,7 +22,7 @@ const AITask = ({task}: any) => {
     console.log(task)
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     const getAttendanceData = async () => {
-        const reqObj: any = {classId}
+        const reqObj: any = {classId, taskId: task.task_id}
         dispatch(getAITaskCheckResults(reqObj))
     }
     const onPress = () => {

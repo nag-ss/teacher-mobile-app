@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
+import EditQuestionModal from './EditQuestionModal';
 
 const { width } = Dimensions.get('window');
 
@@ -26,7 +27,16 @@ interface QuestionCardProps {
 };
 
 const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion}: QuestionCardProps) => {
-  
+  console.log("question =====")
+  console.log(item)
+  const [showEditModal, setShowEditModal] = useState(false)
+
+  const showEdit = () => {
+    setShowEditModal(true)
+  }
+  const hideEdit = () => {
+    setShowEditModal(false)
+  }
   return (
     <View style={styles.card}>
       <Pressable onPress={() => setActiveDropdown(-1)}>
@@ -62,7 +72,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
 
       {activeDropdown === index && (
         <View style={styles.dropdown}>
-          <TouchableHighlight underlayColor='#bdedd7' onPress={() => console.log(`Edit clicked on question ${item.question_id}`)} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => showEdit()} style={styles.dropdownItem}>
             <Text>Edit</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => replaceQuestion(item.question_id)} style={styles.dropdownItem}>
@@ -113,6 +123,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           ))}
         </View>
       )}
+      <EditQuestionModal selectedQuestion={item} show={showEditModal} onCancel={hideEdit} />
     </View>
   );
 }

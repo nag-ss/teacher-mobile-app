@@ -9,7 +9,8 @@ const getAttendance = async (reqData: any, userToken: string) => {
 };
 
 const getAITaskCheckResults = async (reqData: any, userToken: string) => {
-    const reqUrl = GET_AI_TASK_CHECK + '?class_schedule_id='+reqData.classId
+    const reqUrl = GET_AI_TASK_CHECK + '?class_schedule_id='+reqData.classId+'&teacher_task_id='+reqData.taskId
+    // const reqUrl = GET_AI_TASK_CHECK + '?class_schedule_id=882&teacher_task_id=419'
     console.log(reqUrl)
   return await apiRequest(reqUrl, 'GET', reqData, userToken);
 };
