@@ -56,7 +56,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
 
   const validateText = (title: string) => {
     if (!title) {
-      return "Text is required";
+      return "Title is required";
     }
     return '';
   };
@@ -121,7 +121,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
             </View>
             
             <View style={[styles.inputGroup, styles.section, {backgroundColor: 'white'}]}>
-              <Text style={[styles.label, styles.sectionTitle,]}>Title</Text>
+              <Text style={[styles.label, styles.sectionTitle]}>Title</Text>
               <TextInput
                 value={title}
                 onChangeText={setTitle}
