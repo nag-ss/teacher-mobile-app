@@ -50,25 +50,44 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
   const [isMCQ, setIsMCQ] = useState(true);
   const [isSubjective, setIsSubjective] = useState(true);
   const [title, setTitle] = useState('');
+  const [error, setError] = useState('');
 
   const totalQuestions = (isMCQ ? mcqCount : 0) + (isSubjective ? subCount : 0);
+
+  const validateText = (title: string) => {
+    if (!title) {
+      return "Title is required";
+    }
+    return '';
+  };
+
+  const handleTestSubmit = () => {
+    const validationError = validateText(title);
+    if (validationError) {
+      setError(validationError);
+    } else {
+      setError('');
+      generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions, title})
+      setTitle('');
+    }
+  }
 
   const renderStepMarker = useCallback(({index}: MarkerProps) => {
     const maxIndex = 10;
 
-  let translateX = 0;
-  if (index < 5) {
-    translateX = -10+index+2;
-  } else if (index > 5) {
-    translateX = index;
-  }
+    let translateX = 0;
+    if (index < 5) {
+      translateX = -10+index+2;
+    } else if (index > 5) {
+      translateX = index;
+    }
 
-  return (
-    <View style={{ marginTop: 15, alignItems: 'center', transform: [{ translateX }] }}>
-      <Text style={{ fontSize: 16, fontWeight: '900' }}>'</Text>
-      <Text style={{ marginTop: -10 }}>{index % 2 === 0 ? index : ''}</Text>
-    </View>
-  );
+    return (
+      <View style={{ marginTop: 15, alignItems: 'center', transform: [{ translateX }] }}>
+        <Text style={{ fontSize: 16, fontWeight: '900' }}>'</Text>
+        <Text style={{ marginTop: -10 }}>{index % 2 === 0 ? index : ''}</Text>
+      </View>
+    );
   }, []);
 
   useEffect(() => {
@@ -102,13 +121,14 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
             </View>
             
             <View style={[styles.inputGroup, styles.section, {backgroundColor: 'white'}]}>
-              <Text style={[styles.label, styles.sectionTitle,]}>Title</Text>
+              <Text style={[styles.label, styles.sectionTitle]}>Title</Text>
               <TextInput
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Enter Test title"
-                style={[styles.textInput, {backgroundColor: 'white'}]}
+                style={[styles.textInput, {backgroundColor: 'white', borderColor: error ? 'red' : '#D1D5DB'}]}
               />
+              {error && <Text style={{color : "red" }}>{error}</Text>}
             </View>
 
             {/* Time & Marks */}
@@ -287,9 +307,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
 
             {/* Submit Button */}
             <View style={styles.footer}>
-              <TouchableOpacity style={styles.button} onPress={() => {
-                generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions, title})
-              }}>
+              <TouchableOpacity style={styles.button} onPress={handleTestSubmit}>
                 <Text>Generate Test</Text>
               </TouchableOpacity>
             </View>

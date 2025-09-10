@@ -40,6 +40,8 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   const [selectedId, setSelectedId] = useState('exact');
   const [textInput, setTextInput] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
+  const [titleError, setTitleError] = useState('');
+  const [textInputError, setTextInputError] = useState('');
 
   const cancelOrGoBack = () => {
     if (selectedTask) {
@@ -52,18 +54,40 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   useEffect(() => {
     if (selectedTask) {
       setTitle(selectedTask.title);
+      setSelectedId(selectedTask.instructions?.selectedId);
+      setTextInput(selectedTask.instructions?.textInput);
     } else {
       setTitle('');
+      setTextInput('');
     }
   }, [selectedTask]);
 
+  const validateText = () => {
+    if (!title) {
+      setTitleError("Title is Required");
+      return false;
+    } 
+    if (!textInput) {
+      setTextInputError("Text Input is Required");
+      return false;
+    }
+    setTitleError('');
+    setTextInputError('');
+    return true;
+  };
+
   const saveTask = async () => {
-    setIsDisabled(true)
-    await saveAICheckDetails({title, checkType, selectedId, textInput, taskId: selectedTask?.task_id })
-    setTitle('')
-    setTextInput('')
-    setIsDisabled(false)
+    const isValid = validateText();
+    if (isValid) { 
+      setIsDisabled(true)
+      await saveAICheckDetails({title, checkType, selectedId, textInput, taskId: selectedTask?.task_id })
+      setTitle('')
+      setTextInput('')
+      setIsDisabled(false)
+    }
+    
   }
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -83,8 +107,9 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
               value={title}
               onChangeText={setTitle}
               placeholder="Enter check title"
-              style={styles.textInput}
+              style={[styles.textInput, {borderColor: titleError ? 'red' : '#D1D5DB'}]}
             />
+            {titleError && <Text style={{color : "red" }}>{titleError}</Text>}
           </View>
 
           {/* Match Type */}
@@ -100,7 +125,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
           {/* Text Input */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Text Input</Text>
-            <View style={{borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 8 }}>
+            <View style={{borderWidth: 1, borderColor: textInputError ? 'red' : '#D1D5DB', borderRadius: 8 }}>
               <TextInput
                 value={textInput}
                 onChangeText={setTextInput}
@@ -109,7 +134,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
                 style={styles.textArea}
               />
             </View>
-            
+            {textInputError && <Text style={{color : "red" }}>{textInputError}</Text>}
           </View>
 
           {/* Footer Buttons */}
@@ -117,9 +142,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
             <TouchableOpacity style={styles.cancelBtn} onPress={cancelOrGoBack}>
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={() => {
-              saveTask()
-            }}>
+            <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={saveTask}>
               <Text style={{ textAlign: 'center' }}>Save</Text>
             </TouchableOpacity>
           </View>
@@ -171,7 +194,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: '#F3F4F6',
-    borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
@@ -215,12 +237,11 @@ const styles = StyleSheet.create({
   },
   textArea: {
     backgroundColor: '#F5F5F6',
-    borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
-    height: 100,
+    height: 300,
     textAlignVertical: 'top',
     margin: 10
   },
