@@ -82,8 +82,13 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest 
     setActiveDropdown(-1);
   }
 
+  const refreshQuiz = async () => {
+    console.log("calling refresh .....", quiz_details.quiz_id)
+    await dispatch(getClassQuiz(quiz_details.quiz_id));
+  }
+
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} refreshQuiz={refreshQuiz} />)
   }
 
   return (

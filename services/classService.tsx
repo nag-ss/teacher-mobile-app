@@ -15,7 +15,10 @@ import {
   GET_TOPIC_SUBTOPICS,
   SET_TOPIC_SUBTOPIC,
   PUBLISH_CLASSWORK,
-  CHANGE_QUESTION_FROM_IMAGE
+  CHANGE_QUESTION_FROM_IMAGE,
+  RESTORE_QUESTION,
+  EDIT_OBJECTIVE_QUESTION,
+  EDIT_SUBJECTIVE_QUESTION
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -205,6 +208,26 @@ const changeQuestionFromImage = async(quiz: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', quiz, userToken, true);
 }
 
+const restoreQuestionId = async(originalQuestionId: number, userToken: string) => {
+  console.log("ca lling ....")
+  const reqUrl = `${RESTORE_QUESTION}/${originalQuestionId}`;
+  return await apiRequest(reqUrl, 'POST', {}, userToken);
+}
+
+const editSubjectiveQuestion = async(reqData: any, userToken: string) => {
+  console.log("ca lling ....")
+  const reqUrl = `${EDIT_SUBJECTIVE_QUESTION}/${reqData.question_id}`;
+  delete reqData.question_id
+  return await apiRequest(reqUrl, 'PATCH', reqData, userToken);
+}
+
+const editObjectiveQuestion = async(reqData: any, userToken: string) => {
+  console.log("ca lling ....")
+  const reqUrl = `${EDIT_OBJECTIVE_QUESTION}/${reqData.question_id}`;
+  delete reqData.question_id
+  return await apiRequest(reqUrl, 'PATCH', reqData, userToken);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -222,7 +245,10 @@ const authService = {
     getClassTopicSubTopics,
     setClassTopicSubTopic,
     publishClasswork,
-    changeQuestionFromImage
+    changeQuestionFromImage,
+    restoreQuestionId,
+    editSubjectiveQuestion,
+    editObjectiveQuestion
 };
 
 export default authService;

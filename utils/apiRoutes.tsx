@@ -21,3 +21,6 @@ export const GET_TOPIC_SUBTOPICS = 'masters/get_topic_subtopic';
 export const SET_TOPIC_SUBTOPIC = 'class_management/set_class_topic';
 export const PUBLISH_CLASSWORK = 'teacher/publish_classwork';
 export const CHANGE_QUESTION_FROM_IMAGE = 'quiz/change_question_from_image';
+export const RESTORE_QUESTION = 'quiz/restore';
+export const EDIT_OBJECTIVE_QUESTION = 'quiz/edit_objective_question';
+export const EDIT_SUBJECTIVE_QUESTION = 'quiz/edit_subjective_question';

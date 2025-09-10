@@ -70,6 +70,18 @@ export const changeQuestionFromImage = createAsyncThunk('/quiz/changeQuestionFro
   return handleAuthApiCall(classService.changeQuestionFromImage, quiz, thunkAPI);
 });
 
+export const restoreQuestionId = createAsyncThunk('/quiz/restoreQuestionId', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.restoreQuestionId, quiz, thunkAPI);
+});
+
+export const editSubjectiveQuestion = createAsyncThunk('/quiz/editSubjectiveQuestion', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.editSubjectiveQuestion, quiz, thunkAPI);
+});
+
+export const editObjectiveQuestion = createAsyncThunk('/quiz/editObjectiveQuestion', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.editObjectiveQuestion, quiz, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {

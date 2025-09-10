@@ -51,31 +51,9 @@ body,html {
 }`
   const ref: any = useRef();
 
-  function base64ToBlob(base64: any) {
-    console.log("1")
-    let parts = base64.split(',');
-    let mime = parts[0].match(/:(.*?);/)[1];
-    let bstr = atob(parts[1]);
-    console.log("2")
-    let n = bstr.length;
-    let u8arr = new Uint8Array(n);
-    console.log("3")
-  
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    console.log("4")
-    return new Blob([u8arr], { type: mime });
-  }
-
-  const saveBase64Image = async (base64String: string) => {
-    const path = FileSystem.cacheDirectory + 'signature.png';
-    await FileSystem.writeAsStringAsync(path, base64String, { encoding: FileSystem.EncodingType.Base64 });
-    return path;
-  };
-
   const handleSignature = async (signature: any) => {
     console.log('Signature captured:');
+    setIsLoading(true)
     setSignature(signature);
     // setIsLoading(false);
     // console.log(signature)
@@ -98,12 +76,10 @@ body,html {
     console.log("5")
     formData.append('image', file);
     console.log("6")
-    const req = {
-        question_id: selectedQuestion.question_id,
-        image: atob(signature.split(",")[1])
-    }
+    
     await dispatch(changeQuestionFromImage(formData));
     console.log("after change ...")
+    setIsLoading(false)
     updateQuestion()
   };
 
@@ -151,7 +127,7 @@ body,html {
                     // autoClear={false}
                     descriptionText="Write Question"
                     clearText="Clear"
-                    confirmText={"Save"}
+                    confirmText={isLoading ? "Updating ..." : "Save"}
                     // penColor="#000000"
                     // backgroundColor="rgba(255,255,255,0)"
                     // webviewProps={{

@@ -13,49 +13,31 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import EditWriteQuestionModal from './EditWriteQuestionModal';
 import { useDispatch } from 'react-redux';
-import { editObjectiveQuestion, editSubjectiveQuestion } from '@/store/classSlice';
+import { restoreQuestionId } from '@/store/classSlice';
 
 interface EditQuestionModalProps {
   show: boolean;
   selectedQuestion: any;
+  originalQuestionId: number;
   onCancel: () => void;
   updateEdit: () => void;
+  replaceAgain: (id: number) => void;
 }
 
-const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQuestion, onCancel, updateEdit }) => {
+const ReplaceEditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, originalQuestionId, selectedQuestion, onCancel, updateEdit, replaceAgain }) => {
     const dispatch = useDispatch<any>();
     const [showEditWriteModal, setShowEditWriteModal] = useState(false)
-    const [selectedQuestionData, setSelectedQuestionData] = useState(selectedQuestion)
+    
       const showEditWrite = () => {
         setShowEditWriteModal(true)
       }
       const hideEditWrite = () => {
         setShowEditWriteModal(false)
       }
-    const [question, setQuestion] = useState(selectedQuestionData.body.Question)
-    const onUpdate = async () => {
+    const [question, setQuestion] = useState(selectedQuestion.body.Question)
+    const onUpdate = () => {
         console.log("welcome to edit fun...")
-        if(selectedQuestionData.is_objective) {
-            let req = {
-                "question_id": selectedQuestionData.question_id,
-                "question": selectedQuestionData.body.Question,
-                "description": "",
-                "choice_body": selectedQuestionData.choice_body,
-                "choice_answer": selectedQuestionData.answer.text
-              }
-            console.log(req)
-            await dispatch(editObjectiveQuestion(req))
-        } else {
-            let req = {
-                "question_id": selectedQuestionData.question_id,
-                "question": selectedQuestionData.body.Question,
-                "description": "",
-                "subjective_answer": selectedQuestionData.answer.explanation
-              }
-              console.log(req)
-            await dispatch(editSubjectiveQuestion(req))
-        }
-        updateEdit()
+        onCancel()
     }
     const openWriteModal = () => {
         console.log("welcome to edit fun...")
@@ -64,39 +46,18 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
         console.log("am in upd question")
         updateEdit()
     }
-
-    const updateAnswerText = async (key: string) => {
-        console.log("update ans ....")
-        let selData = JSON.parse(JSON.stringify(selectedQuestionData))
-        selData.answer.text = key
-        setSelectedQuestionData(selData)
-    }
-
-    const updateAnswerOption = async (key: string, value: string) => {
-        let selData = JSON.parse(JSON.stringify(selectedQuestionData))
-        selData.choice_body[key] = value
-        setSelectedQuestionData(selData)
-    }
-
-    const setQuestionData = async(value: string) => {
-        let selData = JSON.parse(JSON.stringify(selectedQuestionData))
-        selData.body.Question = value
-        setSelectedQuestionData(selData)
-    }
-
-    const setQuestionAnswer = async (value: string) => {
-        let selData = JSON.parse(JSON.stringify(selectedQuestionData))
-        selData.answer.explanation = value
-        setSelectedQuestionData(selData)
-        
+    const onReplace = async () => {
+        await dispatch(restoreQuestionId(originalQuestionId))
+        console.log("original question id ......", originalQuestionId)
+        replaceAgain(selectedQuestion.question_id)
     }
   return (
     <Modal visible={show} transparent animationType="fade">
-      {selectedQuestionData &&
+      {selectedQuestion &&
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
             <View>
-                <Text style={styles.title}>{ "Edit Question"}</Text>
+                <Text style={styles.title}>{ "New Question"}</Text>
             </View>
             
             <View style={styles.inputGroup}>
@@ -104,7 +65,7 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
                     <Text style={styles.label}>*Title</Text>
                     <View style={{flexDirection: 'row'}}>
                         <View style={styles.markBox}>
-                            <Text style={styles.markText}>Marks - 0{selectedQuestionData.marks || 5}</Text>
+                            <Text style={styles.markText}>Marks - 0{selectedQuestion.marks || 5}</Text>
                         </View>
                         <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
                             <FontAwesome name="pencil" size={18} color="white" />
@@ -115,19 +76,19 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
                 </View>
                 
                 <TextInput
-                    value={selectedQuestionData.body.Question}
-                    onChangeText={(v) => setQuestionData(v)}
+                    value={selectedQuestion.body.Question}
+                    onChangeText={setQuestion}
                     placeholder="Type Here:"
                     multiline
                     style={styles.textArea}
                 />
             </View>
-            {!selectedQuestionData.is_objective ? 
+            {!selectedQuestion.is_objective ? 
             <View style={styles.inputGroup}>
                 <Text style={styles.label}>*Answer</Text>
                 <TextInput
-                    value={selectedQuestionData.answer.explanation}
-                    onChangeText={(v) => setQuestionAnswer(v)}
+                    value={selectedQuestion.answer.explanation}
+                    onChangeText={setQuestion}
                     placeholder="Type Here:"
                     multiline
                     style={styles.textArea}
@@ -135,33 +96,24 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
             </View>
             :
             <View style={styles.optionsGrid}>
-                {(selectedQuestionData && selectedQuestionData?.choice_body) && Object.keys(selectedQuestionData?.choice_body).map((key:string) => (
-                <TouchableOpacity
-                    onPress={() => updateAnswerText(key)}
+                {(selectedQuestion && selectedQuestion?.choice_body) && Object.keys(selectedQuestion?.choice_body).map((key:string) => (
+                <View
                     key={key}
                     style={[
                     styles.optionBox,
-                    key === selectedQuestionData?.answer?.text && {
+                    key === selectedQuestion?.answer?.text && {
                         borderColor: '#059669',
                     },
                     ]}
                 >
-                    {key === selectedQuestionData?.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, marginTop: 8, marginRight: 5 }} />}
-                    <Text style={{marginTop: 8}}>{key + " )"}</Text>
-                    <TextInput
-                        value={selectedQuestionData?.choice_body[key]}
-                        onChangeText={(v) => updateAnswerOption(key, v)}
-                        placeholder="Type Here:"
-                        // style={styles.textArea}
-                    />
-                    {/* <MathJaxSvg 
+                    <MathJaxSvg 
                     fontCache={true}
                     fontSize={12}
                     >
                     {selectedQuestion?.choice_body[key]}
-                    </MathJaxSvg> */}
-                    
-                </TouchableOpacity>
+                    </MathJaxSvg>
+                    {key === selectedQuestion?.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black'  }} />}
+                </View>
                 ))}
             </View> 
             }
@@ -169,8 +121,8 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
           
 
             <View style={styles.buttonRow}>
-                <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <TouchableOpacity onPress={onReplace} style={styles.cancelButton}>
+                <Text style={styles.cancelButtonText}>Replace</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onUpdate} style={styles.saveBtn}>
                     <Text style={styles.cancelButtonText}>Save</Text>
@@ -179,12 +131,12 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
         </View>
       </View>
       }
-      <EditWriteQuestionModal selectedQuestion={selectedQuestionData} show={showEditWriteModal} onCancel={hideEditWrite} updateQuestion={updateQuestion} />
+      <EditWriteQuestionModal selectedQuestion={selectedQuestion} show={showEditWriteModal} onCancel={hideEditWrite} updateQuestion={updateQuestion} />
     </Modal>
   );
 };
 
-export default EditQuestionModal;
+export default ReplaceEditQuestionModal;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -282,7 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     display: 'flex',
     flexDirection: 'row',
-    // justifyContent: 'space-between'
+    justifyContent: 'space-between'
   },
   markBox: {
     borderColor: '#21c17c',

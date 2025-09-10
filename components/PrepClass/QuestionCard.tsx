@@ -12,6 +12,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
 import EditQuestionModal from './EditQuestionModal';
+import ReplaceQuestionModal from './ReplaceQuestionModal';
+import { useDispatch } from 'react-redux';
+import { replaceQuestion } from '@/store/classSlice';
+import ReplaceEditQuestionModal from './ReplaceEditQuestionModal';
 
 const { width } = Dimensions.get('window');
 
@@ -23,25 +27,54 @@ interface QuestionCardProps {
   setActiveDropdown: (id: number) => void;
   editQuestion: (id: number) => void;
   deleteQuestion: (id: number) => void;
-  replaceQuestion: (id: number) => void;
+  replaceQuestionFun: (id: number) => void;
   refreshQuiz: () => void;
 };
 
-const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion, refreshQuiz}: QuestionCardProps) => {
-  console.log("question =====")
-  console.log(item)
+const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestionFun, refreshQuiz}: QuestionCardProps) => {
+  // console.log("question =====")
+  // console.log(item)
+  const dispatch = useDispatch<any>();
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showReplaceEditModal, setShowReplaceEditModal] = useState(false)
+  const [selectedQuestionNumber, setSelectedQuestionNumber] = useState<any>(0)
+  const [isReplaceQuestionModal, setIsReplaceQuestionModal] = useState(false)
+  const [replacedQuestion, setReplacedQuestion] = useState<any>();
+  const [selectedQuestion, setSelectedQuestion] = useState(item)
+  const [selectedQuestionOriginal, setSelectedQuestionOriginal] = useState(0)
 
   const showEdit = () => {
     setShowEditModal(true)
   }
   const hideEdit = () => {
     setShowEditModal(false)
+    setShowReplaceEditModal(false)
+    setIsReplaceQuestionModal(false)
+    updateEdit()
   }
   const updateEdit = () => {
     console.log(" upd edit calling refresh ....")
     refreshQuiz()
   }
+  const replaceQuestionData = (id: number) => {
+    setSelectedQuestionNumber(id)
+    setIsReplaceQuestionModal(true)
+  }
+
+  const confirmReplace = async(id = 0) => {
+    console.log("selectedQuestionNumber", selectedQuestionNumber)
+      let replaceResponse = await dispatch(replaceQuestion({question_id: (id ? id : selectedQuestionNumber), additional_context: "I want this question changed"}))
+      console.log("replaceResponse.payload")
+      console.log(replaceResponse.payload)
+      setReplacedQuestion(replaceResponse.payload)
+      setSelectedQuestion(replaceResponse.payload.new_question)
+      setSelectedQuestionOriginal(replaceResponse.payload.original_question_id)
+      setShowReplaceEditModal(true)
+      // await dispatch(getClassQuiz(quiz_id));
+      // setReplaceQuestionModal(false);
+      // setActiveDropdown(-1);
+    }
+
   return (
     <View style={styles.card}>
       <Pressable onPress={() => setActiveDropdown(-1)}>
@@ -80,7 +113,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => showEdit()} style={styles.dropdownItem}>
             <Text>Edit</Text>
           </TouchableHighlight>
-          <TouchableHighlight underlayColor='#bdedd7' onPress={() => replaceQuestion(item.question_id)} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => replaceQuestionData(item.question_id)} style={styles.dropdownItem}>
             <Text>Replace</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>
@@ -128,7 +161,15 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           ))}
         </View>
       )}
-      <EditQuestionModal selectedQuestion={item} show={showEditModal} onCancel={hideEdit} updateEdit={updateEdit} />
+      <EditQuestionModal selectedQuestion={selectedQuestion} show={showEditModal} onCancel={hideEdit} updateEdit={updateEdit} />
+      <ReplaceEditQuestionModal originalQuestionId={selectedQuestionOriginal} selectedQuestion={selectedQuestion} show={showReplaceEditModal} onCancel={hideEdit} updateEdit={updateEdit} replaceAgain={confirmReplace} />
+      <ReplaceQuestionModal 
+        show={isReplaceQuestionModal}
+        resourceType='question'
+        
+        onCancel={() => setIsReplaceQuestionModal(false)}
+        onReplace={confirmReplace}
+      />
     </View>
   );
 }
