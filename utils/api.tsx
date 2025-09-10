@@ -27,8 +27,11 @@ const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => 
 
 const refreshToken = async () => {
   try {
-    const refreshToken = AsyncStorage.getItem('userRefreshToken')
+    const refreshToken = await AsyncStorage.getItem('userRefreshToken')
+    console.log("refreshToken")
+    console.log(refreshToken)
     const response = await axios.post(`${API_URL}auth/refresh`, {refresh_token: refreshToken}, { withCredentials: true });
+    console.log("refresh respon ....")
     return response.data;
   } catch (err) {
     throw new Error('Session expired. Please login again.');
@@ -43,9 +46,9 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
   console.log("welcome ")
   try {
     console.log(`${API_URL}${endpoint}`)
-    console.log(data)
-    console.log(method)
-    console.log(token)
+    // console.log(data)
+    // console.log(method)
+    // console.log(token)
     console.log(getHeaders(token, isFile, endpoint))
     const response = await axios({
       url: `${API_URL}${endpoint}`,
@@ -65,7 +68,7 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
       try {
         console.log("calling refresh token ")
         const newTokenData = await refreshToken();
-
+        console.log("saving new tokens .....")
         // Save new token to storage (adjust as needed)
         AsyncStorage.setItem('userToken', newTokenData.access_token);
         AsyncStorage.setItem('userRefreshToken', newTokenData.refresh_token);

@@ -30,6 +30,7 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const [selectedQuestion, setSelectedQuestion] = useState<any>(null);
   const [questionIdToDelete, setQuestionIdToDelete] = useState(-1);
   const [questionIdToReplace, setQuestionIdToReplace] = useState(-1);
+  const [replacedQuestion, setReplacedQuestion] = useState<any>();
 
   const editQuestion = (id: number) => {
     const question = (questions.filter((q: { question_id: number; }) => q.question_id == id))[0]
@@ -61,14 +62,17 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
   const confirmReplace = async() => {
     const quiz_id = quiz_details.quiz_id || 35;
     console.log(questionIdToReplace);
-    await dispatch(replaceQuestion({question_id: questionIdToReplace, additional_context: "I want this question changed"}))
+    let replaceResponse = await dispatch(replaceQuestion({question_id: questionIdToReplace, additional_context: "I want this question changed"}))
+    console.log("replaceResponse.payload")
+    console.log(replaceResponse.payload)
+    setReplacedQuestion(replaceResponse.payload)
     await dispatch(getClassQuiz(quiz_id));
     setReplaceQuestionModal(false);
     setActiveDropdown(-1);
   }
 
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} refreshQuiz={refreshQuiz} />)
   }
 
   const publishQuizTask = async() => {
@@ -82,6 +86,11 @@ const SlipTestPage = ({route, navigation} : {route: any; navigation: any}) => {
     // }
     // await dispatch(publishQuiz(the_quiz));
     navigation.navigate('Home', {selectedClass: selectedClass});  
+  }
+
+  const refreshQuiz = async () => {
+    console.log("calling refresh .....", quiz_details.quiz_id)
+    await dispatch(getClassQuiz(quiz_details.quiz_id));
   }
 
   return (

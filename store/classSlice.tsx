@@ -66,6 +66,10 @@ export const publishClasswork = createAsyncThunk('/quiz/publishClasswork', async
   return handleAuthApiCall(classService.publishClasswork, quiz, thunkAPI);
 });
 
+export const changeQuestionFromImage = createAsyncThunk('/quiz/changeQuestionFromImage', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.changeQuestionFromImage, quiz, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -251,6 +255,7 @@ const classSlice = createSlice({
         })
         .addCase(getClassQuiz.pending, (state, action) => {
           state.loading = true
+          state.quiz_details = {}
           console.log("Quiz fetch pending")
         })
         .addCase(getClassQuiz.fulfilled, (state, action) => {

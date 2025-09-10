@@ -9,7 +9,12 @@ export const checkLoginStatus = createAsyncThunk('auth/checkLoginStatus', async 
       // const user = JSON.parse(await AsyncStorage.getItem('user'));
       const userJson = await AsyncStorage.getItem('user');
       const userToken = await AsyncStorage.getItem('userToken');
+      const userRToken = await AsyncStorage.getItem('userRefreshToken');
     
+      console.log("****************************************")
+      console.log(userJson)
+      console.log(userToken)
+      console.log(userRToken)
       if (userJson) {
         return JSON.parse(userJson)
       }

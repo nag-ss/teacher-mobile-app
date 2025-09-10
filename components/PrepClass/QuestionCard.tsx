@@ -24,9 +24,10 @@ interface QuestionCardProps {
   editQuestion: (id: number) => void;
   deleteQuestion: (id: number) => void;
   replaceQuestion: (id: number) => void;
+  refreshQuiz: () => void;
 };
 
-const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion}: QuestionCardProps) => {
+const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestion, refreshQuiz}: QuestionCardProps) => {
   console.log("question =====")
   console.log(item)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -36,6 +37,10 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
   }
   const hideEdit = () => {
     setShowEditModal(false)
+  }
+  const updateEdit = () => {
+    console.log(" upd edit calling refresh ....")
+    refreshQuiz()
   }
   return (
     <View style={styles.card}>
@@ -54,7 +59,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           <View style={styles.markBox}>
             <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
           </View>
-          {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+          {!newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
             <Feather name="more-vertical" size={20} color="#4B5563" />
           </TouchableOpacity>)}
         </View>
@@ -123,7 +128,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           ))}
         </View>
       )}
-      <EditQuestionModal selectedQuestion={item} show={showEditModal} onCancel={hideEdit} />
+      <EditQuestionModal selectedQuestion={item} show={showEditModal} onCancel={hideEdit} updateEdit={updateEdit} />
     </View>
   );
 }

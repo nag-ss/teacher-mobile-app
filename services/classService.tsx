@@ -14,7 +14,8 @@ import {
   REPLACE_QUESTION,
   GET_TOPIC_SUBTOPICS,
   SET_TOPIC_SUBTOPIC,
-  PUBLISH_CLASSWORK
+  PUBLISH_CLASSWORK,
+  CHANGE_QUESTION_FROM_IMAGE
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -198,6 +199,12 @@ const setClassTopicSubTopic = async(params: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', params, userToken);
 }
 
+const changeQuestionFromImage = async(quiz: any, userToken: string) => {
+  console.log("ca lling ....")
+  const reqUrl = `${CHANGE_QUESTION_FROM_IMAGE}`;
+  return await apiRequest(reqUrl, 'POST', quiz, userToken, true);
+}
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -214,7 +221,8 @@ const authService = {
     replaceQuestion, 
     getClassTopicSubTopics,
     setClassTopicSubTopic,
-    publishClasswork
+    publishClasswork,
+    changeQuestionFromImage
 };
 
 export default authService;
