@@ -25,6 +25,7 @@ import {
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
 import ClassworkCheckModal from '../Modals/ClassworkModal';
+import SlipTestDetailsModal from '../Modals/SlipTestModal';
 // import {Topics} from '../../data/Topic_SubTopic';
 
 type ProfileScreenNavigationProp = DrawerNavigationProp<any, any>; 
@@ -56,6 +57,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   const [showModal6SlipTestSettingsModal, setShowModal6SlipTestSettingsModal] = useState(false);
   const [showDeleteQuestionModal, setShowDeleteQuestionModal] = useState(false)
   const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(false);
+  const [showSlipTestDetailsModal, setShowSlipTestDetailsModal] = useState(false);
+  const [isNewQuiz, setIsNewQuiz] = useState(false);
 
   const setSelectedClass = async() => {
     console.log("Action from Parent!", "You triggered this from parent.");
@@ -329,7 +332,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
         division_id: selectedClass.division_id,
       }))
       setShowLoadingQuizModal(false);
-      navigation.navigate('SlipTest', {new_quiz: true, selectedClass: selectedClass});
+      setIsNewQuiz(true)
+      setShowSlipTestDetailsModal(true);
     };
 
   const deleteTask = (task_id: number, task_type: string) => {
@@ -365,7 +369,10 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     // dispatch get quiz
     await dispatch (getClassQuiz(quiz_id));
     setShowModal2TasksModal(false);
-    navigation.navigate('SlipTest', { new_quiz: false, selectedClass: selectedClass });
+    
+    // navigation.navigate('SlipTest', { new_quiz: false, selectedClass: selectedClass });
+    setIsNewQuiz(false);
+    setShowSlipTestDetailsModal(true);
   }
 
   const confirmDeleteTask = async() => {
@@ -418,6 +425,21 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     setSubTopic(subTopic)
   }
 
+  const saveSlipTest = async (new_quiz: any) => {
+    setShowSlipTestDetailsModal(false);
+    if (new_quiz) {
+      const tasksObject = {
+        class_schedule_id: selectedClass.class_schedule_id,
+        teacher_id: user.id,
+        subject_id: selectedClass.subject_id,
+        division_id: selectedClass.division_id,
+      }
+      await dispatch(getTeacherClassTasks(tasksObject));
+    }
+    
+    setShowModal2TasksModal(true)
+  }
+
   // const getDetails = async () => {
     // await dispatch(getLiveClass())
     // await dispatch(getScheduleClasses())
@@ -449,6 +471,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
           onDelete={() => confirmDeleteTask()}
         />
       <LoadingSlipTestModal show={showLoadingQuizModal} />
+      <SlipTestDetailsModal visible={showSlipTestDetailsModal} saveSlipTest={saveSlipTest} selectedClass={selectedClass} new_quiz={isNewQuiz}/>
     </View>
   );
 });

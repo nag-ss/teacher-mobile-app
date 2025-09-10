@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     display: 'flex', 
     position: 'absolute', 
     backgroundColor: 'white',
-    marginLeft: 610, 
+    marginLeft: 570, 
     borderWidth: 1, 
     borderRadius: 8,
     marginTop: 40,
