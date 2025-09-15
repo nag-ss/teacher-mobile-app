@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { RotateInDownLeft } from 'react-native-reanimated';
 import DropDownPicker from 'react-native-dropdown-picker';
+import RadioGroup from 'react-native-radio-buttons-group';
 
 interface AiCheckModalProps {
   visible: boolean;
@@ -22,11 +23,24 @@ interface AiCheckModalProps {
 }
 
 const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
-  const [title, setTitle] = useState('');
-  const [checkType] = useState('Custom (Manual Input)');
-  const [matchType, setMatchType] = useState({ exact: true, approximate: false });
-  const [textInput, setTextInput] = useState('');
+  const radioButtons = useMemo(() => ([
+    {
+        id: 'exact', // acts as primary key, should be unique and non-empty string
+        label: 'Exact Match',
+        value: 'exact',
+        color:"#21c17c"
+    },
+    {
+        id: 'approx',
+        label: 'Approximate Match',
+        value: 'approx',
+        color: "#21c17c"
+    }
+  ]), []);
 
+  const [title, setTitle] = useState('');
+  const [matchType, setMatchType] = useState('approx');
+  const [textInput, setTextInput] = useState('');
   const [selectedTime, setSelectedTime] = useState(5);
   const [selectedMarks, setSelectedMarks] = useState(5);
   const [showMandatoryMsg, setShowMandatoryMsg] = useState(false);
@@ -44,7 +58,6 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     { label: '45 Mins', value: 45 },
     { label: '50 Mins', value: 50 },
     { label: '55 Mins', value: 55 },
-    
   ];
 
   const marksOptions = [
@@ -75,14 +88,14 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
   const [timeOpen, setTimeOpen] = useState(false);
 
   const saveClassWork = async () => {
-    if(!title || !matchType || !selectedMarks || !selectedTime || !textInput) {
+    if(!title || !selectedMarks || !selectedTime || !textInput) {
       setShowMandatoryMsg(true)
     } else {
       setShowMandatoryMsg(false)
       setIsDisabled(true)
       await saveAICheckDetails({title, matchType, time: selectedTime, marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
       setTitle(''), 
-      setMatchType({exact: false, approximate: false})
+      setMatchType('approx')
       setSelectedMarks(5)
       setSelectedTime(5)
       setTextInput('')
@@ -90,6 +103,23 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     }
     
   }
+
+  useEffect(() => {
+      if (selectedTask) {
+        console.log(selectedTask)
+        setTitle(selectedTask.title);
+        setMatchType(selectedTask.instructions?.matchType);
+        setTextInput(selectedTask.instructions?.textInput);
+        setSelectedMarks(selectedTask.instructions?.marks)
+        setSelectedTime(selectedTask.instructions?.time)
+      } else {
+        setTitle('');
+        setTextInput('');
+      }
+    }, [selectedTask]);
+
+
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -174,7 +204,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
 
           {/* Match Type */}
           <View style={styles.matchTypeRow}>
-            <View style={styles.switchRow}>
+            {/* <View style={styles.switchRow}>
               <Switch
                 value={matchType.exact}
                 onValueChange={() =>
@@ -191,7 +221,13 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                 }
               />
               <Text style={styles.switchLabel}>Approximate</Text>
-            </View>
+            </View> */}
+            <RadioGroup 
+              radioButtons={radioButtons} 
+              selectedId={matchType}
+              onPress={setMatchType}
+              layout='row'
+            />
           </View>
 
           {/* Text Input */}
