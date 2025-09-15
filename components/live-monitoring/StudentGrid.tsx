@@ -9,35 +9,18 @@ const students = new Array(45).fill({ student_name: 'Akshay Sharma', status: 'Ac
 const StudentGrid = () => {
     const { studentsData, selectedTaskSection } = useSelector((state: any) => state.liveMonitor)
     const [selectedStudent, setSelectedStudent] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const openStudentModal = (student: any) => {
-    if(selectedTaskSection == 'Attendance') {
-      console.log("calling modal ....")
-      setSelectedStudent(student);
-      setModalVisible(true);
-    }
-    
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedStudent(null);
-  };
-  // console.log(studentsData)
+  
+  console.log("studentsData")
+  console.log(studentsData)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Students Overview</Text>
       <ScrollView contentContainerStyle={styles.grid}>
         {studentsData.map((student: any, i: number) => (
-          <StudentCard key={student.student_id+"_"+i} student={student} showStudentInfo={() => openStudentModal(student)} />
+          <StudentCard key={student.student_id+"_"+i} student={student} />
         ))}
       </ScrollView>
-      <StudentModal
-        visible={modalVisible}
-        student={selectedStudent}
-        onClose={closeModal}
-      />
+      
     </View>
   );
 };

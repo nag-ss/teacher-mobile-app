@@ -102,11 +102,12 @@ const LiveSessionCard = () => {
     let schClassesRes = await dispatch(getScheduleClasses(reqObj))
     console.log(" shcedule paylod ")
     console.log(schClassesRes.payload)
-    if(classTimeline && classTimeline.length) {
+    let tLime = schClassesRes.payload
+    if(tLime && tLime.length) {
       console.log("am in liv sc")
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        let timelineDataArray = classTimeline.map((timeline: any) => {
+        let timelineDataArray = tLime.map((timeline: any) => {
             
             console.log(timeline.start_time)
             console.log(moment(timeline.start_time))

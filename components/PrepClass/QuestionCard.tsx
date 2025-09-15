@@ -92,7 +92,7 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           <View style={styles.markBox}>
             <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
           </View>
-          {!newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+          {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
             <Feather name="more-vertical" size={20} color="#4B5563" />
           </TouchableOpacity>)}
         </View>

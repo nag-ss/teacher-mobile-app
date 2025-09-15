@@ -30,8 +30,16 @@ const refreshToken = async () => {
     const refreshToken = await AsyncStorage.getItem('userRefreshToken')
     console.log("refreshToken")
     console.log(refreshToken)
-    const response = await axios.post(`${API_URL}auth/refresh`, {refresh_token: refreshToken}, { withCredentials: true });
+    console.log(`${API_URL}auth/refresh`)
+    // const response = await axios.post(`${API_URL}auth/refresh`, {refresh_token: refreshToken});
+    const response = await axios({
+      url: `${API_URL}refresh`,
+      method: 'POST',
+      data: {refresh_token: refreshToken},
+      headers: getHeaders(null, false, ''),
+    });
     console.log("refresh respon ....")
+    console.log(response.data)
     return response.data;
   } catch (err) {
     throw new Error('Session expired. Please login again.');
@@ -75,7 +83,8 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
 
         // Retry original request with new token
         return await apiRequest(endpoint, method, data, newTokenData.access_token, isFile, false);
-      } catch (refreshErr) {
+      } catch (refreshErr: any) {
+        console.log(refreshErr.message)
         throw refreshErr;
       }
     }

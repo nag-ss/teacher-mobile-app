@@ -130,7 +130,7 @@ const classSlice = createSlice({
             state.loading = true;
         })
         .addCase(getLiveClass.fulfilled, (state, action) => {
-            console.log("action.payload live ")
+            console.log("action.payload live class")
             console.log(action.payload)
             if(action.payload == 401) {
               console.log("welcome to un auth ....")
@@ -153,6 +153,7 @@ const classSlice = createSlice({
         })
         .addCase(getScheduleClasses.pending, (state, action) => {
             state.loading = true
+            state.classTimeline = []
           })
         .addCase(getScheduleClasses.fulfilled, (state, action) => {
             console.log("action.payload schedule classes ")
