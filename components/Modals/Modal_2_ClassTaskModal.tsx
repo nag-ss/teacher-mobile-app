@@ -108,7 +108,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 />
               </View>
 
-              <ScrollView style={{maxHeight: 200, padding: 10}}>
+              <ScrollView style={{ padding: 10, maxHeight: 450}}>
                 {
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
@@ -144,12 +144,6 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                 </TouchableOpacity>
               </View>
             </View>
-            
-            <View style={{marginTop: 10}}>
-              <QuickActions />
-            </View>
-            
-
             {/* Quick Actions */}
             {/* <View style={styles.quickActions}>
               <Text style={styles.quickActionsTitle}>Quick Actions</Text>

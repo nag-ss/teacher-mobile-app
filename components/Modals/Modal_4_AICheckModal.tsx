@@ -37,7 +37,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
-  const [selectedId, setSelectedId] = useState('exact');
+  const [selectedId, setSelectedId] = useState('approx');
   const [textInput, setTextInput] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
   const [titleError, setTitleError] = useState('');
