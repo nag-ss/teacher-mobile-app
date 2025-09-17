@@ -106,7 +106,6 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest 
                   <Text style={{fontSize: 12, fontWeight: 'bold', marginRight: 10}}>{quiz_details.topic}</Text>
                   <Text style={{fontSize: 12, marginRight: 2}}>Subtopic:</Text>
                   <Text style={{fontWeight: 'bold', fontSize: 12}}>{quiz_details.sub_topic}</Text>
-                  <Image source={require('../../assets/images/ss/Notification.png')} style={{ width: 22, height: 22}} />
                 </View>
               </View>
               

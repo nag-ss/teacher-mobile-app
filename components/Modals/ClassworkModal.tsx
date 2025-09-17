@@ -127,7 +127,10 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Class Work Check</Text>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={() => {
+              setShowMandatoryMsg(false)
+              onClose()
+            }}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
             </TouchableOpacity>
           </View>
@@ -156,7 +159,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               <View>
                 <Text style={styles.marksLabel}>*Time:</Text>
               </View>
-              <View style={{ width: '80%',}}>
+              <View style={{ width: '70%'}}>
                 <DropDownPicker
                   placeholder="Select Time"
                   placeholderStyle={{ fontSize: 12 }}
@@ -180,7 +183,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               <View>
                 <Text style={styles.marksLabel}>*Total Marks:</Text>
               </View>
-              <View style={{ width: '70%',}}>
+              <View style={{ width: '60%'}}>
                 <DropDownPicker
                   placeholder="Select Marks"
                   placeholderStyle={{ fontSize: 12 }}
@@ -227,11 +230,12 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               selectedId={matchType}
               onPress={setMatchType}
               layout='row'
+              labelStyle={{width: 190}}
             />
           </View>
 
           {/* Text Input */}
-          <View style={styles.inputGroup}>
+          {/* <View style={styles.inputGroup}>
             <Text style={styles.label}>*Text Input</Text>
             <TextInput
               value={textInput}
@@ -240,7 +244,21 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               multiline
               style={styles.textArea}
             />
+          </View> */}
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Text Input</Text>
+            <View style={{borderWidth: 1, borderColor: showMandatoryMsg ? 'red' : '#D1D5DB', borderRadius: 8 }}>
+              <TextInput
+                value={textInput}
+                onChangeText={setTextInput}
+                placeholder="Type Here:"
+                multiline
+                style={styles.textArea}
+              />
+            </View>
           </View>
+
           {
             showMandatoryMsg ? 
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -278,7 +296,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
-    width: '90%',
+    width: '70%',
   },
   header: {
     flexDirection: 'row',
@@ -352,8 +370,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
-    height: 100,
+    height: 300,
     textAlignVertical: 'top',
+    margin: 10
   },
   footer: {
     flexDirection: 'row',

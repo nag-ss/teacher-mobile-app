@@ -207,11 +207,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   markBox: {
-    borderColor: '#21c17c',
+    borderColor: '#888888',
     borderWidth: 0.6,
     paddingHorizontal: 4,
     paddingVertical: 4,
-    borderRadius: 10,
+    borderRadius: 8,
     marginRight: 6,
   },
   markText: {
