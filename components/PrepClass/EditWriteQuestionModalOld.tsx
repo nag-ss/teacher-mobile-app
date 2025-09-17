@@ -6,8 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  TextInput,
-  findNodeHandle
+  TextInput
 } from 'react-native';
 import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -16,8 +15,6 @@ import SignatureCanvas from 'react-native-signature-canvas';
 import { changeQuestionFromImage } from '@/store/classSlice';
 import { useDispatch } from 'react-redux';
 import * as FileSystem from 'expo-file-system';
-import ExpoDraw from 'expo-draw'
-import { captureRef } from 'react-native-view-shot';
 // import RNFS from 'react-native-fs';
 
 
@@ -32,55 +29,29 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
     const dispatch = useDispatch<any>();
     const [signature, setSignature] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [strokeColor, setStrokeColor] = useState('#000000')
-  const [imageUri, setImageUri] = useState('')
-  
+  const webStyle = `.m-signature-pad {
+  position: fixed;
+  margin:auto; 
+  top: 0; 
+  width:100%;
+  height:90%
+}
+body,html { 
+  position:relative; 
+}
+.m-signature-pad--footer .button {
+  color: black
+}
+.m-signature-pad--footer .clear {
+  background-color: #fff; /* Clear button color */
+  border-color: lightgray
+}
+.m-signature-pad--footer .save {
+  background-color: #10B981; /* Save button color */
+}`
   const ref: any = useRef();
-    const eraseRef = useRef(null);
-    const clearRef = useRef(null);
 
-  const viewRef = useRef<any>(null);
-  
-    const handleSignature = async () => {
-      if (!viewRef.current) {
-        console.warn('View ref is null, cannot capture');
-        return;
-      }
-      const node = findNodeHandle(viewRef.current);
-      if (!node) {
-        console.warn('Could not find node handle');
-        return;
-      }
-      try {
-          const localUri = await captureRef(viewRef, {
-              format: 'png',
-              quality: 0.9,
-              result: 'tmpfile', // saves to temp file for easier upload
-            });
-      
-        const uri = localUri.startsWith('file://') ? localUri : 'file://' + localUri;
-         
-        const formData = new FormData();
-        formData.append('question_id', selectedQuestion.question_id);
-        const file: any = {
-            uri: uri,
-            type: 'image/png',
-            name: 'upload.png',
-        };
-        formData.append('image', file);
-        console.log("6", uri)
-        
-        await dispatch(changeQuestionFromImage(formData));
-        console.log("after change ...")
-        setIsLoading(false)
-        setImageUri(uri)
-        updateQuestion()
-      } catch (e) {
-        console.error('Error capturing image:', e);
-      }
-    };
-
-  const handleSignatureOld = async (signature: any) => {
+  const handleSignature = async (signature: any) => {
     console.log('Signature captured:');
     setIsLoading(true)
     setSignature(signature);
@@ -145,48 +116,40 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
                 <Text style={styles.title}>{ "Edit Question"}?</Text>
             </View>
             
-            <View style={{height: 500, marginBottom: 10}}>
-                <View ref={viewRef}
-                            collapsable={false}
-                            style={{ height: 500, backgroundColor: '#fff', borderWidth: 1 }} >
-                    <ExpoDraw
-                        
-                        containerStyle={{backgroundColor: '#fff', borderWidth: 1, borderColor: 'lightgray'}}
-                        rewind={(undo: any) => {eraseRef.current = undo}}
-                        clear={(clear: any) => {clearRef.current = clear}}
-                        color={strokeColor}
-                        strokeWidth={3}
-                        enabled={true}
-                    />
-                
-                </View>
+            <View style={{  height: 500 }}>
+                <SignatureCanvas
+                    // ref={ref}
+                    // onEnd={handleEnd}
+                    onOK={handleSignature}
+                    // onEmpty={handleEmpty}
+                    onClear={handleClear}
+                    // onError={handleError}
+                    // autoClear={false}
+                    descriptionText="Write Question"
+                    clearText="Clear"
+                    confirmText={isLoading ? "Updating ..." : "Save"}
+                    // penColor="#000000"
+                    // backgroundColor="rgba(255,255,255,0)"
+                    // webviewProps={{
+                    // // Custom WebView optimization
+                    // cacheEnabled: true,
+                    // androidLayerType: "hardware",
+                    // }}
+                    webStyle={webStyle}
+                />
             </View>
             
-            <View>
-                {
-                    imageUri && 
-                    <Image
-          source={{ uri: imageUri }}
-          style={{
-            height: 200,
-            resizeMode: 'contain',
-            borderWidth: 1,
-            borderColor: '#ccc',
-            marginVertical: 10,
-          }}
-        />
-                }
-            </View>
+
           
 
-            <View style={[styles.buttonRow]}>
+            {/* <View style={[styles.buttonRow]}>
                 <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSignature} style={styles.saveBtn}>
+                <TouchableOpacity onPress={onUpdate} style={styles.saveBtn}>
                     <Text style={styles.cancelButtonText}>Save</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
         </View>
       </View>
       }

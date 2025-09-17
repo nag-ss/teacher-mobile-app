@@ -24,3 +24,5 @@ export const CHANGE_QUESTION_FROM_IMAGE = 'quiz/change_question_from_image';
 export const RESTORE_QUESTION = 'quiz/restore';
 export const EDIT_OBJECTIVE_QUESTION = 'quiz/edit_objective_question';
 export const EDIT_SUBJECTIVE_QUESTION = 'quiz/edit_subjective_question';
+export const TRANSLATE_CLASSWORK_FROM_IMAGE = 'translation/classwork_translation';
+export const TRANSLATE_AICHECK_FROM_IMAGE = 'translation/ai_check_translation';

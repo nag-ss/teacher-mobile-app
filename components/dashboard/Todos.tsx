@@ -5,17 +5,15 @@ import RecentActivityCard from './RecentActivityCard';
 import PerformanceDetailCard from './PerformanceDetailCard';
 
 const activities = [
-  {image: 'Analytics', title: "Class Performance Update", text: "Low engagement: Only 60% took notes in last class."},
-  {image: 'Feedback', title: "Student Engagement Summary", text: "3 students scored <50% in Algebra quiz."},
-  {image: 'WarningNew', title: "Student Engagement Summary", text: "Assignment deadline missed by 4 students."},
-  // {image: 'p2p', title: "Student Engagement Summary", text: "Intervention: 1-on-1 sessions scheduled with 2 students."},
-  // {image: 'WarningNew', title: "Student Engagement Summary", text: "Connectivity issue flagged in last live class (8 students dropped)."},
+  {image: 'Announcement', title: "Class Performance Update", text: "Parent-teacher meeting scheduled Friday 4 PM."},
+  {image: 'Alert', title: "Student Engagement Summary", text: "5 quizzes pending evaluation (due in 2 days)."},
+  {image: 'Alert', title: "Student Engagement Summary", text: "2 assignments need review (submitted yesterday)."},
 ];
 
-const ImportantAlerts = () => (
+const TeacherTodos = () => (
   <View style={styles.container}>
     <View style={styles.headerContent}>
-        <Text style={styles.title}>Important Alerts</Text>
+        <Text style={styles.title}>Teacher Todo's</Text>
         
         <View style={styles.viewAllContent}>
             {/* <Text style={{marginRight: 10}}>View All</Text> */}
@@ -57,4 +55,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ImportantAlerts;
+export default TeacherTodos;

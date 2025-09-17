@@ -5,17 +5,17 @@ import RecentActivityCard from './RecentActivityCard';
 import PerformanceDetailCard from './PerformanceDetailCard';
 
 const activities = [
-  {image: 'Analytics', title: "Class Performance Update", text: "Low engagement: Only 60% took notes in last class."},
-  {image: 'Feedback', title: "Student Engagement Summary", text: "3 students scored <50% in Algebra quiz."},
-  {image: 'WarningNew', title: "Student Engagement Summary", text: "Assignment deadline missed by 4 students."},
-  // {image: 'p2p', title: "Student Engagement Summary", text: "Intervention: 1-on-1 sessions scheduled with 2 students."},
-  // {image: 'WarningNew', title: "Student Engagement Summary", text: "Connectivity issue flagged in last live class (8 students dropped)."},
+  {image: 'TrendUp', title: "Class Performance Update", text: "Average class score: 72% (+5%)"},
+  {image: 'Average', title: "Student Engagement Summary", text: "Top 5 students: scoring above 90%"},
+  {image: 'TrendDown', title: "Student Engagement Summary", text: "Lowest performing topic: Fractions (avg. 48%)"},
+//   {image: 'activityStruggle', text: "Assignment Completion Rate - 92%"},
+//   {image: 'activityTrend', text: "Quiz Results - Average score 78%"}
 ];
 
-const ImportantAlerts = () => (
+const PerformanceSummary = () => (
   <View style={styles.container}>
     <View style={styles.headerContent}>
-        <Text style={styles.title}>Important Alerts</Text>
+        <Text style={styles.title}>Performance Summary</Text>
         
         <View style={styles.viewAllContent}>
             {/* <Text style={{marginRight: 10}}>View All</Text> */}
@@ -57,4 +57,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ImportantAlerts;
+export default PerformanceSummary;

@@ -60,9 +60,11 @@ import { useFocusEffect } from '@react-navigation/native';
 //     '11:00', '11:15', '11:30', '11:45','12:00', '12:15', '12:30', '12:45','13:00', '13:15', '13:30', '13:45',
 //     '14:00', '14:15', '14:30', '14:45','15:00', '15:15', '15:30', '15:45'
 // ];
-
+const timelimeIntervalHeight = 35
+const timelimeEmptyHeight = 25
 const TimelineWithClassDetails = () => {
     // const [noClass, setNoClass] = useState(0)
+    
     let noClass = 0
     let closestSlot = '08:00'
     const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
@@ -104,6 +106,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
     const timelineRef = useRef<any>()
     const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [show, setShow] = useState(false);
+  const [calendarDate, setCalendarDate] = useState(moment(date).format('DD-MM-YYYY'))
 
   const onDateChange = (selectedDate: any) => {
     const currentDate = selectedDate;
@@ -131,6 +134,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
     useFocusEffect(useCallback(() => {
         console.log("calling focus effect ....")
+        setCalendarDate(moment(new Date()).format('YYYY-MM-DD'))
         getDetails(moment(new Date()).format('YYYY-MM-DD'))
       }, [])
       )
@@ -237,7 +241,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
             console.log("timeSlotsData")
             console.log(timeSlotsData)
-            let y= ind*50;
+            let y= ind*timelimeIntervalHeight;
             timelineRef.current.scrollTo({x: 0, y, animated: true});
         } else {
             const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
@@ -252,7 +256,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
             console.log("timeSlotsData")
             console.log(timeSlotsData)
-            let y= ind*50;
+            let y= ind*timelimeIntervalHeight;
             timelineRef.current.scrollTo({x: 0, y, animated: true});
         }
     }, [classTimeline])
@@ -272,7 +276,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     color={'gray' }
                     onPress={showDate}
                     />
-                <Text style={styles.timelineDateText} onPress={showDate} >{moment(date).format('DD-MM-YYYY')}</Text>
+                <Text style={styles.timelineDateText} onPress={showDate} >{calendarDate}</Text>
                 
                 {show && (
                   <View style={styles.calendarOverlay}>
@@ -324,9 +328,9 @@ const onLayout = (event: LayoutChangeEvent): void => {
                         {/* Left Column with Time */}
                         <ScrollView style={styles.timeColumn}>
                         {timeSlots.map((time, index) => (
-                            <View key={index} style={{height: 50}}>
+                            <View key={index} style={{height: timelimeIntervalHeight}}>
                                 <Text  style={styles.timeText}>
-                                    {  parseInt(time.split(':')[1]) == 0 ? time : (parseInt(time.split(':')[1]) == 30 ? '_____' : '___')
+                                    {  parseInt(time.split(':')[1]) == 0 ? time : (parseInt(time.split(':')[1]) == 30 ? '-----' : '---')
                                     }
                                 </Text>
                             </View>
@@ -384,7 +388,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                                     // console.log(relevant_class);
                                     // noClass = noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1
                                     noClass = Math.floor(noClass + (item.classLength == 15 ? 0 : item.classLength/15) )
-                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={item.classLength/15} currentDate={date} />)
+                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={Math.round(item.classLength/15)} currentDate={date} />)
                                 })
                                 ) : noClass < 1 ? (
                                 
@@ -458,7 +462,7 @@ const styles = StyleSheet.create({
     // paddingTop: 10
   },
   classColumn: {
-    paddingLeft: 10,
+    // paddingLeft: 5,
   },
   classWrapper: {
     position: 'relative',
@@ -478,7 +482,7 @@ const styles = StyleSheet.create({
     // elevation: 5, // For Android shadow
   },
   emptySpace: {
-    height: 40,
+    height: timelimeEmptyHeight,
     // backgroundColor: '#f0f0f0',
     // backgroundColor: '#fff',
     marginBottom: 10,

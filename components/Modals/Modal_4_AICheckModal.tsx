@@ -10,6 +10,11 @@ import {
 } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import RadioGroup from 'react-native-radio-buttons-group';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import WritePadViewModal from '../PrepClass/WritePadView';
+import { useDispatch } from 'react-redux';
+import { translateAICheck } from '@/store/classSlice';
+
 interface AiCheckModalProps {
   visible: boolean;
   taskType: string;
@@ -20,6 +25,7 @@ interface AiCheckModalProps {
 }
 
 const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+  const dispatch = useDispatch<any>();
   const radioButtons = useMemo(() => ([
     {
         id: 'exact', // acts as primary key, should be unique and non-empty string
@@ -42,6 +48,34 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   const [isDisabled, setIsDisabled] = useState(false);
   const [titleError, setTitleError] = useState('');
   const [textInputError, setTextInputError] = useState('');
+  const [showEditWriteModal, setShowEditWriteModal] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const showEditWrite = () => {
+    setShowEditWriteModal(true)
+  }
+  const hideEditWrite = () => {
+    setShowEditWriteModal(false)
+  }
+
+  const updateText = async (url: string) => {
+    const formData = new FormData();
+  
+    const file: any = {
+        uri: url,
+        type: 'image/png',
+        name: 'upload.png',
+    };
+    // setImg("data:image/jpeg;base64,"+url)
+    // hideEditWrite()
+    formData.append('image', file);
+    hideEditWrite()
+    setLoading(true)
+    let res =  await dispatch(translateAICheck(formData))
+    console.log("res.payload img resp ")
+    console.log(res.payload)
+    setTextInput(res.payload.translated_text)
+    setLoading(false)
+  }
 
   const cancelOrGoBack = () => {
     if (selectedTask) {
@@ -124,7 +158,13 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Text Input</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.label}>Text Input</Text>
+              <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
+                  <FontAwesome name="pencil" size={18} color="white" />
+              </TouchableOpacity>
+            </View>
+            
             <View style={{borderWidth: 1, borderColor: textInputError ? 'red' : '#D1D5DB', borderRadius: 8 }}>
               <TextInput
                 value={textInput}
@@ -143,11 +183,12 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={saveTask}>
-              <Text style={{ textAlign: 'center' }}>Save</Text>
+              <Text style={{ textAlign: 'center' }}>{loading ? 'Processing' : 'Save'}</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+      <WritePadViewModal show={showEditWriteModal} onCancel={hideEditWrite} updateText={updateText} />
     </Modal>
   );
 };

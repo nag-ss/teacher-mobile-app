@@ -23,12 +23,14 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/drawer": "^7.3.9",
     "@react-navigation/native": "^7.0.14",
+    "@react-navigation/stack": "^7.4.8",
     "@reduxjs/toolkit": "^2.7.0",
     "axios": "^1.9.0",
     "expo": "~52.0.46",
     "expo-asset": "~11.0.5",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.8",
+    "expo-draw": "github:MarangoniEduardo/expo-draw",
     "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.1",
     "expo-linking": "~7.0.5",
@@ -63,7 +65,8 @@
     "react-native-svg-transformer": "^1.5.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "react-native-view-shot": "~4.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

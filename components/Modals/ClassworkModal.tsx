@@ -11,6 +11,10 @@ import {
 } from 'react-native';
 import { RotateInDownLeft } from 'react-native-reanimated';
 import DropDownPicker from 'react-native-dropdown-picker';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import WritePadViewModal from '../PrepClass/WritePadView';
+import { translateClasswork } from '@/store/classSlice';
+import { useDispatch } from 'react-redux';
 
 interface AiCheckModalProps {
   visible: boolean;
@@ -22,6 +26,7 @@ interface AiCheckModalProps {
 }
 
 const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+  const dispatch = useDispatch<any>();
   const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
   const [matchType, setMatchType] = useState({ exact: true, approximate: false });
@@ -31,6 +36,38 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
   const [selectedMarks, setSelectedMarks] = useState(5);
   const [showMandatoryMsg, setShowMandatoryMsg] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [showEditWriteModal, setShowEditWriteModal] = useState(false)
+  const [img, setImg] = useState("")
+  const [loading, setLoading] = useState(false)
+    const showEditWrite = async () => {
+      setShowEditWriteModal(true)
+    }
+    const hideEditWrite = () => {
+      setShowEditWriteModal(false)
+    }
+  
+    const updateText = async (url: string) => {
+      const formData = new FormData();
+    
+      const file: any = {
+          uri: url,
+          type: 'image/png',
+          name: 'upload.png',
+      };
+      console.log("5")
+      console.log("data:image/jpeg;base64,"+url)
+      // setImg("data:image/jpeg;base64,"+url)
+      // hideEditWrite()
+      formData.append('image', file);
+      hideEditWrite()
+      setLoading(true)
+      let res =  await dispatch(translateClasswork(formData))
+      console.log("res.payload img resp ")
+      console.log(res.payload)
+      setTextInput(res.payload.question_text)
+      setLoading(false)
+    }
+
     // Options for the Grade and Section
   const timeOptions = [
     { label: '5 Mins', value: 5 },
@@ -196,7 +233,12 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>*Text Input</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
+                <Text style={styles.label}>*Text Input</Text>
+                <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
+                    <FontAwesome name="pencil" size={18} color="white" />
+                </TouchableOpacity>
+              </View>
             <TextInput
               value={textInput}
               onChangeText={setTextInput}
@@ -211,6 +253,12 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               <Text style={{color: 'red'}}>Please fill all the details</Text>
             </View> : null
           }
+          {img && 
+        <View style={{height: 50}}>
+          <Image source={{uri: img}} />
+        </View>
+        
+        }
           {/* Footer Buttons */}
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
@@ -219,12 +267,15 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={() => {
               saveClassWork()
             }}>
-              <Text style={{ color: 'white' }}>Save</Text>
+              <Text style={{ color: 'white' }}>{loading ? 'Processing..' : 'Save'}</Text>
             </TouchableOpacity>
           </View>
           
         </View>
+        
+        
       </View>
+      <WritePadViewModal show={showEditWriteModal} onCancel={hideEditWrite} updateText={updateText} />
     </Modal>
   );
 };

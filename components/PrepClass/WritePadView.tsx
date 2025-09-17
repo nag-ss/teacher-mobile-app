@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  Button,
   findNodeHandle
 } from 'react-native';
 import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
@@ -16,71 +17,33 @@ import SignatureCanvas from 'react-native-signature-canvas';
 import { changeQuestionFromImage } from '@/store/classSlice';
 import { useDispatch } from 'react-redux';
 import * as FileSystem from 'expo-file-system';
+// import { SketchCanvas } from '@terrylinla/react-native-sketch-canvas';
 import ExpoDraw from 'expo-draw'
 import { captureRef } from 'react-native-view-shot';
+
 // import RNFS from 'react-native-fs';
 
 
 interface EditQuestionModalProps {
   show: boolean;
-  selectedQuestion: any;
   onCancel: () => void;
-  updateQuestion: () => void;
+  updateText: (url: string) => void;
 }
 
-const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQuestion, updateQuestion, onCancel }) => {
+const WritePadViewModal: React.FC<EditQuestionModalProps> = ({ show, updateText, onCancel }) => {
     const dispatch = useDispatch<any>();
     const [signature, setSignature] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [strokeColor, setStrokeColor] = useState('#000000')
-  const [imageUri, setImageUri] = useState('')
+  const [imageUri, setImageUri] = useState('');
+
   
   const ref: any = useRef();
-    const eraseRef = useRef(null);
-    const clearRef = useRef(null);
 
-  const viewRef = useRef<any>(null);
-  
-    const handleSignature = async () => {
-      if (!viewRef.current) {
-        console.warn('View ref is null, cannot capture');
-        return;
-      }
-      const node = findNodeHandle(viewRef.current);
-      if (!node) {
-        console.warn('Could not find node handle');
-        return;
-      }
-      try {
-          const localUri = await captureRef(viewRef, {
-              format: 'png',
-              quality: 0.9,
-              result: 'tmpfile', // saves to temp file for easier upload
-            });
-      
-        const uri = localUri.startsWith('file://') ? localUri : 'file://' + localUri;
-         
-        const formData = new FormData();
-        formData.append('question_id', selectedQuestion.question_id);
-        const file: any = {
-            uri: uri,
-            type: 'image/png',
-            name: 'upload.png',
-        };
-        formData.append('image', file);
-        console.log("6", uri)
-        
-        await dispatch(changeQuestionFromImage(formData));
-        console.log("after change ...")
-        setIsLoading(false)
-        setImageUri(uri)
-        updateQuestion()
-      } catch (e) {
-        console.error('Error capturing image:', e);
-      }
-    };
+  const eraseRef = useRef(null);
+  const clearRef = useRef(null);
 
-  const handleSignatureOld = async (signature: any) => {
+  const handleSignature = async (signature: any) => {
     console.log('Signature captured:');
     setIsLoading(true)
     setSignature(signature);
@@ -88,7 +51,7 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
     // console.log(signature)
     // console.log(selectedQuestion)
     const formData = new FormData();
-    formData.append('question_id', selectedQuestion.question_id);
+    // formData.append('question_id', selectedQuestion.question_id);
     // formData.append('image', atob(signature.split(",")[1]));
     // const blob = base64ToBlob(signature);
     // const path = await saveBase64Image(signature)
@@ -97,19 +60,19 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
     // await RNFS.writeFile(filePath, signature, 'base64');
 
 
-    const file: any = {
-        uri: signature,
-        type: 'image/jpeg',
-        name: 'upload.jpg',
-    };
-    console.log("5")
-    formData.append('image', file);
-    console.log("6")
+    // const file: any = {
+    //     uri: signature,
+    //     type: 'image/jpeg',
+    //     name: 'upload.jpg',
+    // };
+    // console.log("5")
+    // formData.append('image', file);
+    // console.log("6")
     
-    await dispatch(changeQuestionFromImage(formData));
+    // await dispatch(changeQuestionFromImage(formData));
     console.log("after change ...")
     setIsLoading(false)
-    updateQuestion()
+    // updateText()
   };
 
   const handleEmpty = () => {
@@ -136,19 +99,66 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
   const onUpdate = () => {
 
   }
+
+  const updateStrokeColor = () => {
+    setStrokeColor(strokeColor == '#fff' ? '#000000' : '#fff')
+    setStrokeColor(strokeColor == 'red' ? '#000000' : 'red')
+  }
+
+  const canvasRef = useRef(null);
+//   const viewRef = useRef(null);
+
+  const viewRef = useRef<any>(null);
+
+  const handleSaveImage = async () => {
+    if (!viewRef.current) {
+      console.warn('View ref is null, cannot capture');
+      return;
+    }
+    const node = findNodeHandle(viewRef.current);
+    if (!node) {
+      console.warn('Could not find node handle');
+      return;
+    }
+    try {
+        const localUri = await captureRef(viewRef, {
+            format: 'png',
+            quality: 0.9,
+            result: 'tmpfile', // saves to temp file for easier upload
+          });
+    
+          const uri = localUri.startsWith('file://') ? localUri : 'file://' + localUri;
+       
+      updateText(uri)
+    } catch (e) {
+      console.error('Error capturing image:', e);
+    }
+  };
+
   return (
     <Modal visible={show} transparent animationType="fade">
-      {selectedQuestion &&
+      { 
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
             <View>
-                <Text style={styles.title}>{ "Edit Question"}?</Text>
+                <Text style={styles.title}>{ "Write Here"}</Text>
             </View>
-            
+            <View style={{flexDirection: 'row', marginBottom: 5}}>
+                
+                <TouchableOpacity style={styles.editorButton} onPress={() => clearRef.current && clearRef.current()} >
+                    <Text>Clear All</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.editorButton} onPress={() => eraseRef.current && eraseRef.current()} >
+                    <Text>Undo</Text>
+                </TouchableOpacity>
+                {/* <TouchableOpacity style={styles.editorButton} onPress={updateStrokeColor} >
+                    <Text>Erase</Text>
+                </TouchableOpacity> */}
+            </View>
             <View style={{height: 500, marginBottom: 10}}>
                 <View ref={viewRef}
-                            collapsable={false}
-                            style={{ height: 500, backgroundColor: '#fff', borderWidth: 1 }} >
+  collapsable={false}
+  style={{ height: 500, backgroundColor: '#fff', borderWidth: 1 }} >
                     <ExpoDraw
                         
                         containerStyle={{backgroundColor: '#fff', borderWidth: 1, borderColor: 'lightgray'}}
@@ -162,28 +172,11 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
                 </View>
             </View>
             
-            <View>
-                {
-                    imageUri && 
-                    <Image
-          source={{ uri: imageUri }}
-          style={{
-            height: 200,
-            resizeMode: 'contain',
-            borderWidth: 1,
-            borderColor: '#ccc',
-            marginVertical: 10,
-          }}
-        />
-                }
-            </View>
-          
-
             <View style={[styles.buttonRow]}>
                 <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSignature} style={styles.saveBtn}>
+                <TouchableOpacity onPress={handleSaveImage} style={styles.saveBtn}>
                     <Text style={styles.cancelButtonText}>Save</Text>
                 </TouchableOpacity>
             </View>
@@ -194,7 +187,7 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
   );
 };
 
-export default EditWriteQuestionModal;
+export default WritePadViewModal;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -311,5 +304,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#10B981',
     borderRadius: 8,
     width: 140
+  },
+  editorButton: {
+    paddingHorizontal:20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginRight: 8,
+    width: 140,
+  },
+  preview: {
+    marginTop: 15,
+    height: 200,
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 10,
   },
 });

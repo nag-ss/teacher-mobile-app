@@ -5,14 +5,23 @@ import { Badge } from 'react-native-elements'; // For "Live" badge
 import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
 import moment from 'moment';
+import { Colors } from '@/constants/Colors';
 
 
 const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
-
+  const timelimeIntervalHeight = 35
   const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
   // const isLoad = true;
   const classPrepRef = useRef<any>();
 
+  console.log("height ======= ", height)
+
+  const subjectImageSize: any = {
+    1: {height: 25, width: 20, fontSize: 8, headFontSize: 11},
+    2: {height: 45, width: 45, fontSize: 8, headFontSize: 11},
+    3: {height: 70, width: 65, fontSize: 11, headFontSize: 13},
+    4: {height: 70, width: 65, fontSize: 12, headFontSize: 13},
+  }
   const openClassPrep = () => {
     // console.log("welcome to class ....")
     // console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
@@ -31,15 +40,15 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
 
 
   return (
-    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*50, backgroundColor: item.isClassOver ? '#D3D3D3' : '#fff'}]} onPress={openClassPrep}>
+    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : ''}]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
-            <Image style={{width: height == 1 ? 45 : 65, height: height == 1 ? 45 : 70}} source={require('../../assets/images/ss/Chemistry.png')} />
-            <View style={{marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'space-between'}}>
-                <Text style={styles.classTime}>{item.time}</Text>
-                <Text style={styles.topic}>{selectedClass?.class_details[0]?.topic} - {selectedClass?.class_details[0]?.sub_topic[0]}</Text>
-                <Text style={styles.classSubject}>{item.subject}</Text>
-                <Text style={styles.classCategory}>{item.category}</Text>
+            <Image style={{width: subjectImageSize[height].width, height: subjectImageSize[height].height}} source={require('../../assets/images/ss/Chemistry.png')} />
+            <View style={{height: (subjectImageSize[height].height + 10), marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'center', alignItems: 'center', width: 220}}>
+                <Text style={[styles.classTime, {fontSize: subjectImageSize[height].fontSize}]}>{item.time}</Text>
+                <Text style={[styles.topic, {fontSize: subjectImageSize[height].headFontSize}]} numberOfLines={1}>{selectedClass?.class_details[0]?.topic} - {selectedClass?.class_details[0]?.sub_topic[0]}</Text>
+                {/* <Text style={styles.classSubject}>{item.subject}</Text> */}
+                <Text style={[styles.classCategory, {fontSize: subjectImageSize[height].fontSize}]}>{item.category}</Text>
             </View>
             
         </View>
@@ -58,7 +67,7 @@ const styles = StyleSheet.create({
   classCard: {
     backgroundColor: '#fff',
     padding: 15,
-    marginBottom: 10,
+    // marginBottom: 10,
     borderRadius: 8,
     borderWidth: 1,
     // borderColor: 'lightgray',
@@ -80,18 +89,20 @@ const styles = StyleSheet.create({
   },
   classCategory: {
     fontSize: 14,
-    color: '#888',
+    // color: '#888',
     marginTop: 5,
+    fontWeight: 'bold',
   },
   classTime: {
     fontSize: 14,
     color: '#555',
     marginTop: 5,
+    fontWeight: 'bold',
   },
   topic: {
     fontSize: 16,
     fontWeight: 'bold',
-    width: 250
+    // width: 250
   },
   liveBadge: {
     position: 'absolute',

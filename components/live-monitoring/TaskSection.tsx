@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getTeacherClassTasks } from '@/store/classSlice';
 import { useFocusEffect } from '@react-navigation/native';
 import ClassWork from './ClassWork';
+import { Colors } from '@/constants/Colors';
+import ClassPrep from '../dashboard/ClassPrep';
 
 const tasks = [
   { title: 'Attendance Monitoring', action: 'Check' },
@@ -21,6 +23,8 @@ const tasks = [
 const TaskSection = () => {
   const dispatch = useDispatch<any>()
   const { liveClass, classTimeline, classTasks } = useSelector((state: any) => state.classes);
+  const [isPressed, setIsPressed] = useState(false);
+      
   const [tasks, setTasks] = useState<any>([])
   const attendanceTask = {
     "id": "Attendance",
@@ -33,6 +37,16 @@ const TaskSection = () => {
   
   console.log("classTasks")
   console.log(classTasks)
+
+  const classPrepRef = useRef<any>();
+      
+  const onPress = () => {
+      // getAttendanceData()
+      console.log("button pressed ....")
+      setIsPressed(true)
+      // classPrepRef.current?.setLiveMonitorFlag()
+      classPrepRef.current?.setSelectedClass(true)
+  }
   const getTasksListData = async () => {
     let reqObj: any = {
       class_schedule_id : liveClass.class_schedule_id,
@@ -57,10 +71,12 @@ const TaskSection = () => {
 
   useEffect(() => {
     if(classTasks && classTasks.length) {
-      const tasksList = [attendanceTask, ...classTasks, addTaskCard];
+      const tasksList = [attendanceTask, ...classTasks];
+      console.log("tasksList")
+      console.log(tasksList)
       setTasks(tasksList)
     } else {
-      const tasksList = [attendanceTask, addTaskCard];
+      const tasksList = [attendanceTask];
       setTasks(tasksList)
     }
 
@@ -88,7 +104,17 @@ const TaskSection = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>AI Tasks</Text>
+      <View style={styles.headerSection}>
+        <Text style={styles.title}>AI Tasks</Text>
+        <TouchableOpacity style={[styles.button, {backgroundColor: isPressed ? Colors.primaryColor : ''}]} 
+            onPress={onPress}
+            onPressIn={() => setIsPressed(true)}
+            onPressOut={() => setIsPressed(false)}
+        >
+         <Text style={[styles.buttonText, {color: isPressed ? '#fff' : '#000' }]}>{'Add Task'}</Text>
+        </TouchableOpacity>
+      </View>
+      
         <View style={styles.cardsContainer}>
             {/* <Attendance /> */}
             {/* <AttendanceMonitoring />
@@ -133,16 +159,19 @@ const TaskSection = () => {
             </TouchableOpacity>
             
         </View>
-        
+        <ClassPrep item={{}} selectedClass={liveClass} ref={classPrepRef} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { marginBottom: 16, 
+  container: { 
+    marginBottom: 16, 
     paddingVertical: 10, 
     paddingHorizontal: 5,
-    backgroundColor: '#fff'},
+    backgroundColor: '#fff',
+    borderRadius: 10
+  },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   cardsContainer: {
     flexDirection: 'row'
@@ -153,7 +182,22 @@ const styles = StyleSheet.create({
   },
   arrowText: {
     fontSize: 24,
-  }
+  },
+  headerSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5
+  },
+  button: {
+    borderWidth: 1,
+    borderColor: Colors.primaryColor,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 5,
+    width: 100,
+    alignItems: 'center'
+  },
+  buttonText: { fontWeight: '600' },
 });
 
 export default TaskSection;

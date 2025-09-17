@@ -68,11 +68,18 @@ const Quiz = ({task, refreshTasks}: any) => {
       <View>
         <TouchableOpacity onPress={cardPressed}>
         <View style={[styles.card, {borderColor : (selectedTaskSection == 'SlipTest' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
-            <View style={styles.imageSection}>
-                <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Quiz.png')} />
+            <View style={styles.headerSection}>
+              <View style={styles.imageSection}>
+                  <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Quiz.png')} />
+              </View>
+              <View style={[styles.pbutton, {backgroundColor: task.live ? Colors.primaryColor : ''}]} >
+                <Text style={[styles.pbuttonText, {color: task.live ? '#fff' : '#000' }]}>{task.live ? 'Progress' : 'In Queue'}</Text>
+              </View>
             </View>
-            
-            <Text style={styles.title} numberOfLines={1}>{task.title}</Text>
+            <View style={styles.taskBodySection}>
+              <Text style={styles.title}>{task.title}</Text>
+              <Text style={styles.subTitle}>{'Time Left: 12:45 Mins'}</Text>
+            </View>
             {
               !task.published_quiz_id ?
               <TouchableOpacity style={styles.button} onPress={onPress}>
@@ -116,7 +123,8 @@ const Quiz = ({task, refreshTasks}: any) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 130,
+    width: 165,
+    height: 185,
     // marginHorizontal: 8,
     padding: 16,
     backgroundColor: '#fff',
@@ -128,8 +136,11 @@ const styles = StyleSheet.create({
   },
   icon: { fontSize: 24 },
   title: { 
-    fontSize: 14, fontWeight: '600', marginVertical: 10, height: 40
+    fontSize: 14, fontWeight: '600', height: 60
     
+  },
+  subTitle: {
+    fontSize: 12
   },
   button: {
     borderWidth: 1,
@@ -137,16 +148,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 5,
-    width: 100,
-    alignItems: 'center'
+    width: 130,
+    alignItems: 'center',
+    marginTop: 5
   },
   buttonText: { fontWeight: '600' },
+  pbutton: {
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 5,
+    width: 82,
+    alignItems: 'center'
+  },
+  pbuttonText: { fontSize: 10 },
   imageSection: {
     borderWidth: 1,
     borderColor: 'lightgray',
     borderRadius: 5,
     padding: 5,
-    width: 50
+    width: 30
+  },
+  headerSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  taskBodySection: {
+    height: 80,
+    marginTop: 5
   },
   overlay: {
     flex: 1,

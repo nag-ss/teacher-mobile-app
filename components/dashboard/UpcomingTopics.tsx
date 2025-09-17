@@ -7,17 +7,16 @@ import { Colors } from '@/constants/Colors';
 
 const UpcomingTopics = () => (
   <View style={[styles.card, {flexDirection: 'row'}]}>
-    <View style={styles.iconSection}>
+    {/* <View style={styles.iconSection}>
       <View style={styles.iconContent}>
-          {/* <SvgLoader svgFilePath="iconUpcoming" width={50} height={50}  /> */}
           <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Upcoming.png')}  />
       </View>
-    </View>
+    </View> */}
     
     <View style={{}}>
         <Text style={styles.title}>Upcoming Topics</Text>
-        <Text>• Quadratic Equations</Text>
-        <Text>• Trigonometry </Text>
+        <Text style={styles.subTitle}>• Quadratic Equations & Calculus</Text>
+        <Text style={styles.subTitle}>• Trigonometry </Text>
     </View>
     
   </View>
@@ -26,8 +25,8 @@ const UpcomingTopics = () => (
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
+    padding: 10,
+    marginBottom: 5,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'lightgray',
@@ -38,12 +37,13 @@ const styles = StyleSheet.create({
     // elevation: 5,
   },
   title: {
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    fontSize: 14,
     marginBottom: 8,
   },
   subTitle: {
-    marginTop: 12,
-    fontWeight: '600',
+    fontSize: 10,
+    color: 'gray'
   },
   iconSection: {
     // justifyContent: 'center', 

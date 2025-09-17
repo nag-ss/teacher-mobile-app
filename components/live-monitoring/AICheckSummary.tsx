@@ -28,22 +28,22 @@ const AICheckSummary = ({task}: any) => {
 
     }, [selectedTaskSection])
 
-    if(selectedTaskSection == 'AI Task') {
+    // if(selectedTaskSection == 'AI Task') {
         return (
-            <View>
+            <View style={{width: '100%'}}>
               <View style={[styles.card]}>
-                  <View >
+                  <View style={{width: '22%'}}>
                       <Text style={styles.title}>{'AI Check Summary - '}</Text>
                   </View>
-                  <View >
+                  <View  style={{width: '78%'}}>
                       <Text style={styles.subTitle}>{'Student engagement is 85%, with 3 students flagged for incomplete work. Overall class performance is stable. - 10:45 AM'}</Text>
                   </View>
               </View>
             </View>
           )
-    } else {
-        return (null)
-    }
+    // } else {
+    //     return (null)
+    // }
     
 };
 

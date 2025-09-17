@@ -96,7 +96,7 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
             <View>
-                <Text style={styles.title}>{ "Edit Question"}</Text>
+                <Text style={styles.title}>{ "Question"}</Text>
             </View>
             
             <View style={styles.inputGroup}>

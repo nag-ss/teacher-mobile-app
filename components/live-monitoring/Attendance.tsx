@@ -36,12 +36,16 @@ const Attendance = () => {
         <TouchableOpacity onPress={cardPressed}>
         <View style={[styles.card, {borderColor : selectedTaskSection == 'Attendance' ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.imageSection}>
-                <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/MileStone.png')} />
+                <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/MileStone.png')} />
             </View>
             
-            <Text style={styles.title}>{'Attendance Monitoring'}</Text>
+            <View style={styles.taskBodySection}>
+              <Text style={styles.title}>{'View Notebook'}</Text>
+              <Text style={styles.subTitle}>{''}</Text>
+            </View>
+            
             <TouchableOpacity style={styles.button} onPress={onPress}>
-            <Text style={styles.buttonText}>{'Check'}</Text>
+              <Text style={styles.buttonText}>{'Activate'}</Text>
             </TouchableOpacity>
         </View>
         </TouchableOpacity>
@@ -50,7 +54,8 @@ const Attendance = () => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 130,
+    width: 165,
+    height: 185,
     // marginHorizontal: 8,
     // marginRight: 16,
     padding: 16,
@@ -62,15 +67,21 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray'
   },
   icon: { fontSize: 24 },
-  title: { fontSize: 14, fontWeight: '600', marginVertical: 10, height: 40 },
+  title: { 
+    fontSize: 14, fontWeight: '600', height: 60
+  },
+  subTitle: {
+    fontSize: 12
+  },
   button: {
     borderWidth: 1,
     borderColor: Colors.primaryColor,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 5,
-    width: 100,
-    alignItems: 'center'
+    width: 130,
+    alignItems: 'center',
+    marginTop: 5
   },
   buttonText: { fontWeight: '600' },
   imageSection: {
@@ -78,8 +89,12 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray',
     borderRadius: 5,
     padding: 5,
-    width: 50
-  }
+    width: 30
+  },
+  taskBodySection: {
+    height: 80,
+    marginTop: 5
+  },
 });
 
 export default Attendance;

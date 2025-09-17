@@ -5,7 +5,7 @@ import ClassGradeSelection from './ClassGradeSelection';
 
 const ClassProgress = () => (
   <View style={styles.card}>
-    <Text style={styles.title}>Class Progress</Text>
+    <Text style={styles.title}>Class Snapshot</Text>
     <ClassGradeSelection />
     <ProgressBar progress={45} />
   </View>

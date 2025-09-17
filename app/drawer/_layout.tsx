@@ -1,199 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import Login from '../login';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Sidebar from './Sidebar'
+import DrawerLayout from './menu';
 import Home from '../home';
-import Settings from '../settings';
-import SlipTest from '../slip_test';
-import { DrawerTabBarIcon, DrawerTabBarIconCustom, DrawerTabBarLogoIcon } from '@/components/navigation/TabBarIcon';
-import { MaterialIcons } from '@expo/vector-icons';
-import CustomDrawerContent from '@/components/navigation/Sidebar';
-import Analytics from '../analytics';
 import Classes from '../classes';
+import Analytics from '../analytics';
 import Profile from '../profile';
 import Logout from '../logout';
 import LiveMonitoring from '../live-monitoring';
-import { useSelector } from 'react-redux';
 
-const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
 
-const DrawerLayout = () => {
-    
-    const {user} = useSelector((state: any) => state.user)
-    console.log("user")
-    console.log(user)
-   
+export default function App() {
+    const navigation = useNavigation<any>()
   return (
-    <Drawer.Navigator initialRouteName="Home"
-    drawerContent={() => <CustomDrawerContent />}
-    
-        screenOptions={{
-            // animationEnabled: !reduceMotion,
-            // headerShown: false, // Hide top header
-            // drawerType: 'permanent',
-            drawerStyle: {
-            backgroundColor: '#f8f9fa',
-            width: '30%', // Width for left menu
-            borderRadius: 0,
-            borderColor: 'red'
-            },
-        // animation: 'none', // Disable animations for Boox devices
-      }}
-    >
-      <Drawer.Screen name="Home" component={Home} 
-       options={{ 
-          title: user ? user.school_name : 'Keshavareddy Internation Schools',
-          // drawerLabel: 'Login',
-          drawerIcon: ({ color, focused }) => (
-              <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
-          drawerLabelStyle: {
-              fontWeight: 'bold', // Customize label style
-              marginTop: 10,      // Adjust the margin to move the label to the top
-              fontSize: 14,       // Font size of the label
-              textAlign: 'center', // Center the label
-            },
-            drawerItemStyle: {
-              alignItems: 'center', // Center horizontally
-            },
-        }}
-      />
-
-    
-      <Drawer.Screen name="Settings" component={Settings} 
-            options={{ 
-              // title: 'Home',
-              // drawerLabel: 'Login',
-              drawerIcon: ({ color, focused }) => (
-                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-              ),
-              drawerLabelStyle: {
-                  fontWeight: 'bold', // Customize label style
-                  marginTop: 10,      // Adjust the margin to move the label to the top
-                  fontSize: 14,       // Font size of the label
-                  textAlign: 'center', // Center the label
-                },
-                drawerItemStyle: {
-                  alignItems: 'center', // Center horizontally
-                },
-          }}
-          />
-     <Drawer.Screen name="Analytics" component={Analytics} 
-            options={{ 
-              // title: 'Home',
-              // drawerLabel: 'Login',
-              drawerIcon: ({ color, focused }) => (
-                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-              ),
-              drawerLabelStyle: {
-                  fontWeight: 'bold', // Customize label style
-                  marginTop: 10,      // Adjust the margin to move the label to the top
-                  fontSize: 14,       // Font size of the label
-                  textAlign: 'center', // Center the label
-                },
-                drawerItemStyle: {
-                  alignItems: 'center', // Center horizontally
-                },
-          }}
-          />
-    
-    <Drawer.Screen name="Classes" component={Classes} 
-            options={{ 
-              // title: 'Home',
-              // drawerLabel: 'Login',
-              drawerIcon: ({ color, focused }) => (
-                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-              ),
-              drawerLabelStyle: {
-                  fontWeight: 'bold', // Customize label style
-                  marginTop: 10,      // Adjust the margin to move the label to the top
-                  fontSize: 14,       // Font size of the label
-                  textAlign: 'center', // Center the label
-                },
-                drawerItemStyle: {
-                  alignItems: 'center', // Center horizontally
-                },
-          }}
-          />
-
-<Drawer.Screen name="Profile" component={Profile} 
-            options={{ 
-              // title: 'Home',
-              // drawerLabel: 'Login',
-              drawerIcon: ({ color, focused }) => (
-                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-              ),
-              drawerLabelStyle: {
-                  fontWeight: 'bold', // Customize label style
-                  marginTop: 10,      // Adjust the margin to move the label to the top
-                  fontSize: 14,       // Font size of the label
-                  textAlign: 'center', // Center the label
-                },
-                drawerItemStyle: {
-                  alignItems: 'center', // Center horizontally
-                },
-          }}
-          />
-
-<Drawer.Screen name="live-monitoring" component={LiveMonitoring} 
-            options={{ 
-              title: `Live Monitoring`,
-              // drawerLabel: 'Login',
-              drawerIcon: ({ color, focused }) => (
-                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-              ),
-              drawerLabelStyle: {
-                  fontWeight: 'bold', // Customize label style
-                  marginTop: 10,      // Adjust the margin to move the label to the top
-                  fontSize: 14,       // Font size of the label
-                  textAlign: 'center', // Center the label
-                },
-                drawerItemStyle: {
-                  alignItems: 'center', // Center horizontally
-                },
-          }}
-          />
-
-<Drawer.Screen name="Logout" component={Logout} 
-            options={{ 
-              // title: 'Home',
-              // drawerLabel: 'Login',
-              drawerIcon: ({ color, focused }) => (
-                  <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-              ),
-              drawerLabelStyle: {
-                  fontWeight: 'bold', // Customize label style
-                  marginTop: 10,      // Adjust the margin to move the label to the top
-                  fontSize: 14,       // Font size of the label
-                  textAlign: 'center', // Center the label
-                },
-                drawerItemStyle: {
-                  alignItems: 'center', // Center horizontally
-                },
-          }}
-          />
+        <View style={styles.container}>
+        <Sidebar navigation={navigation} />
+        <View style={styles.content}>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Classes" component={Classes} />
+            <Stack.Screen name="Analytics" component={Analytics} />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Logout" component={Logout} />
+            <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
+          </Stack.Navigator>
+        </View>
+      </View>
       
-      <Drawer.Screen name="SlipTest" component={SlipTest} 
-          options={{ 
-            // title: 'Home',
-            // drawerLabel: 'Login',
-            drawerIcon: ({ color, focused }) => (
-                <DrawerTabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-            ),
-            drawerLabelStyle: {
-                fontWeight: 'bold', // Customize label style
-                marginTop: 10,      // Adjust the margin to move the label to the top
-                fontSize: 14,       // Font size of the label
-                textAlign: 'center', // Center the label
-              },
-              drawerItemStyle: {
-                alignItems: 'center', // Center horizontally
-              },
-        }}
-        />
-
-      
-    </Drawer.Navigator>
   );
-};
+}
 
-export default DrawerLayout;
+const styles = StyleSheet.create({
+  container: { flex: 1, flexDirection: 'row' },
+  content: { flex: 1, marginLeft: 60 }, // Adjust if sidebar width changes
+});

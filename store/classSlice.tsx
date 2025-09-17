@@ -82,6 +82,14 @@ export const editObjectiveQuestion = createAsyncThunk('/quiz/editObjectiveQuesti
   return handleAuthApiCall(classService.editObjectiveQuestion, quiz, thunkAPI);
 });
 
+export const translateClasswork = createAsyncThunk('/quiz/translateClasswork', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.translateClasswork, quiz, thunkAPI);
+});
+
+export const translateAICheck = createAsyncThunk('/quiz/translateAICheck', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.translateAICheck, quiz, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {

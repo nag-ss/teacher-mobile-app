@@ -18,7 +18,9 @@ import {
   CHANGE_QUESTION_FROM_IMAGE,
   RESTORE_QUESTION,
   EDIT_OBJECTIVE_QUESTION,
-  EDIT_SUBJECTIVE_QUESTION
+  EDIT_SUBJECTIVE_QUESTION,
+  TRANSLATE_CLASSWORK_FROM_IMAGE,
+  TRANSLATE_AICHECK_FROM_IMAGE
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -228,6 +230,20 @@ const editObjectiveQuestion = async(reqData: any, userToken: string) => {
   return await apiRequest(reqUrl, 'PATCH', reqData, userToken);
 }
 
+const translateClasswork = async(quiz: any, userToken: string) => {
+  console.log("ca lling ....")
+  const reqUrl = `${TRANSLATE_CLASSWORK_FROM_IMAGE}`;
+  return await apiRequest(reqUrl, 'POST', quiz, userToken, true);
+}
+
+const translateAICheck = async(quiz: any, userToken: string) => {
+  console.log("ca lling ....")
+  const reqUrl = `${TRANSLATE_AICHECK_FROM_IMAGE}`;
+  return await apiRequest(reqUrl, 'POST', quiz, userToken, true);
+}
+
+
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -248,7 +264,9 @@ const authService = {
     changeQuestionFromImage,
     restoreQuestionId,
     editSubjectiveQuestion,
-    editObjectiveQuestion
+    editObjectiveQuestion,
+    translateClasswork,
+    translateAICheck
 };
 
 export default authService;

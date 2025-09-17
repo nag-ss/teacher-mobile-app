@@ -53,10 +53,14 @@ const LiveMonitorHeader = () => {
 
 const styles = StyleSheet.create({
     headerContainer: { 
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        marginBottom: 10,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingRight: 25
+        paddingRight: 25,
+        paddingVertical: 10
      },
 });
 

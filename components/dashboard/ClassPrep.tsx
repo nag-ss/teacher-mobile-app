@@ -59,8 +59,11 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   const [showLoadingQuizModal, setShowLoadingQuizModal] = useState(false);
   const [showSlipTestDetailsModal, setShowSlipTestDetailsModal] = useState(false);
   const [isNewQuiz, setIsNewQuiz] = useState(false);
+  const [fromLiveMonitor, setFromLiveMonitor] = useState(false);
 
-  const setSelectedClass = async() => {
+  const setSelectedClass = async(isFlag = false) => {
+    console.log("isFlag ============================", isFlag)
+    setFromLiveMonitor(isFlag)
     console.log("Action from Parent!", "You triggered this from parent.");
     const tasksObject = {
       class_schedule_id: selectedClass.class_schedule_id,
@@ -149,6 +152,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
   }
 
   const saveAICheckDetails = async(aiCheckDetails: any) => { 
+    console.log(fromLiveMonitor)
     const data: any = {
       title: aiCheckDetails.title,
       instructions: {
@@ -179,7 +183,11 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     }
     await dispatch(getTeacherClassTasks(tasksObject))
     setShowModal4AICheckModal(false)
-    setShowModal2TasksModal(true)
+    if(!fromLiveMonitor) {
+      setShowModal2TasksModal(true)
+    }
+    
+
   }
 
   const saveClassWorkCheckDetails = async(aiCheckDetails: any) => { 
@@ -213,7 +221,9 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     }
     await dispatch(getTeacherClassTasks(tasksObject))
     setShowClassWorkModal(false)
-    setShowModal2TasksModal(true)
+    if(!fromLiveMonitor) {
+      setShowModal2TasksModal(true)
+    }
   }
 
   const saveSlipTestDetails = async(slipTestDetails: any) => {
@@ -437,7 +447,9 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
       await dispatch(getTeacherClassTasks(tasksObject));
     }
     
-    setShowModal2TasksModal(true)
+    if(!fromLiveMonitor) {
+      setShowModal2TasksModal(true)
+    }
   }
 
   // const getDetails = async () => {

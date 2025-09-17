@@ -140,15 +140,22 @@ const LiveSessionCard = () => {
     
   }
   return (
-    <View style={[styles.cardContainer, {opacity: nextClass.class_schedule_id ? 1 : 1 }]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
-      <View style={styles.sessionDetails}>
+    <View style={[styles.cardContainer, {backgroundColor: nextClass.class_schedule_id ? '#21C17C' : ''}]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
+      <View style={[styles.sessionDetails, {}]}>
+        {/* <View style={{width: 200, height: 200, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderRadius: 100}}>
+          <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/no_class.png')} />
+        </View> */}
+      
         {
           (isnextClass) ? 
-          <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/UpcomingClass.png')} />
+          <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/subject.png')} />
         : 
         !nextClass.class_schedule_id ? 
-        <Image style={{width: 150, height: 150, borderRadius: 100}} source={require('../../assets/images/ss/women-with-yoga.png')} />
-        : <Image style={{width: 200, height: 200}} source={require('../../assets/images/ss/LiveClass.png')} />
+        <View style={{marginLeft: 20}}><Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/no_class.png')} /></View>
+        : <View style={{marginLeft: 20}}>
+          <Image style={{width: 50, height: 20}} source={require('../../assets/images/ss/LiveButton.png')} />
+          <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/subject.png')} />
+          </View>
         }
         
         {
@@ -174,17 +181,17 @@ const LiveSessionCard = () => {
             
           </View>
           <View>
-            <Text style={styles.subject}>
-              No Classes found today
+            <Text style={styles.noClassText}>
+              No Classes Found Today 
             </Text>
-            <View style={{alignItems: 'center'}}>
+            {/* <View style={{alignItems: 'center'}}>
               <Text style={styles.category}>Chill until then!</Text>
-            </View>
+            </View> */}
           </View>
           
           
         </View>
-      }
+      } }
         
       </View>
     </View>
@@ -198,7 +205,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 8,
     // borderColor: 'gray',
-    borderWidth: 1,
+    // borderWidth: 1,
     // opacity: 0.4
     
     // shadowColor: '#000',
@@ -216,6 +223,7 @@ const styles = StyleSheet.create({
   sessionDetails: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 200,
   },
   sessionImage: {
     width: 60,
@@ -223,7 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   textContainer: {
-    marginLeft: 15,
+    marginLeft: 25,
     // backgroundColor: 'red',
     justifyContent: 'space-between'
   },
@@ -238,10 +246,10 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 14,
-    color: '#888',
+    color: '#000',
   },
   joinButton: {
-    backgroundColor: '#21C17C',
+    backgroundColor: '#fff',
     borderRadius: 8,
     marginTop: 15,
     width: 170,
@@ -252,6 +260,13 @@ const styles = StyleSheet.create({
   buttonTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  noClassText: {
+    width: 200,
+    fontSize: 20,
+    textAlign: 'center',
+    // fontWeight: 'bold',
+    color: '#000',
   },
 });
 

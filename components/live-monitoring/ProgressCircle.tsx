@@ -7,13 +7,15 @@ interface ProgressCircleProps {
   size?: number;
   strokeWidth?: number;
   color?: string;
+  score?: number;
 }
 
 const ProgressCircle = ({
   progress,
   size = 80,
   strokeWidth = 8,
-  color = ''
+  color = '',
+  score
 }: ProgressCircleProps) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -47,7 +49,7 @@ const ProgressCircle = ({
         />
       </Svg>
       <View style={styles.textContainer}>
-        <Text style={styles.text}>{String(progress).padStart(2, '0')}</Text>
+        <Text style={styles.text}>{String(score).padStart(2, '0')}</Text>
       </View>
     </View>
   );

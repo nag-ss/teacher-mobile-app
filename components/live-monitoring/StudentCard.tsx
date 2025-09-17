@@ -28,7 +28,7 @@ const StudentCard = (studentData: any) => {
   };
 
   const showStudentInfo = async () => {
-    if(selectedTaskSection == 'Attendance') {
+    if(selectedTaskSection == 'Attendance' || selectedTaskSection == 'AICheck') {
       console.log("calling modal ....")
       setSelectedStudent(student);
       setNotesModalVisible(true);
@@ -55,14 +55,14 @@ const StudentCard = (studentData: any) => {
           {
               (student.task_type == 'SlipTest') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} size={40} strokeWidth={4} />
+                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={Math.round(parseFloat(student.percentage))} size={40} strokeWidth={4} />
               </View>
               : null
           }
           {
               (student.task_type == 'Classwork') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={(student.score/10)*100} size={40} strokeWidth={4} />
+                  <ProgressCircle progress={(student.score/10)*100} score={(student.score/10)*100} size={40} strokeWidth={4} />
               </View>
               : null
           }
@@ -82,7 +82,7 @@ const StudentCard = (studentData: any) => {
               (student.task_type == 'AICheck' && student.match_type == 'approx') ?
               <View style={styles.statusContainer}>
                   {
-                      <ProgressCircle progress={Math.round(parseFloat(student.approx.score))} size={40} strokeWidth={4} color={student.approx.color} />
+                      <ProgressCircle progress={Math.round(parseFloat(student.approx.score))} score={(Math.round(parseFloat(student.approx.score))/10)*100} size={40} strokeWidth={4} color={student.approx.color} />
                   }
                   
               </View>
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     margin: 6,
     marginLeft: 0,
     // flex: 1,
-    minWidth: 200,
+    minWidth: 235,
     maxWidth: '33%',
     alignItems: 'center',
     // elevation: 2,

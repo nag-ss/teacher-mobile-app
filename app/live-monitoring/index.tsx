@@ -23,6 +23,7 @@ const DashboardScreen = () => {
   // }, [navigation]);
   return (
     <ScrollView style={styles.container}>
+      <LiveMonitorHeader />
       <TaskSection />
       <AICheckSummary />
       <StudentGrid />
@@ -31,7 +32,7 @@ const DashboardScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 10, backgroundColor: '#f5f5f5' },
+  container: { padding: 10, backgroundColor: '#f5f5f5', borderRadius: 10 },
 });
 
 export default DashboardScreen;

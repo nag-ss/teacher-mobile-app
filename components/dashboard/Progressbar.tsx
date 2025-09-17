@@ -19,7 +19,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Syllabus Completed - {progress}%</Text>
-      <View style={styles.progressBar}>
+      <View style={styles.progressBarContainer}>
+        <View style={styles.progressBarBg}>
+          <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+        </View>
+      </View>
+      {/*<View style={styles.progressBar}>
         {[...Array(10)].map((_, index) => (
           <View
             key={index}
@@ -33,7 +38,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
             ]}
           />
         ))}
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -41,7 +46,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
 const styles = StyleSheet.create({
   container: {
     // width: '80%',
-    padding: 15,
+    padding: 10,
     // alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -54,10 +59,10 @@ const styles = StyleSheet.create({
     // elevation: 5,
   },
   text: {
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 10,
     color: '#333',
-    fontWeight: 'bold'
+    // fontWeight: 'bold'
   },
   progressBar: {
     flexDirection: 'row',
@@ -71,6 +76,26 @@ const styles = StyleSheet.create({
     margin: 1,
     // borderRadius: 5
   },
+  progressBarContainer: {
+    width: '100%',
+    height: 16,
+    justifyContent: 'center',
+  },
+  progressBarBg: {
+    width: '100%',
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: '#F0F0F0',
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: '#21C17C',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  }
 });
 
 export default ProgressBar;

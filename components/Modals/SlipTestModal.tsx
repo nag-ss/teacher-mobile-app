@@ -88,7 +88,7 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest 
   }
 
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestion={replaceClicked} refreshQuiz={refreshQuiz} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestionFun={replaceClicked} refreshQuiz={refreshQuiz} />)
   }
 
   return (
