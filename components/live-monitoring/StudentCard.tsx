@@ -43,14 +43,14 @@ const StudentCard = (studentData: any) => {
 
 
     return (
-      <View style={{flex: 1}}>
+      <View style={{}}>
         <TouchableOpacity style={styles.card} onPress={() => showStudentInfo()}>
           <View style={styles.iconView}>
               <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Male.png')} />
           </View>
           <View style={styles.nameContnet}>
-              <Text style={styles.name}>{student.student_name}</Text>
-              <Text style={styles.status}>Status: {student.status}</Text>
+              <Text style={styles.name} numberOfLines={1}>{student.student_name}</Text>
+              <Text style={styles.status} numberOfLines={1}>Status: {student.status}</Text>
           </View>
           {
               (student.task_type == 'SlipTest') ?
@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
     margin: 6,
     marginLeft: 0,
     // flex: 1,
-    minWidth: 235,
-    maxWidth: '33%',
+    minWidth: '32%',
+    // maxWidth: '33%',
     alignItems: 'center',
     // elevation: 2,
     borderWidth: 1,
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   iconView: {
-    marginRight: 10
+    marginRight: 5
   },
   icon: { fontSize: 24 },
   name: { fontWeight: '600', marginTop: 8 },
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'yellow'
   },
   nameContnet: {
-    width: 130
+    width: 120
   }
 });
 
