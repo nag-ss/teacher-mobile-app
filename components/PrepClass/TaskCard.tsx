@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import SvgLoader from '@/utils/SvgLoader';
 
 const TaskCard = ({idx, task, createTask}: {idx: number; task: any; createTask: (title: string) => void}) => {
+  const [isPressed, setIsPressed] = useState(false);
+
   return (
     <View key={idx} style={styles.taskCard}>
       <View style={styles.taskInfo}>
@@ -19,13 +22,21 @@ const TaskCard = ({idx, task, createTask}: {idx: number; task: any; createTask: 
           ))}
         </View>
       </View>
-      <TouchableOpacity
-        style={styles.actionButton}
-        onPress={() => createTask(task.id)}
-      >
-        <Text style={styles.actionText}>{task.action}</Text>
-      </TouchableOpacity>
+      
+      <View style={styles.createButtonBox}>
+        <TouchableOpacity
+          style={[styles.actionButton, isPressed && styles.buttonPressed]}
+          onPress={() => createTask(task.id)}
+          onPressIn={() => setIsPressed(true)}
+          onPressOut={() => setIsPressed(false)}
+        >
+          <Text style={styles.actionText}>{task.action}</Text>
+        </TouchableOpacity>
+      </View>
+        
     </View>
+      
+    
   )
 }
 
@@ -37,11 +48,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 12,
     marginBottom: 12,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'row',
   },
   taskInfo: {
     flexDirection: 'row',
+    width: 420
   },
   taskImage: {
     width: 120,
@@ -67,16 +79,19 @@ const styles = StyleSheet.create({
     color: '#4B5563',
   },
   actionButton: {
-    alignSelf: 'flex-end',
-    marginTop: -30,
     borderWidth: 1,
-    borderColor: '#10B981',
+    borderColor: '#21c17c',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
   },
+  buttonPressed: {
+    backgroundColor: "#BDEDD7"
+  },
+  createButtonBox: {
+    justifyContent: 'center'
+  },
   actionText: {
-    color: '#10B981',
     fontSize: 14,
   },
 });

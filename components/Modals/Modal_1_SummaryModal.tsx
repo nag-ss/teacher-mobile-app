@@ -125,6 +125,8 @@ export default function ClassSummaryPopModal({
                   valueField="topic"
                   style={styles.picker}
                   iconStyle={{width: 30, height:30}}
+                  containerStyle={{borderRadius: 10}}
+                  itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                 />
               </View>
               
@@ -148,6 +150,8 @@ export default function ClassSummaryPopModal({
                   valueField="sub_topic"
                   style={styles.picker}
                   iconStyle={{width: 30, height:30}}
+                  containerStyle={{borderRadius: 10}}
+                  itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                 />
               </View>
               

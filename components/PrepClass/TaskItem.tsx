@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   TouchableHighlight,
-  Dimensions
+  Dimensions,
+  Pressable
 } from 'react-native';
 
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
@@ -51,31 +52,36 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
     setSelectedTaskId(item.task_id)
   }
   return (
-    <View style={styles.taskRow}>
-      <View style={{width: 50}}>
+    <Pressable onPress={(ev) => {
+        setTaskOptionsVisible(false)
+      }}>
+      <View style={[styles.taskRow, isLastItem ? {}: {borderWidth: 0.5, borderColor: 'grey'}]}>
+        <View style={{width: 50}}>
         <View style={{ borderWidth: 1, borderRadius: 4, borderColor: "#21c17c", marginLeft: 20}}>
           <Image source={iconMapper[item.task_type]} style={{...styles.taskIcon, width: 20, height: 20}} />
         </View>
+        </View>
+        <Text style={{...styles.taskCell, width: 280, fontWeight: 'bold', textAlign: 'center'}}>{item.title}</Text>
+        <Text style={{...styles.taskCell, width: 250,textAlign: 'center'}}>{mapper[item.task_type] || 'Other'}</Text>
+        <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisibleOption()}>
+          <Image source={action_icon} style={styles.taskIcon} />
+        </TouchableOpacity>
+        
+        
+        {(taskOptionsVisible && selectedTaskId == item.task_id) && (<View style={[styles.dropdown, isLastItem ? styles.dropdownAbove : styles.dropdownBelow]}>
+          <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
+            <Text style={styles.actionButton}>Edit</Text>
+          </TouchableHighlight>
+          <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => deleteTask(item.task_id, item.task_type)}>
+            <Text style={styles.actionButton}>Delete</Text>
+          </TouchableHighlight>
+          {item.task_type == "SlipTest" && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id)}>
+            <Text style={styles.actionButton}>View Quiz</Text>
+          </TouchableHighlight>)}
+        </View>)}
+      
       </View>
-      <Text style={{...styles.taskCell, width: 280, fontWeight: 'bold', textAlign: 'center'}}>{item.title}</Text>
-      <Text style={{...styles.taskCell, width: 250,textAlign: 'center'}}>{mapper[item.task_type] || 'Other'}</Text>
-      <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisibleOption()}>
-        <Image source={action_icon} style={styles.taskIcon} />
-      </TouchableOpacity>
-      
-      
-      {(taskOptionsVisible && selectedTaskId == item.task_id) && (<View style={[styles.dropdown, isLastItem ? styles.dropdownAbove : styles.dropdownBelow]}>
-        <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
-          <Text style={styles.actionButton}>Edit</Text>
-        </TouchableHighlight>
-        <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => deleteTask(item.task_id, item.task_type)}>
-          <Text style={styles.actionButton}>Delete</Text>
-        </TouchableHighlight>
-        {item.task_type == "SlipTest" && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id)}>
-          <Text style={styles.actionButton}>View Quiz</Text>
-        </TouchableHighlight>)}
-      </View>)}
-    </View>
+    </Pressable>
   )
 }
 
@@ -85,8 +91,6 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     justifyContent: 'space-between',
-    borderWidth: 0.5,
-    borderColor: 'grey'
   },
   taskCell: {
     fontSize: 16,
@@ -116,6 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     elevation: 5,
     zIndex: 1,
+    borderRadius: 6
   },
   dropdownBelow: {
     top: 30,

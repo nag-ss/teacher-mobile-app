@@ -158,6 +158,8 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                         labelField="label"
                         valueField="value"
                         style={styles.picker}
+                        containerStyle={{borderRadius: 10}}
+                        itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                       />
                   </View>
                 </View>
@@ -186,6 +188,8 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                         labelField="label"
                         valueField="value"
                         style={styles.picker}
+                        containerStyle={{borderRadius: 10}}
+                        itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                       />
                   </View>
                 </View>
@@ -239,7 +243,6 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 {/* MCQ Toggle */}  
                 <View >
                   <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <Image source={require('../../assets/images/ss/Checkbox.png')} style={styles.subjectCheckIcon} />
                     <Text>Multiple Choice</Text>
                   </View>
                   
@@ -276,7 +279,6 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                  {/* Subjective Toggle */}
                 <View>
                   <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <Image source={require('../../assets/images/ss/Checkbox.png')} style={styles.subjectCheckIcon} />
                     <Text>Subjective</Text>
                   </View>
                   

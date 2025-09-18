@@ -136,6 +136,7 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
             :
             <View style={styles.optionsGrid}>
                 {(selectedQuestionData && selectedQuestionData?.choice_body) && Object.keys(selectedQuestionData?.choice_body).map((key:string) => (
+                <View>
                 <TouchableOpacity
                     onPress={() => updateAnswerText(key)}
                     key={key}
@@ -162,6 +163,15 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
                     </MathJaxSvg> */}
                     
                 </TouchableOpacity>
+                <View style={{paddingVertical: 5}}>
+                    <MathJaxSvg 
+                    fontCache={true}
+                    fontSize={14}
+                    >
+                    {selectedQuestionData?.choice_body[key]}
+                    </MathJaxSvg>
+                </View>
+                </View>
                 ))}
             </View> 
             }
@@ -266,7 +276,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
-    height: 200,
+    height: 150,
     textAlignVertical: 'top',
     margin: 10
   },

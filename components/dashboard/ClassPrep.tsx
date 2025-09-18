@@ -416,6 +416,11 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     setTaskToEmpty();
   }
 
+  const closeModalClassWork = () => {
+    setShowClassWorkModal(false);
+    setTaskToEmpty();
+  }
+
   const closeModal5GenerateSlipTest = () => {
     setShowModal5GenerateSlipTestModal(false);
     setTaskToEmpty();
@@ -473,7 +478,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
       <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />
       <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
       <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
-      <ClassworkCheckModal selectedTask={selectedTask} visible={showClassWorkModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveClassWorkCheckDetails} />
+      <ClassworkCheckModal selectedTask={selectedTask} visible={showClassWorkModal} taskType={taskType} onClose={closeModalClassWork} goBack={backToNewTasksModal} saveAICheckDetails={saveClassWorkCheckDetails} />
       <GenerateSlipTestModal selectedTopic={topic} selectedSubTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} topicsList={topics} />
       <TestSettingsModal selectedTask={selectedTask} visible={showModal6SlipTestSettingsModal} onClose={closeModal6} generateSlipTest={saveSlipTestDetails} />
       <DeleteQuestionModal

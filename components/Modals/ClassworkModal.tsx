@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -15,6 +15,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import WritePadViewModal from '../PrepClass/WritePadView';
 import { translateClasswork } from '@/store/classSlice';
 import { useDispatch } from 'react-redux';
+import RadioGroup from 'react-native-radio-buttons-group';
 
 interface AiCheckModalProps {
   visible: boolean;
@@ -27,11 +28,25 @@ interface AiCheckModalProps {
 
 const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const dispatch = useDispatch<any>();
-  const [title, setTitle] = useState('');
   const [checkType] = useState('Custom (Manual Input)');
-  const [matchType, setMatchType] = useState({ exact: true, approximate: false });
-  const [textInput, setTextInput] = useState('');
+  const radioButtons = useMemo(() => ([
+    {
+        id: 'exact', // acts as primary key, should be unique and non-empty string
+        label: 'Exact Match',
+        value: 'exact',
+        color:"#21c17c"
+    },
+    {
+        id: 'approx',
+        label: 'Approximate Match',
+        value: 'approx',
+        color: "#21c17c"
+    }
+  ]), []);
 
+  const [title, setTitle] = useState('');
+  const [matchType, setMatchType] = useState('approx');
+  const [textInput, setTextInput] = useState('');
   const [selectedTime, setSelectedTime] = useState(5);
   const [selectedMarks, setSelectedMarks] = useState(5);
   const [showMandatoryMsg, setShowMandatoryMsg] = useState(false);
@@ -81,7 +96,6 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     { label: '45 Mins', value: 45 },
     { label: '50 Mins', value: 50 },
     { label: '55 Mins', value: 55 },
-    
   ];
 
   const marksOptions = [
@@ -112,14 +126,14 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
   const [timeOpen, setTimeOpen] = useState(false);
 
   const saveClassWork = async () => {
-    if(!title || !matchType || !selectedMarks || !selectedTime || !textInput) {
+    if(!title || !selectedMarks || !selectedTime || !textInput) {
       setShowMandatoryMsg(true)
     } else {
       setShowMandatoryMsg(false)
       setIsDisabled(true)
       await saveAICheckDetails({title, matchType, time: selectedTime, marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
       setTitle(''), 
-      setMatchType({exact: false, approximate: false})
+      setMatchType('approx')
       setSelectedMarks(5)
       setSelectedTime(5)
       setTextInput('')
@@ -127,6 +141,23 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     }
     
   }
+
+  useEffect(() => {
+      if (selectedTask) {
+        console.log(selectedTask)
+        setTitle(selectedTask.title);
+        setMatchType(selectedTask.instructions?.matchType);
+        setTextInput(selectedTask.instructions?.textInput);
+        setSelectedMarks(selectedTask.instructions?.marks)
+        setSelectedTime(selectedTask.instructions?.time)
+      } else {
+        setTitle('');
+        setTextInput('');
+      }
+    }, [selectedTask]);
+
+
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.overlay}>
@@ -134,7 +165,10 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Class Work Check</Text>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity onPress={() => {
+              setShowMandatoryMsg(false)
+              onClose()
+            }}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
             </TouchableOpacity>
           </View>
@@ -163,7 +197,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               <View>
                 <Text style={styles.marksLabel}>*Time:</Text>
               </View>
-              <View style={{ width: '80%',}}>
+              <View style={{ width: '70%'}}>
                 <DropDownPicker
                   placeholder="Select Time"
                   placeholderStyle={{ fontSize: 12 }}
@@ -187,7 +221,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               <View>
                 <Text style={styles.marksLabel}>*Total Marks:</Text>
               </View>
-              <View style={{ width: '70%',}}>
+              <View style={{ width: '60%'}}>
                 <DropDownPicker
                   placeholder="Select Marks"
                   placeholderStyle={{ fontSize: 12 }}
@@ -211,7 +245,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
 
           {/* Match Type */}
           <View style={styles.matchTypeRow}>
-            <View style={styles.switchRow}>
+            {/* <View style={styles.switchRow}>
               <Switch
                 value={matchType.exact}
                 onValueChange={() =>
@@ -228,10 +262,18 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                 }
               />
               <Text style={styles.switchLabel}>Approximate</Text>
-            </View>
+            </View> */}
+            <RadioGroup 
+              radioButtons={radioButtons} 
+              selectedId={matchType}
+              onPress={setMatchType}
+              layout='row'
+              labelStyle={{width: 190}}
+            />
           </View>
 
           {/* Text Input */}
+
           <View style={styles.inputGroup}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
                 <Text style={styles.label}>*Text Input</Text>
@@ -239,14 +281,17 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                     <FontAwesome name="pencil" size={18} color="white" />
                 </TouchableOpacity>
               </View>
-            <TextInput
-              value={textInput}
-              onChangeText={setTextInput}
-              placeholder="Type Here:"
-              multiline
-              style={styles.textArea}
-            />
+            <View style={{borderWidth: 1, borderColor: showMandatoryMsg ? 'red' : '#D1D5DB', borderRadius: 8 }}>
+              <TextInput
+                value={textInput}
+                onChangeText={setTextInput}
+                placeholder="Type Here:"
+                multiline
+                style={styles.textArea}
+              />
+            </View>
           </View>
+
           {
             showMandatoryMsg ? 
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -293,7 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 16,
     padding: 20,
-    width: '90%',
+    width: '70%',
   },
   header: {
     flexDirection: 'row',
@@ -367,8 +412,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
-    height: 100,
+    height: 300,
     textAlignVertical: 'top',
+    margin: 10
   },
   footer: {
     flexDirection: 'row',

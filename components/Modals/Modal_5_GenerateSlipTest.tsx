@@ -117,7 +117,9 @@ const GenerateSlipTestModal = ({
               <View style={styles.optionBoxMainContent}>
                 <View>
                   <View style={{display: 'flex', flexDirection: 'row'}}>
-                    <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
+                    <View style={styles.imageBox}>
+                      <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
+                    </View>
                     <View style={{marginLeft: 10}}>
                       <Text style={styles.optionTitle}>Topic</Text>
                       <Text style={styles.optionDescription}>
@@ -151,7 +153,9 @@ const GenerateSlipTestModal = ({
                       labelField="topic"
                       valueField="topic"
                       style={styles.picker}
+                      containerStyle={{borderRadius: 10}}
                       iconStyle={{width: 30, height:30}}
+                      itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
                   
@@ -174,6 +178,8 @@ const GenerateSlipTestModal = ({
                       valueField="sub_topic"
                       style={styles.picker}
                       iconStyle={{width: 30, height:30}}
+                      containerStyle={{borderRadius: 10}}
+                      itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
                   
@@ -184,9 +190,11 @@ const GenerateSlipTestModal = ({
             {/* Upload Option */}
             <View style={styles.optionBox}>
               
-              <View style={styles.optionBoxMainContent}>
+              <View style={[styles.optionBoxMainContent, {opacity: 0.5}]}>
                 <View style={{display: 'flex', flexDirection: 'row'}}>
-                  <Image source={require('../../assets/images/ss/Upload-materials.png')} style={styles.icon} />
+                  <View style={styles.imageBox}>
+                    <Image source={require('../../assets/images/ss/Upload-materials.png')} style={styles.icon} />
+                  </View>
                   <View style={{marginLeft: 10}}>
                     <Text style={styles.optionTitle}>Upload</Text>
                     <Text style={styles.optionDescription}>
@@ -194,9 +202,7 @@ const GenerateSlipTestModal = ({
                     </Text>
                   </View>
                 </View>
-                
-                
-                <RadioButton color="#21c17c" id='upload' onPress={(ev) => setSelectedOption('upload')} selected={selectedOption == "upload"} />
+                <RadioButton disabled color="#21c17c" id='upload' onPress={(ev) => setSelectedOption('upload')} selected={selectedOption == "upload"} />
               </View>
 
               {selectedOption == "upload" && (
@@ -248,12 +254,16 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24
   },
+  imageBox: {
+    borderColor: '#21c17c', 
+    borderRadius: 6, 
+    borderWidth: 0.5, 
+    alignSelf: 'center', 
+    padding: 4 
+  },
   icon: {
     width: 40,
     height: 40,
-    borderColor: '#21c17c',
-    borderRadius: 6,
-    borderWidth: 2,
   },
   closeText: {
     fontSize: 28,
@@ -295,7 +305,7 @@ const styles = StyleSheet.create({
   optionBoxMainContent: {
     display: 'flex',
     flexDirection: 'row', 
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   optionIcon: {
     fontSize: 24,

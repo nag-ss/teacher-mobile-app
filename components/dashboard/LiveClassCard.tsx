@@ -191,7 +191,7 @@ const LiveSessionCard = () => {
           
           
         </View>
-      } }
+      } 
         
       </View>
     </View>
