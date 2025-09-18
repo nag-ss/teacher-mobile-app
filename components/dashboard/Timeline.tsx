@@ -388,7 +388,8 @@ const onLayout = (event: LayoutChangeEvent): void => {
                                     // console.log(relevant_class);
                                     // noClass = noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1
                                     noClass = Math.floor(noClass + (item.classLength == 15 ? 0 : item.classLength/15) )
-                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={Math.round(item.classLength/15)} currentDate={date} />)
+                                    let cardHeight = Math.round(item.classLength/15) 
+                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={cardHeight} currentDate={date} />)
                                 })
                                 ) : noClass < 1 ? (
                                 

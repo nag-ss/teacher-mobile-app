@@ -22,6 +22,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
     3: {height: 70, width: 65, fontSize: 11, headFontSize: 13},
     4: {height: 70, width: 65, fontSize: 12, headFontSize: 13},
   }
+  const contentHeight = height > 4 ? 4 : height
   const openClassPrep = () => {
     // console.log("welcome to class ....")
     // console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
@@ -43,12 +44,12 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
     <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : ''}]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
-            <Image style={{width: subjectImageSize[height].width, height: subjectImageSize[height].height}} source={require('../../assets/images/ss/Chemistry.png')} />
-            <View style={{height: (subjectImageSize[height].height + 10), marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'center', alignItems: 'center', width: 220}}>
-                <Text style={[styles.classTime, {fontSize: subjectImageSize[height].fontSize}]}>{item.time}</Text>
-                <Text style={[styles.topic, {fontSize: subjectImageSize[height].headFontSize}]} numberOfLines={1}>{selectedClass?.class_details[0]?.topic} - {selectedClass?.class_details[0]?.sub_topic[0]}</Text>
+            <Image style={{width: subjectImageSize[contentHeight].width, height: subjectImageSize[contentHeight].height}} source={require('../../assets/images/ss/Chemistry.png')} />
+            <View style={{height: (subjectImageSize[contentHeight].height + 10), marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'center', alignItems: 'center', width: 220}}>
+                <Text style={[styles.classTime, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.time}</Text>
+                <Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize}]} numberOfLines={1}>{selectedClass?.class_details[0]?.topic} - {selectedClass?.class_details[0]?.sub_topic[0]}</Text>
                 {/* <Text style={styles.classSubject}>{item.subject}</Text> */}
-                <Text style={[styles.classCategory, {fontSize: subjectImageSize[height].fontSize}]}>{item.category}</Text>
+                <Text style={[styles.classCategory, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.category}</Text>
             </View>
             
         </View>
