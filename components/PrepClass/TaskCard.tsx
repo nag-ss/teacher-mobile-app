@@ -8,11 +8,14 @@ const TaskCard = ({idx, task, createTask}: {idx: number; task: any; createTask: 
   return (
     <View key={idx} style={styles.taskCard}>
       <View style={styles.taskInfo}>
-        <SvgLoader
-          svgFilePath={task.svgIcon} // Replace with your own logo
-          style={styles.taskLogo}
-          resizeMode="contain"
-        />
+        <View style={{justifyContent: 'center'}}>
+          <SvgLoader
+            svgFilePath={task.svgIcon} // Replace with your own logo
+            style={styles.taskLogo}
+            resizeMode="contain"
+          />
+        </View>
+        
         <View style={styles.taskText}>
           <Text style={styles.taskTitle}>{task.title}</Text>
           {task.description.map((desc: string, i: number) => (
@@ -26,17 +29,19 @@ const TaskCard = ({idx, task, createTask}: {idx: number; task: any; createTask: 
       <View style={styles.createButtonBox}>
         <TouchableOpacity
           style={[styles.actionButton, isPressed && styles.buttonPressed]}
-          onPress={() => createTask(task.id)}
+          onPress={() => {
+            setIsPressed(true);
+            createTask(task.id)
+            setIsPressed(false);
+          }}
           onPressIn={() => setIsPressed(true)}
-          onPressOut={() => setIsPressed(false)}
+          // onPressOut={() => setIsPressed(false)}
         >
           <Text style={styles.actionText}>{task.action}</Text>
         </TouchableOpacity>
       </View>
         
     </View>
-      
-    
   )
 }
 
@@ -50,10 +55,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     display: 'flex',
     flexDirection: 'row',
+    // justifyContent: 'space-between'
   },
   taskInfo: {
     flexDirection: 'row',
-    width: 420
+    width: 430,
   },
   taskImage: {
     width: 120,
@@ -66,16 +72,19 @@ const styles = StyleSheet.create({
     height: 80,
   },
   taskText: {
+    padding: 24,
     flex: 1,
-    marginLeft: 5
+    marginLeft: 5,
+    justifyContent: 'center'
   },
   taskTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   taskDescription: {
     fontSize: 12,
+    margin: 2,
     color: '#4B5563',
   },
   actionButton: {

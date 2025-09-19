@@ -276,7 +276,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     color={'gray' }
                     onPress={showDate}
                     />
-                <Text style={styles.timelineDateText} onPress={showDate} >{calendarDate}</Text>
+                <Text style={styles.timelineDateText} onPress={showDate} >{date}</Text>
                 
                 {show && (
                   <View style={styles.calendarOverlay}>

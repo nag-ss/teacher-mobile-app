@@ -31,6 +31,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
     if(!item.isClassOver) {
       classPrepRef.current?.setSelectedClass()
     }
+    //  classPrepRef.current?.setSelectedClass()
     
     // if(moment(new Date()).format('YYYY-MM-DD') == currentDate) {
     //   console.log("I am in the if loop")
@@ -41,7 +42,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
 
 
   return (
-    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : ''}]} onPress={openClassPrep}>
+    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : '', backgroundColor: item.isClassOver ? 'grey' : '#fff', opacity: item.isClassOver ? 0.4 : 0 }]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
             <Image style={{width: subjectImageSize[contentHeight].width, height: subjectImageSize[contentHeight].height}} source={require('../../assets/images/ss/Chemistry.png')} />
@@ -66,7 +67,6 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
 
 const styles = StyleSheet.create({
   classCard: {
-    backgroundColor: '#fff',
     padding: 15,
     // marginBottom: 10,
     borderRadius: 8,

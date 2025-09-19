@@ -29,23 +29,23 @@ interface AiCheckModalProps {
 const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
   const dispatch = useDispatch<any>();
   const [checkType] = useState('Custom (Manual Input)');
-  const radioButtons = useMemo(() => ([
-    {
-        id: 'exact', // acts as primary key, should be unique and non-empty string
-        label: 'Exact Match',
-        value: 'exact',
-        color:"#21c17c"
-    },
-    {
-        id: 'approx',
-        label: 'Approximate Match',
-        value: 'approx',
-        color: "#21c17c"
-    }
-  ]), []);
+  // const radioButtons = useMemo(() => ([
+  //   {
+  //       id: 'exact', // acts as primary key, should be unique and non-empty string
+  //       label: 'Exact Match',
+  //       value: 'exact',
+  //       color:"#21c17c"
+  //   },
+  //   {
+  //       id: 'approx',
+  //       label: 'Approximate Match',
+  //       value: 'approx',
+  //       color: "#21c17c"
+  //   }
+  // ]), []);
 
   const [title, setTitle] = useState('');
-  const [matchType, setMatchType] = useState('approx');
+  // const [matchType, setMatchType] = useState('approx');
   const [textInput, setTextInput] = useState('');
   const [selectedTime, setSelectedTime] = useState(5);
   const [selectedMarks, setSelectedMarks] = useState(5);
@@ -131,9 +131,9 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     } else {
       setShowMandatoryMsg(false)
       setIsDisabled(true)
-      await saveAICheckDetails({title, matchType, time: selectedTime, marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
+      await saveAICheckDetails({title, matchType: 'approx', time: selectedTime, marks: selectedMarks, textInput, taskId: selectedTask?.task_id })
       setTitle(''), 
-      setMatchType('approx')
+      // setMatchType('approx')
       setSelectedMarks(5)
       setSelectedTime(5)
       setTextInput('')
@@ -146,7 +146,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
       if (selectedTask) {
         console.log(selectedTask)
         setTitle(selectedTask.title);
-        setMatchType(selectedTask.instructions?.matchType);
+        // setMatchType(selectedTask.instructions?.matchType);
         setTextInput(selectedTask.instructions?.textInput);
         setSelectedMarks(selectedTask.instructions?.marks)
         setSelectedTime(selectedTask.instructions?.time)
@@ -263,13 +263,13 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               />
               <Text style={styles.switchLabel}>Approximate</Text>
             </View> */}
-            <RadioGroup 
+            {/* <RadioGroup 
               radioButtons={radioButtons} 
               selectedId={matchType}
               onPress={setMatchType}
               layout='row'
               labelStyle={{width: 190}}
-            />
+            /> */}
           </View>
 
           {/* Text Input */}

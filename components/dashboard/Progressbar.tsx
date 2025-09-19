@@ -18,7 +18,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Syllabus Completed - {progress}%</Text>
+      <Text style={styles.text}>Syllabus covered - {progress}%</Text>
       <View style={styles.progressBarContainer}>
         <View style={styles.progressBarBg}>
           <View style={[styles.progressBarFill, { width: `${progress}%` }]} />

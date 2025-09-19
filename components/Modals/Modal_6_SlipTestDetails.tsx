@@ -116,8 +116,8 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
             </TouchableOpacity>
 
             <View style={styles.titleContainer}>
-              <Text style={styles.modalTitle}>Test Settings - </Text>
-              <Text style={styles.subtitle}>Customize test parameters before generating questions.</Text>
+              <Text style={styles.modalTitle}>Test Setup - </Text>
+              <Text style={styles.subtitle}>Adjust time, marks, and difficulty before generating questions.</Text>
             </View>
             
             <View style={[styles.inputGroup, styles.section, {backgroundColor: 'white'}]}>

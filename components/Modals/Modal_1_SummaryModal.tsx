@@ -61,7 +61,7 @@ export default function ClassSummaryPopModal({
         <View style={styles.modalContainer}>
           {/* Header */}
           <View style={styles.rowBetween}>
-            <Text style={styles.title}>Summary</Text>
+            <Text style={styles.title}>Class Prep</Text>
             <TouchableOpacity onPress={onClose}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
@@ -88,12 +88,14 @@ export default function ClassSummaryPopModal({
             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', marginLeft: -2, marginTop: 8}}>
               <View style={styles.rowItem}>
                 {/* <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.iconSmall} /> */}
-                <Text style={[styles.label, {width: 45}]}>Date:</Text>
+                <Text style={[styles.label, {width: 50}]}>Date</Text>
+                <Text style={styles.label}>:</Text>
                 <Text style={styles.value}> {selectedClass?.date}</Text>
               </View>
               <View style={styles.rowItem}>
                 {/* <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} /> */}
-                <Text style={[styles.label, {width: 55}]}>Time:</Text>
+                <Text style={[styles.label, {width: 63}]}>Time</Text>
+                <Text style={styles.label}>:</Text>
                 <Text style={styles.value}> {parentProps.time}</Text>
               </View>
             </View>
@@ -229,7 +231,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 18,
-    marginLeft: 20,
+    marginLeft: 8,
   },
   icon: {
     width: 32,

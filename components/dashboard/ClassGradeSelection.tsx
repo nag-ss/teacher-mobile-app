@@ -52,7 +52,7 @@ const ClassGradeSelection = () => {
                 }
         </Picker> */}
         <DropDownPicker
-          placeholder="Select Grade"
+          placeholder="Grade"
           placeholderStyle={{ fontSize: 12 }}
           open={gradeOpen}
           value={selectedGrade}
@@ -83,7 +83,7 @@ const ClassGradeSelection = () => {
                 }
         </Picker> */}
         <DropDownPicker
-          placeholder="Select Section"
+          placeholder="Section"
           placeholderStyle={{ fontSize: 11 }}
           open={open}
           value={selectedSection}

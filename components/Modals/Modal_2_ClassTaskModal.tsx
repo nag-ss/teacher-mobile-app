@@ -95,7 +95,7 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
               <View style={styles.aiTextContainer}>
                 <Text style={styles.aiTitle}>Your AI-Powered Assistant</Text>
                 <Text style={styles.aiSubtitle}>
-                  Let AI handle the heavy lifting — create assignments, tests, and classwork in seconds.
+                  Save time — let AI draft assignments, quizzes, and classwork for you.
                 </Text>
               </View>
 

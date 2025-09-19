@@ -14,7 +14,7 @@ const UpcomingTopics = () => (
     </View> */}
     
     <View style={{}}>
-        <Text style={styles.title}>Upcoming Topics</Text>
+        <Text style={styles.title}>Next up</Text>
         <Text style={styles.subTitle}>• Quadratic Equations & Calculus</Text>
         <Text style={styles.subTitle}>• Trigonometry </Text>
     </View>

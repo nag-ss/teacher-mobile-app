@@ -39,7 +39,7 @@ const DashboardScreen = () => {
                 <View style={styles.leftColumn}>
                     <View style={styles.liveCardContainer}>
                         <Text style={styles.title}>Welcome {`${user.first_name} ${user.last_name}`}</Text>
-                        <Text style={styles.subTitle}>"Inspire minds, shape futures — let’s make today a great day of learning.!"</Text>
+                        <Text style={styles.subTitle}>Welcome back! Let’s make today a meaningful day of learning.</Text>
                         <LiveClassCard />
                     </View>
                     
