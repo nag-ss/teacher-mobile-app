@@ -78,11 +78,12 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   }
 
   const cancelOrGoBack = () => {
-    if (selectedTask) {
-      onClose()
-    } else { 
-      goBack()
-    }
+    setTitle('')
+    setTextInput('')
+    setTextInputError('')
+    setTitleError('')
+    setLoading(false)
+    goBack()
   }
 
   useEffect(() => {
@@ -129,9 +130,9 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>{taskType == 'AICheck' ? 'AI Check' : 'Class Work' }</Text>
-            <TouchableOpacity onPress={onClose}>
+            {/* <TouchableOpacity onPress={cancelOrGoBack}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* Title Input */}

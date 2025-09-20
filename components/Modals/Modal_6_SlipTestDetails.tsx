@@ -90,6 +90,16 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
     );
   }, []);
 
+  const resetDefaults = () => {
+    setError('')
+    setTitle('')
+    setDuration(10);
+    setMarks(10);
+    setDifficulty(5);
+    setSubCount(2);
+    setMcqCount(3);
+  }
+
   useEffect(() => {
       if (selectedTask && selectedTask.task_type == 'SlipTest') {
         setDuration(selectedTask.quiz_details.duration);
@@ -111,7 +121,10 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <ScrollView>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <TouchableOpacity style={styles.closeButton} onPress={() => {
+              resetDefaults()
+              onClose()
+            }}>
              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
             </TouchableOpacity>
 

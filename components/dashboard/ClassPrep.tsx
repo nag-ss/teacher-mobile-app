@@ -32,9 +32,10 @@ type ProfileScreenNavigationProp = DrawerNavigationProp<any, any>;
 type MyComponentProps = {
   item: any; // ideally replace `any` with the actual type
   selectedClass: any;
+  updateTopicSubTopic: (topic: any, subTopic: any) => void; 
 };
 
-const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, ref) => {
+const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, updateTopicSubTopic }, ref) => {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
 
   const dispatch = useDispatch<any>();
@@ -99,6 +100,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
     setTopic(topic.topic)
     setSubTopic(subTopic.sub_topic)
     setShowModal1SummaryModal(false)
+    updateTopicSubTopic(topic, subTopic)
     setShowModal2TasksModal(true)
   }
   
@@ -230,11 +232,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass }, re
       setShowModal6SlipTestSettingsModal(false)
       setShowLoadingQuizModal(true)
       let difficulty = slipTestDetails.difficulty;
-      if (difficulty > 6) {
-        difficulty = 6
-      } else if (difficulty == 0) {
+      if (difficulty == 0) {
         difficulty = 1
+      } else {
+        difficulty = Math.round((difficulty*6)/10)
       }
+      
       if (selectedTask && selectedTask.task_type == 'SlipTest') {
         console.log('I am editing a quiz');
         console.log(selectedTask);

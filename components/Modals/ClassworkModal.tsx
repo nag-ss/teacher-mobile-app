@@ -142,6 +142,14 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
     
   }
 
+  const clearData = () => {
+    setShowMandatoryMsg(false)
+    setTitle('')
+    setTextInput('')
+    setSelectedMarks(5)
+    setSelectedTime(5)
+  }
+
   useEffect(() => {
       if (selectedTask) {
         console.log(selectedTask)
@@ -165,12 +173,12 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Class Work Check</Text>
-            <TouchableOpacity onPress={() => {
-              setShowMandatoryMsg(false)
+            {/* <TouchableOpacity onPress={() => {
+              clearData()
               onClose()
             }}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
           {/* Title Input */}
@@ -306,13 +314,16 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
         }
           {/* Footer Buttons */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={goBack}>
-              <Text>Cancel</Text>
+            <TouchableOpacity style={styles.cancelBtn} onPress={() => {
+              clearData()
+              goBack()
+            }}>
+              <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={() => {
               saveClassWork()
             }}>
-              <Text style={{ color: 'white' }}>{loading ? 'Processing..' : 'Save'}</Text>
+              <Text style={{ textAlign: 'center' }}>{loading ? 'Processing..' : 'Save'}</Text>
             </TouchableOpacity>
           </View>
           
@@ -419,7 +430,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 24,
+    marginTop: 8,
   },
   cancelBtn: {
     paddingHorizontal: 24,
@@ -427,12 +438,14 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
+    width: 230
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
+    width: 230
   },
   marksSection: {
     flexDirection: 'row',
