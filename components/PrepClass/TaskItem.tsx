@@ -13,9 +13,9 @@ import {
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
 const action_icon = require('../../assets/images/actions_icon.png');
 const quiz_icon = require('../../assets/images/ss/quiz-2.png');
-const new_classwork_icon = require('../../assets/images/book_48dp.png');
-const new_aicheck_icon = require('../../assets/images/AI_Check_48dp.png');
-const new_quiz_icon = require('../../assets/images/Test_48dp.png');
+// const new_classwork_icon = require('../../assets/images/book_48dp.png');
+// const new_aicheck_icon = require('../../assets/images/AI_Check_48dp.png');
+// const new_quiz_icon = require('../../assets/images/Test_48dp.png');
 const classwork_icon = require('../../assets/images/ss/description.png');
 const ai_check_icon = require('../../assets/images/ss/flag-3.png');
 
@@ -29,10 +29,10 @@ const mapper: any = {
 }
 
 const iconMapper: any = {
-  SlipTest: new_quiz_icon,
+  SlipTest: quiz_icon,
   Quiz: quiz_icon,
-  Classwork: new_classwork_icon,
-  AICheck: new_aicheck_icon
+  Classwork: classwork_icon,
+  AICheck: ai_check_icon
 }
 
 interface TaskItemProps {
@@ -60,7 +60,7 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
       }}>
       <View style={[styles.taskRow, isLastItem ? {}: {borderWidth: 0.5, borderColor: 'grey'}]}>
         <View style={{width: 50}}>
-        <View style={{ borderWidth: 1, borderRadius: 4, borderColor: "black", marginLeft: 20 }}>
+        <View style={{ borderWidth: 1, borderRadius: 4, borderColor: '#21c17c', marginLeft: 20 }}>
           <Image source={iconMapper[item.task_type]} style={{...styles.taskIcon, width: 24, height: 24}} />
         </View>
         </View>
