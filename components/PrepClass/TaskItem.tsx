@@ -55,10 +55,7 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
     setSelectedTaskId(item.task_id)
   }
   return (
-    <Pressable onPress={(ev) => {
-        setTaskOptionsVisible(false)
-      }}>
-      <View style={[styles.taskRow, isLastItem ? {}: {borderWidth: 0.5, borderColor: 'grey'}]}>
+    <View style={[styles.taskRow, isLastItem ? {}: {borderWidth: 0.5, borderColor: 'grey'}]}>
         <View style={{width: 50}}>
         <View style={{ borderWidth: 1, borderRadius: 4, borderColor: '#21c17c', marginLeft: 20 }}>
           <Image source={iconMapper[item.task_type]} style={{...styles.taskIcon, width: 24, height: 24}} />
@@ -70,7 +67,6 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
           <Image source={action_icon} style={styles.taskIcon} />
         </TouchableOpacity>
         
-        
         {(taskOptionsVisible && selectedTaskId == item.task_id) && (<View style={[styles.dropdown, isLastItem ? styles.dropdownAbove : styles.dropdownBelow]}>
           <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
             <Text style={styles.actionButton}>Edit</Text>
@@ -78,13 +74,11 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
           <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => deleteTask(item.task_id, item.task_type)}>
             <Text style={styles.actionButton}>Delete</Text>
           </TouchableHighlight>
-          {item.task_type == "SlipTest" && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id)}>
+          {(item.task_type == "SlipTest" && !(item.published_quiz_id)) && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id)}>
             <Text style={styles.actionButton}>View Quiz</Text>
           </TouchableHighlight>)}
         </View>)}
-      
       </View>
-    </Pressable>
   )
 }
 

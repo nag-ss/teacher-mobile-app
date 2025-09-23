@@ -20,7 +20,9 @@ import {
   updateSlipTest, 
   getClassQuiz,
   getClassTopicSubTopics,
-  setClassTopicSubTopic
+  setClassTopicSubTopic,
+  saveSlipTestQuiz,
+  cancelSlipTestQuiz
 } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
@@ -443,18 +445,31 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     setSubTopic(subTopic)
   }
 
-  const saveSlipTest = async (new_quiz: any) => {
+  const saveSlipTest = async (task_id: number) => {
+    await dispatch(saveSlipTestQuiz(task_id))
     setShowSlipTestDetailsModal(false);
-    if (new_quiz) {
-      const tasksObject = {
-        class_schedule_id: selectedClass.class_schedule_id,
-        teacher_id: user.id,
-        subject_id: selectedClass.subject_id,
-        division_id: selectedClass.division_id,
-      }
-      await dispatch(getTeacherClassTasks(tasksObject));
+    const tasksObject = {
+      class_schedule_id: selectedClass.class_schedule_id,
+      teacher_id: user.id,
+      subject_id: selectedClass.subject_id,
+      division_id: selectedClass.division_id,
     }
-    
+    await dispatch(getTeacherClassTasks(tasksObject));
+    if(!fromLiveMonitor) {
+      setShowModal2TasksModal(true)
+    }
+  }
+
+  const cancelSlipTest = async(task_id: number) => {
+    await dispatch(cancelSlipTestQuiz(task_id))
+    setShowSlipTestDetailsModal(false);
+    const tasksObject = {
+      class_schedule_id: selectedClass.class_schedule_id,
+      teacher_id: user.id,
+      subject_id: selectedClass.subject_id,
+      division_id: selectedClass.division_id,
+    }
+    await dispatch(getTeacherClassTasks(tasksObject));
     if(!fromLiveMonitor) {
       setShowModal2TasksModal(true)
     }
@@ -491,7 +506,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
           onDelete={() => confirmDeleteTask()}
         />
       <LoadingSlipTestModal show={showLoadingQuizModal} />
-      <SlipTestDetailsModal visible={showSlipTestDetailsModal} saveSlipTest={saveSlipTest} selectedClass={selectedClass} new_quiz={isNewQuiz}/>
+      <SlipTestDetailsModal visible={showSlipTestDetailsModal} saveSlipTest={saveSlipTest} cancelSlipTest={cancelSlipTest} selectedClass={selectedClass} new_quiz={isNewQuiz}/>
     </View>
   );
 });

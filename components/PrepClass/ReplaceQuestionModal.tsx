@@ -33,10 +33,10 @@ const ReplaceQuestionModal: React.FC<ReplaceQuestionModalProps> = ({ show, resou
           <Text style={styles.subtitle}>Are you sure you want to proceed?</Text>
           {loading && (<ActivityIndicator />) }
           <View style={styles.buttonRow}>
-            <TouchableOpacity onPress={onCancel} style={styles.cancelButton} disabled={loading}>
+            <TouchableOpacity onPress={onCancel} style={[styles.cancelButton, {opacity: loading ? 0.5 : 1 }]} disabled={loading}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onReplace} style={styles.deleteButton} disabled={loading}>
+            <TouchableOpacity onPress={onReplace} style={[styles.deleteButton, {opacity: loading ? 0.5 : 1 }]} disabled={loading}>
               <Text style={styles.deleteButtonText}>Replace</Text>
             </TouchableOpacity>
           </View>

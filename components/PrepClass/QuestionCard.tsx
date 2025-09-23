@@ -61,16 +61,16 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
     setIsReplaceQuestionModal(true)
   }
 
-  const confirmReplace = async(id = 0) => {
+  const confirmReplace = async() => {
     console.log("selectedQuestionNumber", selectedQuestionNumber)
-      let replaceResponse = await dispatch(replaceQuestion({question_id: (id ? id : selectedQuestionNumber), additional_context: "I want this question changed"}))
-      console.log("replaceResponse.payload")
-      console.log(replaceResponse.payload)
-      setReplacedQuestion(replaceResponse.payload)
-      setSelectedQuestion(replaceResponse.payload.new_question)
-      setSelectedQuestionOriginal(replaceResponse.payload.original_question_id)
-      setShowReplaceEditModal(true)
-      // await dispatch(getClassQuiz(quiz_id));
+    let replaceResponse = await dispatch(replaceQuestion({question_id: selectedQuestionNumber, additional_context: "I want this question changed"}))
+    console.log("replaceResponse.payload")
+    console.log(replaceResponse.payload)
+    setReplacedQuestion(replaceResponse.payload)
+    setSelectedQuestion(replaceResponse.payload.new_question)
+    setSelectedQuestionOriginal(replaceResponse.payload.original_question_id)
+    setShowReplaceEditModal(true)
+    // await dispatch(getClassQuiz(quiz_id));
       // setReplaceQuestionModal(false);
       // setActiveDropdown(-1);
     }
@@ -92,9 +92,9 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           <View style={styles.markBox}>
             <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
           </View>
-          {newQuiz && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+          <TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
             <Feather name="more-vertical" size={20} color="#4B5563" />
-          </TouchableOpacity>)}
+          </TouchableOpacity>
         </View>
       </Pressable>
       
@@ -110,13 +110,22 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
 
       {activeDropdown === index && (
         <View style={styles.dropdown}>
-          <TouchableHighlight underlayColor='#bdedd7' onPress={() => showEdit()} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
+              setActiveDropdown(-1);
+              showEdit()
+            }} style={styles.dropdownItem}>
             <Text>Edit</Text>
           </TouchableHighlight>
-          <TouchableHighlight underlayColor='#bdedd7' onPress={() => replaceQuestionData(item.question_id)} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
+              setActiveDropdown(-1);
+              replaceQuestionData(item.question_id)
+            }} style={styles.dropdownItem}>
             <Text>Replace</Text>
           </TouchableHighlight>
-          <TouchableHighlight underlayColor='#bdedd7' onPress={() => deleteQuestion(item.question_id)} style={styles.dropdownItem}>
+          <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
+              setActiveDropdown(-1);
+              deleteQuestion(item.question_id)
+            }} style={styles.dropdownItem}>
             <Text>Delete</Text>
           </TouchableHighlight>
         </View>

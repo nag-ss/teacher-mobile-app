@@ -20,7 +20,9 @@ import {
   EDIT_OBJECTIVE_QUESTION,
   EDIT_SUBJECTIVE_QUESTION,
   TRANSLATE_CLASSWORK_FROM_IMAGE,
-  TRANSLATE_AICHECK_FROM_IMAGE
+  TRANSLATE_AICHECK_FROM_IMAGE,
+  SAVE_TEACHER_TASK,
+  CANCEL_TEACHER_TASK
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -242,7 +244,15 @@ const translateAICheck = async(quiz: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', quiz, userToken, true);
 }
 
+const saveSlipTestQuiz = async(task: any, userToken: string) => {
+  const reqUrl = `${SAVE_TEACHER_TASK}?teacher_task_id=${task}&state=saved`;
+  return await apiRequest(reqUrl, 'POST', task, userToken);
+}
 
+const cancelSlipTestQuiz = async(task: any, userToken: string) => {
+  const reqUrl = `${CANCEL_TEACHER_TASK}?teacher_task_id=${task}&state=cancel`;
+  return await apiRequest(reqUrl, 'POST', task, userToken);
+}
 
 const authService = {
     getLiveClass,
@@ -266,7 +276,9 @@ const authService = {
     editSubjectiveQuestion,
     editObjectiveQuestion,
     translateClasswork,
-    translateAICheck
+    translateAICheck,
+    saveSlipTestQuiz,
+    cancelSlipTestQuiz
 };
 
 export default authService;

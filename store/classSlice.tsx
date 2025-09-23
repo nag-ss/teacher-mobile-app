@@ -90,6 +90,14 @@ export const translateAICheck = createAsyncThunk('/quiz/translateAICheck', async
   return handleAuthApiCall(classService.translateAICheck, quiz, thunkAPI);
 });
 
+export const saveSlipTestQuiz = createAsyncThunk('/teacher/save_teacher_task', async (task: any, thunkAPI) => {
+  return handleAuthApiCall(classService.saveSlipTestQuiz, task, thunkAPI);
+});
+
+export const cancelSlipTestQuiz = createAsyncThunk('/teacher/cancel_teacher_task', async (task: any, thunkAPI) => {
+  return handleAuthApiCall(classService.cancelSlipTestQuiz, task, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -359,6 +367,34 @@ const classSlice = createSlice({
         .addCase(setClassTopicSubTopic.rejected, (state, action) => {
           state.loading = false
           console.log("Topic set failed");
+          console.log(action.payload)
+        })
+        .addCase(saveSlipTestQuiz.pending, (state, action) => {
+          state.loading = true
+          console.log("Slip Test save pending")
+        })
+        .addCase(saveSlipTestQuiz.fulfilled, (state, action) => {
+          console.log("Slip Test saved successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(saveSlipTestQuiz.rejected, (state, action) => {
+          state.loading = false
+          console.log("Slip Test save failed");
+          console.log(action.payload)
+        })
+        .addCase(cancelSlipTestQuiz.pending, (state, action) => {
+          state.loading = true
+          console.log("Slip Test cancel pending")
+        })
+        .addCase(cancelSlipTestQuiz.fulfilled, (state, action) => {
+          console.log("Slip Test cancelled successfully")
+          console.log(action.payload)
+          state.loading = false;
+        })
+        .addCase(cancelSlipTestQuiz.rejected, (state, action) => {
+          state.loading = false
+          console.log("Slip Test cancel failed");
           console.log(action.payload)
         })
     },

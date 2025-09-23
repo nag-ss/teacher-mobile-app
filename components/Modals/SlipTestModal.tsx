@@ -23,7 +23,8 @@ interface SlipTestDetailsModalProps {
   selectedClass:any; 
   new_quiz: boolean;
   visible: boolean;
-  saveSlipTest: (new_quiz: Boolean) => void;
+  saveSlipTest: (task_id: number) => void;
+  cancelSlipTest: (task_id: number) => void;
   // onClose: () => void;
   // goBack: () => void;
   // addTask: () => void;
@@ -32,7 +33,7 @@ interface SlipTestDetailsModalProps {
   // viewQuiz: (quiz_id: number) => void;
 }
 
-const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest }: SlipTestDetailsModalProps) => {
+const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest, cancelSlipTest }: SlipTestDetailsModalProps) => {
 
   const dispatch = useDispatch<any>();
   const { quiz_details } = useSelector((state: any) => state.classes);
@@ -74,7 +75,7 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest 
   }
 
   const confirmReplace = async() => {
-    const quiz_id = quiz_details.quiz_id || 35;
+    const quiz_id = quiz_details.quiz_id;
     console.log(questionIdToReplace);
     await dispatch(replaceQuestion({question_id: questionIdToReplace, additional_context: "I want this question changed"}))
     await dispatch(getClassQuiz(quiz_id));
@@ -139,9 +140,12 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest 
                   </TouchableOpacity>
                 </View> */}
 
-                <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: 24}}>
-                  <TouchableOpacity style={styles.saveButton} onPress={() => saveSlipTest(new_quiz)}>
-                    <Text style={styles.saveButtonText}>{new_quiz ? "Save" : "Close" }</Text>
+                <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
+                  <TouchableOpacity style={styles.saveButton} onPress={() => cancelSlipTest(quiz_details.task_id)}>
+                    <Text>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.saveButton} onPress={() => saveSlipTest(quiz_details.task_id)}>
+                    <Text>Save</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -247,13 +251,10 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: '#21c17c',
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderRadius: 8,
     alignItems: 'center',
-    marginRight: 10
+    width: 300
   },
-  saveButtonText: {
-    marginLeft: 50,
-    marginRight: 50
-  }
 });

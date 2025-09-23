@@ -68,7 +68,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
     } else {
       setError('');
       generateSlipTest({duration, marks, difficulty, mcqCount, subCount, totalQuestions, title})
-      setTitle('');
+      resetDefaults();
     }
   }
 
