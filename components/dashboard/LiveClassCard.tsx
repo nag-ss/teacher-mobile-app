@@ -75,6 +75,7 @@ const LiveSessionCard = () => {
     }
   }
   useIntervalApi(getDetails, 300000);
+  // useIntervalApi(getDetails, 30000000);
   // useEffect(() => {
   //   getDetails()
   // }, [])

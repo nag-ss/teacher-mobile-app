@@ -55,7 +55,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   }, [selectedClass]);
 
   return (
-    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : '', backgroundColor: item.isClassOver ? 'grey' : '#fff', opacity: item.isClassOver ? 0.4 : 0 }]} onPress={openClassPrep}>
+    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : '', backgroundColor: item.isClassOver ? 'grey' : '#fff', opacity: item.isClassOver ? 0.4 : 1 }]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
             <Image style={{width: subjectImageSize[contentHeight].width, height: subjectImageSize[contentHeight].height}} source={require('../../assets/images/ss/Chemistry.png')} />
