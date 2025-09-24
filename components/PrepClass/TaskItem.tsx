@@ -21,6 +21,8 @@ const ai_check_icon = require('../../assets/images/ss/flag-3.png');
 
 const { width } = Dimensions.get('window');
 
+const taskTypes = ['AICheck', 'Classwork', 'SlipTest'];
+
 const mapper: any = {
   SlipTest: "Slip Test",
   Quiz: "Quiz",
@@ -41,7 +43,7 @@ interface TaskItemProps {
   noTasks: number;
   noTask: number;
   selectedTaskId: number;
-  viewQuiz: (id: number) => void;
+  viewQuiz: (quiz_id: number, task_id: number) => void;
   deleteTask: (id: number, type: string) => void;
   editTask: (id: number, type: string) => void;
   setSelectedTaskId: (id: number) => void;
@@ -54,6 +56,29 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
     setTaskOptionsVisible(!taskOptionsVisible)
     setSelectedTaskId(item.task_id)
   }
+
+  const isEditVisible = () => {
+    const {task_type, published_quiz_id, published_work_id} = item; 
+    if (task_type == "AICheck" || task_type == "Classwork") {
+      return true;
+    } else if (task_type == "SlipTest") {
+      return !published_quiz_id;
+    }
+    return false;
+  }
+
+  const isDeleteVisible = () => {
+    const {task_type, published_quiz_id, published_work_id} = item; 
+    if (task_type == "AICheck") {
+      return true;
+    } else if (task_type == "Classwork") {
+      return !published_work_id;
+    } else if (task_type == "SlipTest") {
+      return !published_quiz_id;
+    }
+    return false;
+  }
+
   return (
     <View style={[styles.taskRow, isLastItem ? {}: {borderWidth: 0.5, borderColor: 'grey'}]}>
         <View style={{width: 50}}>
@@ -68,13 +93,13 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
         </TouchableOpacity>
         
         {(taskOptionsVisible && selectedTaskId == item.task_id) && (<View style={[styles.dropdown, isLastItem ? styles.dropdownAbove : styles.dropdownBelow]}>
-          <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
-            <Text style={styles.actionButton}>Edit</Text>
-          </TouchableHighlight>
-          <TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => deleteTask(item.task_id, item.task_type)}>
+          {(isEditVisible()) && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => editTask(item.task_id, item.task_type)}>
+            <Text style={styles.actionButton}>{(item.task_type == "Classwork" && item.published_work_id) ? "View" : "Edit"}</Text>
+          </TouchableHighlight>)}
+          {(isDeleteVisible()) && (<TouchableHighlight underlayColor='#bdedd7' style={{borderBottomWidth: 0.5}} onPress={() => deleteTask(item.task_id, item.task_type)}>
             <Text style={styles.actionButton}>Delete</Text>
-          </TouchableHighlight>
-          {(item.task_type == "SlipTest" && !(item.published_quiz_id)) && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id)}>
+          </TouchableHighlight>)}
+          {(item.task_type == "SlipTest") && (<TouchableHighlight underlayColor='#bdedd7' onPress={() => viewQuiz(item.quiz_id, item.task_id)}>
             <Text style={styles.actionButton}>View Quiz</Text>
           </TouchableHighlight>)}
         </View>)}

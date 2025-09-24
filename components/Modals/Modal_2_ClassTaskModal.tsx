@@ -33,7 +33,7 @@ interface ClassTaskCardPopProps {
   addTask: () => void;
   deleteTask: (task_id: number, task_type: string) => void;
   editTask: (task_id: number, task_type: string) => void;
-  viewQuiz: (quiz_id: number) => void;
+  viewQuiz: (quiz_id: number, task_id: number) => void;
 }
 
 // const tasks = [

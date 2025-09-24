@@ -22,11 +22,12 @@ interface AiCheckModalProps {
   taskType: string;
   selectedTask: any;
   onClose: () => void;
-  goBack: () => void; 
+  goBack: () => void;
+  goBackToTasksModal: () => void;
   saveAICheckDetails: (AICheckDetails:any) => void;
 }
 
-const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, goBackToTasksModal, saveAICheckDetails }: AiCheckModalProps) => {
   const dispatch = useDispatch<any>();
   const [checkType] = useState('Custom (Manual Input)');
   // const radioButtons = useMemo(() => ([
@@ -173,12 +174,12 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Class Work Check</Text>
-            {/* <TouchableOpacity onPress={() => {
+            <TouchableOpacity onPress={() => {
               clearData()
               onClose()
             }}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.icon} />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
 
           {/* Title Input */}
@@ -186,6 +187,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             <Text style={styles.label}>*Title</Text>
             <TextInput
               value={title}
+              readOnly={selectedTask?.published_work_id}
               onChangeText={setTitle}
               placeholder="Enter check title"
               style={styles.textInput}
@@ -210,6 +212,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                   placeholder="Select Time"
                   placeholderStyle={{ fontSize: 12 }}
                   open={timeOpen}
+                  disabled={!!(selectedTask?.published_work_id)}
                   value={selectedTime}
                   items={timeOptions}
                   setOpen={setTimeOpen}
@@ -233,6 +236,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                 <DropDownPicker
                   placeholder="Select Marks"
                   placeholderStyle={{ fontSize: 12 }}
+                  disabled={!!(selectedTask?.published_work_id)}
                   open={marksOpen}
                   value={selectedMarks}
                   items={marksOptions}
@@ -292,6 +296,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             <View style={{borderWidth: 1, borderColor: showMandatoryMsg ? 'red' : '#D1D5DB', borderRadius: 8 }}>
               <TextInput
                 value={textInput}
+                readOnly={selectedTask?.published_work_id}
                 onChangeText={setTextInput}
                 placeholder="Type Here:"
                 multiline
@@ -313,7 +318,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
         
         }
           {/* Footer Buttons */}
-          <View style={styles.footer}>
+          {!(selectedTask?.published_work_id) ? (<View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={() => {
               clearData()
               goBack()
@@ -325,7 +330,11 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             }}>
               <Text style={{ textAlign: 'center' }}>{loading ? 'Processing..' : 'Save'}</Text>
             </TouchableOpacity>
-          </View>
+          </View>): (<View style={styles.footerRight}>
+            <TouchableOpacity style={[styles.saveBtn]} onPress={goBackToTasksModal}>
+              <Text style={{textAlign: 'center'}}>Close</Text>
+            </TouchableOpacity>
+          </View>)}
           
         </View>
         
@@ -430,6 +439,11 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  footerRight: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     marginTop: 8,
   },
   cancelBtn: {

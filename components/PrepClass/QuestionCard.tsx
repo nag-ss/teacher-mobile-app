@@ -24,6 +24,7 @@ interface QuestionCardProps {
   index: number;
   activeDropdown: number;
   newQuiz: boolean;
+  task: any;
   setActiveDropdown: (id: number) => void;
   editQuestion: (id: number) => void;
   deleteQuestion: (id: number) => void;
@@ -31,7 +32,7 @@ interface QuestionCardProps {
   refreshQuiz: () => void;
 };
 
-const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestionFun, refreshQuiz}: QuestionCardProps) => {
+const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDropdown, editQuestion, deleteQuestion, replaceQuestionFun, refreshQuiz}: QuestionCardProps) => {
   // console.log("question =====")
   // console.log(item)
   const dispatch = useDispatch<any>();
@@ -92,9 +93,9 @@ const QuestionCard = ({item, index, activeDropdown, newQuiz, setActiveDropdown, 
           <View style={styles.markBox}>
             <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
           </View>
-          <TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
+          { !(task?.published_quiz_id) && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
             <Feather name="more-vertical" size={20} color="#4B5563" />
-          </TouchableOpacity>
+          </TouchableOpacity>)}
         </View>
       </Pressable>
       

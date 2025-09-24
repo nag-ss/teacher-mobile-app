@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,11 +20,13 @@ import { publishQuiz, getClassQuiz, deleteQuestion, replaceQuestion } from '@/st
 
 const { width } = Dimensions.get('window');
 interface SlipTestDetailsModalProps { 
-  selectedClass:any; 
+  selectedClass:any;
+  selectedTask: any;
   new_quiz: boolean;
   visible: boolean;
   saveSlipTest: (task_id: number) => void;
   cancelSlipTest: (task_id: number) => void;
+  closeSlipTest: () => void;
   // onClose: () => void;
   // goBack: () => void;
   // addTask: () => void;
@@ -33,7 +35,7 @@ interface SlipTestDetailsModalProps {
   // viewQuiz: (quiz_id: number) => void;
 }
 
-const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest, cancelSlipTest }: SlipTestDetailsModalProps) => {
+const SlipTestDetailsModal = ({  selectedClass, selectedTask, new_quiz, visible, saveSlipTest, cancelSlipTest }: SlipTestDetailsModalProps) => {
 
   const dispatch = useDispatch<any>();
   const { quiz_details } = useSelector((state: any) => state.classes);
@@ -89,7 +91,7 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest,
   }
 
   const renderQuestionCard = ({ item, index }: any) => {
-    return (<QuestionCard newQuiz={new_quiz} item={item} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestionFun={replaceClicked} refreshQuiz={refreshQuiz} />)
+    return (<QuestionCard newQuiz={new_quiz} item={item} task={selectedTask} index={index} activeDropdown={activeDropdown} setActiveDropdown={setActiveDropdown} editQuestion={editQuestion} deleteQuestion={deleteClicked} replaceQuestionFun={replaceClicked} refreshQuiz={refreshQuiz} />)
   }
 
   return (
@@ -140,14 +142,18 @@ const SlipTestDetailsModal = ({  selectedClass, new_quiz, visible, saveSlipTest,
                   </TouchableOpacity>
                 </View> */}
 
-                <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
+                {!(selectedTask?.published_quiz_id) ? (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                   <TouchableOpacity style={styles.saveButton} onPress={() => cancelSlipTest(quiz_details.task_id)}>
                     <Text>Cancel</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.saveButton} onPress={() => saveSlipTest(quiz_details.task_id)}>
                     <Text>Save</Text>
                   </TouchableOpacity>
-                </View>
+                </View>) : (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', margin: 10 }}>
+                  <TouchableOpacity style={styles.saveButton} onPress={() => saveSlipTest(quiz_details.task_id)}>
+                    <Text>Close</Text>
+                  </TouchableOpacity>
+                </View>)}
               </View>
             </ScrollView>    
           </View>  

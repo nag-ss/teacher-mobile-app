@@ -130,9 +130,9 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>{taskType == 'AICheck' ? 'AI Check' : 'Class Work' }</Text>
-            {/* <TouchableOpacity onPress={cancelOrGoBack}>
+            <TouchableOpacity onPress={cancelOrGoBack}>
               <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
 
           {/* Title Input */}

@@ -190,8 +190,6 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     if(!fromLiveMonitor) {
       setShowModal2TasksModal(true)
     }
-    
-
   }
 
   const saveClassWorkCheckDetails = async(aiCheckDetails: any) => { 
@@ -379,12 +377,13 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     }
   }
 
-  const viewQuiz = async(quiz_id: number) => {
+  const viewQuiz = async(quiz_id: number, task_id: number) => {
     console.log(quiz_id);
     // dispatch get quiz
     await dispatch (getClassQuiz(quiz_id));
     setShowModal2TasksModal(false);
-    
+    const currTask = (classTasks?.filter((tsk: any) => tsk.task_id == task_id))[0];
+    setSelectedTask(currTask);
     // navigation.navigate('SlipTest', { new_quiz: false, selectedClass: selectedClass });
     setIsNewQuiz(false);
     setShowSlipTestDetailsModal(true);
@@ -475,6 +474,18 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     }
   }
 
+  const closeSlipTestModal = () => {
+    setShowSlipTestDetailsModal(false);
+    if(!fromLiveMonitor) {
+      setShowModal2TasksModal(true)
+    }
+  }
+
+  const goBackToTasksModal = () => {
+    setShowClassWorkModal(false);
+    setShowModal2TasksModal(true);
+  }
+
   // const getDetails = async () => {
     // await dispatch(getLiveClass())
     // await dispatch(getScheduleClasses())
@@ -496,7 +507,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
       <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />
       <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
       <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />
-      <ClassworkCheckModal selectedTask={selectedTask} visible={showClassWorkModal} taskType={taskType} onClose={closeModalClassWork} goBack={backToNewTasksModal} saveAICheckDetails={saveClassWorkCheckDetails} />
+      <ClassworkCheckModal selectedTask={selectedTask} visible={showClassWorkModal} taskType={taskType} onClose={closeModalClassWork} goBack={backToNewTasksModal} goBackToTasksModal={goBackToTasksModal} saveAICheckDetails={saveClassWorkCheckDetails} />
       <GenerateSlipTestModal selectedTopic={topic} selectedSubTopic={subTopic} selectedClass={selectedClass} updateTopic={updateTopic} updateSubTopic={updateSubTopic} visible={showModal5GenerateSlipTestModal} onClose={closeModal5GenerateSlipTest} clickedNext={goToSlipTestDetails} topicsList={topics} />
       <TestSettingsModal selectedTask={selectedTask} visible={showModal6SlipTestSettingsModal} onClose={closeModal6} generateSlipTest={saveSlipTestDetails} />
       <DeleteQuestionModal
@@ -506,7 +517,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
           onDelete={() => confirmDeleteTask()}
         />
       <LoadingSlipTestModal show={showLoadingQuizModal} />
-      <SlipTestDetailsModal visible={showSlipTestDetailsModal} saveSlipTest={saveSlipTest} cancelSlipTest={cancelSlipTest} selectedClass={selectedClass} new_quiz={isNewQuiz}/>
+      <SlipTestDetailsModal selectedTask={selectedTask} visible={showSlipTestDetailsModal} saveSlipTest={saveSlipTest} cancelSlipTest={cancelSlipTest} selectedClass={selectedClass} new_quiz={isNewQuiz} closeSlipTest={closeSlipTestModal}/>
     </View>
   );
 });
