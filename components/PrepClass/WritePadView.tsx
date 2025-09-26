@@ -155,10 +155,10 @@ const WritePadViewModal: React.FC<EditQuestionModalProps> = ({ show, updateText,
                     <Text>Erase</Text>
                 </TouchableOpacity> */}
             </View>
-            <View style={{height: 500, marginBottom: 10}}>
+            <View style={{height: 400, marginBottom: 10}}>
                 <View ref={viewRef}
   collapsable={false}
-  style={{ height: 500, backgroundColor: '#fff', borderWidth: 1 }} >
+  style={{ height: 400, backgroundColor: '#fff', borderWidth: 1 }} >
                     <ExpoDraw
                         
                         containerStyle={{backgroundColor: '#fff', borderWidth: 1, borderColor: 'lightgray'}}
