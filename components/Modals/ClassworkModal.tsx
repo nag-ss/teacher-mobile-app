@@ -55,12 +55,36 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
   const [showEditWriteModal, setShowEditWriteModal] = useState(false)
   const [img, setImg] = useState("")
   const [loading, setLoading] = useState(false)
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
+
     const showEditWrite = async () => {
       setShowEditWriteModal(true)
     }
     const hideEditWrite = () => {
       setShowEditWriteModal(false)
     }
+
+    const insertTextAtCursor = (insertText: string) => {
+      const { start, end } = selection;
+      const before = start > 0 ? textInput[start - 1] : '';
+      // Check char after cursor
+      const after = end < textInput.length ? textInput[end] : '';
+  
+      // Add space before if needed
+      const needsSpaceBefore = before && before !== ' ';
+      // Add space after if needed
+      const needsSpaceAfter = after && after !== ' ';
+  
+      let toInsert = insertText;
+      if (needsSpaceBefore) toInsert = ' ' + toInsert;
+      if (needsSpaceAfter) toInsert = toInsert + ' ';
+  
+      const newText = textInput.slice(0, start) + toInsert + textInput.slice(end);
+      // Move cursor after inserted text
+      const newCursorPosition = start + insertText.length;
+      setTextInput(newText);
+      setSelection({ start: newCursorPosition, end: newCursorPosition });
+    };
   
     const updateText = async (url: string) => {
       const formData = new FormData();
@@ -80,7 +104,8 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
       let res =  await dispatch(translateClasswork(formData))
       console.log("res.payload img resp ")
       console.log(res.payload)
-      setTextInput(res.payload.question_text)
+      // setTextInput(res.payload.question_text)
+      insertTextAtCursor(res.payload.question_text)
       setLoading(false)
     }
 

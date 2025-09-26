@@ -50,6 +50,8 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   const [textInputError, setTextInputError] = useState('');
   const [showEditWriteModal, setShowEditWriteModal] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
+
   const showEditWrite = () => {
     setShowEditWriteModal(true)
   }
@@ -73,9 +75,32 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
     let res =  await dispatch(translateAICheck(formData))
     console.log("res.payload img resp ")
     console.log(res.payload)
-    setTextInput(res.payload.translated_text)
+    // setTextInput(res.payload.translated_text)
+    insertTextAtCursor(res.payload.translated_text)
     setLoading(false)
   }
+
+  const insertTextAtCursor = (insertText: string) => {
+    const { start, end } = selection;
+    const before = start > 0 ? textInput[start - 1] : '';
+    // Check char after cursor
+    const after = end < textInput.length ? textInput[end] : '';
+
+    // Add space before if needed
+    const needsSpaceBefore = before && before !== ' ';
+    // Add space after if needed
+    const needsSpaceAfter = after && after !== ' ';
+
+    let toInsert = insertText;
+    if (needsSpaceBefore) toInsert = ' ' + toInsert;
+    if (needsSpaceAfter) toInsert = toInsert + ' ';
+
+    const newText = textInput.slice(0, start) + toInsert + textInput.slice(end);
+    // Move cursor after inserted text
+    const newCursorPosition = start + insertText.length;
+    setTextInput(newText);
+    setSelection({ start: newCursorPosition, end: newCursorPosition });
+  };
 
   const cancelOrGoBack = () => {
     setTitle('')
@@ -170,6 +195,8 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
               <TextInput
                 value={textInput}
                 onChangeText={setTextInput}
+                selection={selection}
+                onSelectionChange={({ nativeEvent: { selection } }) => setSelection(selection)}
                 placeholder="Type Here:"
                 multiline
                 style={styles.textArea}
