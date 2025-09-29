@@ -102,6 +102,10 @@ const TaskSection = () => {
     scrollToIndex(newIndex);
   };
 
+  const updateTopicSubTopic = () => {
+
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
@@ -159,13 +163,14 @@ const TaskSection = () => {
             </TouchableOpacity>
             
         </View>
-        <ClassPrep item={{}} selectedClass={liveClass} ref={classPrepRef} />
+        <ClassPrep item={{}} selectedClass={liveClass} ref={classPrepRef} updateTopicSubTopic={updateTopicSubTopic} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { 
+    marginTop: 13.7,
     marginBottom: 16, 
     paddingVertical: 10, 
     paddingHorizontal: 5,
@@ -174,10 +179,11 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   cardsContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    paddingHorizontal: 18.28,
   },
   arrow: {
-    padding: 8,
+    paddingRight: 8,
     justifyContent: 'center'
   },
   arrowText: {
@@ -186,7 +192,10 @@ const styles = StyleSheet.create({
   headerSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5
+    marginBottom: 5,
+    paddingHorizontal: 18.28,
+    paddingTop: 9.14,
+    paddingBottom: 18.28
   },
   button: {
     borderWidth: 1,

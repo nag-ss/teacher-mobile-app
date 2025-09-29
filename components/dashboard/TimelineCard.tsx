@@ -9,20 +9,21 @@ import { Colors } from '@/constants/Colors';
 
 
 const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
-  const timelimeIntervalHeight = 35
+  // const timelimeIntervalHeight = 35
+  const timelimeIntervalHeight = 27.5
   const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
-  const [topic, setTopic] = useState(null);
-  const [subTopic, setSubTopic] = useState(null);
+  const [topic, setTopic] = useState("Rationa Number");
+  const [subTopic, setSubTopic] = useState("Rational Introduction");
   // const isLoad = true;
   const classPrepRef = useRef<any>();
 
   console.log("height ======= ", height)
 
   const subjectImageSize: any = {
-    1: {height: 25, width: 20, fontSize: 8, headFontSize: 11},
-    2: {height: 45, width: 45, fontSize: 8, headFontSize: 11},
-    3: {height: 70, width: 65, fontSize: 11, headFontSize: 13},
-    4: {height: 70, width: 65, fontSize: 12, headFontSize: 13},
+    1: {height: 25, width: 20, fontSize: 9.1, headFontSize: 9.1, subjectFontSize: 8},
+    2: {height: 40, width: 40, fontSize: 9.1, headFontSize: 12, subjectFontSize: 9.1},
+    3: {height: 70, width: 65, fontSize: 9.1, headFontSize: 13.5, subjectFontSize: 11.5},
+    4: {height: 70, width: 65, fontSize: 11.5, headFontSize: 16, subjectFontSize: 13.5},
   }
   const contentHeight = height > 4 ? 4 : height
   const openClassPrep = () => {
@@ -58,12 +59,22 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
     <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : '', backgroundColor: item.isClassOver ? 'grey' : '#fff', opacity: item.isClassOver ? 0.4 : 1 }]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
-            <Image style={{width: subjectImageSize[contentHeight].width, height: subjectImageSize[contentHeight].height}} source={require('../../assets/images/ss/Chemistry.png')} />
-            <View style={{height: (subjectImageSize[contentHeight].height + 10), marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent: 'center', alignItems: 'center', width: 220}}>
-                <Text style={[styles.classTime, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.time}</Text>
-                <Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize}]} numberOfLines={1}>{topic} - {subTopic}</Text>
+            <View style={{width: 70, alignItems: 'center'}}>
+              <Image style={{width: subjectImageSize[contentHeight].width, height: subjectImageSize[contentHeight].height}} source={require('../../assets/images/ss/Chemistry.png')} />
+            </View>
+            
+            <View style={{height: (subjectImageSize[contentHeight].height + 10), marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent:'center', alignItems: 'center', width: 220}}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Image style={{width: 14, height: 14}} source={require('../../assets/images/ss/Schedule.png')} />
+                  <Text style={[styles.classTime, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.time}</Text>
+                </View>
+                
+                <Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize}, height == 1 ? {marginLeft: 5, width: 150} : {}]} numberOfLines={1}>{topic} - {subTopic}</Text>
                 {/* <Text style={styles.classSubject}>{item.subject}</Text> */}
-                <Text style={[styles.classCategory, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.category}</Text>
+                {
+                  height > 1 ? <Text style={[styles.classCategory, {fontSize: subjectImageSize[contentHeight].subjectFontSize}]}>{item.category}</Text> :  null
+                }
+                
             </View>
             
         </View>
@@ -106,19 +117,20 @@ const styles = StyleSheet.create({
     // marginLeft: 10,
   },
   classCategory: {
-    fontSize: 14,
+    // fontSize: 14,
     // color: '#888',
-    marginTop: 5,
-    fontWeight: 'bold',
+    // marginTop: 5,
+    // fontWeight: 'bold',
   },
   classTime: {
-    fontSize: 14,
+    // fontSize: 14,
     color: '#555',
-    marginTop: 5,
+    // marginTop: 5,
     fontWeight: 'bold',
+    marginLeft: 5
   },
   topic: {
-    fontSize: 16,
+    // fontSize: 16,
     fontWeight: 'bold',
     // width: 250
   },

@@ -141,7 +141,7 @@ const LiveSessionCard = () => {
     
   }
   return (
-    <View style={[styles.cardContainer, {backgroundColor: nextClass.class_schedule_id ? '#21C17C' : ''}]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
+    <View style={[styles.cardContainer, nextClass.class_schedule_id ? {backgroundColor: '#21C17C'} : {borderWidth: 1, borderColor: 'lightgray'}]} pointerEvents={nextClass.class_schedule_id ? 'auto' : 'auto'}>
       <View style={[styles.sessionDetails, {}]}>
         {/* <View style={{width: 200, height: 200, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderRadius: 100}}>
           <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/no_class.png')} />
@@ -149,13 +149,13 @@ const LiveSessionCard = () => {
       
         {
           (isnextClass) ? 
-          <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/subject.png')} />
+          <Image style={{width: 145, height: 145}} source={require('../../assets/images/ss/subject.png')} />
         : 
         !nextClass.class_schedule_id ? 
         <View style={{marginLeft: 20}}><Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/no_class.png')} /></View>
         : <View style={{marginLeft: 20}}>
           <Image style={{width: 50, height: 20}} source={require('../../assets/images/ss/LiveButton.png')} />
-          <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/subject.png')} />
+          <Image style={{width: 145, height: 145}} source={require('../../assets/images/ss/subject.png')} />
           </View>
         }
         
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: '#fff',
     padding: 15,
-    marginVertical: 10,
+    // marginVertical: 10,
     borderRadius: 8,
     // borderColor: 'gray',
     // borderWidth: 1,
@@ -234,10 +234,11 @@ const styles = StyleSheet.create({
   textContainer: {
     marginLeft: 25,
     // backgroundColor: 'red',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    // width: '100%'
   },
   time: {
-    fontSize: 14,
+    fontSize: 9.12,
     color: '#555',
   },
   subject: {

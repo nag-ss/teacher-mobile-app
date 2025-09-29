@@ -26,20 +26,23 @@ const DashboardScreen = () => {
       { label: 'Auto Test Generator', icon: 'quiz' }
     ];
   return (
-    <SafeAreaView style={{}}>
-        <View style={{flexDirection: 'row', justifyContent:'space-between', backgroundColor: '#fff', marginLeft: 10, height: 60, borderRadius: 10}}>
-          <Text style={{padding: 10, fontWeight: '600', fontSize: 24}}>{user.school_name}</Text>
+    <SafeAreaView style={{marginLeft: 18.28, height: '100%'}}>
+        <View style={styles.headerContainer}>
+          <Text style={{padding: 10, fontWeight: '600', fontSize: 18.28}}>{user.school_name}</Text>
           <View style={{flexDirection: 'row', marginRight: 20}}>
             <Image  style={[{width: 40, height: 40}]} source={require('../../assets/images/ss/search.png')} />
             <Image  style={[{width: 40, height: 40}]} source={require('../../assets/images/ss/Notification.png')} />
           </View>
         </View>
-        <View style={{flexDirection: 'column', height: '100%'}}>
+        <View style={styles.mainContainer}>
             <View style={styles.container}>
                 <View style={styles.leftColumn}>
                     <View style={styles.liveCardContainer}>
+                      <View style={styles.teacherNameSection}>
                         <Text style={styles.title}>Welcome {`${user.first_name} ${user.last_name}`}</Text>
                         <Text style={styles.subTitle}>Welcome back! Let’s make today a meaningful day of learning.</Text>
+                      </View>
+                        
                         <LiveClassCard />
                     </View>
                     
@@ -50,10 +53,8 @@ const DashboardScreen = () => {
                     <View style={styles.classProgressContainer}>
                         <ClassProgress />
                         <UpcomingTopics />
-                        {/* <CompletedTopics /> */}
                     </View>
                     
-                    {/* <RecentActivity /> */}
                     
                     <PerformanceSummary />
                     <TeacherTodos />
@@ -92,31 +93,48 @@ const DashboardScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    // marginLeft: 18
+    height: '95%',
+    // backgroundColor: 'red'
+  },
   container: {
     // flex: 1,
-    padding: 10,
+    // padding: 10,
     flexDirection: 'row',
     // flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     // backgroundColor: 'yellow',
-    height: '90%'
+    // height: '100%',
+    marginTop: 13.7
 
   },
+  headerContainer: {
+    flexDirection: 'row', 
+    justifyContent:'space-between', 
+    alignItems: 'center',
+    backgroundColor: '#fff', 
+    height: 64, 
+    borderBottomLeftRadius: 10, 
+    borderBottomRightRadius: 10
+  },
   leftColumn: {
-    flex: 0.6,
-    marginRight: 8,
+    // flex: 0.6,
+    width: 450.28,
+    marginRight: 18.28,
   },
   rightColumn: {
-    flex: 0.4,
-    marginLeft: 5,
+    // flex: 0.4,
+    width: 270,
+    // marginLeft: 5,
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 10
   },
   liveCardContainer: {
     backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 12
+    padding: 18.28,
+    borderRadius: 12,
   },
   title: {
     fontSize: 22,
@@ -126,6 +144,10 @@ const styles = StyleSheet.create({
   subTitle: {
     marginTop: 10,
     // fontWeight: '600',
+  },
+  teacherNameSection: {
+    padding: 13.7,
+    marginBottom: 13.7
   },
   classProgressContainer: {
     backgroundColor: '#fff',
@@ -139,7 +161,7 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     position: 'absolute',
-    bottom: 32,
+    bottom: 10,
     right: 24,
     alignItems: 'flex-end',
     zIndex: 99,

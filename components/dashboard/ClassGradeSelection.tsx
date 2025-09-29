@@ -62,12 +62,13 @@ const ClassGradeSelection = () => {
           // setItems={setItems}
           style={{
             borderColor: 'lightgray',      // 👉 Default border
-            borderRadius: 8            // Optional: rounded corners
+            borderRadius: 8,            // Optional: rounded corners
           }}
           dropDownContainerStyle={{
             borderColor: 'lightgray'       // 👉 Dropdown list border
           }}
           disabled={true}
+          textStyle={{fontSize: 11}}
         />
         </View>
         <View style={styles.dropdownContainer}>
@@ -99,6 +100,7 @@ const ClassGradeSelection = () => {
           }}
           disabled={true}
           // setItems={setItems}
+          textStyle={{fontSize: 11}}
         />
       </View>
     </View>

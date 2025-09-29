@@ -49,7 +49,10 @@ const liveMonitoringSlice = createSlice({
             console.log("action.payload attendance ...")
             console.log(action.payload)
             if(action.payload.detail == undefined) {
-                state.studentsData = action.payload;
+                let stds = action.payload
+                stds = [...stds, action.payload]
+                // state.studentsData = action.payload;
+                state.studentsData = stds;
             }
             state.loading = false;
         })

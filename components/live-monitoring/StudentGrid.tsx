@@ -28,14 +28,15 @@ const StudentGrid = () => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        padding: 10
+        paddingHorizontal: 18.28,
+        paddingTop: 13.7
     },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   grid: {
     // height: 500,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    // justifyContent: 'space-between',
+    justifyContent: 'space-between',
   },
 });
 

@@ -60,8 +60,10 @@ import { useFocusEffect } from '@react-navigation/native';
 //     '11:00', '11:15', '11:30', '11:45','12:00', '12:15', '12:30', '12:45','13:00', '13:15', '13:30', '13:45',
 //     '14:00', '14:15', '14:30', '14:45','15:00', '15:15', '15:30', '15:45'
 // ];
-const timelimeIntervalHeight = 35
-const timelimeEmptyHeight = 25
+// const timelimeIntervalHeight = 35
+// const timelimeEmptyHeight = 25
+const timelimeIntervalHeight = 27.5
+const timelimeEmptyHeight = 17.5
 const TimelineWithClassDetails = () => {
     // const [noClass, setNoClass] = useState(0)
     
@@ -267,7 +269,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
     };
   return (
     <View style={styles.mainContainer}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10}}> 
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18.28, paddingTop: 18.28, paddingBottom: 9.14}}> 
             <Text style={styles.timelineText}>Today's Timeline</Text>
             <View style={{flexDirection: 'row', borderWidth: 1, borderColor: 'grey', borderRadius: 5, paddingHorizontal: 20, paddingVertical: 5}}>
                 <MaterialIcons
@@ -427,7 +429,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1, 
     flexDirection: 'column', 
-    marginTop: 10, 
+    marginTop: 13.7, 
     marginBottom: 10,
     // backgroundColor: 'red',
     paddingLeft: 15
@@ -483,14 +485,14 @@ const styles = StyleSheet.create({
     // elevation: 5, // For Android shadow
   },
   emptySpace: {
-    height: timelimeEmptyHeight,
+    height: timelimeIntervalHeight,
     // backgroundColor: '#f0f0f0',
     // backgroundColor: '#fff',
-    marginBottom: 10,
+    // marginBottom: 10,
     // backgroundColor: 'red'
   },
   timelineText: {
-    fontSize: 16,
+    fontSize: 18.28,
     fontWeight: 'bold'
   },
   timelineDateText: {

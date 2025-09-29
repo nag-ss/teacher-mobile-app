@@ -43,7 +43,7 @@ const StudentCard = (studentData: any) => {
 
 
     return (
-      <View style={{}}>
+      <View style={{marginBottom: 13.7}}>
         <TouchableOpacity style={styles.card} onPress={() => showStudentInfo()}>
           <View style={styles.iconView}>
               <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Male.png')} />
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 12,
-    margin: 6,
+    padding: 9.14,
+    // marginRight: 9.14,
     marginLeft: 0,
     // flex: 1,
     minWidth: '32%',
