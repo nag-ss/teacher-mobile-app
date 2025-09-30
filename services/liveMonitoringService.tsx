@@ -22,8 +22,8 @@ const getClassworkResults = async (reqData: any, userToken: string) => {
 };
 
 const getSlipTestResults = async (reqData: any, userToken: string) => {
-    // const reqUrl = GET_SLIPTEST_CHECK + '?class_schedule_id='+reqData.classId+'&task_id='+reqData.taskId
-    const reqUrl = GET_SLIPTEST_CHECK + '?class_schedule_id=936&task_id=464'
+    const reqUrl = GET_SLIPTEST_CHECK + '?class_schedule_id='+reqData.classId+'&task_id='+reqData.taskId
+    // const reqUrl = GET_SLIPTEST_CHECK + '?class_schedule_id=936&task_id=464'
     console.log(reqUrl)
   return await apiRequest(reqUrl, 'GET', reqData, userToken);
 };
