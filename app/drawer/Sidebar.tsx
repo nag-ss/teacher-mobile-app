@@ -20,7 +20,7 @@ const Sidebar = ({navigation}: any) =>  {
     
     const pathname  = usePathname();
   const [expanded, setExpanded] = useState(false);
-  const widthAnim = useRef(new Animated.Value(expanded ? 220 : 48.5)).current;
+  const widthAnim = useRef(new Animated.Value(expanded ? 220 : 57)).current;
 
   // const dpValue = 100;
 // const pxValue = PixelRatio.getPixelSizeForLayoutSize(dpValue);
@@ -29,7 +29,7 @@ const Sidebar = ({navigation}: any) =>  {
   const toggleSidebar = () => {
     console.log("toggleing side bar ")
     Animated.timing(widthAnim, {
-      toValue: expanded ? 48.5 : 220,
+      toValue: expanded ? 57 : 220,
       duration: 260,
       useNativeDriver: false,
     }).start();
@@ -42,11 +42,11 @@ const Sidebar = ({navigation}: any) =>  {
         {/* <MaterialCommunityIcons name="menu" size={28} color="#222" /> */}
         {   expanded &&
             <View style={styles.logoRow}>
-            <Image  style={[styles.iconStyle, {width: 36, height: 36}]} source={require('../../assets/images/ss/Logo_F2.png')} />
+            <Image  style={[styles.iconStyle, {width: 48, height: 48}]} source={require('../../assets/images/ss/Logo_F2.png')} />
             <Text style={styles.brand}>Super Slate</Text>
           </View>
         }
-        <Image  style={[styles.iconStyle, {width: 36, height: 36}]} source={require('../../assets/images/sidebar/state-layer.png')} />
+        <Image  style={[styles.iconStyle, styles.menuIcon, {width: 40, height: 40}]} source={require('../../assets/images/sidebar/state-layer.png')} />
       </TouchableOpacity>
       
       {/* {expanded && <Text style={styles.caption}>DASHBOARD</Text>} */}
@@ -57,7 +57,7 @@ const Sidebar = ({navigation}: any) =>  {
           onPress={() => navigation.navigate(item.route)}
         >
           {/* <MaterialCommunityIcons name={item.icon} size={24} color="#222" /> */}
-          <Image  style={[styles.iconStyle, {width: 36, height: 36}]} source={item.icon} />
+          <Image  style={[styles.iconStyle, {width: 48, height: 48}]} source={item.icon} />
           {expanded && <Text style={styles.menuLabel}>{item.label}</Text>}
         </TouchableOpacity>
       ))}
@@ -78,16 +78,21 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: '#EFEFEF',
     alignItems: 'flex-start',
-    paddingTop: 18,
-    paddingHorizontal: 9.15
+    paddingTop: 12,
+    paddingHorizontal: 13.7
   },
   header: { 
-    // marginLeft: 1, 
-    marginBottom: 18, 
+    // marginTop: 1, 
+    marginBottom: 20, 
     flexDirection: 'row',
     //  backgroundColor:  'yellow' 
   },
-  logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 13, marginLeft: 13 },
+  menuIcon: {
+    height: 32,
+    width: 32,
+    marginTop: 5
+  },
+  logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 13, marginLeft: 0 },
   brand: { marginLeft: 10, fontWeight: 'bold', fontSize: 18 },
   caption: { marginLeft: 14, color: '#888', fontSize: 12, marginBottom: 13 },
   menuItem: { 
@@ -97,9 +102,9 @@ const styles = StyleSheet.create({
     // paddingVertical: 8, 
     paddingHorizontal: 0, 
     borderRadius: 8, 
-    marginBottom: 16, 
-    width: 27.4,
-    height: 27.4
+    marginBottom: 32, 
+    width: 32,
+    height: 32
     // margin: 5 
   },
   menuLabel: { 

@@ -13,6 +13,9 @@ import {
 const calendar_month_icon = require('../../assets/images/modal/calendar_month.png');
 const action_icon = require('../../assets/images/actions_icon.png');
 const quiz_icon = require('../../assets/images/ss/quiz-2.png');
+// const new_classwork_icon = require('../../assets/images/book_48dp.png');
+// const new_aicheck_icon = require('../../assets/images/AI_Check_48dp.png');
+// const new_quiz_icon = require('../../assets/images/Test_48dp.png');
 const classwork_icon = require('../../assets/images/ss/description.png');
 const ai_check_icon = require('../../assets/images/ss/flag-3.png');
 

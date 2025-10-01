@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Image,
   TextInput,
-  findNodeHandle
+  findNodeHandle,
+  PanResponder
 } from 'react-native';
 import {MathJaxSvg} from 'react-native-mathjax-html-to-svg';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -34,6 +35,25 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
   const [isLoading, setIsLoading] = useState(false);
   const [strokeColor, setStrokeColor] = useState('#000000')
   const [imageUri, setImageUri] = useState('')
+
+  const [enabled, setEnabled] = React.useState(false);
+  const panResponder = React.useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: (evt) => {
+        // Stylus on Android: toolType === 2
+        if ('toolType' in evt.nativeEvent)
+          return evt.nativeEvent.toolType === 2;
+        // iOS stylus heuristic: altitudeAngle set
+        if ('altitudeAngle' in evt.nativeEvent)
+          return evt.nativeEvent.altitudeAngle !== undefined;
+        return false;
+      },
+      onPanResponderGrant: () => setEnabled(true),
+      onPanResponderRelease: () => setEnabled(false),
+      onPanResponderTerminate: () => setEnabled(false),
+    })
+  ).current;
+
   
   const ref: any = useRef();
     const eraseRef = useRef(null);
@@ -145,10 +165,11 @@ const EditWriteQuestionModal: React.FC<EditQuestionModalProps> = ({ show, select
                 <Text style={styles.title}>{ "Edit Question"}?</Text>
             </View>
             
-            <View style={{height: 500, marginBottom: 10}}>
+            <View style={{height: 400, marginBottom: 10}}>
                 <View ref={viewRef}
                             collapsable={false}
-                            style={{ height: 500, backgroundColor: '#fff', borderWidth: 1 }} >
+                            style={{ height: 400, backgroundColor: '#fff', borderWidth: 1 }} 
+                             >
                     <ExpoDraw
                         
                         containerStyle={{backgroundColor: '#fff', borderWidth: 1, borderColor: 'lightgray'}}

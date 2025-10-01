@@ -84,7 +84,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     if (selectedClass?.class_details[0]?.topic) {
       setTopic(selectedClass?.class_details[0]?.topic)
       setSubTopic(selectedClass?.class_details[0]?.sub_topic[0])
-      setShowModal2TasksModal(true) 
+      if(isFlag) {
+        showAddTaskModal()
+      } else {
+        setShowModal2TasksModal(true)
+      }
+      
     } else {
       setShowModal1SummaryModal(true)
     }

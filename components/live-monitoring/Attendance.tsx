@@ -18,6 +18,7 @@ const Attendance = () => {
         dispatch(getAttendance(reqObj))
     }
     const onPress = () => {
+        dispatch(setSelectedTask('Attendance'))
         getAttendanceData()
         console.log("button pressed ....")
     }

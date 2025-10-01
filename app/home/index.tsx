@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   leftColumn: {
     // flex: 0.6,
     width: 450.28,
-    marginRight: 18.28,
+    marginRight: 13.7,
   },
   rightColumn: {
     // flex: 0.4,

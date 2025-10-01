@@ -36,6 +36,10 @@ const SlipTest = ({task}: any) => {
         }
 
     }, [selectedTaskSection])
+
+    const updateTopicSubTopic = () => {
+      
+    }
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
@@ -54,7 +58,7 @@ const SlipTest = ({task}: any) => {
         </View>
         </TouchableOpacity>
         {/* To be fixed */}
-        <ClassPrep item={{}} selectedClass={liveClass} ref={classPrepRef} />
+        <ClassPrep item={{}} selectedClass={liveClass} ref={classPrepRef} updateTopicSubTopic={updateTopicSubTopic} />
       </View>
     )
 };
