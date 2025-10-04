@@ -69,7 +69,7 @@ export default function ClassSummaryPopModal({
 
           {/* Class Details */}
           <View style={styles.section}>
-            <Text style={styles.subTitle}>Class Details</Text>
+            <Text style={styles.subTitle}>Details</Text>
             <View style={styles.rowBetween}>
               <View style={styles.rowItem}>
                 <Text style={styles.detailText}>Grade :</Text> 
@@ -105,7 +105,7 @@ export default function ClassSummaryPopModal({
 
           {/* Set Topic Card */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Set Class Topic</Text>
+            <Text style={styles.cardTitle}>Set Topic</Text>
             <View style={styles.row}>
               
               <Text style={styles.label}>Topic </Text>
@@ -128,7 +128,7 @@ export default function ClassSummaryPopModal({
                   style={styles.picker}
                   iconStyle={{width: 30, height:30}}
                   containerStyle={{borderRadius: 10}}
-                  itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                  // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                 />
               </View>
               
@@ -153,7 +153,7 @@ export default function ClassSummaryPopModal({
                   style={styles.picker}
                   iconStyle={{width: 30, height:30}}
                   containerStyle={{borderRadius: 10}}
-                  itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                  // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                 />
               </View>
               
