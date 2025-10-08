@@ -28,10 +28,10 @@ const StudentGrid = () => {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fff',
-        paddingHorizontal: 18.28,
-        paddingTop: 13.7
+        padding: 13.7,
+        borderRadius: 10
     },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 9.14 },
   grid: {
     // height: 500,
     flexDirection: 'row',

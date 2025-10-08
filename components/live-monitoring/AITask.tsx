@@ -53,7 +53,7 @@ const AITask = ({task}: any) => {
               <View style={styles.imageSection}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Note-taking.png')} />
               </View>
-              <View style={[styles.pbutton, {backgroundColor: task.status != 'progress' ? 'gray' : ''}]} >
+              <View style={[styles.pbutton, {backgroundColor: task.status != 'progress' ? '#b8b8b8' : ''}]} >
                 <Text style={[styles.pbuttonText]}>{task.status != 'progress' ? 'Completed' : 'In Queue'}</Text>
               </View>
             </View>
@@ -74,9 +74,9 @@ const AITask = ({task}: any) => {
 const styles = StyleSheet.create({
   card: {
     width: 165,
-    height: 185,
+    // height: 185,
     // marginHorizontal: 8,
-    padding: 16,
+    padding: 9.14,
     backgroundColor: '#fff',
     borderRadius: 10,
     // alignItems: 'center',
@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
   },
   icon: { fontSize: 24 },
   title: { 
-    fontSize: 14, fontWeight: '600', height: 60
+    fontSize: 14, fontWeight: '600', 
+    height: 60
   },
   subTitle: {
     fontSize: 12
@@ -97,35 +98,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 5,
-    width: 130,
+    width: '100%',
     alignItems: 'center',
-    marginTop: 5
+    marginTop: 9.14
   },
   buttonText: { fontWeight: '600' },
   pbutton: {
     borderWidth: 1,
     borderColor: 'lightgray',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    padding: 4.57,
     borderRadius: 5,
-    width: 82,
-    alignItems: 'center'
+    // width: 82,
+    alignItems: 'center',
+    height: 28
   },
   pbuttonText: { fontSize: 10 },
+  
+  headerSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   imageSection: {
     borderWidth: 1,
     borderColor: 'lightgray',
     borderRadius: 5,
     padding: 5,
-    width: 30
-  },
-  headerSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    width: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   taskBodySection: {
-    height: 80,
-    marginTop: 5
+    // height: 80,
+    marginTop: 9.14
   }
 });
 

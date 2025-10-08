@@ -26,12 +26,12 @@ const DashboardScreen = () => {
       { label: 'Auto Test Generator', icon: 'quiz' }
     ];
   return (
-    <SafeAreaView style={{marginLeft: 18.28, height: '100%'}}>
+    <SafeAreaView style={{marginLeft: 13.7, height: '100%', marginTop: 13.7}}>
         <View style={styles.headerContainer}>
-          <Text style={{padding: 10, fontWeight: '600', fontSize: 18.28}}>{user.school_name}</Text>
+          <Text style={{padding: 13.7, fontWeight: '600', fontSize: 18.28}}>{user.school_name}</Text>
           <View style={{flexDirection: 'row', marginRight: 20}}>
-            <Image  style={[{width: 40, height: 40}]} source={require('../../assets/images/ss/search.png')} />
-            <Image  style={[{width: 40, height: 40}]} source={require('../../assets/images/ss/Notification.png')} />
+            <Image  style={[{width: 20, height: 20, marginRight: 16}]} source={require('../../assets/images/ss/search.png')} />
+            <Image  style={[{width: 20, height: 20}]} source={require('../../assets/images/ss/Notification.png')} />
           </View>
         </View>
         <View style={styles.mainContainer}>
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff', 
     height: 64, 
-    borderBottomLeftRadius: 10, 
-    borderBottomRightRadius: 10
+    borderRadius: 10, 
+    marginRight: 13.7
   },
   leftColumn: {
     // flex: 0.6,
@@ -142,16 +142,16 @@ const styles = StyleSheet.create({
     // marginBottom: 5,
   },
   subTitle: {
-    marginTop: 10,
+    marginTop: 9.14,
     // fontWeight: '600',
   },
   teacherNameSection: {
-    padding: 13.7,
-    marginBottom: 13.7
+    // padding: 13.7,
+    marginBottom: 9.14
   },
   classProgressContainer: {
     backgroundColor: '#fff',
-    padding: 15,
+    padding: 13.7,
     // paddingBottom: 5,
     // marginVertical: 10,
     borderRadius: 8,
@@ -161,8 +161,8 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     position: 'absolute',
-    bottom: 10,
-    right: 24,
+    bottom: 30,
+    right: 100,
     alignItems: 'flex-end',
     zIndex: 99,
   },

@@ -32,7 +32,7 @@ const DashboardScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { marginLeft: 18.28, backgroundColor: '#f5f5f5', marginRight: 10 },
+  container: { marginLeft: 13.7, backgroundColor: '#f5f5f5', marginRight: 10 },
 });
 
 export default DashboardScreen;

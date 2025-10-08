@@ -63,7 +63,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
               <Image style={{width: subjectImageSize[contentHeight].width, height: subjectImageSize[contentHeight].height}} source={require('../../assets/images/ss/Chemistry.png')} />
             </View>
             
-            <View style={{height: (subjectImageSize[contentHeight].height + 10), marginLeft: 10, flexDirection: height == 1 ? 'row' : 'column', justifyContent:'center', alignItems: 'center', width: 220}}>
+            <View style={{height: (subjectImageSize[contentHeight].height + 10), marginLeft: 24, flexDirection: height == 1 ? 'row' : 'column', justifyContent:'center',  width: 220}}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Image style={{width: 14, height: 14}} source={require('../../assets/images/ss/Schedule.png')} />
                   <Text style={[styles.classTime, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.time}</Text>

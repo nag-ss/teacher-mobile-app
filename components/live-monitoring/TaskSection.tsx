@@ -172,15 +172,16 @@ const styles = StyleSheet.create({
   container: { 
     marginTop: 13.7,
     marginBottom: 16, 
-    paddingVertical: 10, 
-    paddingHorizontal: 5,
+    // paddingVertical: 10, 
+    // paddingHorizontal: 5,
+    padding: 13.7,
     backgroundColor: '#fff',
     borderRadius: 10
   },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 12 },
   cardsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 18.28,
+    // paddingHorizontal: 18.28,
   },
   arrow: {
     paddingRight: 8,
@@ -193,9 +194,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 5,
-    paddingHorizontal: 18.28,
-    paddingTop: 9.14,
-    paddingBottom: 18.28
+    // paddingHorizontal: 18.28,
+    // paddingTop: 9.14,
+    paddingBottom: 9.14
   },
   button: {
     borderWidth: 1,

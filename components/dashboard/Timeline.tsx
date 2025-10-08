@@ -269,9 +269,9 @@ const onLayout = (event: LayoutChangeEvent): void => {
     };
   return (
     <View style={styles.mainContainer}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 18.28, paddingTop: 18.28, paddingBottom: 9.14}}> 
+        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 0, paddingTop: 18.28, paddingBottom: 9.14}}> 
             <Text style={styles.timelineText}>Today's Timeline</Text>
-            <View style={{flexDirection: 'row', borderWidth: 1, borderColor: 'grey', borderRadius: 5, paddingHorizontal: 20, paddingVertical: 5}}>
+            <View style={{flexDirection: 'row', borderWidth: 1, borderColor: 'grey', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 8}}>
                 <MaterialIcons
                     name="calendar-month"
                     size={20}
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   },
   timelineDateText: {
     fontSize: 15,
-    marginLeft: 10
+    marginLeft: 8
   },
   customScrollBar: {
     // backgroundColor: '#ccc',

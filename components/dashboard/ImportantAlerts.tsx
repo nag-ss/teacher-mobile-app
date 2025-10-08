@@ -33,7 +33,7 @@ const ImportantAlerts = () => (
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    padding: 15,
+    padding: 13.7,
     paddingBottom: 5,
     marginVertical: 5,
     borderRadius: 8,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 9.14,
   },
   text: {
     marginBottom: 4,

@@ -167,8 +167,10 @@ const LiveSessionCard = () => {
             {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
           </Text>
           <View>
-            <Text style={styles.subject}>
-              {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].Topic : ''}
+            <Text style={styles.subject} numberOfLines={1}>
+              {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].topic : ''} -
+              {/* {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].sub_topic[0] : ''} */}
+              {/* { 'Topic - Sub Topic'} */}
             </Text>
             <Text style={styles.category}>{nextClass.subject_name}</Text>
           </View>
@@ -202,6 +204,7 @@ const LiveSessionCard = () => {
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: '#fff',
+    // backgroundColor: 'red',
     padding: 15,
     // marginVertical: 10,
     borderRadius: 8,
@@ -213,7 +216,7 @@ const styles = StyleSheet.create({
     // shadowOffset: { width: 0, height: 1 },
     // shadowOpacity: 0.1,
     // shadowRadius: 2,
-    // elevation: 1,  // For Android shadow
+    // elevation: 1,  // For Android shadow,
   },
   liveBadge: {
     position: 'absolute',

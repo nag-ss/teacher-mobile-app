@@ -56,10 +56,10 @@ const Attendance = () => {
 const styles = StyleSheet.create({
   card: {
     width: 165,
-    height: 185,
+    // height: 185,
     // marginHorizontal: 8,
     // marginRight: 16,
-    padding: 16,
+    padding: 9.14,
     backgroundColor: '#fff',
     borderRadius: 10,
     // alignItems: 'center',
@@ -80,9 +80,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 5,
-    width: 130,
+    // width: 130,
+    width: '100%',
     alignItems: 'center',
-    marginTop: 5
+    marginTop: 9.14
   },
   buttonText: { fontWeight: '600' },
   imageSection: {
@@ -90,11 +91,13 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray',
     borderRadius: 5,
     padding: 5,
-    width: 30
+    width: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   taskBodySection: {
-    height: 80,
-    marginTop: 5
+    // height: 80,
+    marginTop: 9.14
   },
 });
 
