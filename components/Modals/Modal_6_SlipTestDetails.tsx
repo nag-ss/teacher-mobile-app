@@ -121,16 +121,20 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
           <ScrollView>
-            <TouchableOpacity style={styles.closeButton} onPress={() => {
-              resetDefaults()
-              onClose()
-            }}>
-             <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
-            </TouchableOpacity>
+            
 
-            <View style={styles.titleContainer}>
-              <Text style={styles.modalTitle}>Test Setup - </Text>
-              <Text style={styles.subtitle}>Adjust time, marks, and difficulty before generating questions.</Text>
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.modalTitle}>Test Setup - </Text>
+                <Text style={styles.subtitle}>Adjust time, marks, and difficulty before generating questions.</Text>
+              </View>
+              <TouchableOpacity style={styles.closeButton} onPress={() => {
+                resetDefaults()
+                onClose()
+              }}>
+                <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
+              </TouchableOpacity>
+
             </View>
             
             <View style={[styles.inputGroup, styles.section, {backgroundColor: 'white'}]}>
@@ -150,7 +154,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
 
               <View style={styles.row}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                  <Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} />
+                  {/* <Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} /> */}
                   <Text style={styles.marksTextStyle}> Time</Text>
                   <Text style={styles.colonStyle}>:</Text>
                   <View style={styles.pickerWrapper}>
@@ -177,7 +181,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                   </View>
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                  <Image source={require('../../assets/images/ss/Marks.png')} style={styles.clockIcon} />
+                  
                   <Text style={styles.marksTextStyle}>Marks</Text>
                   <Text style={styles.colonStyle}>:</Text>
                 
@@ -312,7 +316,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 {/* Total */}
                 <View>
                   <Text style={{marginBottom: 8}}>Total Questions</Text>
-                  <View style={{width: 150, borderWidth: 0.5, borderRadius: 8}}>
+                  <View style={{width: 145, borderWidth: 0.5, borderRadius: 8, marginTop: 2}}>
                     <Text style={{textAlign: 'center', marginTop: 10, height: 30}}>{totalQuestions}</Text>
                   </View>
                 </View>
@@ -345,14 +349,15 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#f5f5f5',
     borderRadius: 16,
-    padding: 20,
-    width: '70%',
+    padding: 24,
+    width: '72%',
     maxHeight: '90%',
   },
   closeButton: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
+    // position: 'absolute',
+    // right: 10,
+    // top: 10,
+    marginBottom: 8,
     zIndex: 10,
   },
   icon: {
@@ -369,9 +374,9 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     display: 'flex', 
-    flexDirection: 'row', 
-    marginTop: 4, 
-    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center', 
+    marginBottom: 16,
   },
   modalTitle: {
     fontSize: 20,
@@ -384,8 +389,8 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   section: {
-    marginBottom: 20,
-    padding: 10,
+    marginBottom: 16,
+    padding: 16,
     backgroundColor: 'white',
     borderRadius: 8
   },
@@ -402,7 +407,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   difficultyText: {
     color: '#10B981',
@@ -447,7 +452,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 8,
-    marginBottom: 10,
   },
   questionsCount: {
     width: 150,
@@ -481,6 +485,7 @@ const styles = StyleSheet.create({
   // },
   inputGroup: {
     marginBottom: 16,
+    padding: 16
   },
   label: {
     fontSize: 14,
@@ -492,6 +497,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
+    marginBottom: 8,
     fontSize: 14,
   },
   textArea: {

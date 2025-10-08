@@ -227,61 +227,65 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             </View>
           </View> */}
 
-          <View style={[styles.inputGroup, styles.marksSection]}>
+          <View style={[styles.inputGroup, styles.marksSection, {marginRight: 16}]}>
             <View style={{width: '49%', flexDirection: 'row',  justifyContent: 'space-between'}}>
-              <View>
+              <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
                 <Text style={styles.marksLabel}>*Time:</Text>
+                <View style={{ width: '70%'}}>
+     
+                  <DropDownPicker
+                    placeholder="Select Time"
+                    placeholderStyle={{ fontSize: 12 }}
+                    open={timeOpen}
+                    disabled={!!(selectedTask?.published_work_id)}
+                    value={selectedTime}
+                    items={timeOptions}
+                    setOpen={setTimeOpen}
+                    setValue={setSelectedTime}
+                    // setItems={setItems}
+                    style={{
+                      borderColor: 'lightgray',      
+                      borderRadius: 8,           
+                    }}
+                    dropDownContainerStyle={{
+                      borderColor: 'lightgray'      
+                    }}
+                  />
+                </View>
               </View>
-              <View style={{ width: '70%'}}>
-                <DropDownPicker
-                  placeholder="Select Time"
-                  placeholderStyle={{ fontSize: 12 }}
-                  open={timeOpen}
-                  disabled={!!(selectedTask?.published_work_id)}
-                  value={selectedTime}
-                  items={timeOptions}
-                  setOpen={setTimeOpen}
-                  setValue={setSelectedTime}
-                  // setItems={setItems}
-                  style={{
-                    borderColor: 'lightgray',      
-                    borderRadius: 8,           
-                  }}
-                  dropDownContainerStyle={{
-                    borderColor: 'lightgray'      
-                  }}
-                />
-              </View>
+              
             </View>
-            <View style={{width: '49%', flexDirection: 'row',  justifyContent: 'space-between'}}>
-              <View>
+            <View style={{width: '65%', flexDirection: 'row',  justifyContent: 'space-between'}}>
+              <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
                 <Text style={styles.marksLabel}>*Total Marks:</Text>
+                <View style={{ width: '60%'}}>
+                  <DropDownPicker
+                    placeholder="Select Marks"
+                    placeholderStyle={{ fontSize: 12 }}
+                    disabled={!!(selectedTask?.published_work_id)}
+                    open={marksOpen}
+                    value={selectedMarks}
+                    items={marksOptions}
+                    setOpen={setMarksOpen}
+                    setValue={setSelectedMarks}
+                    // setItems={setItems}
+                    style={{
+                      borderColor: 'lightgray',      
+                      borderRadius: 8,           
+                    }}
+                    dropDownContainerStyle={{
+                      borderColor: 'lightgray'      
+                    }}
+                  />
+                </View>
               </View>
-              <View style={{ width: '60%'}}>
-                <DropDownPicker
-                  placeholder="Select Marks"
-                  placeholderStyle={{ fontSize: 12 }}
-                  disabled={!!(selectedTask?.published_work_id)}
-                  open={marksOpen}
-                  value={selectedMarks}
-                  items={marksOptions}
-                  setOpen={setMarksOpen}
-                  setValue={setSelectedMarks}
-                  // setItems={setItems}
-                  style={{
-                    borderColor: 'lightgray',      
-                    borderRadius: 8,           
-                  }}
-                  dropDownContainerStyle={{
-                    borderColor: 'lightgray'      
-                  }}
-                />
-              </View>
+     
+              
             </View>
           </View>
 
           {/* Match Type */}
-          <View style={styles.matchTypeRow}>
+          {/* <View style={styles.matchTypeRow}> */}
             {/* <View style={styles.switchRow}>
               <Switch
                 value={matchType.exact}
@@ -307,16 +311,23 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               layout='row'
               labelStyle={{width: 190}}
             /> */}
-          </View>
+          {/* </View> */}
 
           {/* Text Input */}
 
           <View style={styles.inputGroup}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10}}>
-                <Text style={styles.label}>*Text Input</Text>
-                <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
-                    <FontAwesome name="pencil" size={18} color="white" />
-                </TouchableOpacity>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, alignItems: 'center'}}>
+                <View>
+                  <Text style={styles.label}>Text Input</Text>
+                </View>
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={{marginRight: 8}}>Insert Formula</Text>
+                  <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
+                      <FontAwesome name="pencil" size={18} color="white" />
+                  </TouchableOpacity>
+                </View>
+                
+                
               </View>
             <View style={{borderWidth: 1, borderColor: showMandatoryMsg ? 'red' : '#D1D5DB', borderRadius: 8 }}>
               <TextInput
@@ -382,7 +393,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     width: '70%',
   },
   header: {
@@ -400,7 +411,7 @@ const styles = StyleSheet.create({
     height: 32,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom:24,
   },
   label: {
     fontSize: 14,
@@ -464,7 +475,6 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
   },
   footerRight: {
     flexDirection: 'row',
@@ -492,6 +502,6 @@ const styles = StyleSheet.create({
   },
   marksLabel: {
     marginTop: 15,
-    marginRight: 15
+    marginRight: 8
   }
 });

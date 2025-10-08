@@ -114,13 +114,13 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
               setActiveDropdown(-1);
               showEdit()
-            }} style={styles.dropdownItem}>
+            }} style={[styles.dropdownItem, {borderBottomWidth: 0.5}]}>
             <Text>Edit</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
               setActiveDropdown(-1);
               replaceQuestionData(item.question_id)
-            }} style={styles.dropdownItem}>
+            }} style={[styles.dropdownItem, {borderBottomWidth: 0.5}]}>
             <Text>Replace</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
@@ -134,7 +134,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
 
       {/* Subjective Answer */}
       {!item.is_objective && (
-        <View style={{margin: 10}}>
+        <View style={{margin: 4}}>
           <View style={styles.answerBox}>
             <Text style={{ fontSize: 12 }}>Answer: </Text>
             <MathJaxSvg
@@ -160,12 +160,16 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
                 },
               ]}
             >
-              <MathJaxSvg 
-                fontCache={true}
-                fontSize={12}
-              >
-                {item.choice_body[key]}
-              </MathJaxSvg>
+              <View style={{display: 'flex', flexDirection: 'row'}}>
+                <Text style={{fontSize: 12, marginRight: 8}}>{key}&#41;</Text>
+                <MathJaxSvg 
+                  fontCache={true}
+                  fontSize={12}
+                >
+                  {item.choice_body[key]}
+                </MathJaxSvg>
+              </View>
+              
               {key === item.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black'  }} />}
             </View>
           ))}
@@ -189,8 +193,10 @@ export default QuestionCard;
 const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
-    margin: 10,
-    marginBottom: 20,
+    // margin: 16,
+    marginBottom: 16,
+    marginLeft: 16,
+    marginRight: 16,
     borderColor: '#E5E7EB',
     borderWidth: 0.5,
   },
@@ -198,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    margin: 10
+    margin: 8
   },
   indexBox: {
     width: 24,
@@ -232,32 +238,29 @@ const styles = StyleSheet.create({
     display: 'flex', 
     position: 'absolute', 
     backgroundColor: 'white',
-    marginLeft: 570, 
+    marginLeft: 510, 
     borderWidth: 1, 
     borderRadius: 8,
-    marginTop: 40,
+    marginTop: 32,
   },
   dropdownItem: {
-    padding: 10,
-    borderBottomWidth: 0.5
+    padding: 8,
   },
   answerBox: {
     backgroundColor: '#f5f5f5',
     borderColor: '#b8b8b8',
     borderWidth: 0.5,
     borderRadius: 8,
-    padding: 10,
-    marginTop: 10,
+    padding: 8,
   },
   optionsGrid: {
-    marginTop: 10,
-    padding: 10
+    padding: 4,
   },
   optionBox: {
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 8,
-    padding: 10,
+    padding: 8,
     marginBottom: 8,
     display: 'flex',
     flexDirection: 'row',

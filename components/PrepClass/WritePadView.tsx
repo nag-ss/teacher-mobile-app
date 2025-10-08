@@ -19,7 +19,7 @@ import { changeQuestionFromImage } from '@/store/classSlice';
 import { useDispatch } from 'react-redux';
 import * as FileSystem from 'expo-file-system';
 // import { SketchCanvas } from '@terrylinla/react-native-sketch-canvas';
-import ExpoDraw from 'expo-draw'
+import ExpoDraw from 'expo-draw';
 import { captureRef } from 'react-native-view-shot';
 
 // import RNFS from 'react-native-fs';
@@ -163,7 +163,7 @@ const WritePadViewModal: React.FC<EditQuestionModalProps> = ({ show, updateText,
             <View>
                 <Text style={styles.title}>{ "Write Here"}</Text>
             </View>
-            <View style={{flexDirection: 'row', marginBottom: 5}}>
+            <View style={{flexDirection: 'row', marginBottom: 16}}>
                 
                 <TouchableOpacity style={styles.editorButton} onPress={() => clearRef.current && clearRef.current()} >
                     <Text>Clear All</Text>
@@ -175,15 +175,15 @@ const WritePadViewModal: React.FC<EditQuestionModalProps> = ({ show, updateText,
                     <Text>Erase</Text>
                 </TouchableOpacity> */}
             </View>
-            <View style={{height: 400, marginBottom: 10}}>
+            <View style={{height: 400, marginBottom: 16}}>
                 <View 
                 ref={viewRef}
   collapsable={false}
-  style={{ height: 400, backgroundColor: '#fff', borderWidth: 1 }} 
+  style={{ height: 400, backgroundColor: '#fff', borderWidth: 1 , borderRadius: 10, borderColor: 'lightgray'}} 
    >
                     <ExpoDraw
                         
-                        containerStyle={{backgroundColor: '#fff', borderWidth: 1, borderColor: 'lightgray'}}
+                        containerStyle={{backgroundColor: '#fff', borderWidth: 1, borderColor: 'lightgray', borderRadius: 10}}
                         rewind={(undo: any) => {eraseRef.current = undo}}
                         clear={(clear: any) => {clearRef.current = clear}}
                         color={strokeColor}
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 24,
-    width: '100%',
+    width: '90%',
     // alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: 16,
   },
   subtitle: {
     fontSize: 14,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between', 
+    justifyContent: 'flex-end', 
   },
   cancelButton: {
     paddingHorizontal:20,
@@ -335,7 +335,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     marginRight: 8,
-    width: 140,
   },
   preview: {
     marginTop: 15,

@@ -12,8 +12,8 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   // const timelimeIntervalHeight = 35
   const timelimeIntervalHeight = 27.5
   const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
-  const [topic, setTopic] = useState("Rationa Number");
-  const [subTopic, setSubTopic] = useState("Rational Introduction");
+  const [topic, setTopic] = useState("");
+  const [subTopic, setSubTopic] = useState("");
   // const isLoad = true;
   const classPrepRef = useRef<any>();
 
@@ -69,7 +69,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
                   <Text style={[styles.classTime, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.time}</Text>
                 </View>
                 
-                <Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize}, height == 1 ? {marginLeft: 5, width: 150} : {}]} numberOfLines={1}>{topic} - {subTopic}</Text>
+                {(topic && subTopic) &&(<Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize}, height == 1 ? {marginLeft: 5, width: 150} : {}]} numberOfLines={1}>{topic} - {subTopic}</Text>)}
                 {/* <Text style={styles.classSubject}>{item.subject}</Text> */}
                 {
                   height > 1 ? <Text style={[styles.classCategory, {fontSize: subjectImageSize[contentHeight].subjectFontSize}]}>{item.category}</Text> :  null

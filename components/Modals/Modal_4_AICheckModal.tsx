@@ -184,11 +184,18 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.label}>Text Input</Text>
-              <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
-                  <FontAwesome name="pencil" size={18} color="white" />
-              </TouchableOpacity>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 4}}>
+              <View>
+                <Text style={styles.label}>Text Input</Text>
+              </View>
+              
+              <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={{marginRight: 8}}>Insert Formula</Text>
+                <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
+                    <FontAwesome name="pencil" size={18} color="white" />
+                </TouchableOpacity>
+              </View>
+              
             </View>
             
             <View style={{borderWidth: 1, borderColor: textInputError ? 'red' : '#D1D5DB', borderRadius: 8 }}>
@@ -233,7 +240,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 20,
+    padding: 24,
     width: '60%',
   },
   header: {
@@ -325,13 +332,13 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    width: 200,
+    width: 196,
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
-    width: 200
+    width: 196
   },
 });

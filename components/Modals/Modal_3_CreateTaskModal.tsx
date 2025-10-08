@@ -38,8 +38,8 @@ const taskOptions = [
     id: 'Classwork',
     title: 'Classwork',
     description: [
-      'Set up and publish classwork checks for students during a live class.',
-      'Define the question and check type to ensure accurate evaluation.',
+      'Publish classwork checks during live class',
+      'Define questions and select check types',
     ],
     svgIcon: 'classUpload',
     action: 'Create',
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20
+    padding: 24
   },
   container: {
     backgroundColor: '#f5f5f5',

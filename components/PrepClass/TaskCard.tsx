@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: 'white',
     padding: 12,
-    marginBottom: 12,
+    marginBottom: 16,
     display: 'flex',
     flexDirection: 'row',
     // justifyContent: 'space-between'
