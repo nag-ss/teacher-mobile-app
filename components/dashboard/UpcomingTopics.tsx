@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     padding: 10,
-    marginBottom: 5,
+    // marginBottom: 5,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'lightgray',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   title: {
     // fontWeight: 'bold',
     fontSize: 14,
-    marginBottom: 8,
+    marginBottom: 4.57,
   },
   subTitle: {
     fontSize: 10,

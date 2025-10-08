@@ -39,9 +39,9 @@ const LiveMonitorHeader = () => {
     <View style={styles.headerContainer}>
         <View style={{flexDirection: 'row'}}>
             <TouchableOpacity onPress={gotoHome} style={{marginTop: 0}}>
-                <Image style={{width: 30, height: 30}} source={require('../../assets/images/ss/left-arrow.png')} />
+                <Image style={{width: 12, height: 12, marginTop: 8, marginRight: 10}} source={require('../../assets/images/ss/left-arrow.png')} />
             </TouchableOpacity>
-            <Text style={{marginTop: 3}}>{((liveClass && liveClass.division_name) ? liveClass.division_name : 'VII - 8 ') + " - " + ((liveClass && liveClass.subject_name) ? liveClass.subject_name : 'Physics')}</Text>
+            <Text style={{fontWeight: '600', fontSize: 18.28}}>{((liveClass && liveClass.division_name) ? liveClass.division_name : 'VII - 8 ') + " - " + ((liveClass && liveClass.subject_name) ? liveClass.subject_name : 'Physics')}</Text>
         </View>
         <View>
             <Text>Students {`${activeStudentsCount} / ${totalStudentsCount}`}</Text>
@@ -54,16 +54,16 @@ const LiveMonitorHeader = () => {
 const styles = StyleSheet.create({
     headerContainer: { 
         backgroundColor: '#fff',
-        borderBottomLeftRadius: 10, 
-        borderBottomRightRadius: 10,
-        marginBottom: 10,
+        borderRadius: 10, 
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingRight: 25,
-        paddingVertical: 10,
+        // paddingRight: 25,
+        padding: 13.7,
         height: 64,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: 13.7
+
      },
 });
 

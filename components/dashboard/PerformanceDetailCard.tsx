@@ -29,7 +29,7 @@ const PerformanceDetailCard = ({image, title, text}: any) => {
       </View>
     </View>
     
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, justifyContent: 'center'}}>
         {/* <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>{title}</Text> */}
         <Text style={styles.subTitle}>{text}</Text>
     </View>
@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     // backgroundColor: 'red',
-    padding: 10,
-    marginBottom: 10,
+    padding: 9.14,
+    marginBottom: 9.14,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: 'lightgray',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     width: 25, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    marginRight: 20, 
+    marginRight: 13.7, 
     // borderWidth: 1, 
     borderRadius: 5, 
     // borderColor: Colors.primaryColor

@@ -43,26 +43,26 @@ const StudentCard = (studentData: any) => {
 
 
     return (
-      <View style={{marginBottom: 13.7}}>
+      <View style={{marginBottom: 9.14}}>
         <TouchableOpacity style={styles.card} onPress={() => showStudentInfo()}>
           <View style={styles.iconView}>
               <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Male.png')} />
           </View>
           <View style={styles.nameContnet}>
               <Text style={styles.name} numberOfLines={1}>{student.student_name}</Text>
-              <Text style={styles.status} numberOfLines={1}>Status: {student.status}</Text>
+              <Text style={[styles.status, {color: student.status == 'active' ? '#21C17C' : ''}]} numberOfLines={1}>Status: {student.status}</Text>
           </View>
           {
               (student.task_type == 'SlipTest') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={Math.round(parseFloat(student.percentage))} size={40} strokeWidth={4} />
+                  <ProgressCircle progress={Math.round(parseFloat(student.percentage.replace("%", "")))} score={Math.round(parseFloat(student.score))} size={40} strokeWidth={4} />
               </View>
               : null
           }
           {
               (student.task_type == 'Classwork') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={(student.score/10)*100} score={(student.score/10)*100} size={40} strokeWidth={4} />
+                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={parseFloat(student.score)} size={40} strokeWidth={4} />
               </View>
               : null
           }
@@ -119,8 +119,9 @@ const styles = StyleSheet.create({
     // marginRight: 9.14,
     marginLeft: 0,
     // flex: 1,
-    minWidth: '32%',
+    // minWidth: '32%',
     // maxWidth: '33%',
+    width: 230,
     alignItems: 'center',
     // elevation: 2,
     borderWidth: 1,
@@ -131,14 +132,15 @@ const styles = StyleSheet.create({
     marginRight: 5
   },
   icon: { fontSize: 24 },
-  name: { fontWeight: '600', marginTop: 8 },
+  name: { fontWeight: '600' },
   status: { fontSize: 12, color: '#555' },
   statusContainer: {
     // padding: 10,
     // backgroundColor: 'yellow'
   },
   nameContnet: {
-    width: 120
+    width: 120,
+    justifyContent: 'center',
   }
 });
 

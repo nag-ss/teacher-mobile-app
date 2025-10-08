@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10
+    marginBottom: 9.14
   },
   title: {
     fontSize: 20,

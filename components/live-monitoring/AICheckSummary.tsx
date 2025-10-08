@@ -52,14 +52,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // width: 140,
     // marginHorizontal: 8,
-    padding: 18.28,
+    padding: 13.7,
     backgroundColor: '#fff',
     borderRadius: 10,
     // alignItems: 'center',
     // elevation: 2,
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: 'lightgray',
-    marginBottom: 16
+    marginBottom: 13.7
   },
   title: { fontSize: 14, fontWeight: '600'},
     
