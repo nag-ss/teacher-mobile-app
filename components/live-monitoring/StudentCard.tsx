@@ -50,19 +50,19 @@ const StudentCard = (studentData: any) => {
           </View>
           <View style={styles.nameContnet}>
               <Text style={styles.name} numberOfLines={1}>{student.student_name}</Text>
-              <Text style={[styles.status, {color: student.status == 'active' ? '#21C17C' : ''}]} numberOfLines={1}>Status: {student.status}</Text>
+              <Text style={[styles.status]} numberOfLines={1}>Status: {student.status}</Text>
           </View>
           {
               (student.task_type == 'SlipTest') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={Math.round(parseFloat(student.percentage.replace("%", "")))} score={Math.round(parseFloat(student.score))} size={40} strokeWidth={4} />
+                  <ProgressCircle progress={Math.round(parseFloat(student.percentage.replace("%", "")))} score={parseFloat(student.score)} size={40} strokeWidth={4} />
               </View>
               : null
           }
           {
               (student.task_type == 'Classwork') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={parseFloat(student.score)} size={40} strokeWidth={4} />
+                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={parseFloat(student.score ? student.score : 0)} size={40} strokeWidth={4} />
               </View>
               : null
           }
@@ -82,7 +82,7 @@ const StudentCard = (studentData: any) => {
               (student.task_type == 'AICheck' && student.match_type == 'approx') ?
               <View style={styles.statusContainer}>
                   {
-                      <ProgressCircle progress={Math.round(parseFloat(student.approx.score))} score={(Math.round(parseFloat(student.approx.score))/10)*100} size={40} strokeWidth={4} color={student.approx.color} />
+                      <ProgressCircle progress={Math.round(parseFloat(student.approx.percentage))} score={Math.round(parseFloat(student.approx.score))} size={40} strokeWidth={4} color={student.approx.color} />
                   }
                   
               </View>

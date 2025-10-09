@@ -68,17 +68,17 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
                                     <Text>{questionData.score}</Text>
                                 </View>
                                 <View>
-                                    {/* {
-                                        questionData.question_type != 'subjective' ? 
+                                    {
+                                        questionData.question_type == 'subjective' ? 
                                         
-                                    } */}
                                     <Text style={{fontWeight: '600'}}>{questionData.marks_awarded + "/"+ questionData.max_marks}</Text> :
-                                        <View>
-                                            {!questionData.is_correct ?
-                                                <Image style={{width: 30, height: 30}} source={require('../../assets/images/ss/close.png')} />
-                                                : <Image style={{width: 30, height: 30}} source={require('../../assets/images/ss/Correct.png')} />
-                                            }
-                                        </View>
+                                    <View>
+                                        {!questionData.is_correct ?
+                                            <Image style={{width: 30, height: 30}} source={require('../../assets/images/ss/close.png')} />
+                                            : <Image style={{width: 30, height: 30}} source={require('../../assets/images/ss/Correct.png')} />
+                                        }
+                                    </View>
+                                    }
                                 </View>
                                 
                             </View>
