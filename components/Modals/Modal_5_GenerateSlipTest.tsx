@@ -14,6 +14,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import {RadioButton} from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 // import {Topics} from '../../data/Topic_SubTopic';
 
 // const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
@@ -156,9 +157,17 @@ const GenerateSlipTestModal = ({
                       labelField="topic"
                       valueField="topic"
                       style={styles.picker}
-                      containerStyle={{borderRadius: 10}}
+                      containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       iconStyle={{width: 30, height:30}}
-                      itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                      renderItem={(item, selected) => {
+                        return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                          <Text>{item.topic}</Text>
+                          <Icon name="check" size={16} color="black" /> 
+                        </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text>{item.topic}</Text>
+                        </View>)
+                      }}
+                      // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
                   
@@ -181,8 +190,16 @@ const GenerateSlipTestModal = ({
                       valueField="sub_topic"
                       style={styles.picker}
                       iconStyle={{width: 30, height:30}}
-                      containerStyle={{borderRadius: 10}}
-                      itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                      containerStyle={{borderRadius: 10, overflow: 'hidden'}}
+                      renderItem={(item, selected) => {
+                        return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                          <Text>{item.sub_topic}</Text>
+                          <Icon name="check" size={16} color="black" /> 
+                        </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text>{item.sub_topic}</Text>
+                        </View>)
+                      }}
+                      // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
                   
@@ -346,7 +363,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   picker: {
-    height: 60,
+    minHeight: 60,
     width: 160,
     padding: 10,
   },
