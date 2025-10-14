@@ -487,14 +487,14 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    width: 230
+    width: 232
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
-    width: 230
+    width: 232
   },
   marksSection: {
     flexDirection: 'row',

@@ -5,6 +5,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from 'react-na
 import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
 import DropDownPicker from 'react-native-dropdown-picker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 // import { useDispatch, useSelector } from 'react-redux';
 // import {Topics} from '../../data/Topic_SubTopic';
 
@@ -36,7 +37,7 @@ export default function ClassSummaryPopModal({
   parentProps,
   topicsList,
   onClose, 
-  setTopicSubTopicAndMoveToNext
+  setTopicSubTopicAndMoveToNext,
 } : ClassSummaryPopModalProps) {
 
   const [subTopics, setSubTopics] = useState([]);
@@ -50,6 +51,17 @@ export default function ClassSummaryPopModal({
     setSubTopics(tp.sub_topic)
     setTopic(tp)
   }
+
+  //  TODO Fix this
+  useEffect(() => {
+  // This code runs when any of these change:
+  // propA, propB, or propC
+    console.log("I got called");
+    console.log(topic)
+    console.log(subTopic)
+    setTopic(topic)
+    setSubTopic(subTopic)
+  }, [topic, subTopic]);  
   
   return (
     <Modal
@@ -131,9 +143,17 @@ export default function ClassSummaryPopModal({
                       onChange={(tp) => setSubTopicAndUpdateTopic(tp)}
                       labelField="topic"
                       valueField="topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       iconStyle={{width: 30, height:30}}
-                      containerStyle={{borderRadius: 10}}
+                      containerStyle={{borderRadius: 10, overflow: 'hidden'}}
+                      renderItem={(item, selected) => {
+                        return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                          <Text>{item.topic}</Text>
+                          <Icon name="check" size={16} color="black" /> 
+                        </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text>{item.topic}</Text>
+                        </View>)
+                      }}
                       // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
@@ -156,9 +176,17 @@ export default function ClassSummaryPopModal({
                       onChange={(item) => setSubTopic(item)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       iconStyle={{width: 30, height:30}}
-                      containerStyle={{borderRadius: 10}}
+                      containerStyle={{borderRadius: 10, overflow: 'hidden'}}
+                      renderItem={(item, selected) => {
+                        return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                          <Text>{item.sub_topic}</Text>
+                          <Icon name="check" size={16} color="black" /> 
+                        </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text>{item.sub_topic}</Text>
+                        </View>)
+                      }}
                       // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
@@ -276,7 +304,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   picker: {
-    height: 60,
+    minHeight: 60,
     width: 180,
     padding: 10,
   },

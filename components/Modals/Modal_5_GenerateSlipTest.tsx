@@ -14,6 +14,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import {RadioButton} from 'react-native-radio-buttons-group';
 import { Dropdown } from 'react-native-element-dropdown';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 // import {Topics} from '../../data/Topic_SubTopic';
 
 // const topicsList = [{label: "Integer", value: "Integer"}, {label:"Fractions and Decimals", value: "Fractions and Decimals"}]
@@ -78,13 +79,21 @@ const GenerateSlipTestModal = ({
     <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <ScrollView contentContainerStyle={styles.contentContainer}>
 
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
-            </TouchableOpacity>
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+              <View>
+                <Text style={styles.modalTitle}>Generate Slip Test</Text>
+              </View>
+              <View>
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                  <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
+                </TouchableOpacity>
+              </View>
+              
+              
+            </View>
+            
 
-            <Text style={styles.modalTitle}>Generate Slip Test</Text>
 
             {/* Class Details */}
             <View style={styles.section}>
@@ -155,10 +164,18 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => setSubTopicsAndUpdateTopic(item)}
                       labelField="topic"
                       valueField="topic"
-                      style={styles.picker}
-                      containerStyle={{borderRadius: 10}}
+                      style={{height: 60, width: 180, padding: 10}}
+                      containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       iconStyle={{width: 30, height:30}}
-                      itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                      renderItem={(item, selected) => {
+                        return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                          <Text>{item.topic}</Text>
+                          <Icon name="check" size={16} color="black" /> 
+                        </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text>{item.topic}</Text>
+                        </View>)
+                      }}
+                      // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
                   
@@ -179,10 +196,18 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => updateSubTopic(item.sub_topic)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       iconStyle={{width: 30, height:30}}
-                      containerStyle={{borderRadius: 10}}
-                      itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                      containerStyle={{borderRadius: 10, overflow: 'hidden'}}
+                      renderItem={(item, selected) => {
+                        return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                          <Text>{item.sub_topic}</Text>
+                          <Icon name="check" size={16} color="black" /> 
+                        </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text>{item.sub_topic}</Text>
+                        </View>)
+                      }}
+                      // itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
                     />
                   </View>
                   
@@ -224,7 +249,7 @@ const GenerateSlipTestModal = ({
                 <Text style={styles.nextText}>Next</Text>
               </TouchableOpacity>
             </View>
-          </ScrollView>
+          
         </View>
       </View>
     </Modal>
@@ -251,9 +276,6 @@ const styles = StyleSheet.create({
     // paddingBottom: 20,
   },
   closeButton: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
     zIndex: 10,
   },
   closeIcon:{
@@ -278,7 +300,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 16,
   },
   section: {
     marginBottom: 16,
@@ -346,7 +367,7 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   picker: {
-    height: 60,
+    minHeight: 60,
     width: 160,
     padding: 10,
   },

@@ -184,7 +184,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 4}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 4, alignItems: 'baseline'}}>
               <View>
                 <Text style={styles.label}>Text Input</Text>
               </View>

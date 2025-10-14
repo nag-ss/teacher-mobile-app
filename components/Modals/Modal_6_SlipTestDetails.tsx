@@ -14,6 +14,7 @@ import { Picker } from '@react-native-picker/picker';
 import Slider, {MarkerProps, SliderProps} from '@react-native-community/slider';
 import InputSpinner from "react-native-input-spinner";
 import { Dropdown } from 'react-native-element-dropdown';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const squareThumb = require('../../assets/images/ss/Sliderbutton.png');
 
@@ -175,8 +176,16 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                         labelField="label"
                         valueField="value"
                         style={styles.picker}
-                        containerStyle={{borderRadius: 10}}
+                        containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                         itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                        renderItem={(item, selected) => {
+                          return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                            <Text>{item.value}</Text>
+                            <Icon name="check" size={16} color="black" /> 
+                          </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                            <Text>{item.value}</Text>
+                          </View>)
+                        }}
                       />
                   </View>
                 </View>
@@ -205,8 +214,16 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                         labelField="label"
                         valueField="value"
                         style={styles.picker}
-                        containerStyle={{borderRadius: 10}}
+                        containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                         itemContainerStyle={{borderColor: '#f5f5f5', borderBottomWidth: 1}}
+                        renderItem={(item, selected) => {
+                          return selected ? (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                            <Text>{item.value}</Text>
+                            <Icon name="check" size={16} color="black" /> 
+                          </View>) : (<View style={[styles.picker, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}>
+                            <Text>{item.value}</Text>
+                          </View>)
+                        }}
                       />
                   </View>
                 </View>
