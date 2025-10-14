@@ -22,7 +22,8 @@ import {
   getClassTopicSubTopics,
   setClassTopicSubTopic,
   saveSlipTestQuiz,
-  cancelSlipTestQuiz
+  cancelSlipTestQuiz,
+  getLiveClass
 } from '@/store/classSlice';
 import DeleteQuestionModal from '@/components/PrepClass/DeleteQuestionModal';
 import LoadingSlipTestModal from '@/components/PrepClass/LoadingSlipTestModal';
@@ -104,6 +105,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
       class_schedule_id: selectedClass.class_schedule_id,
       subject_topic_id: subTopic.id
     }))
+    await dispatch(getLiveClass())
     setTopic(topic.topic)
     setSubTopic(subTopic.sub_topic)
     setShowModal1SummaryModal(false)

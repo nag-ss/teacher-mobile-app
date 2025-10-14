@@ -38,8 +38,8 @@ const LiveMonitorHeader = () => {
   return (
     <View style={styles.headerContainer}>
         <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity onPress={gotoHome} style={{marginTop: 0}}>
-                <Image style={{width: 12, height: 12, marginTop: 8, marginRight: 10}} source={require('../../assets/images/ss/left-arrow.png')} />
+            <TouchableOpacity onPress={gotoHome} style={{marginTop: 8}}>
+                <Image style={{width: 12, height: 12, marginTop: 0, marginRight: 10}} source={require('../../assets/images/ss/left-arrow.png')} />
             </TouchableOpacity>
             <Text style={{fontWeight: '600', fontSize: 18.28}}>{((liveClass && liveClass.division_name) ? liveClass.division_name : 'VII - 8 ') + " - " + ((liveClass && liveClass.subject_name) ? liveClass.subject_name : 'Physics')}</Text>
         </View>

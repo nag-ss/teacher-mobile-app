@@ -144,6 +144,7 @@ const classSlice = createSlice({
         builder
         .addCase(getLiveClass.pending, (state) => {
             state.loading = true;
+            state.liveClass = {}
         })
         .addCase(getLiveClass.fulfilled, (state, action) => {
             console.log("action.payload live class")

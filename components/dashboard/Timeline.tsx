@@ -63,6 +63,7 @@ import { useFocusEffect } from '@react-navigation/native';
 // const timelimeIntervalHeight = 35
 // const timelimeEmptyHeight = 25
 const timelimeIntervalHeight = 27.5
+// const timelimeIntervalHeight = 0.458
 const timelimeEmptyHeight = 17.5
 const TimelineWithClassDetails = () => {
     // const [noClass, setNoClass] = useState(0)

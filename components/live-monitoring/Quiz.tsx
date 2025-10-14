@@ -20,7 +20,10 @@ const Quiz = ({task, refreshTasks}: any) => {
     const {liveClass} = useSelector((state: any) => state.classes);
 
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
+    const [quizeStatusCheck, setQuizeStatusCheck] = useState('');
 
+    // console.log("Slip Test Slip Test Slip Test Slip Test")
+    // console.log(task)
     const getAttendanceData = async (taskId: number) => {
         const reqObj: any = {classId, taskId}
         dispatch(getSlipTestResults(reqObj))
@@ -44,8 +47,8 @@ const Quiz = ({task, refreshTasks}: any) => {
     }, [selectedTaskSection])
 
     const publishQuizFun = async () => {
-      console.log("task")
-      console.log(task)
+      // console.log("task")
+      // console.log(task)
       // const now = new Date();
       // const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
       const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(5, 'minutes');
@@ -64,6 +67,43 @@ const Quiz = ({task, refreshTasks}: any) => {
       setShowModal4AICheckModal(false)
 
     }
+
+    useEffect(() => {
+      if(task.published_quiz_id) {
+        // console.log(JSON.stringify(task.quiz_details.start_date))
+        // console.log(JSON.stringify(task.quiz_details.duration))
+        const durationMinutes = task.quiz_details.duration;
+        const startDateString = task.quiz_details.start_date;
+
+        // Parse start date
+        const startDate: any = new Date(startDateString.replace(' ', 'T'));
+
+        // Calculate end time
+        const endDate: any = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+
+        // Function to get remaining time
+        function getTimeLeft() {
+          const now: any = new Date();
+          const timeLeftMS: any = endDate - now;
+
+          if (timeLeftMS <= 0) {
+            clearInterval(intervarid);
+            return 'Time up!';
+              
+          }
+
+          const minutes = Math.floor((timeLeftMS / 1000 / 60) % 60);
+          const seconds = Math.floor((timeLeftMS / 1000) % 60);
+
+          // return `${minutes} min ${seconds} sec left`;
+          return `Time Left: ${minutes} min `;
+        }
+
+        const intervarid = setInterval(() => {
+          setQuizeStatusCheck(getTimeLeft());
+        }, 1000);
+      }
+    }, [task])
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
@@ -78,7 +118,12 @@ const Quiz = ({task, refreshTasks}: any) => {
             </View>
             <View style={styles.taskBodySection}>
               <Text style={styles.title}>{task.title}</Text>
-              <Text style={styles.subTitle}>{'Time Left: 12:45 Mins'}</Text>
+              {
+                task.published_quiz_id ?
+                <Text style={styles.subTitle}>{quizeStatusCheck}</Text> :
+                <Text style={styles.subTitle}>{''}</Text>
+              }
+              
             </View>
             {
               !task.published_quiz_id ?
@@ -189,7 +234,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 20,
+    padding: 18.28,
     width: '50%',
   },
   footer: {
@@ -203,12 +248,16 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
+    width: '48%',
+    alignItems: 'center'
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
+    width: '48%',
+    alignItems: 'center'
   },
   iconImg: {
 

@@ -62,9 +62,10 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
     setIsReplaceQuestionModal(true)
   }
 
-  const confirmReplace = async() => {
-    console.log("selectedQuestionNumber", selectedQuestionNumber)
-    let replaceResponse = await dispatch(replaceQuestion({question_id: selectedQuestionNumber, additional_context: "I want this question changed"}))
+  const confirmReplace = async(newQuestionId: number = 0) => {
+    console.log("selectedQuestionNumber new", newQuestionId)
+    const questionId = newQuestionId ? newQuestionId : selectedQuestionNumber
+    let replaceResponse = await dispatch(replaceQuestion({question_id: questionId, additional_context: "I want this question changed"}))
     console.log("replaceResponse.payload")
     console.log(replaceResponse.payload)
     setReplacedQuestion(replaceResponse.payload)

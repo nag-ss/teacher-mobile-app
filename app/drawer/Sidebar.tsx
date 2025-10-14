@@ -38,22 +38,24 @@ const Sidebar = ({navigation}: any) =>  {
 
   return (
     <Animated.View style={[styles.sidebar, { width: widthAnim }]}>
-      <TouchableOpacity style={styles.header} onPress={toggleSidebar}>
+      <TouchableOpacity style={[styles.header, expanded ? {width: 200} : {justifyContent: 'center'}]} onPress={toggleSidebar}>
         {/* <MaterialCommunityIcons name="menu" size={28} color="#222" /> */}
-        {   expanded &&
-            <View style={styles.logoRow}>
-            <Image  style={[styles.iconStyle, {width: 48, height: 48}]} source={require('../../assets/images/ss/Logo_F2.png')} />
+        
+            {/* <View style={[styles.logoRow, {backgroundColor: 'red'}]}> */}
+            <Image  style={[styles.iconStyle, {width: 40, height: 40}]} source={require('../../assets/images/ss/Logo_F2.png')} />
+            {   expanded &&
             <Text style={styles.brand}>Super Slate</Text>
-          </View>
-        }
-        <Image  style={[styles.iconStyle, styles.menuIcon, {width: 40, height: 40}]} source={require('../../assets/images/sidebar/state-layer.png')} />
+            }
+          {/* </View> */}
+        
+        {/* <Image  style={[styles.iconStyle, styles.menuIcon, {width: 40, height: 40}]} source={require('../../assets/images/ss/Logo_F2.png')} /> */}
       </TouchableOpacity>
       
       {/* {expanded && <Text style={styles.caption}>DASHBOARD</Text>} */}
       {menuItems.map((item: any, idx) => (
         <TouchableOpacity
           key={item.label}
-          style={[styles.menuItem, pathname == '/'+item.label ? styles.selectedMenu : {}, expanded ? {width: 200} : {justifyContent: 'center'}]}
+          style={[styles.menuItem, (pathname == '/'+item.label || (pathname == '/live-monitoring' && item.label == 'Home')) ? styles.selectedMenu : {}, expanded ? {width: 200} : {justifyContent: 'center'}]}
           onPress={() => navigation.navigate(item.route)}
         >
           {/* <MaterialCommunityIcons name={item.icon} size={24} color="#222" /> */}
@@ -67,10 +69,10 @@ const Sidebar = ({navigation}: any) =>  {
 export default Sidebar
 const styles = StyleSheet.create({
   sidebar: {
-    position: 'absolute',
-    left: 10,
-    top: 0,
-    bottom: 0,
+    // position: 'absolute',
+    // left: 10,
+    // top: 0,
+    // bottom: 0,
     backgroundColor: '#fff',
     // backgroundColor: 'red',
     zIndex: 100,
@@ -81,7 +83,8 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingHorizontal: 13.7,
     marginTop: 13.7,
-    borderRadius: 10
+    borderRadius: 10,
+    marginLeft: 8.28
   },
   header: { 
     // marginTop: 1, 
@@ -95,7 +98,12 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   logoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 13, marginLeft: 0 },
-  brand: { marginLeft: 10, fontWeight: 'bold', fontSize: 18 },
+  brand: { 
+    marginLeft: 10, 
+    fontWeight: 'bold', 
+    fontSize: 18,
+    marginTop: 6 
+  },
   caption: { marginLeft: 14, color: '#888', fontSize: 12, marginBottom: 13 },
   menuItem: { 
     flexDirection: 'row', 

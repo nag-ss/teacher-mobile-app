@@ -95,13 +95,16 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
       {selectedQuestionData &&
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-            <View>
+            <View style={{marginBottom: 18.28}}>
                 <Text style={styles.title}>{ "Question"}</Text>
             </View>
             
             <View style={styles.inputGroup}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={styles.label}>*Title</Text>
+                    <View style={{justifyContent: 'center'}}>
+                      <Text style={styles.label}>*Title</Text>
+                    </View>
+                    
                     <View style={{flexDirection: 'row'}}>
                         <View style={styles.markBox}>
                             <Text style={styles.markText}>Marks - 0{selectedQuestionData.marks || 5}</Text>
@@ -153,20 +156,17 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
                         value={selectedQuestionData?.choice_body[key]}
                         onChangeText={(v) => updateAnswerOption(key, v)}
                         placeholder="Type Here:"
-                        // style={styles.textArea}
+                        // style={{width: 500}}
                     />
-                    {/* <MathJaxSvg 
-                    fontCache={true}
-                    fontSize={12}
-                    >
-                    {selectedQuestion?.choice_body[key]}
-                    </MathJaxSvg> */}
+                    
                     
                 </TouchableOpacity>
-                <View style={{paddingVertical: 5}}>
+                <View style={{paddingVertical: 5, flexDirection: 'row', marginBottom: 13.7, height: 35, alignItems: 'center'}}>
+                  <Text style={{marginRight: 10}}>Preview:</Text>
                     <MathJaxSvg 
                     fontCache={true}
                     fontSize={14}
+                    style={{}}
                     >
                     {selectedQuestionData?.choice_body[key]}
                     </MathJaxSvg>
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     // width: '50%',
-    alignItems: 'center',
+    // alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between', 
+    // justifyContent: 'space-between', 
+    justifyContent: 'flex-end'
   },
   cancelButton: {
     paddingHorizontal:20,
@@ -274,15 +275,16 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    padding: 10,
+    // padding: 10,
     fontSize: 14,
     height: 150,
     textAlignVertical: 'top',
-    margin: 10
+    // margin: 10
+    marginVertical: 13.7
   },
   optionsGrid: {
     marginTop: 10,
-    padding: 10
+    // padding: 10
   },
   optionBox: {
     borderWidth: 1,
@@ -297,10 +299,11 @@ const styles = StyleSheet.create({
   markBox: {
     borderColor: '#21c17c',
     borderWidth: 0.6,
-    paddingHorizontal: 4,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 10,
     marginRight: 6,
+    justifyContent: 'center'
   },
   markText: {
     fontSize: 9

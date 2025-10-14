@@ -11,6 +11,7 @@ import { Colors } from '@/constants/Colors';
 const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   // const timelimeIntervalHeight = 35
   const timelimeIntervalHeight = 27.5
+  // const timelimeIntervalHeight = 0.458
   const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
   const [topic, setTopic] = useState("");
   const [subTopic, setSubTopic] = useState("");

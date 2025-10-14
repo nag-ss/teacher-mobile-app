@@ -15,7 +15,7 @@ interface ReplaceQuestionModalProps {
   show: boolean;
   resourceType: string;
   onCancel: () => void;
-  onReplace: () => void;
+  onReplace: (id: number) => void;
 }
 
 const ReplaceQuestionModal: React.FC<ReplaceQuestionModalProps> = ({ show, resourceType, onCancel, onReplace }) => {
@@ -36,7 +36,7 @@ const ReplaceQuestionModal: React.FC<ReplaceQuestionModalProps> = ({ show, resou
             <TouchableOpacity onPress={onCancel} style={[styles.cancelButton, {opacity: loading ? 0.5 : 1 }]} disabled={loading}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onReplace} style={[styles.deleteButton, {opacity: loading ? 0.5 : 1 }]} disabled={loading}>
+            <TouchableOpacity onPress={() => onReplace(0)} style={[styles.deleteButton, {opacity: loading ? 0.5 : 1 }]} disabled={loading}>
               <Text style={styles.deleteButtonText}>Replace</Text>
             </TouchableOpacity>
           </View>
@@ -89,14 +89,15 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cancelButton: {
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
-    marginRight: 8,
-    width: 120,
+    // marginRight: 4,
+    width: '48%',
+    alignItems: 'center'
   },
   cancelButtonText: {
     color: '#333',
@@ -104,11 +105,12 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   deleteButton: {
-    width: 120,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: '#21c17c',
+    width: '48%',
+    alignItems: 'center'
   },
   deleteButtonText: {
     fontSize: 14,

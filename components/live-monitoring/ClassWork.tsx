@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 20,
+    padding: 18.28,
     width: '50%',
   },
   footer: {
@@ -194,12 +194,18 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
+    // width: 173.7
+    width: '48%',
+    alignItems: 'center'
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
+    // width: 173.7
+    width: '48%',
+    alignItems: 'center'
   },
   iconImg: {
 

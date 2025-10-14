@@ -18,7 +18,7 @@ export default function App() {
   return (
         <View style={styles.container}>
         <Sidebar navigation={navigation} />
-        <View style={styles.content}>
+        <View style={[styles.content]}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Classes" component={Classes} />
@@ -35,5 +35,5 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: 'row' },
-  content: { flex: 1, marginLeft: 60 }, // Adjust if sidebar width changes
+  content: { flex: 1 }, // Adjust if sidebar width changes
 });

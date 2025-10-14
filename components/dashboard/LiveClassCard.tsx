@@ -62,7 +62,7 @@ const LiveSessionCard = () => {
   }
   const getDetails = async () => {
     let liveClassDataRes = await dispatch(getLiveClass())
-    console.log("liveClassDataRes.payload")
+    console.log("liveClassDataRes.payload ------------------")
     console.log(liveClassDataRes.payload)
     if(!liveClassDataRes.payload) {
       
@@ -93,6 +93,15 @@ const LiveSessionCard = () => {
       dispatch(logout())
     }
   }, [unAuthorised])
+
+  useEffect(() => {
+    console.log("liveClass ********************************************")
+    console.log(liveClass)
+    if(liveClass.class_schedule_id) {
+      setNextClass(liveClass)
+    } 
+  }, [liveClass])
+  
 
   const getClassFromSchedule = async () => {
     console.log("next call")
@@ -152,24 +161,26 @@ const LiveSessionCard = () => {
           <Image style={{width: 145, height: 145}} source={require('../../assets/images/ss/subject.png')} />
         : 
         !nextClass.class_schedule_id ? 
-        <View style={{marginLeft: 20}}><Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/no_class.png')} /></View>
-        : <View style={{marginLeft: 20}}>
-          <Image style={{width: 50, height: 20}} source={require('../../assets/images/ss/LiveButton.png')} />
-          <Image style={{width: 145, height: 145}} source={require('../../assets/images/ss/subject.png')} />
+        <View style={{marginLeft: 20}}>
+          <Image style={{width: 120, height: 120}} source={require('../../assets/images/ss/no_class.png')} />
+        </View>
+        : <View style={{marginLeft: -13.7, backgroundColor: ''}}>
+          <Image style={{width: 50, height: 20, marginLeft: 13.7, marginTop: 13.7}} source={require('../../assets/images/ss/LiveButton.png')} />
+          <Image style={{width: 200, height: 200, marginTop:-24}} source={require('../../assets/images/ss/subject.png')} />
           </View>
         }
         
         {
         nextClass.class_schedule_id ?
-          <View style={styles.textContainer}>
+        <View style={styles.textContainer}>
           <Text style={styles.time}>
             {nextClass.start_time ? (moment(nextClass.start_time, 'HH:mm:ss').format('HH:mm a')) : moment().format('HH:mm a')} - 
             {nextClass.end_time ? moment(nextClass.end_time, 'HH:mm:ss').format('HH:mm a') : moment().add(30, 'minutes').format('HH:mm a')}
           </Text>
-          <View>
+          <View style={{width:200}}>
             <Text style={styles.subject} numberOfLines={1}>
               {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].topic : ''} -
-              {/* {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].sub_topic[0] : ''} */}
+              {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].sub_topic[0] : ''}
               {/* { 'Topic - Sub Topic'} */}
             </Text>
             <Text style={styles.category}>{nextClass.subject_name}</Text>
@@ -235,7 +246,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   textContainer: {
-    marginLeft: 25,
+    // marginLeft: 25,
     // backgroundColor: 'red',
     justifyContent: 'space-between',
     // width: '100%'
@@ -243,11 +254,13 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 9.12,
     color: '#555',
+    marginBottom: 18.28
   },
   subject: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#000',
+    marginBottom: 13.7
   },
   category: {
     fontSize: 14,
@@ -256,8 +269,8 @@ const styles = StyleSheet.create({
   joinButton: {
     backgroundColor: '#fff',
     borderRadius: 8,
-    marginTop: 15,
-    width: 170,
+    marginTop: 18.28,
+    width: 200,
     justifyContent: 'center',
     alignItems: 'center',
     height: 40

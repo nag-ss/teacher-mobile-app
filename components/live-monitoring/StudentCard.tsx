@@ -43,7 +43,7 @@ const StudentCard = (studentData: any) => {
 
 
     return (
-      <View style={{marginBottom: 9.14}}>
+      <View style={{marginBottom: 9.14, marginRight: 5.49}}>
         <TouchableOpacity style={styles.card} onPress={() => showStudentInfo()}>
           <View style={styles.iconView}>
               <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Male.png')} />

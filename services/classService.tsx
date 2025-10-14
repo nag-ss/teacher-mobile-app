@@ -193,6 +193,8 @@ const deleteQuestion = async(questionId: number, userToken: string) => {
 
 const replaceQuestion = async(question: any, userToken: string) => {
   const reqUrl = REPLACE_QUESTION;
+  console.log("replace question req obj")
+  console.log(question)
   return await apiRequest(reqUrl, 'POST', question, userToken);
 }
 

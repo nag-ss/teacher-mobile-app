@@ -49,6 +49,7 @@ const ReplaceEditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, orig
     const onReplace = async () => {
         await dispatch(restoreQuestionId(originalQuestionId))
         console.log("original question id ......", originalQuestionId)
+        console.log("selected question id ......", selectedQuestion.question_id)
         replaceAgain(selectedQuestion.question_id)
     }
   return (
@@ -56,7 +57,7 @@ const ReplaceEditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, orig
       {selectedQuestion &&
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-            <View>
+            <View style={{marginBottom: 18.28}}>
                 <Text style={styles.title}>{ "New Question"}</Text>
             </View>
             
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     // width: '50%',
-    alignItems: 'center',
+    // alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between', 
+    justifyContent: 'flex-end', 
   },
   cancelButton: {
     paddingHorizontal:20,
@@ -216,11 +217,11 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    padding: 10,
+    // padding: 10,
     fontSize: 14,
-    height: 200,
+    // height: 200,
     textAlignVertical: 'top',
-    margin: 10
+    marginVertical: 13.7
   },
   optionsGrid: {
     marginTop: 10,
@@ -239,10 +240,11 @@ const styles = StyleSheet.create({
   markBox: {
     borderColor: '#21c17c',
     borderWidth: 0.6,
-    paddingHorizontal: 4,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 10,
     marginRight: 6,
+    justifyContent: 'center'
   },
   markText: {
     fontSize: 9
