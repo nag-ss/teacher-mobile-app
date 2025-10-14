@@ -79,13 +79,21 @@ const GenerateSlipTestModal = ({
     <Modal visible={visible} animationType="fade" transparent>
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-          <ScrollView contentContainerStyle={styles.contentContainer}>
 
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
-            </TouchableOpacity>
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+              <View>
+                <Text style={styles.modalTitle}>Generate Slip Test</Text>
+              </View>
+              <View>
+                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                  <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
+                </TouchableOpacity>
+              </View>
+              
+              
+            </View>
+            
 
-            <Text style={styles.modalTitle}>Generate Slip Test</Text>
 
             {/* Class Details */}
             <View style={styles.section}>
@@ -156,7 +164,7 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => setSubTopicsAndUpdateTopic(item)}
                       labelField="topic"
                       valueField="topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       iconStyle={{width: 30, height:30}}
                       renderItem={(item, selected) => {
@@ -188,7 +196,7 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => updateSubTopic(item.sub_topic)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {
@@ -241,7 +249,7 @@ const GenerateSlipTestModal = ({
                 <Text style={styles.nextText}>Next</Text>
               </TouchableOpacity>
             </View>
-          </ScrollView>
+          
         </View>
       </View>
     </Modal>
@@ -268,9 +276,6 @@ const styles = StyleSheet.create({
     // paddingBottom: 20,
   },
   closeButton: {
-    position: 'absolute',
-    right: 10,
-    top: 10,
     zIndex: 10,
   },
   closeIcon:{
@@ -295,7 +300,6 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 16,
   },
   section: {
     marginBottom: 16,

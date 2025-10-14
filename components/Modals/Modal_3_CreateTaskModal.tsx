@@ -23,6 +23,7 @@ const taskOptions = [
     ],
     svgIcon: 'aiCheck',
     action: 'Create',
+    imagePath: require('../../assets/images/modal/Ai_Check.png')
   },
   {
     id: 'SlipTest',
@@ -33,6 +34,7 @@ const taskOptions = [
     ],
     svgIcon: 'autoTest',
     action: 'Create',
+    imagePath: require('../../assets/images/modal/Auto_Test.png')
   },
   {
     id: 'Classwork',
@@ -43,6 +45,7 @@ const taskOptions = [
     ],
     svgIcon: 'classUpload',
     action: 'Create',
+    imagePath: require('../../assets/images/modal/Upload.png')
   }
 ];
 

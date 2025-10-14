@@ -9,11 +9,12 @@ const TaskCard = ({idx, task, createTask}: {idx: number; task: any; createTask: 
     <View key={idx} style={styles.taskCard}>
       <View style={styles.taskInfo}>
         <View style={{justifyContent: 'center'}}>
-          <SvgLoader
+          {/* <SvgLoader
             svgFilePath={task.svgIcon} // Replace with your own logo
             style={styles.taskLogo}
             resizeMode="contain"
-          />
+          /> */}
+          <Image source={task.imagePath} style={styles.taskLogo}/>
         </View>
         
         <View style={styles.taskText}>
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
   taskImage: {
     width: 120,
     height: 90,
-    borderRadius: 8,
+    // borderRadius: 8,
     marginRight: 12,
   },
   taskLogo: {
@@ -84,7 +85,6 @@ const styles = StyleSheet.create({
   },
   taskDescription: {
     fontSize: 12,
-    margin: 2,
     color: '#4B5563',
   },
   actionButton: {

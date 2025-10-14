@@ -37,7 +37,7 @@ export default function ClassSummaryPopModal({
   parentProps,
   topicsList,
   onClose, 
-  setTopicSubTopicAndMoveToNext
+  setTopicSubTopicAndMoveToNext,
 } : ClassSummaryPopModalProps) {
 
   const [subTopics, setSubTopics] = useState([]);
@@ -51,6 +51,17 @@ export default function ClassSummaryPopModal({
     setSubTopics(tp.sub_topic)
     setTopic(tp)
   }
+
+  //  TODO Fix this
+  useEffect(() => {
+  // This code runs when any of these change:
+  // propA, propB, or propC
+    console.log("I got called");
+    console.log(topic)
+    console.log(subTopic)
+    setTopic(topic)
+    setSubTopic(subTopic)
+  }, [topic, subTopic]);  
   
   return (
     <Modal
@@ -132,7 +143,7 @@ export default function ClassSummaryPopModal({
                       onChange={(tp) => setSubTopicAndUpdateTopic(tp)}
                       labelField="topic"
                       valueField="topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {
@@ -165,7 +176,7 @@ export default function ClassSummaryPopModal({
                       onChange={(item) => setSubTopic(item)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={styles.picker}
+                      style={{height: 60, width: 180, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {

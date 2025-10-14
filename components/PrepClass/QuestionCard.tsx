@@ -91,7 +91,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
             {item.body.Question}
           </MathJaxSvg>
           <View style={styles.markBox}>
-            <Text style={styles.markText}>Marks - 0{item.marks || 5}</Text>
+            <Text style={styles.markText}>Marks - {item.marks < 10 ? "0" + item.marks : item.marks}</Text>
           </View>
           { !(task?.published_quiz_id) && (<TouchableOpacity style={{backgroundColor: '#F5F5F5', borderRadius: 999}} onPress={() => setActiveDropdown(activeDropdown === index ? -1 : index)}>
             <Feather name="more-vertical" size={20} color="#4B5563" />
@@ -149,7 +149,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
 
       {/* Objective Options */}
       {item.is_objective && (
-        <View style={styles.optionsGrid}>
+        <View style={{padding: 4}}>
           {Object.keys(item.choice_body).map((key:string) => (
             <View
               key={key}
@@ -160,7 +160,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
                 },
               ]}
             >
-              <View style={{display: 'flex', flexDirection: 'row'}}>
+              <View style={{display: 'flex', flexDirection: 'row', maxWidth: '97%'}}>
                 <Text style={{fontSize: 12, marginRight: 8}}>{key}&#41;</Text>
                 <MathJaxSvg 
                   fontCache={true}
@@ -170,7 +170,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
                 </MathJaxSvg>
               </View>
               
-              {key === item.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black'  }} />}
+              {key === item.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black', maxHeight: 19 }} />}
             </View>
           ))}
         </View>
@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     // margin: 16,
+    padding: 4,
     marginBottom: 16,
     marginLeft: 16,
     marginRight: 16,
@@ -221,6 +222,7 @@ const styles = StyleSheet.create({
   questionText: {
     flex: 1,
     marginLeft: 10,
+    paddingRight: 10
   },
   markBox: {
     borderColor: '#888888',
@@ -253,17 +255,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
   },
-  optionsGrid: {
-    padding: 4,
-  },
   optionBox: {
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 8,
     padding: 8,
-    marginBottom: 8,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   }
 });
