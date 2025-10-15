@@ -160,10 +160,10 @@ const WritePadViewModal: React.FC<EditQuestionModalProps> = ({ show, updateText,
       { 
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-            <View>
+            <View style={{marginBottom: 13.7}}>
                 <Text style={styles.title}>{ "Write Here"}</Text>
             </View>
-            <View style={{flexDirection: 'row', marginBottom: 16}}>
+            <View style={{flexDirection: 'row', marginBottom: 13.7}}>
                 
                 <TouchableOpacity style={styles.editorButton} onPress={() => clearRef.current && clearRef.current()} >
                     <Text>Clear All</Text>
@@ -175,7 +175,7 @@ const WritePadViewModal: React.FC<EditQuestionModalProps> = ({ show, updateText,
                     <Text>Erase</Text>
                 </TouchableOpacity> */}
             </View>
-            <View style={{height: 400, marginBottom: 16}}>
+            <View style={{height: 400, marginBottom: 13.7}}>
                 <View 
                 ref={viewRef}
   collapsable={false}
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 24,
+    padding: 18.28,
     width: '90%',
     // alignItems: 'center',
     shadowColor: '#000',
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   subtitle: {
     fontSize: 14,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
-    marginRight: 8,
+    marginRight: 9.17,
   },
   preview: {
     marginTop: 15,

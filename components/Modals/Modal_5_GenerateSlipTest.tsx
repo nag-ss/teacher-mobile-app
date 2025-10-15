@@ -80,7 +80,7 @@ const GenerateSlipTestModal = ({
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
 
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+            <View style={{display: 'flex', marginBottom: 13.7, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
               <View>
                 <Text style={styles.modalTitle}>Generate Slip Test</Text>
               </View>
@@ -124,15 +124,15 @@ const GenerateSlipTestModal = ({
 
             <View  style={styles.optionBox}>
               <View style={styles.optionBoxMainContent}>
-                <View>
+                <View style={{marginBottom: 9.17}}>
                   <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
                     <View style={{display:'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
-                      <View style={styles.imageBox}>
+                      {/* <View style={styles.imageBox}>
                         <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
-                      </View>
-                      <View style={{marginLeft: 10}}>
-                        <Text style={styles.optionTitle}>Topic</Text>
-                        <Text style={styles.optionDescription}>
+                      </View> */}
+                      <View style={{flexDirection: 'row', }}>
+                        <Text style={styles.optionTitle}>Topic - </Text>
+                        <Text style={[styles.optionDescription, {marginTop: 4}]}>
                           Choose a topic and subtopic to auto-generate a customized test.
                         </Text>
                       </View>
@@ -142,12 +142,12 @@ const GenerateSlipTestModal = ({
                     
                 </View>
                 
-                <RadioButton color="#21c17c" id='topic' onPress={(ev) => setSelectedOption('topic')} selected={selectedOption == "topic"} />
+                {/* <RadioButton color="#21c17c" id='topic' onPress={(ev) => setSelectedOption('topic')} selected={selectedOption == "topic"} /> */}
                 {/* <CheckBox checked={topicSelected} onPress={() => setTopicSelected(val => !val)}/> */}
                   
               </View>
               {selectedOption == "topic" && (
-                <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>            
+                <View style={{display: 'flex', flexDirection: 'row',  alignItems: 'center'}}>            
                   <Text style={styles.label}>Topic :</Text>
                   <View style={styles.pickerContainer}>
                     {/* <Picker
@@ -180,7 +180,7 @@ const GenerateSlipTestModal = ({
                   </View>
                   
     
-                  <Text style={styles.label}>Sub Topic :</Text>
+                  <Text style={[styles.label, {marginLeft: 9.17}]}>Sub Topic :</Text>
                   <View style={styles.pickerContainer}>
                     {/* <Picker
                       selectedValue={subTopic}
@@ -196,7 +196,7 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => updateSubTopic(item.sub_topic)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={{height: 60, width: 180, padding: 10}}
+                      style={{height: 60, width: 210, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {
@@ -221,19 +221,19 @@ const GenerateSlipTestModal = ({
               <View style={[styles.optionBoxMainContent, {opacity: 0.5}]}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
-                    <View style={styles.imageBox}>
+                    {/* <View style={styles.imageBox}>
                       <Image source={require('../../assets/images/ss/Upload-materials.png')} style={styles.icon} />
-                    </View>
-                    <View style={{marginLeft: 10}}>
-                      <Text style={styles.optionTitle}>Upload</Text>
-                      <Text style={styles.optionDescription}>
+                    </View> */}
+                    <View style={{flexDirection: 'row'}}>
+                      <Text style={styles.optionTitle}>Upload - </Text>
+                      <Text style={[styles.optionDescription, {marginTop: 4}]}>
                         Generate a test by uploading your own material.
                       </Text>
                     </View>
                   </View>
                   
                 </View>
-                <RadioButton disabled color="#21c17c" id='upload' onPress={(ev) => setSelectedOption('upload')} selected={selectedOption == "upload"} />
+                {/* <RadioButton disabled color="#21c17c" id='upload' onPress={(ev) => setSelectedOption('upload')} selected={selectedOption == "upload"} /> */}
               </View>
 
               {selectedOption == "upload" && (
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#FFF',
     borderRadius: 16,
-    padding: 24,
+    padding: 18.28,
     width: '75%',
     maxHeight: '90%',
   },
@@ -302,11 +302,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   sectionTitle: {
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 9.17,
     fontSize: 16,
   },
   detailGrid: {
@@ -325,14 +325,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
+    padding: 13.7,
+    marginBottom: 9.17,
     backgroundColor: '#FFF',
   },
   optionBoxMainContent: {
     display: 'flex',
     flexDirection: 'row', 
     justifyContent: 'space-between',
+    // marginBottom: 9.17
   },
   optionIcon: {
     fontSize: 24,
@@ -341,12 +342,12 @@ const styles = StyleSheet.create({
   optionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    // marginBottom: 4,
   },
   optionDescription: {
     fontSize: 11,
     color: '#4B5563',
-    marginBottom: 12,
+    // marginBottom: 12,
   },
   row: {
     flexDirection: 'row',
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 10
+    // marginTop: 10
   },
   picker: {
     minHeight: 60,
@@ -402,7 +403,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#999',
     borderRadius: 8,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginLeft: 4.57
   },
 
 });

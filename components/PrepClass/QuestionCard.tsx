@@ -135,7 +135,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
 
       {/* Subjective Answer */}
       {!item.is_objective && (
-        <View style={{margin: 4}}>
+        <View style={{}}>
           <View style={styles.answerBox}>
             <Text style={{ fontSize: 12 }}>Answer: </Text>
             <MathJaxSvg
@@ -150,7 +150,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
 
       {/* Objective Options */}
       {item.is_objective && (
-        <View style={{padding: 4}}>
+        <View style={{}}>
           {Object.keys(item.choice_body).map((key:string) => (
             <View
               key={key}
@@ -161,7 +161,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
                 },
               ]}
             >
-              <View style={{display: 'flex', flexDirection: 'row', maxWidth: '97%'}}>
+              <View style={{display: 'flex', flexDirection: 'row', maxWidth: '97%', alignItems:  'center'}}>
                 <Text style={{fontSize: 12, marginRight: 8}}>{key}&#41;</Text>
                 <MathJaxSvg 
                   fontCache={true}
@@ -195,18 +195,19 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
     // margin: 16,
-    padding: 4,
+    padding: 13.7,
     marginBottom: 16,
     marginLeft: 16,
     marginRight: 16,
-    borderColor: '#E5E7EB',
+    borderColor: 'lightgray',
     borderWidth: 0.5,
+    // backgroundColor: 'red'
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    margin: 8
+    marginBottom: 9.14
   },
   indexBox: {
     width: 24,
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
   questionText: {
     flex: 1,
     marginLeft: 10,
-    paddingRight: 10
+    // paddingRight: 10
   },
   markBox: {
     borderColor: '#888888',
@@ -264,6 +265,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 9.14
   }
 });

@@ -95,14 +95,14 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
       {selectedQuestionData &&
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-            <View style={{marginBottom: 18.28}}>
+            {/* <View style={{marginBottom: 13.7}}>
                 <Text style={styles.title}>{ "Question"}</Text>
-            </View>
+            </View> */}
             
             <View style={styles.inputGroup}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <View style={{justifyContent: 'center'}}>
-                      <Text style={styles.label}>*Title</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 9.17}}>
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                      <Text style={styles.title}>*Question</Text>
                     </View>
                     
                     <View style={{flexDirection: 'row'}}>
@@ -161,7 +161,7 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
                     
                     
                 </TouchableOpacity>
-                <View style={{paddingVertical: 5, flexDirection: 'row', marginBottom: 13.7, height: 35, alignItems: 'center'}}>
+                <View style={{paddingVertical: 5, flexDirection: 'row', marginBottom: 9.17, height: 35, alignItems: 'center'}}>
                   <Text style={{marginRight: 10}}>Preview:</Text>
                     <MathJaxSvg 
                     fontCache={true}
@@ -206,8 +206,8 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 24,
-    // width: '50%',
+    padding: 18.28,
+    width: '90%',
     // alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -234,7 +234,8 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     // justifyContent: 'space-between', 
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    marginTop: 3.6
   },
   cancelButton: {
     paddingHorizontal:20,
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
-    marginRight: 8,
+    marginRight: 9.14,
     width: 140,
   },
   cancelButtonText: {
@@ -256,11 +257,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   label: {
     fontSize: 14,
-    marginBottom: 6,
+    // marginBottom: 6,
+    marginTop: 5
   },
   textInput: {
     backgroundColor: '#F3F4F6',
@@ -275,23 +277,24 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    // padding: 10,
+    padding: 9.17,
     fontSize: 14,
     height: 150,
     textAlignVertical: 'top',
     // margin: 10
-    marginVertical: 13.7
+    // marginVertical: 13.7,
+    marginBottom: 4.57
   },
   optionsGrid: {
-    marginTop: 10,
-    // padding: 10
+    // marginTop: 10,
+    // padding: 10,
   },
   optionBox: {
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 8,
     padding: 10,
-    marginBottom: 8,
+    marginBottom: 4.57,
     display: 'flex',
     flexDirection: 'row',
     // justifyContent: 'space-between'

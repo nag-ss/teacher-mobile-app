@@ -255,7 +255,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
               </View>
               
             </View>
-            <View style={{width: '65%', flexDirection: 'row',  justifyContent: 'space-between'}}>
+            <View style={{width: '49%', flexDirection: 'row',  justifyContent: 'space-between'}}>
               <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
                 <Text style={styles.marksLabel}>*Total Marks:</Text>
                 <View style={{ width: '60%'}}>
@@ -316,10 +316,10 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
           {/* Text Input */}
 
           <View style={styles.inputGroup}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, alignItems: 'center'}}>
-                <View>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 9.17, alignItems: 'center'}}>
+                {/* <View>
                   <Text style={styles.label}>Text Input</Text>
-                </View>
+                </View> */}
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={{marginRight: 8}}>Insert Formula</Text>
                   <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
@@ -393,14 +393,14 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 24,
+    padding: 18.28,
     width: '70%',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   title: {
     fontSize: 20,
@@ -411,11 +411,11 @@ const styles = StyleSheet.create({
     height: 32,
   },
   inputGroup: {
-    marginBottom:24,
+    marginBottom: 13.7,
   },
   label: {
     fontSize: 14,
-    marginBottom: 6,
+    marginBottom: 9.17,
   },
   textInput: {
     backgroundColor: '#F3F4F6',
@@ -487,14 +487,17 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    width: 232
+    width: '49%',
+    alignItems: 'center',
+    marginRight: 9.17
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
-    width: 232
+    width: '49%',
+    alignItems: 'center'
   },
   marksSection: {
     flexDirection: 'row',
@@ -502,6 +505,6 @@ const styles = StyleSheet.create({
   },
   marksLabel: {
     marginTop: 15,
-    marginRight: 8
+    marginRight: 9.17
   }
 });

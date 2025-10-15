@@ -184,10 +184,10 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 4, alignItems: 'baseline'}}>
-              <View>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 4, alignItems: 'baseline', marginBottom: 9.17}}>
+              {/* <View>
                 <Text style={styles.label}>Text Input</Text>
-              </View>
+              </View> */}
               
               <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={{marginRight: 8}}>Insert Formula</Text>
@@ -240,14 +240,14 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 24,
+    padding: 18.28,
     width: '60%',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   title: {
     fontSize: 20,
@@ -262,11 +262,11 @@ const styles = StyleSheet.create({
     height: 24
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   label: {
     fontSize: 14,
-    marginBottom: 6,
+    marginBottom: 9.17,
   },
   textInput: {
     backgroundColor: '#F3F4F6',
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   matchTypeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   switchRow: {
     flexDirection: 'row',
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
   cancelBtn: {
     paddingHorizontal: 24,
@@ -332,13 +332,16 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderWidth: 1,
     borderRadius: 8,
-    width: 196,
+    width: '49%',
+    alignItems: 'center',
+    marginRight: 9.17
   },
   saveBtn: {
     paddingHorizontal: 24,
     paddingVertical: 10,
     backgroundColor: '#10B981',
     borderRadius: 8,
-    width: 196
+    width: '49%',
+    alignItems: 'center'
   },
 });

@@ -124,7 +124,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
           <ScrollView>
             
 
-            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 13.7}}>
               <View style={styles.titleContainer}>
                 <Text style={styles.modalTitle}>Test Setup - </Text>
                 <Text style={styles.subtitle}>Adjust time, marks, and difficulty before generating questions.</Text>
@@ -156,8 +156,8 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
               <View style={styles.row}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   {/* <Image source={require('../../assets/images/ss/Clock.png')} style={styles.clockIcon} /> */}
-                  <Text style={styles.marksTextStyle}> Time</Text>
-                  <Text style={styles.colonStyle}>:</Text>
+                  <Text style={styles.marksTextStyle}> Time :</Text>
+                  {/* <Text style={styles.colonStyle}>:</Text> */}
                   <View style={styles.pickerWrapper}>
                     {/* <Picker
                       selectedValue={duration}
@@ -191,8 +191,8 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 </View>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   
-                  <Text style={styles.marksTextStyle}>Marks</Text>
-                  <Text style={styles.colonStyle}>:</Text>
+                  <Text style={styles.marksTextStyle}>Marks :</Text>
+                  {/* <Text style={styles.colonStyle}>:</Text> */}
                 
                 
                   <View style={{...styles.pickerWrapper, padding: 0}}>
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#f5f5f5',
     borderRadius: 16,
-    padding: 24,
+    padding: 18.28,
     width: '72%',
     maxHeight: '90%',
   },
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     display: 'flex', 
     flexDirection: 'row',
     alignItems: 'center', 
-    marginBottom: 16,
+    // marginBottom: 16,
   },
   modalTitle: {
     fontSize: 20,
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
     fontSize: 12
   },
   section: {
-    marginBottom: 16,
+    marginBottom: 13.7,
     padding: 16,
     backgroundColor: 'white',
     borderRadius: 8
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 9.14,
   },
   difficultyText: {
     color: '#10B981',
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   marksTextStyle: {
-    margin: 5
+    marginRight: 4.57
   },
   colonStyle:{
     fontWeight: 'bold',
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     borderColor: '#999',
     borderRadius: 8,
     overflow: 'hidden',
-    marginLeft: 10
+    // marginLeft: 10
   },
   picker: {
     width: 120,
@@ -501,12 +501,12 @@ const styles = StyleSheet.create({
   //   // transform: [{ scaleY: 1.5 }]
   // },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 13.7,
     padding: 16
   },
   label: {
     fontSize: 14,
-    marginBottom: 6,
+    marginBottom: 9.14,
   },
   textInput: {
     backgroundColor: '#F3F4F6',

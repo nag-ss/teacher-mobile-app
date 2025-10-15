@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     borderRightColor: '#EFEFEF',
     alignItems: 'flex-start',
     paddingTop: 12,
-    paddingHorizontal: 13.7,
+    paddingHorizontal: 7,
     marginTop: 13.7,
     borderRadius: 10,
     marginLeft: 8.28
@@ -109,11 +109,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     alignItems: 'center', 
     // justifyContent: 'center',
-    paddingVertical: 8, 
+    // paddingVertical: 8, 
     paddingHorizontal: 0, 
     borderRadius: 8, 
     marginBottom: 24, 
-    width: 32,
+    width: 40,
     height: 40
     // margin: 5 
   },

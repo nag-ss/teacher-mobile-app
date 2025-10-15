@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#f5f5f5',
     borderRadius: 12,
-    padding: 24,
+    padding: 18.28,
     width: '90%',
     maxHeight: '90%',
   },
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     borderRadius: 8,
-    marginLeft: 16,
+    marginLeft: 9.14,
     marginRight: 16,
     alignItems: 'center',
     width: 150

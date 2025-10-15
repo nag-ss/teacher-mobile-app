@@ -57,13 +57,13 @@ const ReplaceEditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, orig
       {selectedQuestion &&
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
-            <View style={{marginBottom: 18.28}}>
+            {/* <View style={{marginBottom: 13.7}}>
                 <Text style={styles.title}>{ "New Question"}</Text>
-            </View>
+            </View> */}
             
             <View style={styles.inputGroup}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={styles.label}>*Title</Text>
+                <Text style={styles.title}>{ "New Question"}</Text>
                     <View style={{flexDirection: 'row'}}>
                         <View style={styles.markBox}>
                             <Text style={styles.markText}>Marks - 0{selectedQuestion.marks || 5}</Text>
@@ -107,13 +107,17 @@ const ReplaceEditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, orig
                     },
                     ]}
                 >
-                    <MathJaxSvg 
-                    fontCache={true}
-                    fontSize={12}
-                    >
-                    {selectedQuestion?.choice_body[key]}
-                    </MathJaxSvg>
-                    {key === selectedQuestion?.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black'  }} />}
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={{marginRight: 8}}>{key + " )"}</Text>
+                      <MathJaxSvg 
+                      fontCache={true}
+                      fontSize={12}
+                      >
+                      {selectedQuestion?.choice_body[key]}
+                      </MathJaxSvg>
+                  </View>
+                  
+                    {key === selectedQuestion?.answer.text && <AntDesign name="checkcircle" size={18} color='#21c17c' style={{ borderRadius: 999, backgroundColor: 'black', justifyContent: 'flex-end'  }} />}
                 </View>
                 ))}
             </View> 
@@ -149,8 +153,8 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 24,
-    // width: '50%',
+    padding: 18.28,
+    width: '90%',
     // alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.2,
@@ -185,7 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
-    marginRight: 8,
+    marginRight: 9.14,
     width: 140,
   },
   cancelButtonText: {
@@ -198,11 +202,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   inputGroup: {
-    marginBottom: 16,
+    marginBottom: 13.7,
   },
   label: {
     fontSize: 14,
-    marginBottom: 6,
+    marginBottom: 4.57,
   },
   textInput: {
     backgroundColor: '#F3F4F6',
@@ -221,21 +225,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     // height: 200,
     textAlignVertical: 'top',
-    marginVertical: 13.7
+    marginVertical: 13.7,
+    padding: 9.14
   },
   optionsGrid: {
-    marginTop: 10,
-    padding: 10
+    // marginTop: 10,
+    // padding: 10,
+    
   },
   optionBox: {
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 8,
     padding: 10,
-    marginBottom: 8,
+    marginBottom: 9.17,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   markBox: {
     borderColor: '#21c17c',

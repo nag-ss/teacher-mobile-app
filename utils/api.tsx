@@ -7,6 +7,7 @@ import { logout } from '@/store/authSlice';
 
 // const API_URL = 'http://localhost:3002/api/';
 const API_URL = 'https://superslate-ss.onrender.com/';
+// const API_URL = 'https://superslate-web.calmsky-d7431561.centralindia.azurecontainerapps.io/'
 
 const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => {
   let headers: any = {

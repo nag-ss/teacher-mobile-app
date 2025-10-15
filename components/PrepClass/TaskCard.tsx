@@ -8,7 +8,7 @@ const TaskCard = ({idx, task, createTask}: {idx: number; task: any; createTask: 
   return (
     <View key={idx} style={styles.taskCard}>
       <View style={styles.taskInfo}>
-        <View style={{justifyContent: 'center'}}>
+        <View style={{justifyContent: 'center', marginRight: 9.14}}>
           {/* <SvgLoader
             svgFilePath={task.svgIcon} // Replace with your own logo
             style={styles.taskLogo}
@@ -52,15 +52,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     backgroundColor: 'white',
-    padding: 12,
-    marginBottom: 16,
+    padding: 13.7,
+    marginBottom: 13.7,
     display: 'flex',
     flexDirection: 'row',
-    // justifyContent: 'space-between'
+    justifyContent: 'space-between'
   },
   taskInfo: {
     flexDirection: 'row',
     width: 430,
+    // backgroundColor: 'red'
   },
   taskImage: {
     width: 120,
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     height: 80,
   },
   taskText: {
-    padding: 24,
+    // padding: 24,
     flex: 1,
     marginLeft: 5,
     justifyContent: 'center'
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     borderColor: '#21c17c',
     paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 6,
+    borderRadius: 6
   },
   buttonPressed: {
     backgroundColor: "#BDEDD7"
