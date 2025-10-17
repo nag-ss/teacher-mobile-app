@@ -38,7 +38,7 @@ interface SlipTestDetailsModalProps {
 const SlipTestDetailsModal = ({  selectedClass, selectedTask, new_quiz, visible, saveSlipTest, cancelSlipTest }: SlipTestDetailsModalProps) => {
 
   const dispatch = useDispatch<any>();
-  const { quiz_details } = useSelector((state: any) => state.classes);
+  const { quiz_details, loading } = useSelector((state: any) => state.classes);
   const {questions, title} = quiz_details;
   const [activeDropdown, setActiveDropdown] = useState(-1);
   const [isDeleteQuestionModal, setDeleteQuestionModal] = useState(false);
@@ -98,7 +98,7 @@ const SlipTestDetailsModal = ({  selectedClass, selectedTask, new_quiz, visible,
     <View>
       <Modal visible={visible} transparent={true} animationType="fade">
         <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
+          {!loading && (<View style={styles.modalContainer}>
             <ScrollView contentContainerStyle={styles.content}>
               <View style={{display: 'flex', flexDirection:'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, backgroundColor: 'white', borderRadius: 10, marginBottom: 16}}>
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
@@ -156,7 +156,7 @@ const SlipTestDetailsModal = ({  selectedClass, selectedTask, new_quiz, visible,
                 </View>)}
               </View>
             </ScrollView>    
-          </View>  
+          </View>)}  
         </View>
       </Modal>
       <DeleteQuestionModal
