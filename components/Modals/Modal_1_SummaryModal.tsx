@@ -24,6 +24,8 @@ interface ClassSummaryPopModalProps {
   selectedClass: any;
   parentProps: any;
   topicsList: any;
+  tp: string;
+  subT: string;
   // updateTopic: (topic: string) => void;
   // updateSubTopic: (subtopic: string) => void;
   onClose: () => void; 
@@ -36,13 +38,15 @@ export default function ClassSummaryPopModal({
   selectedClass,
   parentProps,
   topicsList,
+  tp,
+  subT,
   onClose, 
   setTopicSubTopicAndMoveToNext,
 } : ClassSummaryPopModalProps) {
 
   const [subTopics, setSubTopics] = useState([]);
-  const [topic, setTopic] = useState(null);
-  const [subTopic, setSubTopic] = useState(null);
+  const [topic, setTopic] = useState('');
+  const [subTopic, setSubTopic] = useState('');
 
   const setSubTopicAndUpdateTopic = (tp: any) => {
     console.log(tp);
@@ -52,16 +56,16 @@ export default function ClassSummaryPopModal({
     setTopic(tp)
   }
 
-  //  TODO Fix this
   useEffect(() => {
-  // This code runs when any of these change:
-  // propA, propB, or propC
-    console.log("I got called");
-    console.log(topic)
-    console.log(subTopic)
-    setTopic(topic)
-    setSubTopic(subTopic)
-  }, [topic, subTopic]);  
+      if (visible) {
+        if (tp && subT) {
+          setTopic(tp);
+          setSubTopic(subT);
+          const subTopics = topicsList.find((t: any) => t.topic == tp).sub_topic
+          setSubTopics(subTopics)
+        }
+      }
+    }, [visible]);
   
   return (
     <Modal
@@ -75,7 +79,7 @@ export default function ClassSummaryPopModal({
           <View>
             {/* Header */}
             <View style={styles.rowBetween}>
-              <Text style={styles.title}>Class Prep</Text>
+              <Text style={styles.title}>Prepare for Class</Text>
               <TouchableOpacity onPress={onClose}>
                 <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />
               </TouchableOpacity>
