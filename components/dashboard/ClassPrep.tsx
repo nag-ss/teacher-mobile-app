@@ -510,7 +510,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
 
   return (
     <View>
-      <SummaryModal parentProps={item} selectedClass={selectedClass} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} setTopicSubTopicAndMoveToNext={setTopicSubTopicAndMoveToNext} topicsList={topics} />  
+      <SummaryModal parentProps={item} tp={topic} subT={subTopic} selectedClass={selectedClass} visible={showModal1SummaryModal} onClose={() => setShowModal1SummaryModal(false)} setTopicSubTopicAndMoveToNext={setTopicSubTopicAndMoveToNext} topicsList={topics} />  
       <ClassTaskCardPop topic={topic} subTopic={subTopic} selectedClass={selectedClass} classTasks={classTasks} visible={showModal2TasksModal} onClose={() => setShowModal2TasksModal(false)} goBack={backToSummaryModal} addTask={showAddTaskModal} deleteTask={deleteTask} editTask={editTask} viewQuiz={viewQuiz} />
       <NewTaskModal visible={showModal3NewTasksModal} onClose={() => setShowModal3NewTaskModal(false)} goBack={backToShowDetailsModal} clickedNext={gotoTask} />
       <AiCheckModal selectedTask={selectedTask} visible={showModal4AICheckModal} taskType={taskType} onClose={closeModal4AICheck} goBack={backToNewTasksModal} saveAICheckDetails={saveAICheckDetails} />

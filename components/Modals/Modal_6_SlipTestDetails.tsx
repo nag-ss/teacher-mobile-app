@@ -103,12 +103,14 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
 
   useEffect(() => {
       if (selectedTask && selectedTask.task_type == 'SlipTest') {
+        setTitle(selectedTask.title);
         setDuration(selectedTask.quiz_details.duration);
         setMarks(selectedTask.instructions?.total_marks);
         setDifficulty(selectedTask.quiz_details.level_id);
         setSubCount(selectedTask.instructions?.subjective_questions);
         setMcqCount(selectedTask.instructions?.objective_questions);
       } else {
+        setTitle('')
         setDuration(10);
         setMarks(10);
         setDifficulty(5);
