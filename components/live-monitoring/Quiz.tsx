@@ -21,6 +21,7 @@ const Quiz = ({task, refreshTasks}: any) => {
 
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     const [quizeStatusCheck, setQuizeStatusCheck] = useState('');
+    const [isTaskLive, setIsTaskLive] = useState(false);
 
     // console.log("Slip Test Slip Test Slip Test Slip Test")
     // console.log(task)
@@ -95,26 +96,41 @@ const Quiz = ({task, refreshTasks}: any) => {
           const minutes = Math.floor((timeLeftMS / 1000 / 60) % 60);
           const seconds = Math.floor((timeLeftMS / 1000) % 60);
 
+          let tStr = ''
+          if(minutes > 0) {
+            tStr = `${minutes} min`
+          } else {
+            tStr = `${seconds} secs`
+          }
+          return `Time Left: ${tStr} `;
           // return `${minutes} min ${seconds} sec left`;
-          return `Time Left: ${minutes} min `;
+          // return `Time Left: ${minutes} min `;
         }
 
         const intervarid = setInterval(() => {
-          setQuizeStatusCheck(getTimeLeft());
+          let timeLeft = getTimeLeft()
+          setQuizeStatusCheck(timeLeft);
+          if(task.status == 'active' && timeLeft != 'Time up!') {
+            setIsTaskLive(true)
+          } else {
+            setIsTaskLive(false)
+          }
         }, 1000);
       }
     }, [task])
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'SlipTest' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'SlipTest' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray', backgroundColor: isTaskLive ? Colors.primaryColor : ''}]}>
             <View style={styles.headerSection}>
-              <View style={styles.imageSection}>
+              <View style={[styles.imageSection, {backgroundColor: isTaskLive ? '#fff' : ''}]}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Quiz.png')} />
               </View>
-              <View style={[styles.pbutton, {backgroundColor: task.live ? Colors.primaryColor : '', borderColor: '#21C17C'}]} >
-                <Text style={[styles.pbuttonText, {color: task.live ? '#fff' : '#000' }]}>{task.live ? 'Progress' : 'In Queue'}</Text>
-              </View>
+               
+              <View style={[styles.pbutton, {backgroundColor: isTaskLive ? '#fff' : '', borderColor: '#21C17C'}]} >
+                <Text style={[styles.pbuttonText, {color: task.live ? '#fff' : '#000' }]}>{task.status =='saved' ? 'In Queue' : ('Progress')}</Text>
+              </View> 
+              
             </View>
             <View style={styles.taskBodySection}>
               <Text style={styles.title}>{task.title}</Text>
@@ -131,7 +147,7 @@ const Quiz = ({task, refreshTasks}: any) => {
               <Text style={styles.buttonText}>{'Start'}</Text>
             </TouchableOpacity>
             :
-            <TouchableOpacity style={styles.button} onPress={cardPressed}>
+            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} onPress={cardPressed}>
               <Text style={styles.buttonText}>{'Results'}</Text>
             </TouchableOpacity>
             }

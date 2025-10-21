@@ -5,6 +5,10 @@ import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
 
+//test url
+const webViewBaseUrl = 'https://superstudent.z13.web.core.windows.net'
+//prod url
+// const webViewBaseUrl = 'https://superslateappstorage.z29.web.core.windows.net'
 interface Props {
   visible: boolean;
   student: { student_name: string; status: string, student_id: number, class_schedule_id: number } | null;
@@ -19,7 +23,7 @@ const StudentModal = ({ visible, student, onClose }: Props) => {
   const getToken = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
     setToken(userToken)
-    console.log('https://superstudent.z13.web.core.windows.net/?token='+token+'&student='+student.student_id+'&class='+liveClass.class_schedule_id)
+    // console.log('https://superstudent.z13.web.core.windows.net/?token='+token+'&student='+student.student_id+'&class='+liveClass.class_schedule_id)
   }
   useEffect(() => {
     getToken()
@@ -35,7 +39,7 @@ const StudentModal = ({ visible, student, onClose }: Props) => {
           token &&
           <WebView
             style={styles.webViewContainer}
-            source={{ uri: 'https://superstudent.z13.web.core.windows.net/?token='+token+'&student='+student.student_id+'&class='+liveClass.class_schedule_id }}
+            source={{ uri: webViewBaseUrl+'/?token='+token+'&student='+student.student_id+'&class='+liveClass.class_schedule_id }}
         />
         }
         

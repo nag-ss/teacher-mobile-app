@@ -50,17 +50,17 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
             </View>
             
             <View style={styles.studentDetails}>
-                <View style={styles.iconView}>
-                    <Image style={{width: 50, height: 50}} source={require('../../assets/images/ss/Male.png')} />
+                <View style={[styles.iconView, {backgroundColor: 'lightgray', borderRadius: 10}]}>
+                    <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/face.png')} />
                 </View>
                 <View style={styles.nameContnet}>
-                    <View style={styles.nameSection}>
-                        <Text style={{marginRight: 10, marginTop: 8}}>{'Name:'}</Text>
+                    <View style={[styles.nameSection, {marginBottom: 9.14}]}>
+                        <Text style={{marginRight: 10}}>{'Name:'}</Text>
                         <Text style={styles.name}>{student.student_name}</Text>
                     </View>
                     
                     <View style={styles.nameSection}>
-                        <Text style={{marginRight: 10, marginTop: 8}}>{'Score:'}</Text>
+                        <Text style={{marginRight: 10}}>{'Score:'}</Text>
                         <Text style={styles.name}>{student.score+"/"+student.total_marks}</Text>
                     </View>
                 </View>
@@ -68,8 +68,8 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
             {
                 (student.questions && student.questions.length) ?
                 <View style={{marginTop: 13.7}}>
-                    <Text style={{fontSize: 16, fontWeight: '600'}}>Question Summary</Text>
-                    <View style={{flexDirection: 'row', padding: 10, flexWrap: 'wrap'}}>
+                    <Text style={{fontSize: 16, fontWeight: '600', marginBottom: 13.7}}>Question Summary</Text>
+                    <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                         {student.questions.map((questionData: any, i: number) => (
                             <TouchableOpacity style={styles.questionsList} onPress={() => {setShowResult(true); setStudentResult(questionData)}}>
                                 <View>
@@ -163,17 +163,19 @@ closeButton: {
     // backgroundColor: 'red'
   },
   icon: { fontSize: 30 },
-  name: { fontWeight: '600', marginTop: 8 },
+  name: { fontWeight: '600' },
   status: { fontSize: 12, color: '#555' },
   nameContnet: {
     padding: 13.7,
-    height: 54.5,
+    height: 65,
+    justifyContent: 'center'
   },
   nameSection: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    // marginBottom: 9.14
   },
   questionsList: {
-    minWidth: 64,
+    minWidth: 72,
     minHeight: 60,
     height: 64,
     borderColor: 'lightgray',

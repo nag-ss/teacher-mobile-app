@@ -234,7 +234,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
             </View>
 
             {/* Difficulty */}
-            <View style={{...styles.section, height: 100}}>
+            <View style={{...styles.section, height: 110}}>
               <Text style={styles.sectionTitle}>
                 Difficulty Level -{' '}
                 <Text style={styles.difficultyText}>
@@ -248,7 +248,18 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 keyboardType="numeric"
               /> */}
 
-              <View style={styles.container}>
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10}
+                step={1}
+                value={difficulty}
+                onSlidingComplete={(num) => setDifficulty(num)}
+                minimumTrackTintColor='#21c17c'
+                thumbTintColor='#21c17c'
+                StepMarker={renderStepMarker}
+              />
+              {/* <View style={styles.container}>
                 <View style={styles.trackBackground} />
                 <Slider
                   style={styles.slider}
@@ -264,7 +275,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                   StepMarker={renderStepMarker}
                 />
                 
-              </View>
+              </View> */}
               
             </View>
 
@@ -407,7 +418,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 13.7,
-    padding: 16,
+    padding: 13.7,
     backgroundColor: 'white',
     borderRadius: 8
   },
@@ -497,9 +508,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 6,
   },
-  // slider: {
-  //   // transform: [{ scaleY: 1.5 }]
-  // },
+  slider: {
+    // transform: [{ scaleY: 1.5 }],
+  },
   inputGroup: {
     marginBottom: 13.7,
     padding: 16
@@ -542,8 +553,8 @@ const styles = StyleSheet.create({
     top: '50%',
     marginTop: 0, // half of trackBackground height to center vertically
   },
-  slider: {
-    width: '100%',
-    height: 40, // overall slider height to control thumb size
-  },
+  // slider: {
+  //   width: '100%',
+  //   height: 40, // overall slider height to control thumb size
+  // },
 });

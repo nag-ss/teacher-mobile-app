@@ -18,6 +18,8 @@ const ClassWork = ({task, refreshTasks}: any) => {
     const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
     const {user} = useSelector((state: any) => state.user);
     const {liveClass} = useSelector((state: any) => state.classes);
+    const [cwStatusCheck, setCWStatusCheck] = useState('');
+    const [isTaskLive, setIsTaskLive] = useState(false);
 
     console.log("task")
     console.log(task)
@@ -58,21 +60,75 @@ const ClassWork = ({task, refreshTasks}: any) => {
     
     }
     
+    useEffect(() => {
+          if(task.published_work_id) {
+            // console.log(JSON.stringify(task.quiz_details.start_date))
+            // console.log(JSON.stringify(task.quiz_details.duration))
+            const durationMinutes = task.work_detail.time;
+            const startDateString = task.work_detail.start_time;
+
+            // Parse start date
+            const startDate: any = new Date(startDateString.replace(' ', 'T'));
+    
+            // Calculate end time
+            // const endDate: any = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+            const endDate: any = new Date(task.work_detail.end_time);
+    
+            // Function to get remaining time
+            function getTimeLeft() {
+              const now: any = new Date();
+              const timeLeftMS: any = endDate - now;
+    
+              if (timeLeftMS <= 0) {
+                clearInterval(intervarid);
+                return 'Time up!';
+                  
+              }
+    
+              const minutes = Math.floor((timeLeftMS / 1000 / 60) % 60);
+              const seconds = Math.floor((timeLeftMS / 1000) % 60);
+    
+              // return `${minutes} min ${seconds} sec left`;
+              let tStr = ''
+              if(minutes > 0) {
+                tStr = `${minutes} min`
+              } else {
+                tStr = `${seconds} secs`
+              }
+              return `Time Left: ${tStr} `;
+            }
+    
+            const intervarid = setInterval(() => {
+              let timeLeft = getTimeLeft()
+              setCWStatusCheck(timeLeft);
+              if(task.status == 'in_progress' && timeLeft != 'Time up!') {
+                setIsTaskLive(true)
+              } else {
+                setIsTaskLive(false)
+              }
+            }, 1000);
+          }
+        }, [task])
+
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'Classwork' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'Classwork' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray', backgroundColor: isTaskLive ? Colors.primaryColor : ''}]}>
             <View style={styles.headerSection}>
-              <View style={styles.imageSection}>
+              <View style={[styles.imageSection, {backgroundColor: isTaskLive ? '#fff' : ''}]}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Note-taking.png')} />
               </View>
-              <View style={[styles.pbutton, {backgroundColor: task.status != 'progress' ? Colors.primaryColor : ''}]} >
-                <Text style={[styles.pbuttonText]}>{task.status != 'progress' ? 'Progress' : 'In Queue'}</Text>
+              <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '' : (isTaskLive ? '#fff' : 'lightgray')}]} >
+                <Text style={[styles.pbuttonText]}>{task.status == 'pending' ? 'In Queue' : (!isTaskLive ? 'Completed' : 'Progress')}</Text>
               </View>
             </View>
             <View style={styles.taskBodySection}>
               <Text style={styles.title}>{task.title}</Text>
-              <Text style={styles.subTitle}>{'Duration: 15 Mins'}</Text>
+              {
+                task.published_work_id ?
+                <Text style={styles.subTitle}>{cwStatusCheck}</Text> :
+                <Text style={styles.subTitle}>{''}</Text>
+              }
             </View>
             {
               !task.published_work_id ?
@@ -80,7 +136,7 @@ const ClassWork = ({task, refreshTasks}: any) => {
                 <Text style={styles.buttonText}>{'Publish'}</Text>
                 </TouchableOpacity>
                 :
-                <TouchableOpacity style={styles.button} onPress={cardPressed}>
+                <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} onPress={cardPressed}>
                 <Text style={styles.buttonText}>{'Results'}</Text>
                 </TouchableOpacity>
             }

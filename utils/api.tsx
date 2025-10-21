@@ -6,7 +6,9 @@ import { useDispatch } from 'react-redux';
 import { logout } from '@/store/authSlice';
 
 // const API_URL = 'http://localhost:3002/api/';
+//test url
 const API_URL = 'https://superslate-ss.onrender.com/';
+//prod url
 // const API_URL = 'https://superslate-web.calmsky-d7431561.centralindia.azurecontainerapps.io/'
 
 const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => {

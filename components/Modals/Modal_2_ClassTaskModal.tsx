@@ -113,10 +113,10 @@ const ClassTaskCardPop = ({ topic, subTopic, visible, selectedClass, classTasks,
                   (classTasks.length > 0) ? (
                     <View style={styles.taskTable}>
                       <View style={{display: 'flex', flexDirection: 'row', paddingBottom: 10, borderBottomWidth: 0.5}}>
-                        <Text style={{width: 50, textAlign: 'center'}}>Icon</Text>
-                        <Text style={{width: 260, textAlign: 'center'}}>Title</Text>
-                        <Text style={{width: 250, textAlign: 'center'}}>Category</Text>
-                        <Text style={{width: 50, textAlign: 'center'}}>Action</Text>
+                        <Text style={{width: 75, textAlign: 'center'}}>Icon</Text>
+                        <Text style={{width: 380, textAlign: 'center'}}>Title</Text>
+                        <Text style={{width: 160, textAlign: 'center'}}>Category</Text>
+                        <Text style={{width: 60, textAlign: 'center'}}>Action</Text>
                       </View>
                       {/* <FlatList
                         data={classTasks}

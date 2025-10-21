@@ -53,13 +53,14 @@ const AITask = ({task}: any) => {
               <View style={styles.imageSection}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Note-taking.png')} />
               </View>
-              <View style={[styles.pbutton, {backgroundColor: task.status != 'progress' ? '#b8b8b8' : ''}]} >
-                <Text style={[styles.pbuttonText]}>{task.status != 'progress' ? 'Completed' : 'In Queue'}</Text>
+              <View style={[styles.pbutton, {backgroundColor: Colors.primaryColor}]} >
+                <Text style={[styles.pbuttonText]}>{'Progress'}</Text>
               </View>
             </View>
             <View style={styles.taskBodySection}>
               <Text style={styles.title}>{task.title}</Text>
-              <Text style={styles.subTitle}>{'Time Left: 12:45 Mins'}</Text>
+              <Text style={styles.subTitle}>{''}</Text>
+              {/* <Text style={styles.subTitle}>{'Time Left: 12:45 Mins'}</Text> */}
             </View>
             
             <TouchableOpacity style={styles.button} onPress={cardPressed}>

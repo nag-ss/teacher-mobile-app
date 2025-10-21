@@ -71,6 +71,7 @@ const LiveSessionCard = () => {
       console.log("liveClassDataRes.payload ----")
       console.log(liveClassDataRes.payload)
       setNextClass(liveClassDataRes.payload)
+      setIsNextClass(false)
       // getClassFromSchedule()
     }
   }
@@ -179,7 +180,7 @@ const LiveSessionCard = () => {
           </Text>
           <View style={{width:200}}>
             <Text style={styles.subject} numberOfLines={1}>
-              {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].topic : ''} -
+              {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].topic + " - " : ''}
               {(nextClass.class_details && nextClass.class_details.length) ? nextClass.class_details[0].sub_topic[0] : ''}
               {/* { 'Topic - Sub Topic'} */}
             </Text>

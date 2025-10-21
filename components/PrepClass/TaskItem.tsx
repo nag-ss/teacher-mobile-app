@@ -81,14 +81,14 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
 
   return (
     <View style={[styles.taskRow, isLastItem ? {}: {borderWidth: 0.5, borderColor: 'grey'}]}>
-        <View style={{width: 50}}>
-        <View style={{ borderWidth: 1, borderRadius: 4, borderColor: '#21c17c', marginLeft: 20 }}>
-          <Image source={iconMapper[item.task_type]} style={{...styles.taskIcon, width: 24, height: 24}} />
+        <View style={{width: 75, alignItems: 'center'}}>
+          <View style={{ borderWidth: 1, borderRadius: 4, borderColor: '#21c17c', width: 30, height: 30 }}>
+            <Image source={iconMapper[item.task_type]} style={{...styles.taskIcon, width: 24, height: 24}} />
+          </View>
         </View>
-        </View>
-        <Text style={{...styles.taskCell, width: 280, fontWeight: 'bold', textAlign: 'center'}}>{item.title}</Text>
-        <Text style={{...styles.taskCell, width: 250,textAlign: 'center'}}>{mapper[item.task_type] || 'Other'}</Text>
-        <TouchableOpacity style={{width: 50, alignContent: 'center'}} onPress={() => setTaskOptionsVisibleOption()}>
+        <Text style={{...styles.taskCell, width: 380, fontWeight: 'bold', textAlign: 'center'}}>{item.title}</Text>
+        <Text style={{...styles.taskCell, width: 160,textAlign: 'center'}}>{mapper[item.task_type] || 'Other'}</Text>
+        <TouchableOpacity style={{width: 60, alignContent: 'center'}} onPress={() => setTaskOptionsVisibleOption()}>
           <Image source={action_icon} style={styles.taskIcon} />
         </TouchableOpacity>
         
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   taskCell: {
     fontSize: 16,
-    flex: 1,
+    // flex: 1,
     textAlign: 'center',
   },
   taskIcon: {
