@@ -53,7 +53,8 @@ const Quiz = ({task, refreshTasks}: any) => {
       // console.log(task)
       // const now = new Date();
       // const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
-      const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(5, 'minutes');
+      // const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(5, 'minutes');
+      const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(1, 'minutes');
       const formatted = fiveMinutesLaterIST.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
 
       const the_quiz = {
