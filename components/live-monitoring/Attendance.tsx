@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getAttendance, setSelectedTask } from '@/store/liveMonitoringSlice';
+import { getAttendance, setSelectedTask, setSelectedTaskData } from '@/store/liveMonitoringSlice';
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ const Attendance = () => {
     }
     const onPress = () => {
         dispatch(setSelectedTask('Attendance'))
+        dispatch(setSelectedTaskData(null))
         getAttendanceData()
         console.log("button pressed ....")
     }

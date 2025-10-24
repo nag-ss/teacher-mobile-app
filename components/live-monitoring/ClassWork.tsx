@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getClassworkResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getClassworkResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,6 +39,7 @@ const ClassWork = ({task, refreshTasks}: any) => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('Classwork'))
         dispatch(setSelectedTaskId(task.task_id))
+        dispatch(setSelectedTaskData(task))
         getClassworkData()
     }
     useEffect(() => {

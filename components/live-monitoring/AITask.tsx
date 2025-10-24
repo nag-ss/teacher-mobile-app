@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getAITaskCheckResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getAITaskCheckResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,6 +35,7 @@ const AITask = ({task}: any) => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('AI Task'))
         dispatch(setSelectedTaskId(task.task_id))
+        dispatch(setSelectedTaskData(task))
         getAttendanceData()
     }
     useEffect(() => {

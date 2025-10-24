@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
 import SlipTestQuestionResultModal from './SlipTestQuestionResult';
 import SlipTestAnalysisModal from './SlipTestAnalysis';
+import STAnalysisModal from './STAnalysis';
 
 interface Props {
   visible: boolean;
@@ -24,6 +25,9 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
   const getStudentSTResult = async () => {
     
   }
+
+  console.log("student")
+  console.log(student)
   useEffect(() => {
     // getStudentSTResult()
     console.log("called r modal ....")
@@ -71,7 +75,7 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
                     <Text style={{fontSize: 16, fontWeight: '600', marginBottom: 13.7}}>Question Summary</Text>
                     <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
                         {student.questions.map((questionData: any, i: number) => (
-                            <TouchableOpacity style={styles.questionsList} onPress={() => {setShowResult(true); setStudentResult(questionData)}}>
+                            <TouchableOpacity style={styles.questionsList} onPress={() => {setShowResult(true); setStudentResult(questionData)}} key={questionData.question_number.toString().padStart(2, '0')}>
                                 <View>
                                     <Text>{'Q-'+(questionData.question_number.toString().padStart(2, '0'))}</Text>
                                     {/* <Text>{questionData.score}</Text> */}
@@ -120,13 +124,20 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
               onClose={closeModal}
             /> : null
             }
-      {showAnalysisResult ?
+      {/* showAnalysisResult ?
               <SlipTestAnalysisModal
               visible={showAnalysisResult}
               student={student}
               onClose={closeModal}
             /> : null
-            }
+      */}
+      { showAnalysisResult ?
+              <STAnalysisModal
+              visible={showAnalysisResult}
+              student={student}
+              onClose={closeModal}
+            /> : null
+      }
     </Modal>
   );
 };

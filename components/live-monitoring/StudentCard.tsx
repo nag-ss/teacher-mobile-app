@@ -4,6 +4,7 @@ import ProgressCircle from './ProgressCircle';
 import { useSelector } from 'react-redux';
 import StudentModal from './StudentModal';
 import SlipTestResultModal from './SlipTestResult';
+import CWAnalysisModal from './CWAnalysis';
 
 interface StudentCardProps {
   name: string;
@@ -16,27 +17,31 @@ const StudentCard = (studentData: any) => {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const stdNo = studentData.student.student_id
     const student = studentData.student
-    console.log("student")
-    console.log(student)
     const [notesModalVisible, setNotesModalVisible] = useState(false);
     const [stResultModalVisible, setstResultModalVisible] = useState(false);
+    const [cwResultModalVisible, setcwResultModalVisible] = useState(false);
 
 
   const closeModal = () => {
     setNotesModalVisible(false);
     setstResultModalVisible(false)
+    setcwResultModalVisible(false)
   };
 
   const showStudentInfo = async () => {
+    console.log(selectedTaskSection)
     if(selectedTaskSection == 'Attendance' || selectedTaskSection == 'AICheck') {
       console.log("calling modal ....")
       setSelectedStudent(student);
       setNotesModalVisible(true);
     } else if(selectedTaskSection == 'SlipTest') {
-      console.log("sliptest result calling modal ....")
       // setSelectedStudent(student);
       // setNotesModalVisible(true);
       setstResultModalVisible(true)
+    } else if(selectedTaskSection == 'Classwork') {
+      // setSelectedStudent(student);
+      // setNotesModalVisible(true);
+      setcwResultModalVisible(true)
     }
 
   }
@@ -101,6 +106,13 @@ const StudentCard = (studentData: any) => {
         {stResultModalVisible ?
         <SlipTestResultModal
         visible={stResultModalVisible}
+        student={student}
+        onClose={closeModal}
+      /> : null
+      }
+      {cwResultModalVisible ?
+        <CWAnalysisModal
+        visible={cwResultModalVisible}
         student={student}
         onClose={closeModal}
       /> : null

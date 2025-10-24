@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getSlipTestResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getSlipTestResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,6 +29,7 @@ const SlipTest = ({task}: any) => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('Slip Test'))
         dispatch(setSelectedTaskId(task.task_id))
+        dispatch(setSelectedTaskData(task))
     }
     useEffect(() => {
         if(selectedTaskSection == 'Slip Test') {

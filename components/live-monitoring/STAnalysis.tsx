@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
+import { getSlipTestPerformance } from '@/store/liveMonitoringSlice';
 
 //test url
 // const webViewBaseUrl = 'https://superstudent.z13.web.core.windows.net'
@@ -15,19 +17,42 @@ interface Props {
   onClose: () => void;
 }
 
-const StudentModal = ({ visible, student, onClose }: Props) => {
+const STAnalysisModal = ({ visible, student, onClose }: Props) => {
   if (!student) return null;
+  const dispatch = useDispatch<any>()
   const { liveClass } = useSelector((state: any) => state.classes)
+  const { studentPerformance, selectedTask } = useSelector((state: any) => state.liveMonitor)
+  const {  } = useSelector((state: any) => state.liveMonitor)
   const [token, setToken] = useState<string | null>(null)
+  const [pdfUrlLink, setPdfUrlLink] = useState('')
 
   const getToken = async () => {
     const userToken = await AsyncStorage.getItem('userToken');
     setToken(userToken)
     // console.log('https://superstudent.z13.web.core.windows.net/?token='+token+'&student='+student.student_id+'&class='+liveClass.class_schedule_id)
   }
-  useEffect(() => {
-    getToken()
-  }, [])
+
+  console.log("studentPerformance.download_url")
+  console.log(studentPerformance?.download_url)
+    const getDetails = async () => {
+        console.log(selectedTask)
+        console.log("selectedTask")
+        const reqObj: any = {student_id: student.student_id, published_quiz_id: selectedTask.published_quiz_id}
+        dispatch(getSlipTestPerformance(reqObj))
+    }
+  useFocusEffect(useCallback(() => {
+      console.log("calling focus effect ....")
+      getDetails()
+    }, [])
+    )
+
+    useEffect(() => {
+        if(studentPerformance) {
+            // const pdfUrl = "https://example.com/sample.pdf"; // Replace with your cloud URL
+            const pdfUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(studentPerformance.download_url)}`;
+            setPdfUrlLink(pdfUrl)
+        }
+    }, [studentPerformance])
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
@@ -36,11 +61,14 @@ const StudentModal = ({ visible, student, onClose }: Props) => {
           <Text style={styles.closeText}>✕</Text>
         </TouchableOpacity>
         {
-          token &&
+          (studentPerformance && studentPerformance.download_url) &&
           <WebView
-            style={styles.webViewContainer}
-            source={{ uri: webViewBaseUrl+'/?token='+token+'&student='+student.student_id+'&class='+liveClass.class_schedule_id }}
-        />
+                source={{ uri: pdfUrlLink }}
+                startInLoadingState={true}
+                renderLoading={() => <ActivityIndicator size="large" />}
+                style={{ flex: 1 }}
+            />
+          
         }
         
         {/* Add more student info here */}
@@ -85,4 +113,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default StudentModal;
+export default STAnalysisModal;

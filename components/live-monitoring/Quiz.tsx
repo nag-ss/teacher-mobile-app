@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getSlipTestResults, setSelectedTask, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { getSlipTestResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,8 +23,8 @@ const Quiz = ({task, refreshTasks}: any) => {
     const [quizeStatusCheck, setQuizeStatusCheck] = useState('');
     const [isTaskLive, setIsTaskLive] = useState(false);
 
-    // console.log("Slip Test Slip Test Slip Test Slip Test")
-    // console.log(task)
+    console.log("Slip Test Slip Test Slip Test Slip Test")
+    console.log(task)
     const getAttendanceData = async (taskId: number) => {
         const reqObj: any = {classId, taskId}
         dispatch(getSlipTestResults(reqObj))
@@ -38,6 +38,7 @@ const Quiz = ({task, refreshTasks}: any) => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('SlipTest'))
         dispatch(setSelectedTaskId(task.task_id))
+        dispatch(setSelectedTaskData(task))
         getAttendanceData(task.task_id)
     }
     useEffect(() => {
@@ -110,7 +111,7 @@ const Quiz = ({task, refreshTasks}: any) => {
         const intervarid = setInterval(() => {
           let timeLeft = getTimeLeft()
           setQuizeStatusCheck(timeLeft);
-          if(task.status == 'active' && timeLeft != 'Time up!') {
+          if((task.status == 'active' || task.status == 'in_progress') && timeLeft != 'Time up!') {
             setIsTaskLive(true)
           } else {
             setIsTaskLive(false)

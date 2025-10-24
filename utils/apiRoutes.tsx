@@ -28,3 +28,5 @@ export const EDIT_OBJECTIVE_QUESTION = 'quiz/edit_objective_question';
 export const EDIT_SUBJECTIVE_QUESTION = 'quiz/edit_subjective_question';
 export const TRANSLATE_CLASSWORK_FROM_IMAGE = 'translation/classwork_translation';
 export const TRANSLATE_AICHECK_FROM_IMAGE = 'translation/ai_check_translation';
+export const GET_QUIZ_PERFORMANCE = 'quiz/teacher/student_performance_results/quiz';
+export const GET_CW_PERFORMANCE = 'monitoring/get_classwork_eval_page';

@@ -18,15 +18,26 @@ export const getSlipTestResults = createAsyncThunk('livemonitoring/getSlipTestRe
     return handleAuthApiCall(liveMonitoringService.getSlipTestResults, reqData, thunkAPI);
 });
 
+export const getSlipTestPerformance = createAsyncThunk('livemonitoring/getSlipTestPerformance', async (reqData, thunkAPI) => {
+    return handleAuthApiCall(liveMonitoringService.getSlipTestPerformance, reqData, thunkAPI);
+});
+
+export const getClassWorkPerformance = createAsyncThunk('livemonitoring/getClassWorkPerformance', async (reqData, thunkAPI) => {
+    return handleAuthApiCall(liveMonitoringService.getClassWorkPerformance, reqData, thunkAPI);
+});
+
 const liveMonitoringSlice = createSlice({
     name: 'liveMonitoring',
     initialState: {
       selectedTaskSection: '',
+      selectedTask: null,
       selectedTaskId: '',
       studentsData: [],
       loading: false,
       error: null,
-      classId: 0
+      classId: 0,
+      studentPerformance: null,
+      studentCWPerformance: null,
     },
     reducers: {
         setSelectedTask: (state, action) => {
@@ -37,7 +48,10 @@ const liveMonitoringSlice = createSlice({
         },
         setClassId: (state, action) => {
             state.classId = action.payload
-        }
+        },
+        setSelectedTaskData: (state, action) => {
+            state.selectedTask = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -108,9 +122,43 @@ const liveMonitoringSlice = createSlice({
           state.loading = false
           console.log("error in calling live class api")
         })
+        .addCase(getSlipTestPerformance.pending, (state) => {
+            state.loading = true;
+            state.studentPerformance = null
+        })
+        .addCase(getSlipTestPerformance.fulfilled, (state, action) => {
+            console.log("sutdent ST performance result payload")
+            console.log(action.payload)
+            if(action.payload) {
+                state.studentPerformance = action.payload;
+            }
+            state.loading = false;
+        })
+        .addCase(getSlipTestPerformance.rejected, (state, action) => {
+          state.loading = false
+          state.studentPerformance = null
+          console.log("error in calling live class api")
+        })
+        .addCase(getClassWorkPerformance.pending, (state) => {
+            state.loading = true;
+            state.studentCWPerformance = null
+        })
+        .addCase(getClassWorkPerformance.fulfilled, (state, action) => {
+            console.log("action.payload")
+            console.log(action.payload)
+            if(action.payload) {
+                state.studentCWPerformance = action.payload;
+            }
+            state.loading = false;
+        })
+        .addCase(getClassWorkPerformance.rejected, (state, action) => {
+          state.loading = false
+          state.studentCWPerformance = null
+          console.log("error in calling live class api")
+        })
     },
 });
   
-export const { setSelectedTask, setClassId, setSelectedTaskId } = liveMonitoringSlice.actions;
+export const { setSelectedTask, setClassId, setSelectedTaskId, setSelectedTaskData } = liveMonitoringSlice.actions;
   
 export default liveMonitoringSlice.reducer;

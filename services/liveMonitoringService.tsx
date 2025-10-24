@@ -1,5 +1,5 @@
 import apiRequest from '../utils/api';
-import { GET_CLASS_ATTENDANCE, GET_AI_TASK_CHECK, GET_CLASSWORK_CHECK, GET_SLIPTEST_CHECK } from '../utils/apiRoutes'
+import { GET_CLASS_ATTENDANCE, GET_AI_TASK_CHECK, GET_CLASSWORK_CHECK, GET_SLIPTEST_CHECK, GET_QUIZ_PERFORMANCE, GET_CW_PERFORMANCE } from '../utils/apiRoutes'
 import moment from 'moment';
 
 const getAttendance = async (reqData: any, userToken: string) => {
@@ -28,11 +28,28 @@ const getSlipTestResults = async (reqData: any, userToken: string) => {
   return await apiRequest(reqUrl, 'GET', reqData, userToken);
 };
 
+const getSlipTestPerformance = async (reqData: any, userToken: string) => {
+  const reqUrl = GET_QUIZ_PERFORMANCE + '/'+reqData.published_quiz_id+'/'+reqData.student_id
+  // const reqUrl = GET_SLIPTEST_CHECK + '?class_schedule_id=936&task_id=464'
+  console.log(reqUrl)
+return await apiRequest(reqUrl, 'GET', reqData, userToken);
+};
+
+const getClassWorkPerformance = async (reqData: any, userToken: string) => {
+  const reqUrl = GET_CW_PERFORMANCE + '/'+reqData.student_work_id
+  // const reqUrl = GET_SLIPTEST_CHECK + '?class_schedule_id=936&task_id=464'
+  console.log(reqUrl)
+return await apiRequest(reqUrl, 'GET', reqData, userToken);
+};
+
+
 const liveMonitoringService = {
     getAttendance,
     getAITaskCheckResults,
     getClassworkResults,
-    getSlipTestResults
+    getSlipTestResults,
+    getSlipTestPerformance,
+    getClassWorkPerformance
 };
 
 export default liveMonitoringService;

@@ -7,9 +7,9 @@ import { logout } from '@/store/authSlice';
 
 // const API_URL = 'http://localhost:3002/api/';
 //test url
-const API_URL = 'https://superslate-ss.onrender.com/';
+// const API_URL = 'https://superslate-ss.onrender.com/';
 //prod url
-// const API_URL = 'https://superslate-web.calmsky-d7431561.centralindia.azurecontainerapps.io/'
+const API_URL = 'https://superslate-web.calmsky-d7431561.centralindia.azurecontainerapps.io/'
 
 const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => {
   let headers: any = {
@@ -31,9 +31,6 @@ const getHeaders = (token: string | null, isFile: boolean, endpoint: string) => 
 const refreshToken = async () => {
   try {
     const refreshToken = await AsyncStorage.getItem('userRefreshToken')
-    console.log("refreshToken")
-    console.log(refreshToken)
-    console.log(`${API_URL}auth/refresh`)
     // const response = await axios.post(`${API_URL}auth/refresh`, {refresh_token: refreshToken});
     const response = await axios({
       url: `${API_URL}refresh`,
@@ -41,8 +38,6 @@ const refreshToken = async () => {
       data: {refresh_token: refreshToken},
       headers: getHeaders(null, false, ''),
     });
-    console.log("refresh respon ....")
-    console.log(response.data)
     return response.data;
   } catch (err) {
     throw new Error('Session expired. Please login again.');
@@ -54,27 +49,18 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
   // const dispatch = useDispatch<any>()
   
   
-  console.log("welcome ")
   try {
-    console.log(`${API_URL}${endpoint}`)
     // console.log(data)
     // console.log(method)
     // console.log(token)
-    console.log(getHeaders(token, isFile, endpoint))
     const response = await axios({
       url: `${API_URL}${endpoint}`,
       method,
       data,
       headers: getHeaders(token, isFile, endpoint),
     });
-    console.log("response.data")
-    console.log(response.data)
     return response.data;
   } catch (error: any) {
-    console.log("error in api page" )
-    console.log(`${API_URL}${endpoint}`)
-    console.log(error.response)
-    console.log(error.response.status)
     if (error.response?.status === 401 && retry) {
       try {
         console.log("calling refresh token ")
