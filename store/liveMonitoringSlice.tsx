@@ -79,7 +79,7 @@ const liveMonitoringSlice = createSlice({
             state.studentsData = []
         })
         .addCase(getAITaskCheckResults.fulfilled, (state, action) => {
-            console.log("action.payload")
+            console.log("AI check res payload")
             console.log(action.payload)
             if(action.payload.detail == undefined) {
                 state.studentsData = action.payload;

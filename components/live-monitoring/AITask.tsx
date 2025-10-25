@@ -33,13 +33,13 @@ const AITask = ({task}: any) => {
 
     const cardPressed = () => {
         console.log("card pressed ....")
-        dispatch(setSelectedTask('AI Task'))
+        dispatch(setSelectedTask('AICheck'))
         dispatch(setSelectedTaskId(task.task_id))
         dispatch(setSelectedTaskData(task))
         getAttendanceData()
     }
     useEffect(() => {
-        if(selectedTaskSection == 'AI Task') {
+        if(selectedTaskSection == 'AICheck') {
             getAttendanceData()
         }
 
@@ -49,7 +49,7 @@ const AITask = ({task}: any) => {
     return (
       <View>
         <TouchableOpacity onPress={cardPressed}>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'AI Task' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
+        <View style={[styles.card, {borderColor : (selectedTaskSection == 'AICheck' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray'}]}>
             <View style={styles.headerSection}>
               <View style={styles.imageSection}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Note-taking.png')} />

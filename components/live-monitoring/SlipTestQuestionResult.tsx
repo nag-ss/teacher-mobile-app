@@ -57,7 +57,7 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                     
                     <View style={styles.nameSection}>
                         <Text style={{marginRight: 10, marginTop: 8}}>{'Accuracy:'}</Text>
-                        <Text style={styles.name}>{studentAnswer.accuracy ? studentAnswer.accuracy : '0%'}</Text> 
+                        <Text style={styles.name}>{studentAnswer.accuracy ? studentAnswer.accuracy : ((studentAnswer.question_type == 'objective' && studentAnswer.is_correct) ? '100%' : '0%')}</Text> 
                     </View>
                 </View>
             </View>
