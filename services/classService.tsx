@@ -22,7 +22,9 @@ import {
   TRANSLATE_CLASSWORK_FROM_IMAGE,
   TRANSLATE_AICHECK_FROM_IMAGE,
   SAVE_TEACHER_TASK,
-  CANCEL_TEACHER_TASK
+  CANCEL_TEACHER_TASK,
+  LAUNCH_AI_CHECK_TASK,
+  GET_TASK_STATUS
 } from '../utils/apiRoutes'
 import moment from 'moment';
 
@@ -256,6 +258,17 @@ const cancelSlipTestQuiz = async(task: any, userToken: string) => {
   return await apiRequest(reqUrl, 'POST', task, userToken);
 }
 
+const launchAICheckTask = async(task: any, userToken: string) => {
+  const reqUrl = `${LAUNCH_AI_CHECK_TASK}?teacher_task_id=${task.task_id}&class_schedule_id=${task.class_schedule_id}`;
+  return await apiRequest(reqUrl, 'POST', task, userToken);
+}
+
+const getTaskStatus = async(task: any, userToken: string) => {
+  const reqUrl = `${GET_TASK_STATUS}?teacher_task_id=${task.task_id}`;
+  return await apiRequest(reqUrl, 'GET', task, userToken);
+}
+
+
 const authService = {
     getLiveClass,
     getScheduleClasses,
@@ -280,7 +293,9 @@ const authService = {
     translateClasswork,
     translateAICheck,
     saveSlipTestQuiz,
-    cancelSlipTestQuiz
+    cancelSlipTestQuiz,
+    launchAICheckTask,
+    getTaskStatus
 };
 
 export default authService;

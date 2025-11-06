@@ -12,7 +12,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   // const timelimeIntervalHeight = 35
   const timelimeIntervalHeight = 27.5
   // const timelimeIntervalHeight = 0.458
-  const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') == currentDate ? true : false)
+  const [isLoad, setIsLoad] = useState(moment(new Date()).format('YYYY-MM-DD') <= currentDate ? true : false)
   const [topic, setTopic] = useState("");
   const [subTopic, setSubTopic] = useState("");
   // const isLoad = true;
@@ -57,7 +57,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   }, [selectedClass]);
 
   return (
-    <TouchableOpacity key={idx} style={[styles.classCard, {height: height*timelimeIntervalHeight, borderColor: item.live ? Colors.primaryColor : 'lightgray', backgroundColor: item.isClassOver ? 'grey' : '#fff', opacity: item.isClassOver ? 0.4 : 1 }]} onPress={openClassPrep}>
+    <TouchableOpacity key={idx} style={[styles.classCard, {height: (height*timelimeIntervalHeight)-5, marginBottom: 5, borderColor: item.live ? Colors.primaryColor : 'lightgray', backgroundColor: item.isClassOver ? 'grey' : '#fff', opacity: item.isClassOver ? 0.4 : 1 }]} onPress={openClassPrep}>
         <View style={[styles.classHeader]}>
             {/* <SvgLoader svgFilePath="chemistry" width={height == 1 ? 50 : 70} height={height == 1 ? 50 :70}  /> */}
             <View style={{width: 70, alignItems: 'center'}}>

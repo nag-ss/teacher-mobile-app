@@ -35,14 +35,10 @@ const TaskSection = () => {
     "task_type": "AddTask"
   }
   
-  console.log("classTasks")
-  console.log(classTasks)
-
   const classPrepRef = useRef<any>();
       
   const onPress = () => {
       // getAttendanceData()
-      console.log("button pressed ....")
       setIsPressed(true)
       // classPrepRef.current?.setLiveMonitorFlag()
       classPrepRef.current?.setSelectedClass(true)
@@ -72,8 +68,6 @@ const TaskSection = () => {
   useEffect(() => {
     if(classTasks && classTasks.length) {
       const tasksList = [attendanceTask, ...classTasks];
-      console.log("tasksList")
-      console.log(tasksList)
       setTasks(tasksList)
     } else {
       const tasksList = [attendanceTask];
@@ -140,7 +134,7 @@ const TaskSection = () => {
               renderItem={
                 ({ item }) => {
                   if(item.task_type == 'AICheck') {
-                    return (<AITask task={item} /> )
+                    return (<AITask task={item}  refreshTasks={getTasksListData} /> )
                   } else if(item.task_type == 'Classwork') {
                     return (<ClassWork task={item} refreshTasks={getTasksListData} /> )
                   } else if(item.task_type == 'SlipTest') {

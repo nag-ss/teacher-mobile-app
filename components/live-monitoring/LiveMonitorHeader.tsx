@@ -29,8 +29,6 @@ const LiveMonitorHeader = () => {
             setActiveStudentsCount(0)
             setTotalStudentsCount(0)
         }
-        console.log("liveClass")
-        console.log(liveClass)
     }, [studentsData])
   const gotoHome = () => {
     navigation.navigate('Home')

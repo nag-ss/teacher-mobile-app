@@ -77,6 +77,14 @@ const apiRequest = async (endpoint: string, method: string, data: any, token: st
         throw refreshErr;
       }
     }
+    if (error.response?.status === 400) {
+      try {
+        return error.response?.data
+      } catch (refreshErr: any) {
+        console.log(refreshErr.message)
+        throw refreshErr;
+      }
+    }
     if (error.response) {
       
       // Request made and server responded

@@ -22,6 +22,7 @@ const Quiz = ({task, refreshTasks}: any) => {
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     const [quizeStatusCheck, setQuizeStatusCheck] = useState('');
     const [isTaskLive, setIsTaskLive] = useState(false);
+    const [publishError, setPublishError] = useState(null);
 
     console.log("Slip Test Slip Test Slip Test Slip Test")
     console.log(task)
@@ -65,9 +66,17 @@ const Quiz = ({task, refreshTasks}: any) => {
         division_id: liveClass.division_id,
         task_id: task.task_id
       }
-      await dispatch(publishQuiz(the_quiz));
-      await refreshTasks()
-      setShowModal4AICheckModal(false)
+      const qRes = await dispatch(publishQuiz(the_quiz));
+      console.log("qRes")
+      console.log(qRes.payload)
+      if(!qRes.payload.detail) {
+        await refreshTasks()
+        setShowModal4AICheckModal(false)
+        setPublishError(null)
+      } else {
+        setPublishError(qRes.payload.detail)
+      }
+      
 
     }
 
@@ -130,7 +139,7 @@ const Quiz = ({task, refreshTasks}: any) => {
               </View>
                
               <View style={[styles.pbutton, {backgroundColor: isTaskLive ? '#fff' : '', borderColor: '#21C17C'}]} >
-                <Text style={[styles.pbuttonText, {color: task.live ? '#fff' : '#000' }]}>{task.status =='saved' ? 'In Queue' : ('Progress')}</Text>
+                <Text style={[styles.pbuttonText, {color: task.live ? '#fff' : '#000' }]}>{task.status =='saved' ? 'In Queue' : (!isTaskLive ? 'Completed' : 'Progress')}</Text>
               </View> 
               
             </View>
@@ -169,8 +178,13 @@ const Quiz = ({task, refreshTasks}: any) => {
                   <Text style={styles.subText}>Are you sure you want to proceed?</Text>
                 </View>
               </View>
+              {publishError ? 
+              <View style={{marginTop: 13.7}}>
+                <Text style={{color: 'red'}}>{publishError}</Text>
+              </View>
+              : null }
               <View style={styles.footer}>
-                <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal4AICheckModal(false)}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => {setShowModal4AICheckModal(false); setPublishError(null)}}>
                   <Text>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>

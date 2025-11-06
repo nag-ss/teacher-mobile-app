@@ -20,7 +20,8 @@ const ClassWork = ({task, refreshTasks}: any) => {
     const {liveClass} = useSelector((state: any) => state.classes);
     const [cwStatusCheck, setCWStatusCheck] = useState('');
     const [isTaskLive, setIsTaskLive] = useState(false);
-
+    const [publishError, setPublishError] = useState(null);
+    
     console.log("task")
     console.log(task)
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
@@ -55,10 +56,14 @@ const ClassWork = ({task, refreshTasks}: any) => {
             task_id: task.task_id
           }
           console.log(classworkReq)
-          await dispatch(publishClasswork(classworkReq));
-          await refreshTasks()
-          setShowModal4AICheckModal(false)
-    
+          const pCWRes = await dispatch(publishClasswork(classworkReq));
+          if(!pCWRes.payload.detail) {
+            await refreshTasks()
+            setShowModal4AICheckModal(false)
+            setPublishError(null)
+          } else {
+            setPublishError(pCWRes.payload.detail)
+          }
     }
     
     useEffect(() => {
@@ -154,9 +159,14 @@ const ClassWork = ({task, refreshTasks}: any) => {
                     <Text style={styles.mainText}>Publish Classwork</Text>
                     <Text style={styles.subText}>Are you sure you want to proceed?</Text>
                 </View>
+              </View>
+              {publishError ? 
+                <View style={{marginTop: 13.7}}>
+                  <Text style={{color: 'red'}}>{publishError}</Text>
                 </View>
-                <View style={styles.footer}>
-                <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal4AICheckModal(false)}>
+                : null }
+              <View style={styles.footer}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={() => {setShowModal4AICheckModal(false); setPublishError(null)}}>
                     <Text>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>

@@ -26,6 +26,10 @@ export const getClassWorkPerformance = createAsyncThunk('livemonitoring/getClass
     return handleAuthApiCall(liveMonitoringService.getClassWorkPerformance, reqData, thunkAPI);
 });
 
+export const getTaskSummary = createAsyncThunk('livemonitoring/getTaskSummary', async (reqData, thunkAPI) => {
+    return handleAuthApiCall(liveMonitoringService.getTaskSummary, reqData, thunkAPI);
+});
+
 const liveMonitoringSlice = createSlice({
     name: 'liveMonitoring',
     initialState: {
@@ -38,6 +42,7 @@ const liveMonitoringSlice = createSlice({
       classId: 0,
       studentPerformance: null,
       studentCWPerformance: null,
+      taskSummary: null
     },
     reducers: {
         setSelectedTask: (state, action) => {
@@ -79,8 +84,6 @@ const liveMonitoringSlice = createSlice({
             state.studentsData = []
         })
         .addCase(getAITaskCheckResults.fulfilled, (state, action) => {
-            console.log("AI check res payload")
-            console.log(action.payload)
             if(action.payload.detail == undefined) {
                 state.studentsData = action.payload;
             }
@@ -88,15 +91,12 @@ const liveMonitoringSlice = createSlice({
         })
         .addCase(getAITaskCheckResults.rejected, (state, action) => {
           state.loading = false
-          console.log("error in calling live class api")
         })
         .addCase(getClassworkResults.pending, (state) => {
             state.loading = true;
             state.studentsData = []
         })
         .addCase(getClassworkResults.fulfilled, (state, action) => {
-            console.log("action.payload")
-            console.log(action.payload)
             if(action.payload.detail == undefined) {
                 state.studentsData = action.payload;
             }
@@ -104,15 +104,12 @@ const liveMonitoringSlice = createSlice({
         })
         .addCase(getClassworkResults.rejected, (state, action) => {
           state.loading = false
-          console.log("error in calling live class api")
         })
         .addCase(getSlipTestResults.pending, (state) => {
             state.loading = true;
             state.studentsData = []
         })
         .addCase(getSlipTestResults.fulfilled, (state, action) => {
-            console.log("action.payload")
-            console.log(action.payload)
             if(action.payload.detail == undefined) {
                 state.studentsData = action.payload;
             }
@@ -156,6 +153,21 @@ const liveMonitoringSlice = createSlice({
           state.studentCWPerformance = null
           console.log("error in calling live class api")
         })
+        .addCase(getTaskSummary.pending, (state) => {
+            state.loading = true;
+            state.taskSummary = null
+        })
+        .addCase(getTaskSummary.fulfilled, (state, action) => {
+            if(action.payload) {
+                state.taskSummary = action.payload;
+            }
+            state.loading = false;
+        })
+        .addCase(getTaskSummary.rejected, (state, action) => {
+          state.loading = false
+          state.taskSummary = null
+        })
+        
     },
 });
   

@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors';
-import { getAITaskCheckResults, setSelectedTask } from '@/store/liveMonitoringSlice';
+import { getAITaskCheckResults, getTaskSummary, setSelectedTask } from '@/store/liveMonitoringSlice';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,11 +14,16 @@ interface AITaskCardProps {
 
 const AICheckSummary = ({task}: any) => {
     const dispatch = useDispatch<any>()
-    const { selectedTaskSection, classId} = useSelector((state: any) => state.liveMonitor)
+    const { selectedTaskSection, classId, selectedTask, taskSummary} = useSelector((state: any) => state.liveMonitor)
     
-    const getAttendanceData = async () => {
-        const reqObj: any = {classId}
-        dispatch(getAITaskCheckResults(reqObj))
+    const getSummaryData = async () => {
+      console.log("calling req for summary api ....")
+        const reqObj: any = {
+          task_id: selectedTask.task_id,
+          class_schedule_id: selectedTask.class_schedule_id
+        }
+        console.log(reqObj)
+        dispatch(getTaskSummary(reqObj))
     }
     
     useEffect(() => {
@@ -28,17 +33,27 @@ const AICheckSummary = ({task}: any) => {
 
     }, [selectedTaskSection])
 
+    useEffect(() => {
+      if(selectedTask && selectedTask.task_id) {
+        getSummaryData()
+      }
+    },  [selectedTask])
+
     // if(selectedTaskSection == 'AI Task') {
         return (
             <View style={{width: '100%'}}>
+              {taskSummary ? 
               <View style={[styles.card]}>
-                  <View style={{width: '22%'}}>
-                      <Text style={styles.title}>{'AI Check Summary - '}</Text>
+                  <View style={{width: '23%'}}>
+                      <Text style={styles.title}>{taskSummary.name+' - '}</Text>
                   </View>
-                  <View  style={{width: '78%'}}>
-                      <Text style={styles.subTitle}>{'Student engagement is 85%, with 3 students flagged for incomplete work. Overall class performance is stable. - 10:45 AM'}</Text>
+                  <View  style={{width: '77%'}}>
+                      <Text style={styles.subTitle}>{taskSummary.summary}</Text>
                   </View>
               </View>
+              : null
+              }
+              
             </View>
           )
     // } else {

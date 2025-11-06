@@ -98,6 +98,14 @@ export const cancelSlipTestQuiz = createAsyncThunk('/teacher/cancel_teacher_task
   return handleAuthApiCall(classService.cancelSlipTestQuiz, task, thunkAPI);
 });
 
+export const launchAICheckTask = createAsyncThunk('/teacher/launchAICheckTask', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.launchAICheckTask, quiz, thunkAPI);
+});
+
+export const getTaskStatus = createAsyncThunk('/teacher/getTaskStatus', async (quiz: any, thunkAPI) => {
+  return handleAuthApiCall(classService.getTaskStatus, quiz, thunkAPI);
+});
+
 const classSlice = createSlice({
     name: 'class',
     initialState: {
@@ -397,6 +405,12 @@ const classSlice = createSlice({
           state.loading = false
           console.log("Slip Test cancel failed");
           console.log(action.payload)
+        })
+        .addCase(publishClasswork.fulfilled, (state, action) => {
+          console.log("classwork publish successfully")
+          console.log(action.payload)
+          console.log(action.payload.detail)
+          state.loading = false;
         })
     },
 });

@@ -184,24 +184,6 @@ const onLayout = (event: LayoutChangeEvent): void => {
     useEffect(() => {
         if(classTimeline && classTimeline.length) {
             let timelineDataArray = classTimeline.map((timeline: any) => {
-                /*response sample 
-                {
-                    "class_id": 32,
-                    "date": "2025-05-03",
-                    "period": "Period 1",
-                    "start_time": "18:00:00",
-                    "end_time": "18:59:00",
-                    "school_name": "Super School",
-                    "division_name": "Class 8",
-                    "section_name": "A",
-                    "subject_name": "Maths",
-                    "teacher_first_name": "Nageswara Rao",
-                    "teacher_last_name": "Nali",
-                    "assets": [],
-                    "class_details": []
-                  },*/
-                console.log(timeline.start_time)
-                console.log(moment(timeline.start_time))
                 var startTime = moment(timeline.start_time, 'HH:mm:ss');
                 var endTime = moment(timeline.end_time, 'HH:mm:ss');
                 let startTimeStr = startTime.format('HH:mm')
@@ -209,7 +191,6 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
                 var duration = moment.duration(endTime.diff(startTime));
 
-                // var minutes = duration.asMinutes() % 60;
                 var minutes = duration.asMinutes()
                 const start_date_time = moment(timeline.date + " " +timeline.start_time)
                 const end_date_time = moment(timeline.date + " " +timeline.end_time)
@@ -226,26 +207,21 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     isClassOver: now.isSameOrAfter(end_date_time)
                 }
             })
-            console.log("timelineDataArray")
-            console.log(timelineDataArray)
             setTimelineData(timelineDataArray)
             const firstClassTime = moment(classTimeline[0].start_time, 'HH:mm:ss').format('HH:mm')
             const lastClassTime = moment(classTimeline[classTimeline.length-1].end_time, 'HH:mm:ss').format('HH:mm')
-            // const timeSlotsData = generateTimeSlots(firstClassTime, lastClassTime, 15);
-            // const timeSlotsData = generateTimeSlots('8:00', lastClassTime, 15);
             const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
             setTimeSlots(timeSlotsData)
             closestSlot = timeSlots[0];
             const preTime = getLastQuarterHour()
             const ind = timeSlotsData.indexOf(preTime)
-            console.log("preTime")
-            console.log(preTime)
-            console.log(ind)
-
-            console.log("timeSlotsData")
-            console.log(timeSlotsData)
             let y= ind*timelimeIntervalHeight;
-            timelineRef.current.scrollTo({x: 0, y, animated: true});
+            if(moment(date).format('YYYY-MM-DD') == moment(new Date()).format('YYYY-MM-DD')) {
+              timelineRef.current.scrollTo({x: 0, y, animated: true});
+            } else {
+              timelineRef.current.scrollTo({x: 0, y:0, animated: true});
+            }
+            // timelineRef.current.scrollTo({x: 0, y, animated: true});
         } else {
             const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
             setTimeSlots(timeSlotsData)
@@ -253,14 +229,13 @@ const onLayout = (event: LayoutChangeEvent): void => {
             setTimelineData([])
             const preTime = getLastQuarterHour()
             const ind = timeSlotsData.indexOf(preTime)
-            console.log("preTime")
-            console.log(preTime)
-            console.log(ind)
-
-            console.log("timeSlotsData")
-            console.log(timeSlotsData)
             let y= ind*timelimeIntervalHeight;
-            timelineRef.current.scrollTo({x: 0, y, animated: true});
+            if(moment(date).format('YYYY-MM-DD') == moment(new Date()).format('YYYY-MM-DD')) {
+              timelineRef.current.scrollTo({x: 0, y, animated: true});
+            } else {
+              timelineRef.current.scrollTo({x: 0, y: 0, animated: true});
+            }
+            
         }
     }, [classTimeline])
 

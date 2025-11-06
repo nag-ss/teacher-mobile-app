@@ -10,8 +10,8 @@ const StudentGrid = () => {
     const { studentsData, selectedTaskSection } = useSelector((state: any) => state.liveMonitor)
     const [selectedStudent, setSelectedStudent] = useState(null);
   
-  console.log("studentsData")
-  console.log(studentsData)
+  // console.log("studentsData")
+  // console.log(studentsData)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Students Overview</Text>
