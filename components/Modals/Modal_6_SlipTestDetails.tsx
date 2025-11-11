@@ -148,7 +148,7 @@ const TestSettingsModal = ({ visible, selectedTask, onClose, generateSlipTest }:
                 placeholder="Enter Test title"
                 style={[styles.textInput, {backgroundColor: 'white', borderColor: error ? 'red' : '#D1D5DB'}]}
               />
-              {error && <Text style={{color : "red" }}>{error}</Text>}
+              {error ? <Text style={{color : "red" }}>{error}</Text> : null}
             </View>
 
             {/* Time & Marks */}

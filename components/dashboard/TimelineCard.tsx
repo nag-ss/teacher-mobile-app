@@ -18,7 +18,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   // const isLoad = true;
   const classPrepRef = useRef<any>();
 
-  console.log("height ======= ", height)
+  // console.log("height ======= ", height)
 
   const subjectImageSize: any = {
     1: {height: 25, width: 20, fontSize: 9.1, headFontSize: 9.1, subjectFontSize: 8},
@@ -31,7 +31,7 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
     // console.log("welcome to class ....")
     // console.log(moment(new Date()).format('YYYY-MM-DD'), currentDate);
     // fetch class tasks
-    console.log(item)
+    // console.log(item)
     if(!item.isClassOver) {
       classPrepRef.current?.setSelectedClass()
     }

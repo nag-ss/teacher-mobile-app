@@ -57,6 +57,9 @@ const liveMonitoringSlice = createSlice({
         setSelectedTaskData: (state, action) => {
             state.selectedTask = action.payload
         },
+        clearSelectedTaskData: (state, action) => {
+            state.selectedTask = null
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -171,6 +174,6 @@ const liveMonitoringSlice = createSlice({
     },
 });
   
-export const { setSelectedTask, setClassId, setSelectedTaskId, setSelectedTaskData } = liveMonitoringSlice.actions;
+export const { setSelectedTask, setClassId, setSelectedTaskId, setSelectedTaskData, clearSelectedTaskData } = liveMonitoringSlice.actions;
   
 export default liveMonitoringSlice.reducer;

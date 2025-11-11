@@ -10,12 +10,14 @@ import Analytics from '../analytics';
 import Profile from '../profile';
 import Logout from '../logout';
 import LiveMonitoring from '../live-monitoring';
+import { PaperProvider } from "react-native-paper";
 
 const Stack = createStackNavigator();
 
 export default function App() {
     const navigation = useNavigation<any>()
   return (
+    <PaperProvider>
         <View style={styles.container}>
         <Sidebar navigation={navigation} />
         <View style={[styles.content]}>
@@ -29,7 +31,7 @@ export default function App() {
           </Stack.Navigator>
         </View>
       </View>
-      
+      </PaperProvider>
   );
 }
 

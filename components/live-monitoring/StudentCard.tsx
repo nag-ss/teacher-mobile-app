@@ -4,7 +4,7 @@ import ProgressCircle from './ProgressCircle';
 import { useSelector } from 'react-redux';
 import StudentModal from './StudentModal';
 import SlipTestResultModal from './SlipTestResult';
-import CWAnalysisModal from './CWAnalysis';
+import CWResultModal from './CWResult';
 
 interface StudentCardProps {
   name: string;
@@ -21,7 +21,8 @@ const StudentCard = (studentData: any) => {
     const [stResultModalVisible, setstResultModalVisible] = useState(false);
     const [cwResultModalVisible, setcwResultModalVisible] = useState(false);
 
-
+  console.log("studentData")
+  console.log(studentData)
   const closeModal = () => {
     setNotesModalVisible(false);
     setstResultModalVisible(false)
@@ -48,7 +49,7 @@ const StudentCard = (studentData: any) => {
 
 
     return (
-      <View style={{marginBottom: 9.14, marginRight: 5.49}}>
+      <View style={{marginBottom: 9.14, marginRight: 5.49}} key={studentData.student_id+"_st"}>
         <TouchableOpacity style={styles.card} onPress={() => showStudentInfo()}>
           <View style={styles.iconView}>
               <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/Male.png')} />
@@ -60,14 +61,21 @@ const StudentCard = (studentData: any) => {
           {
               (student.task_type == 'SlipTest') ?
               <View style={styles.statusContainer}>
+                {student.status.toLowerCase() == 'evaluated' ? 
                   <ProgressCircle progress={Math.round(parseFloat(student.percentage.replace("%", "")))} score={parseFloat(student.score)} size={40} strokeWidth={4} />
-              </View>
+                  : <Image style={{width: 40, height: 40}} source={require('../../assets/images/tasks/result_progress.png')} />
+                }
+                </View>
               : null
           }
           {
               (student.task_type == 'Classwork') ?
               <View style={styles.statusContainer}>
-                  <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={parseFloat(student.score ? student.score : 0)} size={40} strokeWidth={4} />
+                  {student.status.toLowerCase() == 'evaluated' ? 
+                    <ProgressCircle progress={Math.round(parseFloat(student.percentage))} score={parseFloat(student.score ? student.score : 0)} size={40} strokeWidth={4} />
+                    : <Image style={{width: 40, height: 40}} source={require('../../assets/images/tasks/result_progress.png')} />
+                  }
+                  
               </View>
               : null
           }
@@ -86,9 +94,13 @@ const StudentCard = (studentData: any) => {
           {
               (student.task_type == 'AICheck' && student.match_type == 'approx') ?
               <View style={styles.statusContainer}>
-                  {
-                      <ProgressCircle progress={Math.round(parseFloat(student.approx.percentage))} score={Math.round(parseFloat(student.approx.score))} size={40} strokeWidth={4} color={student.approx.color} />
+                  
+                  {student.evaluation_summary?.status?.toLowerCase() == 'completed' ? 
+                    <ProgressCircle progress={Math.round(parseFloat(student.approx.percentage))} score={Math.round(parseFloat(student.approx.score))} size={40} strokeWidth={4} color={student.approx.color} />
+                    : <Image style={{width: 40, height: 40}} source={require('../../assets/images/tasks/result_progress.png')} />
                   }
+                      
+                  
                   
               </View>
               : null
@@ -111,9 +123,9 @@ const StudentCard = (studentData: any) => {
       /> : null
       }
       {cwResultModalVisible ?
-        <CWAnalysisModal
+        <CWResultModal
         visible={cwResultModalVisible}
-        student={student}
+        studentAnswer={student}
         onClose={closeModal}
       /> : null
       }

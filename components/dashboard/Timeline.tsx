@@ -114,9 +114,9 @@ const onLayout = (event: LayoutChangeEvent): void => {
   const onDateChange = (selectedDate: any) => {
     const currentDate = selectedDate;
     setShow(false);
-    console.log("======================")
-    console.log(currentDate);
-    console.log("======================")
+    // console.log("======================")
+    // console.log(currentDate);
+    // console.log("======================")
     setDate(currentDate);
     getDetails(moment(currentDate).format('YYYY-MM-DD'))
   };
@@ -129,14 +129,14 @@ const onLayout = (event: LayoutChangeEvent): void => {
       const reqObj: any = {
         date: currentDate
       }
-      console.log("get classes by date")
-      console.log(reqObj)
+      // console.log("get classes by date")
+      // console.log(reqObj)
        await dispatch(getScheduleClasses(reqObj))
        
     }
 
     useFocusEffect(useCallback(() => {
-        console.log("calling focus effect ....")
+        // console.log("calling focus effect ....")
         setCalendarDate(moment(new Date()).format('YYYY-MM-DD'))
         getDetails(moment(new Date()).format('YYYY-MM-DD'))
       }, [])

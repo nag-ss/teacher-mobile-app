@@ -62,14 +62,14 @@ const LiveSessionCard = () => {
   }
   const getDetails = async () => {
     let liveClassDataRes = await dispatch(getLiveClass())
-    console.log("liveClassDataRes.payload ------------------")
-    console.log(liveClassDataRes.payload)
+    // console.log("liveClassDataRes.payload ------------------")
+    // console.log(liveClassDataRes.payload)
     if(!liveClassDataRes.payload) {
       
       getClassFromSchedule()
     } else {
-      console.log("liveClassDataRes.payload ----")
-      console.log(liveClassDataRes.payload)
+      // console.log("liveClassDataRes.payload ----")
+      // console.log(liveClassDataRes.payload)
       setNextClass(liveClassDataRes.payload)
       setIsNextClass(false)
       // getClassFromSchedule()
@@ -82,13 +82,13 @@ const LiveSessionCard = () => {
   // }, [])
 
   useFocusEffect(useCallback(() => {
-    console.log("calling focus effect ....")
+    // console.log("calling focus effect ....")
     getDetails()
   }, [])
   )
 
   useEffect(() => {
-    console.log("unAuthorised", unAuthorised)
+    // console.log("unAuthorised", unAuthorised)
     if(unAuthorised) {
       dispatch(setUnAuth())
       dispatch(logout())
@@ -105,34 +105,34 @@ const LiveSessionCard = () => {
   
 
   const getClassFromSchedule = async () => {
-    console.log("next call")
-    console.log(classTimeline)
+    // console.log("next call")
+    // console.log(classTimeline)
     const reqObj: any = {
       date: moment(new Date()).format('YYYY-MM-DD')
     }
     let schClassesRes = await dispatch(getScheduleClasses(reqObj))
-    console.log(" shcedule paylod ")
-    console.log(schClassesRes.payload)
+    // console.log(" shcedule paylod ")
+    // console.log(schClassesRes.payload)
     let tLime = schClassesRes.payload
     if(tLime && tLime.length) {
-      console.log("am in liv sc")
+      // console.log("am in liv sc")
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
         let timelineDataArray = tLime.map((timeline: any) => {
             
-            console.log(timeline.start_time)
-            console.log(moment(timeline.start_time))
+            // console.log(timeline.start_time)
+            // console.log(moment(timeline.start_time))
             var startTime = moment(timeline.start_time, 'HH:mm:ss').format('HH:mm');
             const [hours, minutes] = startTime.split(':').map(Number);
             const itemMinutes = hours * 60 + minutes;
-            console.log("------------")
-            console.log({ ...timeline, itemMinutes })
+            // console.log("------------")
+            // console.log({ ...timeline, itemMinutes })
             return { ...timeline, itemMinutes };
         }).filter((item: any) => item.itemMinutes > currentMinutes)
         .sort((a: any, b: any) => a.itemMinutes - b.itemMinutes);
         if(timelineDataArray.length) {
           setNextClass(timelineDataArray[0])
-          console.log(timelineDataArray[0])
+          // console.log(timelineDataArray[0])
           setIsNextClass(true)
         }
         
@@ -142,7 +142,7 @@ const LiveSessionCard = () => {
   }
 
   const navigateToMonitor = () => {
-    console.log("calling nav ...")
+    // console.log("calling nav ...")
     if(nextClass && nextClass.class_schedule_id) {
       dispatch(setSelectedTask('Attendance'))
       dispatch(setClassId(nextClass.class_schedule_id))

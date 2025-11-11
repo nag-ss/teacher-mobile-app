@@ -1,11 +1,12 @@
 import { Colors } from '@/constants/Colors';
-import { getAITaskCheckResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import { clearSelectedTaskData, getAITaskCheckResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiCheckModal from '../Modals/Modal_4_AICheckModal';
 import { addTaskToClass, getTaskStatus, launchAICheckTask } from '@/store/classSlice';
 import { useFocusEffect } from '@react-navigation/native';
+import { Menu, IconButton, Divider } from "react-native-paper";
 
 interface AITaskCardProps {
   title: string;
@@ -13,16 +14,32 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const AITask = ({task, refreshTasks}: any) => {
+const AITask = ({task, refreshTasks, editTask, deleteTask}: any) => {
     const dispatch = useDispatch<any>()
-    const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
+    const { selectedTaskSection, classId, selectedTaskId, selectedTask} = useSelector((state: any) => state.liveMonitor)
     const {user} = useSelector((state: any) => state.user);
     const {liveClass} = useSelector((state: any) => state.classes);
 
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     const [isTaskLive, setIsTaskLive] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(false);
+    const [taskStatus, setTaskStatus] = useState<string>('')
+    const [taskStatusName, setTaskStatusName] = useState<string>(task.status_name)
+    const [taskCTAName, setTaskCTAName] = useState<string>(task.status_name)
+    const [menuVisible, setMenuVisible] = useState(false);
+    const taskCTANames: any = {
+      "in_queue": 'Launch',
+      "completed": 'Update Results',
+      "evaluated": 'View Results',
+      "in_progress": 'Update Results'
+    }
+    const nonLiveStatuses = ['in_queue', 'completed', 'evaluated']
+    const statusCheckStatuses = ['in_progress', 'completed']
+    const intervalTimeSec = 30
+    let intervalId: any; 
 
+    // console.log("AI task")
+    // console.log(task)
     const getAttendanceData = async () => {
         const reqObj: any = {classId, taskId: task.task_id}
         dispatch(getAITaskCheckResults(reqObj))
@@ -33,12 +50,69 @@ const AITask = ({task, refreshTasks}: any) => {
         setShowModal4AICheckModal(true)
     }
 
+    const checkTaskStatus = async (taskId: any) => {
+      const taskResp = await dispatch(getTaskStatus({task_id: taskId}))
+      const taskStatusResp = taskResp.payload
+      console.log("status res .....")
+      console.log(taskStatusResp)
+      setTaskStatus(taskStatusResp.status)
+      setTaskStatusName(taskStatusResp.status_name)
+      setIsTaskLive(nonLiveStatuses.indexOf(taskStatusResp.status) >= 0 ? false : true )
+      setTaskCTAName(taskCTANames[taskStatusResp.status.toLowerCase()])
+      if(taskStatusResp.status.toLowerCase() == 'evaluated') {
+        if (intervalId) {
+          clearInterval(intervalId);
+          refreshTasks()
+        }
+      }
+      if(taskCTANames[taskStatusResp.status.toLowerCase()] == 'Update Results' || taskCTANames[taskStatusResp.status.toLowerCase()] == 'View Results') {
+        // fetch results automatically
+        dispatch(clearSelectedTaskData({}))
+        cardPressed()
+      }
+    }
+
+    useEffect(() => {
+      
+      console.log("taskStatus", taskStatus)
+      if (statusCheckStatuses.indexOf(taskStatus.toLowerCase()) >= 0) {
+        intervalId = setInterval(() => {
+          checkTaskStatus(task.task_id)
+        }, intervalTimeSec * 1000);
+      }
+
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
+    }, [taskStatus])
+
+    useFocusEffect(useCallback(() => {
+        if(task.status){
+          setTaskStatus(task.status)
+          setTaskStatusName(task.status_name)
+          setTaskCTAName(taskCTANames[task.status.toLowerCase()])
+          setIsTaskLive(nonLiveStatuses.indexOf(task.status) >= 0 ? false : true )
+        }
+      }, [task])
+    )
+
     const cardPressed = () => {
         console.log("card pressed ....")
         dispatch(setSelectedTask('AICheck'))
         dispatch(setSelectedTaskId(task.task_id))
         dispatch(setSelectedTaskData(task))
         getAttendanceData()
+    }
+
+    const fetchResult = () => {
+      console.log(taskStatus, task.task_id)
+      if(taskStatus == 'in_queue') {
+        onPress()
+      } else {
+        cardPressed()
+      }
     }
     // useEffect(() => {
     //     if(selectedTaskSection == 'AICheck') {
@@ -49,39 +123,44 @@ const AITask = ({task, refreshTasks}: any) => {
 
     const publishQuizFun = async () => {
           setSubmitStatus(true)
-          const classworkReq = {
+          const aiCheckReq = {
             task_id: task.task_id,
             class_schedule_id: task.class_schedule_id
           }
-          await dispatch(launchAICheckTask(classworkReq));
+          const res = await dispatch(launchAICheckTask(aiCheckReq));
+          console.log(res.payload)
           await refreshTasks()
-          setSubmitStatus(false)
-          setShowModal4AICheckModal(false)
+          if(res.payload && res.payload.status) {
+            setTaskStatus(res.payload.status)
+            setSubmitStatus(false)
+            setShowModal4AICheckModal(false)
+          }
+          
     
     }
 
-    useEffect(() => {
-      if(isTaskLive) {
-        const getTimeLeft = async () => {
-          const taskResp = await dispatch(getTaskStatus({task_id: task.task_id}))
-          const taskStatusResp = taskResp.payload
-          if(taskStatusResp && taskStatusResp.status == 'completed') {
-            clearInterval(intervarid);
-            setIsTaskLive(false)
-          }
-        }
+    // useEffect(() => {
+    //   if(isTaskLive) {
+    //     const getTimeLeft = async () => {
+    //       const taskResp = await dispatch(getTaskStatus({task_id: task.task_id}))
+    //       const taskStatusResp = taskResp.payload
+    //       if(taskStatusResp && taskStatusResp.status == 'completed') {
+    //         clearInterval(intervarid);
+    //         setIsTaskLive(false)
+    //       }
+    //     }
 
-        const intervarid = setInterval(() => {
-          getTimeLeft()
+    //     const intervarid = setInterval(() => {
+    //       getTimeLeft()
           
-        }, 2000);
-      }
-    }, [isTaskLive])
+    //     }, 2000);
+    //   }
+    // }, [isTaskLive])
 
     useFocusEffect(useCallback(() => {
         if(task.status != 'pending' && task.status != 'completed'){
           console.log("came here tooo .....")
-          setIsTaskLive(true)
+          // setIsTaskLive(true)
         }
       }, [])
     )
@@ -89,20 +168,77 @@ const AITask = ({task, refreshTasks}: any) => {
     useEffect(() => {
       if(task.status != 'pending' && task.status != 'completed'){
         console.log("came here ......")
-        setIsTaskLive(true)
+        // setIsTaskLive(true)
       }
     }, [task.status])
 
+    
     return (
       <View>
-        <TouchableOpacity onPress={cardPressed}>
+        <TouchableOpacity>
         <View style={[styles.card, {borderColor : (selectedTaskSection == 'AICheck' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray', backgroundColor: isTaskLive ? Colors.primaryColor : '#fff'}]}>
             <View style={styles.headerSection}>
               <View style={styles.imageSection}>
-                  <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Note-taking.png')} />
+                  <Image style={{width: 20, height: 20}} source={require('../../assets/images/tasks/AI_task.png')} />
               </View>
-              <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '#fff' : (isTaskLive ? '#fff' : 'lightgray')}]} >
-                <Text style={[styles.pbuttonText]}>{task.status == 'pending' ? 'In Queue' : 'Completed'}</Text>
+              {/* <View>
+                <Text style={{fontSize: 10}}>AI Check</Text>
+              </View> */}
+              <View style={{flexDirection: 'row'}}>
+                <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '#fff' : (isTaskLive ? '#fff' : 'lightgray')}]} >
+                  <Text style={[styles.pbuttonText]}>{taskStatusName}</Text>
+                </View>
+                <View style={{ width: 20 }}>
+                  <Menu
+                    visible={menuVisible}
+                    onDismiss={() => setMenuVisible(false)}
+                    anchor={
+                      <IconButton
+                        icon="dots-vertical"
+                        size={20}
+                        onPress={() => setMenuVisible(true)}
+                        style={{
+                          width: 20,  
+                          height: 20
+                        }}
+                      />
+                    }
+                    contentStyle={{
+                      backgroundColor: "#fdfdfd",
+                      borderRadius: 10,
+                      paddingVertical: 4,
+                      elevation: 5,
+                      shadowColor: "#000",
+                      shadowOpacity: 0.2,
+                      shadowRadius: 6,
+                    }}
+                    style={{
+                      marginTop: 40, // adjust distance from icon
+                      marginLeft: 20
+                    }}
+                  >
+                    {
+                      taskStatus != 'in_queue' && 
+                      <Menu.Item onPress={() => console.log("View", task.id)} title="View" />
+                    }
+                    { /*
+                      taskStatus == 'in_queue' && 
+                      <Divider />
+                    */ }
+                    {
+                      taskStatus == 'in_queue' && 
+                        <Menu.Item onPress={() => editTask(task.task_id, task.task_type)} title="Edit" />
+                    }
+                    {
+                      taskStatus == 'in_queue' && 
+                          <Divider />
+                    }
+                    {
+                      taskStatus == 'in_queue' && 
+                        <Menu.Item  onPress={() => deleteTask(task.task_id, task.task_type)} title="Delete" />
+                    }
+                  </Menu>
+                </View>
               </View>
             </View>
             <View style={styles.taskBodySection}>
@@ -111,7 +247,7 @@ const AITask = ({task, refreshTasks}: any) => {
               {/* <Text style={styles.subTitle}>{'Time Left: 12:45 Mins'}</Text> */}
             </View>
             
-            {
+            {/* {
               task.status == 'pending' ?
                 <TouchableOpacity style={styles.button} onPress={onPress}>
                 <Text style={styles.buttonText}>{'Check'}</Text>
@@ -123,10 +259,10 @@ const AITask = ({task, refreshTasks}: any) => {
                 : <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} >
                   <Text style={styles.buttonText}>{'Evaluating ...'}</Text>
                 </TouchableOpacity>)
-            }
-            {/* <TouchableOpacity style={styles.button} onPress={cardPressed}>
-            <Text style={styles.buttonText}>{task.task_type == 'AICheck' ? 'Check' : 'Publish'}</Text>
-            </TouchableOpacity> */}
+            } */}
+            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} onPress={fetchResult}>
+              <Text style={styles.buttonText}>{taskCTAName}</Text>
+            </TouchableOpacity>
         </View>
         </TouchableOpacity>
         <Modal visible={showModal4AICheckModal} transparent animationType="fade">
@@ -146,7 +282,7 @@ const AITask = ({task, refreshTasks}: any) => {
                     <Text>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>
-                    <Text style={{ color: 'white' }}>{submitStatus ? 'Evaluating ...' : 'Publish'}</Text>
+                    <Text style={{ color: 'white' }}>{taskCTAName}</Text>
                 </TouchableOpacity>
                 </View>
             </View>

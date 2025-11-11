@@ -28,7 +28,8 @@ const TaskSection = () => {
   const [tasks, setTasks] = useState<any>([])
   const attendanceTask = {
     "id": "Attendance",
-    "task_type": "Attendance"
+    "task_type": "Attendance",
+    "task_id": 1
   }
   const addTaskCard = {
     "id": "AddTask",
@@ -100,6 +101,17 @@ const TaskSection = () => {
 
   }
 
+  const editTaskFun = (taskId: number, taskType: string) => {
+    classPrepRef.current?.editTask(taskId, taskType, true)
+  }
+  const deleteTaskFun = (taskId: number, taskType: string) => {
+    classPrepRef.current?.editTask(taskId, taskType)
+  }
+
+  const viewTaskFun = (quizId: number, taskId: number) => {
+    classPrepRef.current?.viewQuiz(quizId, taskId)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
@@ -130,21 +142,19 @@ const TaskSection = () => {
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ gap: 12 }}
-              keyExtractor={(item: any) => item.id}
+              keyExtractor={(item: any) => item.task_id.toString()}
               renderItem={
                 ({ item }) => {
                   if(item.task_type == 'AICheck') {
-                    return (<AITask task={item}  refreshTasks={getTasksListData} /> )
+                    return (<AITask task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun} /> )
                   } else if(item.task_type == 'Classwork') {
-                    return (<ClassWork task={item} refreshTasks={getTasksListData} /> )
+                    return (<ClassWork task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun}/> )
                   } else if(item.task_type == 'SlipTest') {
-                    return (<Quiz task={item} refreshTasks={getTasksListData} /> )
+                    return (<Quiz task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun} viewTask={viewTaskFun} /> )
                   } else if(item.task_type == 'Attendance') {
                     return (<Attendance /> )
-                  } else if(item.task_type == 'AddTask') {
-                    return (<SlipTest /> )
                   } else {
-                    return ( null )
+                    return ( <View /> )
                   }
                   
                 }

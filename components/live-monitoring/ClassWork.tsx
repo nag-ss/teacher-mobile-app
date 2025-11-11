@@ -1,11 +1,13 @@
 import { Colors } from '@/constants/Colors';
-import { getClassworkResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
-import React, { useEffect, useState } from 'react';
+import { clearSelectedTaskData, getClassworkResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiCheckModal from '../Modals/Modal_4_AICheckModal';
-import { addTaskToClass, publishClasswork } from '@/store/classSlice';
+import { addTaskToClass, getTaskStatus, publishClasswork } from '@/store/classSlice';
 import moment from 'moment-timezone';
+import { useFocusEffect } from '@react-navigation/native';
+import { Menu, IconButton, Divider } from "react-native-paper";
 
 interface AITaskCardProps {
   title: string;
@@ -13,7 +15,7 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const ClassWork = ({task, refreshTasks}: any) => {
+const ClassWork = ({task, refreshTasks, editTask, deleteTask}: any) => {
     const dispatch = useDispatch<any>()
     const { selectedTaskSection, classId, selectedTaskId} = useSelector((state: any) => state.liveMonitor)
     const {user} = useSelector((state: any) => state.user);
@@ -21,9 +23,81 @@ const ClassWork = ({task, refreshTasks}: any) => {
     const [cwStatusCheck, setCWStatusCheck] = useState('');
     const [isTaskLive, setIsTaskLive] = useState(false);
     const [publishError, setPublishError] = useState(null);
+    const [taskStatus, setTaskStatus] = useState<string>('')
+    const [taskStatusName, setTaskStatusName] = useState<string>(task.status_name)
+    const [taskCTAName, setTaskCTAName] = useState<string>(task.status_name)
+    const [menuVisible, setMenuVisible] = useState(false);
+    const taskCTANames: any = {
+      "in_queue": 'Publish',
+      "completed": 'Update Results',
+      "evaluated": 'View Results',
+      "evaluating": 'View Results',
+      "in_progress": 'Update Results',
+      "launching": 'Update Results',
+      'published': 'Launching',
+      'loading': 'Wait'
+    }
+    const nonLiveStatuses = ['in_queue', 'completed', 'evaluated']
+    const statusCheckStatuses = ['in_progress', 'completed', 'evaluating', 'launching', 'published', 'loading']
+    const intervalTimeSec = 30
+    let intervalId: any; 
+
+    // console.log("CW CW CW")
+    // console.log(task)
+    const checkTaskStatus = async (taskId: any) => {
+      const taskResp = await dispatch(getTaskStatus({task_id: taskId}))
+      const taskStatusResp = taskResp.payload
+      console.log("status res .....")
+      console.log(taskStatusResp)
+      setTaskStatus(taskStatusResp.status)
+      setTaskStatusName(taskStatusResp.status_name)
+      setIsTaskLive(nonLiveStatuses.indexOf(taskStatusResp.status) >= 0 ? false : true )
+      setTaskCTAName(taskCTANames[taskStatusResp.status.toLowerCase()])
+      if(taskStatusResp.status.toLowerCase() == 'evaluated') {
+        if (intervalId) {
+          clearInterval(intervalId);
+          refreshTasks()
+        }
+        if(intervarid) {
+          setCWStatusCheck('');
+          clearInterval(intervarid)
+        }
+      }
+      if(taskCTANames[taskStatusResp.status.toLowerCase()] == 'Update Results' || taskCTANames[taskStatusResp.status.toLowerCase()] == 'View Results') {
+        // fetch results automatically
+        dispatch(clearSelectedTaskData({}))
+        cardPressed()
+      }
+    }
+
+    useEffect(() => {
+      
+      console.log("taskStatus ====== ", taskStatus)
+      if (statusCheckStatuses.indexOf(taskStatus.toLowerCase()) >= 0) {
+        intervalId = setInterval(() => {
+          checkTaskStatus(task.task_id)
+        }, intervalTimeSec * 1000);
+      }
+
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
+    }, [taskStatus])
+
+    useFocusEffect(useCallback(() => {
+        if(task.status){
+          setTaskStatus(task.status)
+          setTaskStatusName(task.status_name)
+          setTaskCTAName(taskCTANames[task.status.toLowerCase()])
+          setIsTaskLive(nonLiveStatuses.indexOf(task.status) >= 0 ? false : true )
+        }
+      }, [task])
+    )
     
-    console.log("task")
-    console.log(task)
+    // console.log("task")
+    // console.log(task)
     const [showModal4AICheckModal, setShowModal4AICheckModal] = useState(false);
     
     const getClassworkData = async () => {
@@ -43,6 +117,16 @@ const ClassWork = ({task, refreshTasks}: any) => {
         dispatch(setSelectedTaskData(task))
         getClassworkData()
     }
+
+    const fetchResult = () => {
+      console.log(taskStatus, task.task_id)
+      if(taskStatus == 'in_queue') {
+        onPress()
+      } else if(taskStatus.toLowerCase() != 'launching') {
+        cardPressed()
+      }
+    }
+
     useEffect(() => {
         // if(selectedTaskSection == 'Classwork') {
         //     getAttendanceData()
@@ -65,67 +149,143 @@ const ClassWork = ({task, refreshTasks}: any) => {
             setPublishError(pCWRes.payload.detail)
           }
     }
-    
+    let intervarid: any;
     useEffect(() => {
-          if(task.published_work_id) {
-            // console.log(JSON.stringify(task.quiz_details.start_date))
-            // console.log(JSON.stringify(task.quiz_details.duration))
-            const durationMinutes = task.work_detail.time;
-            const startDateString = task.work_detail.start_time;
+          if(taskStatus) {
+            try {
+              // let intervarid: any;
+              // console.log(JSON.stringify(task.quiz_details.start_date))
+              // console.log(JSON.stringify(task.quiz_details.duration))
+              // const durationMinutes = task.work_detail.time;
+              // const startDateString = task.work_detail.start_time;
 
-            // Parse start date
-            const startDate: any = new Date(startDateString.replace(' ', 'T'));
-    
-            // Calculate end time
-            // const endDate: any = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
-            const endDate: any = new Date(task.work_detail.end_time);
-    
-            // Function to get remaining time
-            function getTimeLeft() {
-              const now: any = new Date();
-              const timeLeftMS: any = endDate - now;
-    
-              if (timeLeftMS <= 0) {
-                clearInterval(intervarid);
-                return 'Time up!';
-                  
-              }
-    
-              const minutes = Math.floor((timeLeftMS / 1000 / 60) % 60);
-              const seconds = Math.floor((timeLeftMS / 1000) % 60);
-    
-              // return `${minutes} min ${seconds} sec left`;
-              let tStr = ''
-              if(minutes > 0) {
-                tStr = `${minutes} min`
+              // Parse start date
+              // const startDate: any = new Date(startDateString.replace(' ', 'T'));
+      
+              // Calculate end time
+              // const endDate: any = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+              
+      
+              if(taskStatus == 'in_progress') {
+                const endDate: any = new Date(task.work_detail.end_time);
+      
+                // Function to get remaining time
+                function getTimeLeft() {
+                  const now: any = new Date();
+                  const timeLeftMS: any = endDate - now;
+        
+                  if (timeLeftMS <= 0) {
+                    clearInterval(intervarid);
+                    return 'Time up!';
+                      
+                  }
+        
+                  const minutes = Math.floor((timeLeftMS / 1000 / 60) % 60);
+                  const seconds = Math.floor((timeLeftMS / 1000) % 60);
+        
+                  // return `${minutes} min ${seconds} sec left`;
+                  let tStr = ''
+                  // if(minutes > 0) {
+                  //   tStr = `${minutes} min`
+                  // } else {
+                  //   tStr = `${seconds} secs`
+                  // }
+                  tStr = `${minutes} : ${seconds}`
+                  return `Time Left: ${tStr} `;
+                }
+                if(!intervarid) {
+                  intervarid = setInterval(() => {
+                    let timeLeft = getTimeLeft()
+                    setCWStatusCheck(timeLeft);
+                    if(timeLeft == 'Time up!') {
+                      clearInterval(intervarid)
+                    }
+                  }, 1000);
+                }
+                
               } else {
-                tStr = `${seconds} secs`
+                if(intervarid) {
+                  setCWStatusCheck('');
+                  clearInterval(intervarid)
+                }
+                
               }
-              return `Time Left: ${tStr} `;
+            } catch (e) {
+              console.log("error in start CW ....", e)
             }
-    
-            const intervarid = setInterval(() => {
-              let timeLeft = getTimeLeft()
-              setCWStatusCheck(timeLeft);
-              if(task.status == 'in_progress' && timeLeft != 'Time up!') {
-                setIsTaskLive(true)
-              } else {
-                setIsTaskLive(false)
-              }
-            }, 1000);
+            
           }
-        }, [task])
+        }, [taskStatus])
 
     return (
       <View>
-        <TouchableOpacity onPress={cardPressed}>
+        <TouchableOpacity>
         <View style={[styles.card, {borderColor : (selectedTaskSection == 'Classwork' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray', backgroundColor: isTaskLive ? Colors.primaryColor : '#fff'}]}>
             <View style={styles.headerSection}>
               <View style={[styles.imageSection, {backgroundColor: isTaskLive ? '#fff' : ''}]}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/ss/Note-taking.png')} />
               </View>
-              <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '' : (isTaskLive ? '#fff' : 'lightgray')}]} >
+              {/* <View>
+                <Text>CW</Text>
+              </View> */}
+              {/* <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '' : (isTaskLive ? '#fff' : 'lightgray')}]} >
                 <Text style={[styles.pbuttonText]}>{task.status == 'pending' ? 'In Queue' : (!isTaskLive ? 'Completed' : 'Progress')}</Text>
+              </View> */}
+              <View style={{flexDirection: 'row'}}>
+                <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '#fff' : (isTaskLive ? '#fff' : 'lightgray')}]} >
+                  <Text style={[styles.pbuttonText]}>{taskStatusName}</Text>
+                </View>
+                <View style={{ width: 20 }}>
+                  <Menu
+                    visible={menuVisible}
+                    onDismiss={() => setMenuVisible(false)}
+                    anchor={
+                      <IconButton
+                        icon="dots-vertical"
+                        size={20}
+                        onPress={() => setMenuVisible(true)}
+                        style={{
+                          width: 20,  
+                          height: 20
+                        }}
+                      />
+                    }
+                    contentStyle={{
+                      backgroundColor: "#fdfdfd",
+                      borderRadius: 10,
+                      paddingVertical: 4,
+                      elevation: 5,
+                      shadowColor: "#000",
+                      shadowOpacity: 0.2,
+                      shadowRadius: 6,
+                    }}
+                    style={{
+                      marginTop: 40, // adjust distance from icon
+                      marginLeft: 20
+                    }}
+                  >
+                    {
+                      taskStatus != 'in_queue' && 
+                      <Menu.Item onPress={() => console.log("View", task.id)} title="View" />
+                    }
+                    { /*
+                      taskStatus == 'in_queue' && 
+                      <Divider />
+                    */ }
+                    {
+                      taskStatus == 'in_queue' && 
+                        <Menu.Item onPress={() => editTask(task.task_id, task.task_type)} title="Edit" />
+                    }
+                    {
+                      taskStatus == 'in_queue' && 
+                          <Divider />
+                    }
+                    {
+                      taskStatus == 'in_queue' && 
+                        <Menu.Item  onPress={() => deleteTask(task.task_id, task.task_type)} title="Delete" />
+                    }
+                  </Menu>
+                </View>
               </View>
             </View>
             <View style={styles.taskBodySection}>
@@ -136,7 +296,7 @@ const ClassWork = ({task, refreshTasks}: any) => {
                 <Text style={styles.subTitle}>{''}</Text>
               }
             </View>
-            {
+            {/* {
               !task.published_work_id ?
                 <TouchableOpacity style={styles.button} onPress={onPress}>
                 <Text style={styles.buttonText}>{'Publish'}</Text>
@@ -145,7 +305,10 @@ const ClassWork = ({task, refreshTasks}: any) => {
                 <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} onPress={cardPressed}>
                 <Text style={styles.buttonText}>{'Results'}</Text>
                 </TouchableOpacity>
-            }
+            } */}
+            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} onPress={fetchResult}>
+              <Text style={styles.buttonText}>{taskCTAName}</Text>
+            </TouchableOpacity>
         </View>
         </TouchableOpacity>
         <Modal visible={showModal4AICheckModal} transparent animationType="fade">

@@ -97,7 +97,7 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
   };
     
   useImperativeHandle(ref, () => ({
-    setSelectedClass,
+    setSelectedClass, editTask, deleteTask, viewQuiz
   }));
       
   const setTopicSubTopicAndMoveToNext = async(topic: any, subTopic: any) => {
@@ -364,9 +364,19 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     console.log(task_id, task_type);
   }
   
-  const editTask = (task_id: number, task_type: string) => {  
+  const editTask = async (task_id: number, task_type: string, isFlag: boolean = false) => {  
     console.log(task_type);
     console.log(task_id);
+    console.log(isFlag);
+    console.log("---------------------------------------")
+    if(isFlag) {
+      console.log("editing ST, fetching topics")
+      console.log(selectedClass)
+      console.log({subject_id: selectedClass.subject_id, division_id: selectedClass.division_id})
+      let res = await dispatch(getClassTopicSubTopics({subject_id: selectedClass.subject_id, division_id: selectedClass.division_id}))
+      console.log("res fetch topics")
+      console.log(res.payload)
+    }
     setShowModal2TasksModal(false)
     setTaskIDToEdit(task_id)
     setTaskType(task_type)
@@ -378,9 +388,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
     } else if (task_type == 'Classwork') {
       setShowClassWorkModal(true);
     } else if (task_type == 'SlipTest') {
-      setShowModal5GenerateSlipTestModal(true);
       setTopic(currTask.quiz_details?.topic);
       setSubTopic(currTask.quiz_details?.sub_topic)
+      console.log("topics in edit ST")
+      console.log(topics)
+      setShowModal5GenerateSlipTestModal(true);
+      
     }
   }
 
