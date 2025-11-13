@@ -26,6 +26,8 @@ interface EditQuestionModalProps {
 
 const ReplaceEditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, originalQuestionId, selectedQuestion, onCancel, updateEdit, replaceAgain }) => {
     const dispatch = useDispatch<any>();
+    console.log("ami n replace edit modal content ..........")
+    console.log(selectedQuestion)
     const [showEditWriteModal, setShowEditWriteModal] = useState(false)
     
       const showEditWrite = () => {

@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { clearSelectedTaskData, getAITaskCheckResults, setSelectedTask, setSelectedTaskData, setSelectedTaskId } from '@/store/liveMonitoringSlice';
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TouchableHighlight } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiCheckModal from '../Modals/Modal_4_AICheckModal';
 import { addTaskToClass, getTaskStatus, launchAICheckTask } from '@/store/classSlice';
@@ -14,7 +14,7 @@ interface AITaskCardProps {
   onPress: () => void;
 }
 
-const AITask = ({task, refreshTasks, editTask, deleteTask}: any) => {
+const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
     const dispatch = useDispatch<any>()
     const { selectedTaskSection, classId, selectedTaskId, selectedTask} = useSelector((state: any) => state.liveMonitor)
     const {user} = useSelector((state: any) => state.user);
@@ -65,11 +65,11 @@ const AITask = ({task, refreshTasks, editTask, deleteTask}: any) => {
           refreshTasks()
         }
       }
-      if(taskCTANames[taskStatusResp.status.toLowerCase()] == 'Update Results' || taskCTANames[taskStatusResp.status.toLowerCase()] == 'View Results') {
+      /*if(taskCTANames[taskStatusResp.status.toLowerCase()] == 'Update Results' || taskCTANames[taskStatusResp.status.toLowerCase()] == 'View Results') {
         // fetch results automatically
         dispatch(clearSelectedTaskData({}))
         cardPressed()
-      }
+      }*/
     }
 
     useEffect(() => {
@@ -176,7 +176,7 @@ const AITask = ({task, refreshTasks, editTask, deleteTask}: any) => {
     return (
       <View>
         <TouchableOpacity>
-        <View style={[styles.card, {borderColor : (selectedTaskSection == 'AICheck' && selectedTaskId == task.task_id) ? '#21C17C' : 'lightgray', backgroundColor: isTaskLive ? Colors.primaryColor : '#fff'}]}>
+        <View style={[styles.card, {borderColor : (taskStatus == 'in_queue') ? '#21C17C' : 'lightgray', backgroundColor: isTaskLive ? Colors.primaryColor : '#fff'}]}>
             <View style={styles.headerSection}>
               <View style={styles.imageSection}>
                   <Image style={{width: 20, height: 20}} source={require('../../assets/images/tasks/AI_task.png')} />
@@ -185,7 +185,7 @@ const AITask = ({task, refreshTasks, editTask, deleteTask}: any) => {
                 <Text style={{fontSize: 10}}>AI Check</Text>
               </View> */}
               <View style={{flexDirection: 'row'}}>
-                <View style={[styles.pbutton, {backgroundColor: task.status == 'pending' ? '#fff' : (isTaskLive ? '#fff' : 'lightgray')}]} >
+                <View style={[styles.pbutton, {backgroundColor: taskStatus == 'in_queue' ? Colors.primaryColor : (isTaskLive ? '#fff' : 'lightgray')}]} >
                   <Text style={[styles.pbuttonText]}>{taskStatusName}</Text>
                 </View>
                 <View style={{ width: 20 }}>
@@ -206,36 +206,69 @@ const AITask = ({task, refreshTasks, editTask, deleteTask}: any) => {
                     contentStyle={{
                       backgroundColor: "#fdfdfd",
                       borderRadius: 10,
-                      paddingVertical: 4,
-                      elevation: 5,
-                      shadowColor: "#000",
-                      shadowOpacity: 0.2,
-                      shadowRadius: 6,
+                      paddingVertical: 0,
+                      paddingHorizontal: 0,
+                      width: 80
                     }}
                     style={{
-                      marginTop: 40, // adjust distance from icon
-                      marginLeft: 20
+                      marginTop: 30, 
+                      marginLeft: 15,
                     }}
                   >
                     {
                       taskStatus != 'in_queue' && 
-                      <Menu.Item onPress={() => console.log("View", task.id)} title="View" />
+                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => viewTask(task.quiz_id, task.task_id)}>
+                        <View
+                          style={{
+                            width: 80, // ✅ smaller than menu width
+                            paddingVertical: 6,
+                            // backgroundColor: "#f3f3f3",
+                            borderRadius: 6,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text>View</Text>
+                        </View>
+                      </TouchableHighlight>
                     }
-                    { /*
+                    {
+                      taskStatus == 'in_queue' && 
+                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => editTask(task.task_id, task.task_type)}>
+                        <View
+                          style={{
+                            width: 80, // ✅ smaller than menu width
+                            paddingVertical: 6,
+                            // backgroundColor: "#f3f3f3",
+                            borderRadius: 6,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text>Edit</Text>
+                        </View>
+                      </TouchableHighlight>
+                    }
+                    {
                       taskStatus == 'in_queue' && 
                       <Divider />
-                    */ }
-                    {
-                      taskStatus == 'in_queue' && 
-                        <Menu.Item onPress={() => editTask(task.task_id, task.task_type)} title="Edit" />
                     }
                     {
                       taskStatus == 'in_queue' && 
-                          <Divider />
-                    }
-                    {
-                      taskStatus == 'in_queue' && 
-                        <Menu.Item  onPress={() => deleteTask(task.task_id, task.task_type)} title="Delete" />
+                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => deleteTask(task.task_id, task.task_type)}>
+                        <View
+                          style={{
+                            width: 80,
+                            paddingVertical: 6,
+                            // backgroundColor: "#fee",
+                            borderRadius: 6,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text>Delete</Text>
+                        </View>
+                      </TouchableHighlight>
                     }
                   </Menu>
                 </View>
@@ -392,10 +425,12 @@ const styles = StyleSheet.create({
 
   },
   mainText: {
-    fontSize: 20
+    fontSize: 18,
+    fontWeight: '600'
   },
   subText: {
-    fontSize: 16
+    fontSize: 14,
+    color: '#666',
   }
 });
 

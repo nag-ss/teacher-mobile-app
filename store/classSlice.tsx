@@ -336,13 +336,13 @@ const classSlice = createSlice({
           console.log(action.payload)
         })
         .addCase(replaceQuestion.pending, (state, action) => {
-          state.loading = true
+          // state.loading = true
           console.log("Question being Replaced")
         })
         .addCase(replaceQuestion.fulfilled, (state, action) => {
           console.log("Question replaced successfully")
           console.log(action.payload)
-          state.loading = false;
+          // state.loading = false;
         })
         .addCase(replaceQuestion.rejected, (state, action) => {
           state.loading = false

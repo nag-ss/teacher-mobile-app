@@ -4,6 +4,8 @@ import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
+import CWAnalysisModal from './CWAnalysis';
+import StudentModal from './StudentModal';
 
 interface Props {
   visible: boolean;
@@ -11,10 +13,11 @@ interface Props {
   onClose: () => void;
 }
 
-const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props) => {
+const AIResultModal = ({ visible, studentAnswer, onClose }: Props) => {
   if (!studentAnswer) return null;
   const { liveClass } = useSelector((state: any) => state.classes)
   const [token, setToken] = useState<string | null>(null)
+  const [showAnalysisResult, setShowAnalysisResult] = useState(false)
 
   const getStudentSTResult = async () => {
     
@@ -33,7 +36,7 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20.5}}>
-                <Text style={{fontSize: 18, fontWeight: '600'}}>{'Q-'+studentAnswer.question_number.toString().padStart(2, '0')} Analysis</Text>
+                <Text style={{fontSize: 18, fontWeight: '600'}}>{'Class Work '} Analysis</Text>
                 <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                     <Text style={styles.closeText}>✕</Text>
                 </TouchableOpacity>
@@ -48,55 +51,22 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                     <View style={styles.nameSection}>
                         <Text style={{marginRight: 10, marginTop: 8}}>{'Result:'}</Text>
                         {
-                          studentAnswer.question_type == 'subjective' ?
-                          <Text style={styles.name}>{studentAnswer.marks_awarded + "/"+ studentAnswer.max_marks}</Text>
-                          : <Text style={styles.name}>{studentAnswer.is_correct ? 'Correct' : 'Wrong'}</Text>
+                          <Text style={styles.name}>{studentAnswer.result}</Text>
                         }
                         
                     </View>
                     
                     <View style={styles.nameSection}>
                         <Text style={{marginRight: 10, marginTop: 8}}>{'Accuracy:'}</Text>
-                        <Text style={styles.name}>{studentAnswer.accuracy ? studentAnswer.accuracy : ((studentAnswer.question_type == 'objective' && studentAnswer.is_correct) ? '100%' : '0%')}</Text> 
+                        <Text style={styles.name}>{studentAnswer.accuracy}</Text> 
                     </View>
                 </View>
             </View>
             <View style={{backgroundColor: '#BDEDD7', borderRadius: 10, paddingHorizontal: 13.7}}>
                 <View style={styles.aiinsightSection}>
                     <Text>AI Insight: 
-                    <Text style={{fontWeight: '600', lineHeight: 20}}>  {studentAnswer.ai_insight ? studentAnswer.ai_insight : 'N/A'} </Text>
+                    <Text style={{fontWeight: '600', lineHeight: 20}}>  {studentAnswer.insight} </Text>
                     </Text>
-                </View>
-                
-                <View style={styles.aiinsightSection}>
-                    <Text style={{fontWeight: '600'}}> Strengths </Text> 
-                    
-                        {
-                          studentAnswer.strengths.map((strength: any, i: number) => {
-                            return (
-                            <View style={{flexDirection: 'row', padding: 5}}>
-                              <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/Correct.png')} />
-                              <Text key={i+"s"}>{strength}</Text>
-                            </View>
-                        )
-                          })
-                        }
-                        
-                    
-                </View>
-
-                <View style={styles.aiinsightSection}>
-                    <Text style={{fontWeight: '600'}}> Improvements Needed </Text> 
-                        {
-                          studentAnswer.areas_for_improvement.map((strength: any, i: number) => {
-                            return (
-                              <View style={{flexDirection: 'row', padding: 5}}>
-                                <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/close.png')} />
-                                <Text key={i+"ai"}>{strength}</Text>
-                              </View>
-                          )
-                          })
-                        }
                 </View>
             </View>
             
@@ -105,7 +75,7 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                 <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
                     <Text>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.saveBtn} onPress={onClose}>
+                <TouchableOpacity style={styles.saveBtn} onPress={() => {setShowAnalysisResult(true)}}>
                     <Text style={{ color: 'white' }}>View Details</Text>
                 </TouchableOpacity>
             </View>
@@ -113,6 +83,13 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
           
         </View>
       </View>
+      { showAnalysisResult ?
+              <StudentModal
+        visible={showAnalysisResult}
+        student={studentAnswer}
+        onClose={onClose}
+      />: null 
+      }
     </Modal>
   );
 };
@@ -194,4 +171,4 @@ closeButton: {
   },
 });
 
-export default SlipTestQuestionResultModal;
+export default AIResultModal;

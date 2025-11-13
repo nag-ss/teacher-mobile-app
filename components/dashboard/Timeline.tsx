@@ -10,6 +10,7 @@ import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from "react-native-calendars";
 import { useFocusEffect } from '@react-navigation/native';
+import { Colors } from '@/constants/Colors';
 
 /*const timelineData = [
   {
@@ -118,6 +119,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
     // console.log(currentDate);
     // console.log("======================")
     setDate(currentDate);
+    setCalendarDate(moment(currentDate).format('DD-MM-YYYY'));
     getDetails(moment(currentDate).format('YYYY-MM-DD'))
   };
 
@@ -137,7 +139,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
 
     useFocusEffect(useCallback(() => {
         // console.log("calling focus effect ....")
-        setCalendarDate(moment(new Date()).format('YYYY-MM-DD'))
+        setCalendarDate(moment(new Date()).format('DD-MM-YYYY'))
         getDetails(moment(new Date()).format('YYYY-MM-DD'))
       }, [])
       )
@@ -254,7 +256,7 @@ const onLayout = (event: LayoutChangeEvent): void => {
                     color={'gray' }
                     onPress={showDate}
                     />
-                <Text style={styles.timelineDateText} onPress={showDate} >{date}</Text>
+                <Text style={styles.timelineDateText} onPress={showDate} >{calendarDate}</Text>
                 
                 {show && (
                   <View style={styles.calendarOverlay}>
@@ -265,17 +267,19 @@ const onLayout = (event: LayoutChangeEvent): void => {
                           onDateChange(day.dateString)
                         }}
                         markedDates={{
-                          [date as any]: { selected: true, selectedColor: "green" },
+                          [date as any]: { selected: true, selectedColor: Colors.primaryColor },
                         }}
                         theme={{
                           backgroundColor: '#ffffff',
                           calendarBackground: '#ffffff',
                           textSectionTitleColor: '#b6c1cd',
-                          selectedDayBackgroundColor: 'green',
+                          selectedDayBackgroundColor: Colors.primaryColor,
                           selectedDayTextColor: '#ffffff',
-                          todayTextColor: '#00adf5',
+                          todayTextColor: Colors.primaryColor,
                           dayTextColor: '#2d4150',
-                          textDisabledColor: '#dd99ee'
+                          // textDisabledColor: '#dd99ee'
+                          textDisabledColor: '#ebe6ecdf',
+                          arrowColor: Colors.primaryColor
                         }}
                         
                       />
@@ -408,7 +412,7 @@ const styles = StyleSheet.create({
     marginTop: 13.7, 
     marginBottom: 10,
     // backgroundColor: 'red',
-    paddingLeft: 15
+    // paddingLeft: 15
   },
   container: {
     flexDirection: 'row',

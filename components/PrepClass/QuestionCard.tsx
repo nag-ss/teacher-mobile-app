@@ -48,16 +48,19 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
     setShowEditModal(true)
   }
   const hideEdit = () => {
+    console.log("calling hide edit ......")
+    updateEdit()
     setShowEditModal(false)
     setShowReplaceEditModal(false)
     setIsReplaceQuestionModal(false)
-    updateEdit()
+    
   }
   const updateEdit = () => {
     console.log(" upd edit calling refresh ....")
     refreshQuiz()
   }
   const replaceQuestionData = (id: number) => {
+    console.log("show .......")
     setSelectedQuestionNumber(id)
     setIsReplaceQuestionModal(true)
   }
@@ -65,17 +68,25 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
   const confirmReplace = async(newQuestionId: number = 0) => {
     console.log("selectedQuestionNumber new", newQuestionId)
     const questionId = newQuestionId ? newQuestionId : selectedQuestionNumber
+    console.log("selectedQuestionNumber", questionId)
     let replaceResponse = await dispatch(replaceQuestion({question_id: questionId, additional_context: "I want this question changed"}))
     console.log("replaceResponse.payload")
     console.log(replaceResponse.payload)
-    setReplacedQuestion(replaceResponse.payload)
-    setSelectedQuestion(replaceResponse.payload.new_question)
-    setSelectedQuestionOriginal(replaceResponse.payload.original_question_id)
-    setShowReplaceEditModal(true)
-    // await dispatch(getClassQuiz(quiz_id));
-      // setReplaceQuestionModal(false);
-      // setActiveDropdown(-1);
+    try {
+      setReplacedQuestion(replaceResponse.payload)
+      setSelectedQuestion(replaceResponse.payload.new_question)
+      setSelectedQuestionOriginal(replaceResponse.payload.original_question_id)
+      console.log("setting replace edit modal ....")
+      setShowReplaceEditModal(true)
+    } catch (e) {
+      console.log("error while ", e)
     }
+    
+    // await dispatch(getClassQuiz(quiz_id));
+    //   setReplaceQuestionModal(false);
+    //   setActiveDropdown(-1);
+    // refreshQuiz()
+  }
 
   return (
     <View style={styles.card}>
@@ -151,7 +162,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
       {/* Objective Options */}
       {item.is_objective && (
         <View style={{}}>
-          {Object.keys(item.choice_body).map((key:string) => (
+          {Object.keys(item.choice_body).map((key:string, index: number) => (
             <View
               key={key}
               style={[
@@ -159,6 +170,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
                 key === item.answer?.text && {
                   borderColor: '#059669',
                 },
+                {marginBottom: index === Object.keys(item.choice_body).length - 1 ? 0 : 9.14}
               ]}
             >
               <View style={{display: 'flex', flexDirection: 'row', maxWidth: '97%', alignItems:  'center'}}>
@@ -177,7 +189,10 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
         </View>
       )}
       <EditQuestionModal selectedQuestion={selectedQuestion} show={showEditModal} onCancel={hideEdit} updateEdit={updateEdit} />
-      <ReplaceEditQuestionModal originalQuestionId={selectedQuestionOriginal} selectedQuestion={selectedQuestion} show={showReplaceEditModal} onCancel={hideEdit} updateEdit={updateEdit} replaceAgain={confirmReplace} />
+      {showReplaceEditModal && 
+        <ReplaceEditQuestionModal originalQuestionId={selectedQuestionOriginal} selectedQuestion={selectedQuestion} show={showReplaceEditModal} onCancel={hideEdit} updateEdit={updateEdit} replaceAgain={confirmReplace} />
+      }
+      
       <ReplaceQuestionModal 
         show={isReplaceQuestionModal}
         resourceType='question'
@@ -266,6 +281,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 9.14
+    // marginBottom: 9.14
+    // marginTop: 9.14
   }
 });

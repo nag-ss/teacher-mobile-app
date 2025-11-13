@@ -117,24 +117,27 @@ const GenerateSlipTestModal = ({
                 
               </View>
             </View>
+            <View style={{flexDirection: 'row', marginTop: 4}}>
+              <Text style={styles.sectionTitle}>Select an Option - </Text>
+              <Text style={[styles.optionDescription, {marginTop: 4}]}>
+                Choose a topic and subtopic to auto-generate a customized test.
+              </Text>
+          </View>
 
-            <Text style={styles.sectionTitle}>Select an Option to Proceed</Text>
+          
 
-            {/* Topic Option */}
+          {/* Topic Option */}
 
-            <View  style={styles.optionBox}>
-              <View style={styles.optionBoxMainContent}>
-                <View style={{marginBottom: 9.17}}>
-                  <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
-                    <View style={{display:'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
-                      {/* <View style={styles.imageBox}>
-                        <Image source={require('../../assets/images/ss/Topic.png')} style={styles.icon} />
-                      </View> */}
-                      <View style={{flexDirection: 'row', }}>
-                        <Text style={styles.optionTitle}>Topic - </Text>
-                        <Text style={[styles.optionDescription, {marginTop: 4}]}>
-                          Choose a topic and subtopic to auto-generate a customized test.
-                        </Text>
+          <View  style={styles.optionBox}>
+            {/* <View style={styles.optionBoxMainContent}>
+              <View style={{marginBottom: 9.17}}>
+                <View style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
+                  <View style={{display:'flex', flexDirection: 'row', alignItems: 'flex-start'}}>
+                    
+                    <View style={{flexDirection: 'row', }}>
+                      <Text style={[styles.optionDescription, {marginTop: 4}]}>
+                        Choose a topic and subtopic to auto-generate a customized test.
+                      </Text>
                       </View>
                     </View>
                     
@@ -142,13 +145,11 @@ const GenerateSlipTestModal = ({
                     
                 </View>
                 
-                {/* <RadioButton color="#21c17c" id='topic' onPress={(ev) => setSelectedOption('topic')} selected={selectedOption == "topic"} /> */}
-                {/* <CheckBox checked={topicSelected} onPress={() => setTopicSelected(val => !val)}/> */}
                   
-              </View>
+              </View> */}
               {selectedOption == "topic" && (
                 <View style={{display: 'flex', flexDirection: 'row',  alignItems: 'center'}}>            
-                  <Text style={styles.label}>Topic :</Text>
+                  <Text style={styles.label}>Topic  :  </Text>
                   <View style={styles.pickerContainer}>
                     {/* <Picker
                       selectedValue={topic}
@@ -164,7 +165,7 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => setSubTopicsAndUpdateTopic(item)}
                       labelField="topic"
                       valueField="topic"
-                      style={{height: 60, width: 180, padding: 10}}
+                      style={{height: 60, width: 195, padding: 10}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       iconStyle={{width: 30, height:30}}
                       renderItem={(item, selected) => {
@@ -180,7 +181,7 @@ const GenerateSlipTestModal = ({
                   </View>
                   
     
-                  <Text style={[styles.label, {marginLeft: 9.17}]}>Sub Topic :</Text>
+                  <Text style={[styles.label, {marginLeft: 15}]}>Sub Topic  :  </Text>
                   <View style={styles.pickerContainer}>
                     {/* <Picker
                       selectedValue={subTopic}
@@ -196,7 +197,7 @@ const GenerateSlipTestModal = ({
                       onChange={(item) => updateSubTopic(item.sub_topic)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={{height: 60, width: 210, padding: 10}}
+                      style={{height: 60, width: 195, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {
@@ -261,12 +262,12 @@ export default GenerateSlipTestModal;
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: '#00000080',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#f5f5f5',
     borderRadius: 16,
     padding: 18.28,
     width: '75%',
@@ -302,7 +303,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
-    marginBottom: 13.7,
+    marginBottom: 13.7
   },
   sectionTitle: {
     fontWeight: '600',
@@ -322,12 +323,12 @@ const styles = StyleSheet.create({
     fontWeight: 'normal'
   },
   optionBox: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 12,
-    padding: 13.7,
-    marginBottom: 9.17,
-    backgroundColor: '#FFF',
+    // borderWidth: 1,
+    // borderColor: '#D1D5DB',
+    // borderRadius: 12,
+    // padding: 13.7,
+    marginBottom: 13.7,
+    // backgroundColor: '#FFF',
   },
   optionBoxMainContent: {
     display: 'flex',

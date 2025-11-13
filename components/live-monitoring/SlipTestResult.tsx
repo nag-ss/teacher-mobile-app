@@ -101,8 +101,8 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
                 : null
             }
             <View style={{flexDirection: 'row', marginTop: 13.7, marginBottom: 13.7}}>
-                <Text>AI Insight: </Text>
-                <Text style={{fontWeight: '600'}}>{student.insight ? student.insight : ' --- '}</Text>
+                <Text style={{width: '20%'}}>AI Insight: </Text>
+                <Text style={{fontWeight: '600', width: '80%'}}>{student.insight ? student.insight : ' N/A '}</Text>
             </View>
           
             <View style={styles.footer}>

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import StudentModal from './StudentModal';
 import SlipTestResultModal from './SlipTestResult';
 import CWResultModal from './CWResult';
+import AIResultModal from './AIResult';
 
 interface StudentCardProps {
   name: string;
@@ -20,6 +21,7 @@ const StudentCard = (studentData: any) => {
     const [notesModalVisible, setNotesModalVisible] = useState(false);
     const [stResultModalVisible, setstResultModalVisible] = useState(false);
     const [cwResultModalVisible, setcwResultModalVisible] = useState(false);
+    const [aiResultModalVisible, setaiResultModalVisible] = useState(false);
 
   console.log("studentData")
   console.log(studentData)
@@ -31,7 +33,7 @@ const StudentCard = (studentData: any) => {
 
   const showStudentInfo = async () => {
     console.log(selectedTaskSection)
-    if(selectedTaskSection == 'Attendance' || selectedTaskSection == 'AICheck') {
+    if(selectedTaskSection == 'Attendance') {
       console.log("calling modal ....")
       setSelectedStudent(student);
       setNotesModalVisible(true);
@@ -43,6 +45,10 @@ const StudentCard = (studentData: any) => {
       // setSelectedStudent(student);
       // setNotesModalVisible(true);
       setcwResultModalVisible(true)
+    } else if(selectedTaskSection == 'v') {
+      // setSelectedStudent(student);
+      // setNotesModalVisible(true);
+      setaiResultModalVisible(true)
     }
 
   }
@@ -129,6 +135,14 @@ const StudentCard = (studentData: any) => {
         onClose={closeModal}
       /> : null
       }
+      {aiResultModalVisible ?
+        <AIResultModal
+        visible={aiResultModalVisible}
+        studentAnswer={student}
+        onClose={closeModal}
+      /> : null
+      }
+      
         
       </View>
   

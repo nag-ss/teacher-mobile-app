@@ -21,10 +21,10 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
   // console.log("height ======= ", height)
 
   const subjectImageSize: any = {
-    1: {height: 25, width: 20, fontSize: 9.1, headFontSize: 9.1, subjectFontSize: 8},
-    2: {height: 40, width: 40, fontSize: 9.1, headFontSize: 12, subjectFontSize: 9.1},
-    3: {height: 70, width: 65, fontSize: 9.1, headFontSize: 13.5, subjectFontSize: 11.5},
-    4: {height: 70, width: 65, fontSize: 11.5, headFontSize: 16, subjectFontSize: 13.5},
+    1: {height: 25, width: 20, fontSize: 9.1, headFontSize: 9.1, subjectFontSize: 8, marginBottom: 0},
+    2: {height: 40, width: 40, fontSize: 9.1, headFontSize: 10, subjectFontSize: 9.1, marginBottom: 2},
+    3: {height: 70, width: 65, fontSize: 9.1, headFontSize: 13.5, subjectFontSize: 11.5, marginBottom: 5},
+    4: {height: 70, width: 65, fontSize: 11.5, headFontSize: 16, subjectFontSize: 13.5, marginBottom: 8},
   }
   const contentHeight = height > 4 ? 4 : height
   const openClassPrep = () => {
@@ -65,15 +65,15 @@ const TimelineCard = ({idx, item, height, currentDate, selectedClass}: any) => {
             </View>
             
             <View style={{height: (subjectImageSize[contentHeight].height + 10), marginLeft: 24, flexDirection: height == 1 ? 'row' : 'column', justifyContent:'center',  width: 220}}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: subjectImageSize[contentHeight].marginBottom}}>
                   <Image style={{width: 14, height: 14}} source={require('../../assets/images/ss/Schedule.png')} />
                   <Text style={[styles.classTime, {fontSize: subjectImageSize[contentHeight].fontSize}]}>{item.time}</Text>
                 </View>
                 
-                {(topic && subTopic) &&(<Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize}, height == 1 ? {marginLeft: 5, width: 150} : {}]} numberOfLines={1}>{topic} - {subTopic}</Text>)}
+                {(topic && subTopic) &&(<Text style={[styles.topic, {fontSize: subjectImageSize[contentHeight].headFontSize,  marginBottom: subjectImageSize[contentHeight].marginBottom}, height == 1 ? {marginLeft: 5, marginTop: 10, width: 150} : {}]} numberOfLines={1}>{topic} - {subTopic}</Text>)}
                 {/* <Text style={styles.classSubject}>{item.subject}</Text> */}
                 {
-                  height > 1 ? <Text style={[styles.classCategory, {fontSize: subjectImageSize[contentHeight].subjectFontSize}]}>{item.category}</Text> :  null
+                  (height > 2 || (height == 2 && !topic)) ? <Text style={[styles.classCategory, {fontSize: subjectImageSize[contentHeight].subjectFontSize}]}>{item.category}</Text> :  null
                 }
                 
             </View>

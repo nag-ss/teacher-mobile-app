@@ -102,7 +102,7 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
             <View style={styles.inputGroup}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 9.17}}>
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                      <Text style={styles.title}>*Question</Text>
+                      <Text style={[styles.label, {fontWeight:  '600'}]}>*Question</Text>
                     </View>
                     
                     <View style={{flexDirection: 'row'}}>
@@ -127,7 +127,7 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
             </View>
             {!selectedQuestionData.is_objective ? 
             <View style={styles.inputGroup}>
-                <Text style={styles.label}>*Answer</Text>
+                <Text style={[styles.label, {marginBottom: 9.17, fontWeight: '600'}]}>*Answer</Text>
                 <TextInput
                     value={selectedQuestionData.answer.explanation}
                     onChangeText={(v) => setQuestionAnswer(v)}

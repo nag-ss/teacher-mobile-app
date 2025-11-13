@@ -58,9 +58,12 @@ const Login = () => {
           }
           
           <Text style={styles.label}>Username</Text>
-          <TextInput style={styles.input} placeholder="test@test.com" onChangeText={(uname) => setUsername(uname)} />
+          <View style={styles.passContainer}>
+            <TextInput style={styles.input} placeholder="Ursername" onChangeText={(uname) => setUsername(uname)} />
+          </View>
+          
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={[styles.label, {marginTop: 13.4}]}>Password</Text>
           {/* <TextInput
             style={styles.input}
             placeholder="password"
@@ -104,12 +107,15 @@ const styles = StyleSheet.create({
       backgroundColor: '#f4f4f4',
     },
     leftPanel: {
-      flex: 1,
+      // flex: 1,
       backgroundColor: '#5AB87A',
       justifyContent: 'center',
       alignItems: 'center',
       paddingVertical: 40,
-      borderRadius: width > 768 ? 20 : 0,
+      // borderRadius: width > 768 ? 20 : 0,
+      borderTopRightRadius:  20,
+      borderBottomRightRadius: 20,
+      width: '50%'
     },
     logoCircle: {
       // backgroundColor: '#1e1e1e',
@@ -118,7 +124,7 @@ const styles = StyleSheet.create({
       borderRadius: 150,
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 20,
+      // marginBottom: 20,
     },
     logo: {
       width: 80,
@@ -130,16 +136,17 @@ const styles = StyleSheet.create({
       color: '#000',
     },
     rightPanel: {
-      flex: 1,
+      // flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
       padding: 20,
+      width: '50%'
     },
     card: {
       backgroundColor: '#fff',
       width: '100%',
       maxWidth: 360,
-      padding: 20,
+      padding: 32,
       borderRadius: 12,
       shadowColor: '#000',
       shadowOpacity: 0.1,
@@ -156,11 +163,11 @@ const styles = StyleSheet.create({
       fontSize: 12,
       color: '#333',
       marginBottom: 4,
-      marginTop: 12,
+      // marginTop: 12,
     },
     input: {
-      backgroundColor: '#f1f1f1',
-      padding: 10,
+      // backgroundColor: '#f1f1f1',
+      // padding: 10,
       borderRadius: 6,
       fontSize: 14,
     },
@@ -182,7 +189,7 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       alignItems: 'center',
       paddingHorizontal: 10,
-      marginVertical: 12,
+      // marginVertical: 12,
     },
     pinput: {
       flex: 1,

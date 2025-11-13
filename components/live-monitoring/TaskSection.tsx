@@ -112,6 +112,10 @@ const TaskSection = () => {
     classPrepRef.current?.viewQuiz(quizId, taskId)
   }
 
+  const viewTaskFn = (quizId: number, taskId: number) => {
+    // classPrepRef.current?.viewTask(quizId, taskId)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
@@ -146,9 +150,9 @@ const TaskSection = () => {
               renderItem={
                 ({ item }) => {
                   if(item.task_type == 'AICheck') {
-                    return (<AITask task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun} /> )
+                    return (<AITask task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun}  viewTask={viewTaskFn} /> )
                   } else if(item.task_type == 'Classwork') {
-                    return (<ClassWork task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun}/> )
+                    return (<ClassWork task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun} viewTask={viewTaskFn} /> )
                   } else if(item.task_type == 'SlipTest') {
                     return (<Quiz task={item} refreshTasks={getTasksListData} editTask={editTaskFun} deleteTask={deleteTaskFun} viewTask={viewTaskFun} /> )
                   } else if(item.task_type == 'Attendance') {

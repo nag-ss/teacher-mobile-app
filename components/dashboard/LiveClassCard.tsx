@@ -191,7 +191,7 @@ const LiveSessionCard = () => {
           </TouchableOpacity>
         </View>
         :
-        <View style={styles.textContainer}>
+        <View style={[styles.textContainer, {marginLeft: 25}]}>
           <View>
             
           </View>

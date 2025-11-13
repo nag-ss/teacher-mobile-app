@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import moment from 'moment';
 // import { useDispatch, useSelector } from 'react-redux';
 // import {Topics} from '../../data/Topic_SubTopic';
 
@@ -91,7 +92,7 @@ export default function ClassSummaryPopModal({
                 <Text style={styles.subTitle}>Details</Text>
               </View>
               
-              <View style={[styles.rowBetween, {paddingBottom: (16/1.75)}]}>
+              <View style={[styles.rowBetween, {paddingBottom: 16}]}>
                 <View style={styles.rowItem}>
                   <Text style={styles.detailText}>Grade :</Text> 
                   <Text style={styles.detailTextValues}>{selectedClass?.division_name}</Text>
@@ -111,7 +112,7 @@ export default function ClassSummaryPopModal({
                   {/* <Image source={require('../../assets/images/modal/calendar_month.png')} style={styles.iconSmall} /> */}
                   <Text style={[styles.label, {width: 50}]}>Date</Text>
                   <Text style={styles.label}>:</Text>
-                  <Text style={styles.value}> {selectedClass?.date}</Text>
+                  <Text style={styles.value}> {moment(selectedClass?.date).format('DD-MM-YYYY')}</Text>
                 </View>
                 <View style={styles.rowItem}>
                   {/* <Image source={require('../../assets/images/modal/account_circle.png')} style={styles.iconSmall} /> */}
@@ -130,8 +131,8 @@ export default function ClassSummaryPopModal({
                 <Text style={styles.cardTitle}>Set Topic</Text>
                 <View style={styles.row}>
                   
-                  <Text style={styles.label}>Topic </Text>
-                  <Text>:</Text>
+                  <Text style={styles.label}>Topic  :</Text>
+                  {/* <Text>:</Text> */}
                   <View style={styles.pickerWrapper}>
                     {/* <Picker
                       selectedValue={topic}
@@ -147,7 +148,7 @@ export default function ClassSummaryPopModal({
                       onChange={(tp) => setSubTopicAndUpdateTopic(tp)}
                       labelField="topic"
                       valueField="topic"
-                      style={{height: 60, width: 180, padding: 10}}
+                      style={{height: 60, width: 220, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {
@@ -163,8 +164,8 @@ export default function ClassSummaryPopModal({
                   </View>
                   
 
-                  <Text style={styles.label}>Sub Topic </Text>
-                  <Text>:</Text>
+                  <Text style={[styles.label, {marginLeft: 32}]}>Sub Topic :</Text>
+                  {/* <Text>:</Text> */}
                   <View style={styles.pickerWrapper}>
                     {/* <Picker
                       selectedValue={subTopic}
@@ -180,7 +181,7 @@ export default function ClassSummaryPopModal({
                       onChange={(item) => setSubTopic(item)}
                       labelField="sub_topic"
                       valueField="sub_topic"
-                      style={{height: 60, width: 180, padding: 10}}
+                      style={{height: 60, width: 220, padding: 10}}
                       iconStyle={{width: 30, height:30}}
                       containerStyle={{borderRadius: 10, overflow: 'hidden'}}
                       renderItem={(item, selected) => {
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
   },
   rowBetween: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     alignItems: 'center',
   },
   rowItem:{
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     // marginVertical: 6,
   },
   title: {
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginRight: 10
   },
   detailTextValues: {
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginLeft: 3,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   value: {
     fontSize: 18,
@@ -288,13 +289,13 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 12,
-    backgroundColor: '#fff',
-    padding: (24/1.75),
+    // backgroundColor: '#fff',
+    // paddingVertical: (24/1.75),
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: '600',
-    // marginBottom: 12,
+    marginBottom: 8,
   },
   pickerContainer: {
     borderTopWidth: 1, 
@@ -333,6 +334,7 @@ const styles = StyleSheet.create({
     borderColor: '#999',
     borderRadius: 8,
     overflow: 'hidden',
-    width:180
+    width: 220,
+    marginLeft: 16
   },
 });

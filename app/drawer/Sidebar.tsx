@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   header: { 
     // marginTop: 1, 
-    marginBottom: 20, 
+    marginBottom: 12, 
     flexDirection: 'row',
     //  backgroundColor:  'yellow' 
   },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     // paddingVertical: 8, 
     paddingHorizontal: 0, 
     borderRadius: 8, 
-    marginBottom: 24, 
+    marginBottom: 12, 
     width: 40,
     height: 40
     // margin: 5 
