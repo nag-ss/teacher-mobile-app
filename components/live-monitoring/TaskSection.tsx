@@ -52,8 +52,8 @@ const TaskSection = () => {
       subject_id: liveClass.subject_id
 
     }
-    console.log("calling tasks from home *********************")
-    console.log(reqObj)
+    // console.log("calling tasks from home *********************")
+    // console.log(reqObj)
     await dispatch(getTeacherClassTasks(reqObj))
   }
   
@@ -105,7 +105,7 @@ const TaskSection = () => {
     classPrepRef.current?.editTask(taskId, taskType, true)
   }
   const deleteTaskFun = (taskId: number, taskType: string) => {
-    classPrepRef.current?.editTask(taskId, taskType)
+    classPrepRef.current?.deleteTask(taskId, taskType, true)
   }
 
   const viewTaskFun = (quizId: number, taskId: number) => {

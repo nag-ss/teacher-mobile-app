@@ -37,6 +37,7 @@ const liveMonitoringSlice = createSlice({
       selectedTask: null,
       selectedTaskId: '',
       studentsData: [],
+      studentsCountData: [],
       loading: false,
       error: null,
       classId: 0,
@@ -66,20 +67,21 @@ const liveMonitoringSlice = createSlice({
         .addCase(getAttendance.pending, (state) => {
             state.loading = true;
             state.studentsData = []
+            state.studentsCountData = []
         })
         .addCase(getAttendance.fulfilled, (state, action) => {
-            console.log("action.payload attendance ...")
-            console.log(action.payload)
+            // console.log("action.payload attendance ...")
+            // console.log(action.payload)
             if(action.payload.detail == undefined) {
-                let stds = action.payload
-                stds = [...stds, action.payload]
-                // state.studentsData = action.payload;
-                state.studentsData = stds;
+                state.studentsData = action.payload;
+                state.studentsCountData = action.payload;
             }
             state.loading = false;
         })
         .addCase(getAttendance.rejected, (state, action) => {
           state.loading = false
+          state.studentsData = []
+          state.studentsCountData = []
           console.log("error in calling attendance data api")
         })
         .addCase(getAITaskCheckResults.pending, (state) => {
@@ -94,6 +96,7 @@ const liveMonitoringSlice = createSlice({
         })
         .addCase(getAITaskCheckResults.rejected, (state, action) => {
           state.loading = false
+          state.studentsData = []
         })
         .addCase(getClassworkResults.pending, (state) => {
             state.loading = true;
@@ -107,6 +110,7 @@ const liveMonitoringSlice = createSlice({
         })
         .addCase(getClassworkResults.rejected, (state, action) => {
           state.loading = false
+          state.studentsData = []
         })
         .addCase(getSlipTestResults.pending, (state) => {
             state.loading = true;
@@ -120,6 +124,7 @@ const liveMonitoringSlice = createSlice({
         })
         .addCase(getSlipTestResults.rejected, (state, action) => {
           state.loading = false
+          state.studentsData = []
           console.log("error in calling live class api")
         })
         .addCase(getSlipTestPerformance.pending, (state) => {

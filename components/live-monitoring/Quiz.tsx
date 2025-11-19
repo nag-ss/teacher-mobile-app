@@ -26,9 +26,10 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
     const [isTaskLive, setIsTaskLive] = useState(false);
     const [publishError, setPublishError] = useState(null);
     const [taskStatus, setTaskStatus] = useState<string>('')
-    const [taskStatusName, setTaskStatusName] = useState<string>('')
+    const [taskStatusName, setTaskStatusName] = useState<string>(task.status_name)
     const [taskCTAName, setTaskCTAName] = useState<string>(task.status_name)
     const [menuVisible, setMenuVisible] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(false);
     const taskCTANames: any = {
       "in_queue": 'Publish',
       "completed": 'Update Results',
@@ -63,7 +64,8 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
       console.log("status res .....")
       console.log(taskStatusResp)
       setTaskStatus(taskStatusResp.status)
-      setTaskStatusName(taskStatusNamesMap[taskStatusResp.status])
+      // setTaskStatusName(taskStatusNamesMap[taskStatusResp.status])
+      setTaskStatusName(taskStatusResp.status_name)
       setIsTaskLive(nonLiveStatuses.indexOf(taskStatusResp.status) >= 0 ? false : true )
       setTaskCTAName(taskCTANames[taskStatusResp.status.toLowerCase()])
       if(taskStatusResp.status.toLowerCase() == 'evaluated') {
@@ -75,12 +77,17 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
           setQuizeStatusCheck('');
           clearInterval(intervarid)
         }
+        if(selectedTaskId == task.task_id) {
+          // fetch results automatically
+          cardPressed()
+        }
       }
       /*if(taskCTANames[taskStatusResp.status.toLowerCase()] == 'Update Results' || taskCTANames[taskStatusResp.status.toLowerCase()] == 'View Results') {
         // fetch results automatically
         dispatch(clearSelectedTaskData({}))
         cardPressed()
       }*/
+      
     }
 
     useEffect(() => {
@@ -96,13 +103,17 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
         if (intervalId) {
           clearInterval(intervalId);
         }
+        if (intervarid) {
+          clearInterval(intervarid);
+        }
       };
     }, [taskStatus])
 
     useFocusEffect(useCallback(() => {
         if(task.status){
           setTaskStatus(task.status)
-          setTaskStatusName(taskStatusNamesMap[task.status])
+          // setTaskStatusName(taskStatusNamesMap[task.status])
+          setTaskStatusName(task.status_name)
           setTaskCTAName(taskCTANames[task.status.toLowerCase()])
           setIsTaskLive(nonLiveStatuses.indexOf(task.status) >= 0 ? false : true )
         }
@@ -120,8 +131,9 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
         console.log("button pressed ....")
     }
 
-    const cardPressed = () => {
+    const cardPressed = async () => {
         console.log("card pressed ....")
+        await dispatch(clearSelectedTaskData({}))
         dispatch(setSelectedTask('SlipTest'))
         dispatch(setSelectedTaskId(task.task_id))
         dispatch(setSelectedTaskData(task))
@@ -137,12 +149,12 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
       }
     }
 
-    useEffect(() => {
-        if(selectedTaskSection == 'SlipTest') {
-            getAttendanceData(task.task_id)
-        }
+    // useEffect(() => {
+    //     if(selectedTaskSection == 'SlipTest' && selectedTaskId == task.task_id) {
+    //         getAttendanceData(task.task_id)
+    //     }
 
-    }, [selectedTaskSection])
+    // }, [selectedTaskSection])
 
     const publishQuizFun = async () => {
       // console.log("task")
@@ -150,28 +162,39 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
       // const now = new Date();
       // const fiveMinutesLater = new Date(now.getTime() + 5 * 60 * 1000);
       // const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(5, 'minutes');
-      const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(1, 'minutes');
-      const formatted = fiveMinutesLaterIST.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+      setSubmitStatus(true)
+      try {
+        const fiveMinutesLaterIST = moment().tz("Asia/Kolkata").add(1, 'minutes');
+        const formatted = fiveMinutesLaterIST.format("YYYY-MM-DDTHH:mm:ss.SSSZ");
 
-      const the_quiz = {
-        start_time: formatted, 
-        quiz_id: task?.quiz_id, 
-        quiz_type: task?.quiz_details?.quiz_type ? task?.quiz_details?.quiz_type : "SlipTest", 
-        duration: task?.quiz_details?.duration, 
-        division_id: liveClass.division_id,
-        task_id: task.task_id
+        const the_quiz = {
+          start_time: formatted, 
+          quiz_id: task?.quiz_id, 
+          quiz_type: task?.quiz_details?.quiz_type ? task?.quiz_details?.quiz_type : "SlipTest", 
+          duration: task?.quiz_details?.duration, 
+          division_id: liveClass.division_id,
+          task_id: task.task_id
+        }
+        console.log(the_quiz)
+        const qRes = await dispatch(publishQuiz(the_quiz));
+        console.log("qRes")
+        console.log(qRes.payload)
+        if(!qRes.payload.detail) {
+          setShowModal4AICheckModal(false)
+          await refreshTasks()
+          cardPressed()
+          setPublishError(null)
+        } else {
+          setPublishError(qRes.payload.detail)
+        }
+        setSubmitStatus(false)
+      } catch (e: any) {
+        setPublishError(e)
+        setSubmitStatus(false)
+      } finally {
+        setSubmitStatus(false)
       }
-      console.log(the_quiz)
-      const qRes = await dispatch(publishQuiz(the_quiz));
-      console.log("qRes")
-      console.log(qRes.payload)
-      if(!qRes.payload.detail) {
-        await refreshTasks()
-        setShowModal4AICheckModal(false)
-        setPublishError(null)
-      } else {
-        setPublishError(qRes.payload.detail)
-      }
+      
       
 
     }
@@ -206,13 +229,17 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
               const timeLeftMS: any = endDate - now;
 
               if (timeLeftMS <= 0) {
-                // clearInterval(intervarid);
+                clearInterval(intervarid);
                 return 'Time up!';
                   
               }
+              if(taskStatus.toLowerCase() == 'evaluated') {
+                clearInterval(intervarid);
+                return 'Time up!';
+              }
 
-              const minutes = Math.floor((timeLeftMS / 1000 / 60) % 60);
-              const seconds = Math.floor((timeLeftMS / 1000) % 60);
+              let minutes: any = Math.floor((timeLeftMS / 1000 / 60) % 60);
+              let seconds: any = Math.floor((timeLeftMS / 1000) % 60);
 
               let tStr = ''
               // if(minutes > 0) {
@@ -220,6 +247,8 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
               // } else {
               //   tStr = `${seconds} secs`
               // }
+              minutes = minutes.toString().padStart(2, "0")
+              seconds = seconds.toString().padStart(2, "0")
               tStr = `${minutes} : ${seconds}`
               return `Time Left: ${tStr} `;
               // return `${minutes} min ${seconds} sec left`;
@@ -272,6 +301,7 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                       <IconButton
                         icon="dots-vertical"
                         size={20}
+                        iconColor={isTaskLive ? 'black' : 'gray'} 
                         onPress={() => setMenuVisible(true)}
                         style={{
                           width: 20,  
@@ -370,7 +400,7 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
               <Text style={styles.buttonText}>{'Results'}</Text>
             </TouchableOpacity>
             } */}
-            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : ''}]} onPress={fetchResult}>
+            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : '', borderColor:  taskStatus.toLowerCase() == 'evaluated' ? 'lightgray' : Colors.primaryColor}]} onPress={fetchResult}>
               <Text style={styles.buttonText}>{taskCTAName}</Text>
             </TouchableOpacity>
             

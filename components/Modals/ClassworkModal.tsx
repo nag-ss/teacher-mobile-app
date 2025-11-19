@@ -361,7 +361,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             }}>
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={() => {
+            <TouchableOpacity disabled={isDisabled || loading} style={styles.saveBtn} onPress={() => {
               saveClassWork()
             }}>
               <Text style={{ textAlign: 'center' }}>{loading ? 'Processing..' : 'Save'}</Text>

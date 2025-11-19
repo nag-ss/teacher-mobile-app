@@ -59,8 +59,10 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
 
   const isEditVisible = () => {
     const {task_type, published_quiz_id, published_work_id} = item; 
-    if (task_type == "AICheck" || task_type == "Classwork") {
-      return true;
+    if (task_type == "AICheck") {
+      return item.status == 'in_queue' ? true : false;
+    } else if (task_type == "Classwork") {
+      return !published_work_id;
     } else if (task_type == "SlipTest") {
       return !published_quiz_id;
     }
@@ -70,7 +72,7 @@ const TaskItem = ({item, noTasks, noTask, index, deleteTask, editTask, viewQuiz,
   const isDeleteVisible = () => {
     const {task_type, published_quiz_id, published_work_id} = item; 
     if (task_type == "AICheck") {
-      return true;
+      return item.status == 'in_queue' ? true : false;
     } else if (task_type == "Classwork") {
       return !published_work_id;
     } else if (task_type == "SlipTest") {

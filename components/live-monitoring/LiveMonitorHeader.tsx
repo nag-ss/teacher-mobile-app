@@ -4,35 +4,36 @@ import TaskSection from '@/components/live-monitoring/TaskSection';
 import StudentGrid from '@/components/live-monitoring/StudentGrid';
 import AICheckSummary from '@/components/live-monitoring/AICheckSummary';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const LiveMonitorHeader = () => {
-  const [activeStudentsCount, setActiveStudentsCount] = useState(0)
-  const [totalStudentsCount, setTotalStudentsCount] = useState(0)
+    const dispatch = useDispatch<any>()
+    const [activeStudentsCount, setActiveStudentsCount] = useState(0)
+    const [totalStudentsCount, setTotalStudentsCount] = useState(0)
 
-  const { studentsData } = useSelector((state: any) => state.liveMonitor)
-  const { liveClass } = useSelector((state: any) => state.classes)
+    const { studentsCountData } = useSelector((state: any) => state.liveMonitor)
+    const { liveClass } = useSelector((state: any) => state.classes)
     const navigation = useNavigation<any>()
-  useEffect(() => {
-        setActiveStudentsCount(0)
-        if(studentsData.length) {
-            let aCount = 0
-            for(let student of studentsData) {
-                if(student.status == 'active') {
-                    aCount = aCount + 1
-                    
-                }
-            }
-            setActiveStudentsCount(aCount)
-            setTotalStudentsCount(studentsData.length)
-        } else {
+    useEffect(() => {
             setActiveStudentsCount(0)
-            setTotalStudentsCount(0)
-        }
-    }, [studentsData])
-  const gotoHome = () => {
-    navigation.navigate('Home')
-  }
+            if(studentsCountData.length) {
+                let aCount = 0
+                for(let student of studentsCountData) {
+                    if(student.status == 'active') {
+                        aCount = aCount + 1
+                        
+                    }
+                }
+                setActiveStudentsCount(aCount)
+                setTotalStudentsCount(studentsCountData.length)
+            } else {
+                setActiveStudentsCount(0)
+                setTotalStudentsCount(0)
+            }
+        }, [studentsCountData])
+    const gotoHome = () => {
+        navigation.navigate('Home')
+    }
   return (
     <View style={styles.headerContainer}>
         <View style={{flexDirection: 'row'}}>

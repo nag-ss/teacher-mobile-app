@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
   visible: boolean;
@@ -15,6 +16,12 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
   if (!studentAnswer) return null;
   const { liveClass } = useSelector((state: any) => state.classes)
   const [token, setToken] = useState<string | null>(null)
+  const faceIcons: any = {
+    "pass": require('../../assets/images/tasks/st-q-pass.png'),
+    "average": require('../../assets/images/tasks/st-q-average.png'),
+    "fail": require('../../assets/images/tasks/st-q-fail.png'),
+  }
+  const [faceIcon, setFaceIcon] = useState('pass')
 
   const getStudentSTResult = async () => {
     
@@ -22,6 +29,26 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
   console.log("studentAnswer")
   console.log(studentAnswer)
   
+  useFocusEffect(useCallback(() => {
+      if(studentAnswer.question_type == 'objective') {
+        if(studentAnswer.is_correct) {
+          setFaceIcon('pass')
+        } else {
+          setFaceIcon('fail')
+        }
+      } else {
+        const accuracy = Math.round(parseFloat(studentAnswer.accuracy.replace("%", "")))
+        if(accuracy >= 70) {
+          setFaceIcon('pass')
+        } else if(accuracy >= 40) {
+          setFaceIcon('average')
+        } else {
+          setFaceIcon('fail')
+        }
+      }
+      
+    }, [])
+  )
 
   return (
     <Modal
@@ -42,7 +69,7 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
             
             <View style={styles.studentDetails}>
                 <View style={styles.iconView}>
-                    <Image style={{width: 27.4, height: 34.28}} source={require('../../assets/images/ss/q_level_analysis_a.png')} />
+                    <Image style={{width: 27.4, height: 34.28}} source={faceIcons[faceIcon]} />
                 </View>
                 <View style={styles.nameContnet}>
                     <View style={styles.nameSection}>
@@ -57,7 +84,7 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                     
                     <View style={styles.nameSection}>
                         <Text style={{marginRight: 10, marginTop: 8}}>{'Accuracy:'}</Text>
-                        <Text style={styles.name}>{studentAnswer.accuracy ? studentAnswer.accuracy : ((studentAnswer.question_type == 'objective' && studentAnswer.is_correct) ? '100%' : '0%')}</Text> 
+                        <Text style={styles.name}>{studentAnswer.accuracy ? (studentAnswer.accuracy + " (" + studentAnswer.result + ")" ): ((studentAnswer.question_type == 'objective' && studentAnswer.is_correct) ? '100%' : '0%')}</Text> 
                     </View>
                 </View>
             </View>
@@ -72,7 +99,7 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                     <Text style={{fontWeight: '600'}}> Strengths </Text> 
                     
                         {
-                          studentAnswer.strengths.map((strength: any, i: number) => {
+                          studentAnswer.strengths?.map((strength: any, i: number) => {
                             return (
                             <View style={{flexDirection: 'row', padding: 5}}>
                               <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/Correct.png')} />
@@ -81,7 +108,12 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                         )
                           })
                         }
-                        
+                        {
+                          !studentAnswer.strengths?.length && 
+                          <View style={{flexDirection: 'row', padding: 5}}>
+                            <Text>N/A</Text>
+                          </View>
+                        }
                     
                 </View>
 
@@ -97,18 +129,24 @@ const SlipTestQuestionResultModal = ({ visible, studentAnswer, onClose }: Props)
                           )
                           })
                         }
+                        {
+                          !studentAnswer.areas_for_improvement?.length && 
+                          <View style={{flexDirection: 'row', padding: 5}}>
+                            <Text>N/A</Text>
+                          </View>
+                        }
                 </View>
             </View>
             
           
-            <View style={styles.footer}>
+            {/* <View style={styles.footer}>
                 <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
                     <Text>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.saveBtn} onPress={onClose}>
                     <Text style={{ color: 'white' }}>View Details</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
           
         </View>

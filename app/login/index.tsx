@@ -59,7 +59,7 @@ const Login = () => {
           
           <Text style={styles.label}>Username</Text>
           <View style={styles.passContainer}>
-            <TextInput style={styles.input} placeholder="Ursername" onChangeText={(uname) => setUsername(uname)} />
+            <TextInput style={styles.input} value={username} placeholder="Username" onChangeText={(uname) => setUsername(uname)} />
           </View>
           
 
@@ -103,7 +103,7 @@ const Login = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      flexDirection: width > 768 ? 'row' : 'column',
+      flexDirection: 'row',
       backgroundColor: '#f4f4f4',
     },
     leftPanel: {
@@ -166,10 +166,11 @@ const styles = StyleSheet.create({
       // marginTop: 12,
     },
     input: {
-      // backgroundColor: '#f1f1f1',
+      // backgroundColor: 'red',
       // padding: 10,
       borderRadius: 6,
       fontSize: 14,
+      width: '100%'
     },
     button: {
       backgroundColor: '#5AB87A',
@@ -190,6 +191,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       paddingHorizontal: 10,
       // marginVertical: 12,
+      height:45
     },
     pinput: {
       flex: 1,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
 import CWAnalysisModal from './CWAnalysis';
 import StudentModal from './StudentModal';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
   visible: boolean;
@@ -18,13 +19,38 @@ const AIResultModal = ({ visible, studentAnswer, onClose }: Props) => {
   const { liveClass } = useSelector((state: any) => state.classes)
   const [token, setToken] = useState<string | null>(null)
   const [showAnalysisResult, setShowAnalysisResult] = useState(false)
-
+    const faceIcons: any = {
+        "pass": require('../../assets/images/tasks/st-q-pass.png'),
+        "average": require('../../assets/images/tasks/st-q-average.png'),
+        "fail": require('../../assets/images/tasks/st-q-fail.png'),
+      }
+      const [faceIcon, setFaceIcon] = useState('pass')
+    
+      console.log("studentAnswer")
+      console.log(studentAnswer)
+      
+    useFocusEffect(useCallback(() => {
+        const accuracy = studentAnswer.accuracy
+        if(accuracy >= 70) {
+            setFaceIcon('pass')
+        } else if(accuracy >= 40) {
+            setFaceIcon('average')
+        } else {
+            setFaceIcon('fail')
+        }
+          
+          
+        }, [])
+    )
   const getStudentSTResult = async () => {
     
   }
   console.log("studentAnswer")
   console.log(studentAnswer)
   
+  const closeModal = () => {
+    setShowAnalysisResult(false)
+  }
 
   return (
     <Modal
@@ -45,7 +71,7 @@ const AIResultModal = ({ visible, studentAnswer, onClose }: Props) => {
             
             <View style={styles.studentDetails}>
                 <View style={styles.iconView}>
-                    <Image style={{width: 27.4, height: 34.28}} source={require('../../assets/images/ss/q_level_analysis_a.png')} />
+                    <Image style={{width: 27.4, height: 34.28}} source={faceIcons[faceIcon]} />
                 </View>
                 <View style={styles.nameContnet}>
                     <View style={styles.nameSection}>
@@ -58,7 +84,7 @@ const AIResultModal = ({ visible, studentAnswer, onClose }: Props) => {
                     
                     <View style={styles.nameSection}>
                         <Text style={{marginRight: 10, marginTop: 8}}>{'Accuracy:'}</Text>
-                        <Text style={styles.name}>{studentAnswer.accuracy}</Text> 
+                        <Text style={styles.name}>{studentAnswer.accuracy + "%"}</Text> 
                     </View>
                 </View>
             </View>
@@ -87,7 +113,7 @@ const AIResultModal = ({ visible, studentAnswer, onClose }: Props) => {
               <StudentModal
         visible={showAnalysisResult}
         student={studentAnswer}
-        onClose={onClose}
+        onClose={closeModal}
       />: null 
       }
     </Modal>

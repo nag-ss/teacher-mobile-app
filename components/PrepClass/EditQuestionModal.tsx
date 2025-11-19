@@ -138,11 +138,11 @@ const EditQuestionModal: React.FC<EditQuestionModalProps> = ({ show, selectedQue
             </View>
             :
             <View style={styles.optionsGrid}>
-                {(selectedQuestionData && selectedQuestionData?.choice_body) && Object.keys(selectedQuestionData?.choice_body).map((key:string) => (
+                {(selectedQuestionData && selectedQuestionData?.choice_body) && Object.keys(selectedQuestionData?.choice_body).map((key:string, index: number) => (
                 <View>
                 <TouchableOpacity
                     onPress={() => updateAnswerText(key)}
-                    key={key}
+                    key={index.toString()}
                     style={[
                     styles.optionBox,
                     key === selectedQuestionData?.answer?.text && {

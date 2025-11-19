@@ -126,7 +126,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
               setActiveDropdown(-1);
               showEdit()
-            }} style={[styles.dropdownItem, {borderBottomWidth: 0.5}]}>
+            }} style={[styles.dropdownItem, {borderBottomWidth: 0.5, borderTopLeftRadius: 8, borderTopRightRadius: 8}]}>
             <Text>Edit</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
@@ -138,7 +138,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
           <TouchableHighlight underlayColor='#bdedd7' onPress={() => {
               setActiveDropdown(-1);
               deleteQuestion(item.question_id)
-            }} style={styles.dropdownItem}>
+            }} style={[styles.dropdownItem, { borderBottomLeftRadius: 8, borderBottomRightRadius: 8}]}>
             <Text>Delete</Text>
           </TouchableHighlight>
         </View>
@@ -164,7 +164,7 @@ const QuestionCard = ({item, index, task, activeDropdown, newQuiz, setActiveDrop
         <View style={{}}>
           {Object.keys(item.choice_body).map((key:string, index: number) => (
             <View
-              key={key}
+              key={index.toString()}
               style={[
                 styles.optionBox,
                 key === item.answer?.text && {

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSelector } from 'react-redux';
 import CWAnalysisModal from './CWAnalysis';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
   visible: boolean;
@@ -17,13 +18,38 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
   const { liveClass } = useSelector((state: any) => state.classes)
   const [token, setToken] = useState<string | null>(null)
   const [showAnalysisResult, setShowAnalysisResult] = useState(false)
-
+    const faceIcons: any = {
+        "pass": require('../../assets/images/tasks/st-q-pass.png'),
+        "average": require('../../assets/images/tasks/st-q-average.png'),
+        "fail": require('../../assets/images/tasks/st-q-fail.png'),
+        }
+        const [faceIcon, setFaceIcon] = useState('pass')
+    
+        console.log("studentAnswer")
+        console.log(studentAnswer)
+        
+    useFocusEffect(useCallback(() => {
+        const accuracy = studentAnswer.accuracy
+        if(accuracy >= 70) {
+            setFaceIcon('pass')
+        } else if(accuracy >= 40) {
+            setFaceIcon('average')
+        } else {
+            setFaceIcon('fail')
+        }
+            
+            
+        }, [])
+    )
   const getStudentSTResult = async () => {
     
   }
   console.log("studentAnswer")
   console.log(studentAnswer)
   
+  const onCloseModal = () => {
+    setShowAnalysisResult(false)
+  }
 
   return (
     <Modal
@@ -44,7 +70,7 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
             
             <View style={styles.studentDetails}>
                 <View style={styles.iconView}>
-                    <Image style={{width: 27.4, height: 34.28}} source={require('../../assets/images/ss/q_level_analysis_a.png')} />
+                    <Image style={{width: 27.4, height: 34.28}} source={faceIcons[faceIcon]} />
                 </View>
                 <View style={styles.nameContnet}>
                     <View style={styles.nameSection}>
@@ -57,7 +83,7 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
                     
                     <View style={styles.nameSection}>
                         <Text style={{marginRight: 10, marginTop: 8}}>{'Accuracy:'}</Text>
-                        <Text style={styles.name}>{studentAnswer.accuracy}</Text> 
+                        <Text style={styles.name}>{studentAnswer.accuracy + "%"}</Text> 
                     </View>
                 </View>
             </View>
@@ -71,8 +97,14 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
                 <View style={styles.aiinsightSection}>
                     <Text style={{fontWeight: '600'}}> Strengths </Text> 
                     
+                    {
+                        !studentAnswer.strengths?.length && 
+                        <View style={{flexDirection: 'row', padding: 5}}>
+                            <Text>N/A</Text>
+                        </View>
+                    }
                         {
-                          studentAnswer.strengths.map((strength: any, i: number) => {
+                          studentAnswer.strengths?.map((strength: any, i: number) => {
                             return (
                             <View style={{flexDirection: 'row', padding: 5}}>
                               <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/Correct.png')} />
@@ -88,7 +120,13 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
                 <View style={styles.aiinsightSection}>
                     <Text style={{fontWeight: '600'}}> Improvements Needed </Text> 
                         {
-                          studentAnswer.areas_for_improvement.map((strength: any, i: number) => {
+                            !studentAnswer.areas_for_improvement?.length && 
+                            <View style={{flexDirection: 'row', padding: 5}}>
+                                <Text>N/A</Text>
+                            </View>
+                        }
+                        {
+                          studentAnswer.areas_for_improvement?.map((strength: any, i: number) => {
                             return (
                               <View style={{flexDirection: 'row', padding: 5}}>
                                 <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/close.png')} />
@@ -117,7 +155,7 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
               <CWAnalysisModal
         visible={showAnalysisResult}
         student={studentAnswer}
-        onClose={onClose}
+        onClose={onCloseModal}
       />: null 
       }
     </Modal>

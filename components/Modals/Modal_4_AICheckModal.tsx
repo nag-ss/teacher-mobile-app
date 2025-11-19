@@ -217,7 +217,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
             <TouchableOpacity style={styles.cancelBtn} onPress={cancelOrGoBack}>
               <Text style={{textAlign: 'center'}}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity disabled={isDisabled} style={styles.saveBtn} onPress={saveTask}>
+            <TouchableOpacity disabled={isDisabled || loading} style={styles.saveBtn} onPress={saveTask}>
               <Text style={{ textAlign: 'center' }}>{loading ? 'Processing' : 'Save'}</Text>
             </TouchableOpacity>
           </View>

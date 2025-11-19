@@ -67,9 +67,9 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
   const [fromLiveMonitor, setFromLiveMonitor] = useState(false);
 
   const setSelectedClass = async(isFlag = false) => {
-    console.log("isFlag ============================", isFlag)
+    // console.log("isFlag ============================", isFlag)
     setFromLiveMonitor(isFlag)
-    console.log("Action from Parent!", "You triggered this from parent.");
+    // console.log("Action from Parent!", "You triggered this from parent.");
     const tasksObject = {
       class_schedule_id: selectedClass.class_schedule_id,
       teacher_id: user.id,
@@ -77,8 +77,8 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
       division_id: selectedClass.division_id,
     }
 
-    console.log("selectedClass");
-    console.log(selectedClass);
+    // console.log("selectedClass");
+    // console.log(selectedClass);
 
     await dispatch(getTeacherClassTasks(tasksObject))
     await dispatch(getClassTopicSubTopics({subject_id: selectedClass.subject_id, division_id: selectedClass.division_id}))
@@ -361,11 +361,12 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
       setShowSlipTestDetailsModal(true);
     };
 
-  const deleteTask = (task_id: number, task_type: string) => {
+  const deleteTask = (task_id: number, task_type: string, isFlag = false) => {
     setShowModal2TasksModal(false)
     setTaskIDToDelete(task_id)
     setTaskType(task_type)
     setShowDeleteQuestionModal(true)
+    setFromLiveMonitor(isFlag)
     console.log(task_id, task_type);
   }
   
@@ -424,7 +425,9 @@ const ClassPrep = forwardRef<any, MyComponentProps>(({ item, selectedClass, upda
       division_id: selectedClass.division_id,
     }))
     setShowDeleteQuestionModal(false);
-    setShowModal2TasksModal(true);
+    if(!fromLiveMonitor) {
+      setShowModal2TasksModal(true);
+    }
   }
 
   const cancelDeleteTask = async() => {

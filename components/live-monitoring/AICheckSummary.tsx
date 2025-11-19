@@ -34,6 +34,7 @@ const AICheckSummary = ({task}: any) => {
     }, [selectedTaskSection])
 
     useEffect(() => {
+      console.log("selected task updated ....")
       if(selectedTask && selectedTask.task_id) {
         getSummaryData()
       }

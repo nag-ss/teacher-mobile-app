@@ -24,9 +24,10 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
     const [isTaskLive, setIsTaskLive] = useState(false);
     const [publishError, setPublishError] = useState(null);
     const [taskStatus, setTaskStatus] = useState<string>('')
-    const [taskStatusName, setTaskStatusName] = useState<string>('')
+    const [taskStatusName, setTaskStatusName] = useState<string>(task.status_name)
     const [taskCTAName, setTaskCTAName] = useState<string>(task.status_name)
     const [menuVisible, setMenuVisible] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(false);
     const taskCTANames: any = {
       "in_queue": 'Publish',
       "completed": 'Update Results',
@@ -61,7 +62,8 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
       console.log("status res .....")
       console.log(taskStatusResp)
       setTaskStatus(taskStatusResp.status)
-      setTaskStatusName(taskStatusNamesMap[taskStatusResp.status])
+      // setTaskStatusName(taskStatusNamesMap[taskStatusResp.status])
+      setTaskStatusName(taskStatusResp.status_name)
       setIsTaskLive(nonLiveStatuses.indexOf(taskStatusResp.status) >= 0 ? false : true )
       setTaskCTAName(taskCTANames[taskStatusResp.status.toLowerCase()])
       if(taskStatusResp.status.toLowerCase() == 'evaluated') {
@@ -73,12 +75,17 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
           setCWStatusCheck('');
           clearInterval(intervarid)
         }
+        if(selectedTaskId == task.task_id) {
+          // fetch results automatically
+          cardPressed()
+        }
       }
       /*if(taskCTANames[taskStatusResp.status.toLowerCase()] == 'Update Results' || taskCTANames[taskStatusResp.status.toLowerCase()] == 'View Results') {
         // fetch results automatically
         dispatch(clearSelectedTaskData({}))
         cardPressed()
       }*/
+     
     }
 
     useEffect(() => {
@@ -94,13 +101,17 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
         if (intervalId) {
           clearInterval(intervalId);
         }
+        if (intervarid) {
+          clearInterval(intervarid);
+        }
       };
     }, [taskStatus])
 
     useFocusEffect(useCallback(() => {
         if(task.status){
           setTaskStatus(task.status)
-          setTaskStatusName(taskStatusNamesMap[task.status])
+          // setTaskStatusName(taskStatusNamesMap[task.status])
+          setTaskStatusName(task.status_name)
           setTaskCTAName(taskCTANames[task.status.toLowerCase()])
           setIsTaskLive(nonLiveStatuses.indexOf(task.status) >= 0 ? false : true )
         }
@@ -121,8 +132,9 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
         setShowModal4AICheckModal(true)
     }
 
-    const cardPressed = () => {
+    const cardPressed = async () => {
         console.log("card pressed ....")
+        await dispatch(clearSelectedTaskData({}))
         dispatch(setSelectedTask('Classwork'))
         dispatch(setSelectedTaskId(task.task_id))
         dispatch(setSelectedTaskData(task))
@@ -138,27 +150,36 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
       }
     }
 
-    useEffect(() => {
-        // if(selectedTaskSection == 'Classwork') {
-        //     getAttendanceData()
-        // }
+    // useEffect(() => {
+    //     // if(selectedTaskSection == 'Classwork') {
+    //     //     getAttendanceData()
+    //     // }
 
-    }, [selectedTaskSection])
+    // }, [selectedTaskSection])
 
     const publishQuizFun = async () => {
-
+        setSubmitStatus(true)
+        try {
           const classworkReq = {
             task_id: task.task_id
           }
           console.log(classworkReq)
           const pCWRes = await dispatch(publishClasswork(classworkReq));
           if(!pCWRes.payload.detail) {
-            await refreshTasks()
             setShowModal4AICheckModal(false)
+            await refreshTasks()
+            cardPressed()
             setPublishError(null)
           } else {
             setPublishError(pCWRes.payload.detail)
           }
+          setSubmitStatus(false)
+        } catch(e) {
+          setSubmitStatus(false)
+        } finally {
+          setSubmitStatus(false)
+        }
+          
     }
     useEffect(() => {
           if(taskStatus) {
@@ -188,6 +209,10 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
                     clearInterval(intervarid);
                     return 'Time up!';
                       
+                  }
+                  if(taskStatus.toLowerCase() == 'evaluated') {
+                    clearInterval(intervarid);
+                    return 'Time up!';
                   }
         
                   let minutes:  any = Math.floor((timeLeftMS / 1000 / 60) % 60);
@@ -255,6 +280,7 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
                       <IconButton
                         icon="dots-vertical"
                         size={20}
+                        iconColor={isTaskLive ? 'black' : 'gray'} 
                         onPress={() => setMenuVisible(true)}
                         style={{
                           width: 20,  
@@ -377,7 +403,7 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
                 <TouchableOpacity style={styles.cancelBtn} onPress={() => {setShowModal4AICheckModal(false); setPublishError(null)}}>
                     <Text>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>
+                <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun} disabled={submitStatus}>
                     <Text style={{ color: 'white' }}>Publish</Text>
                 </TouchableOpacity>
                 </View>

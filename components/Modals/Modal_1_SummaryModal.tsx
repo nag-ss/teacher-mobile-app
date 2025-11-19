@@ -79,7 +79,7 @@ export default function ClassSummaryPopModal({
         <View style={styles.modalContainer}>
           <View>
             {/* Header */}
-            <View style={styles.rowBetween}>
+            <View style={[styles.rowBetween, {justifyContent: 'space-between'}]}>
               <Text style={styles.title}>Prepare for Class</Text>
               <TouchableOpacity onPress={onClose}>
                 <Image source={require('../../assets/images/modal/state-layer.png')} style={styles.closeIcon} />

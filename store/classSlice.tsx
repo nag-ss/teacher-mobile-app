@@ -181,8 +181,8 @@ const classSlice = createSlice({
             state.classTimeline = []
           })
         .addCase(getScheduleClasses.fulfilled, (state, action) => {
-            console.log("action.payload schedule classes ")
-            console.log(action.payload)
+            // console.log("action.payload schedule classes ")
+            // console.log(action.payload)
             state.classTimeline = action.payload
             
         })
@@ -195,8 +195,8 @@ const classSlice = createSlice({
           console.log("Fetching the tasks of a class")
         })
         .addCase(getTeacherClassTasks.fulfilled, (state, action) => {
-          console.log("action.payload")
-          console.log(action.payload)
+          // console.log("action.payload")
+          // console.log(action.payload)
           state.classTasks = action.payload
           state.loading = false;
         })
@@ -210,8 +210,8 @@ const classSlice = createSlice({
           console.log("Fetching the tasks of a class")
         })
         .addCase(addTaskToClass.fulfilled, (state, action) => {
-          console.log("action.payload")
-          console.log(action.payload)
+          // console.log("action.payload")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(addTaskToClass.rejected, (state, action) => {
@@ -224,8 +224,8 @@ const classSlice = createSlice({
           console.log("Deleting the task")
         })
         .addCase(deleteTeacherClassTask.fulfilled, (state, action) => {
-          console.log("action.payload")
-          console.log(action.payload)
+          // console.log("action.payload")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(deleteTeacherClassTask.rejected, (state, action) => {
@@ -238,8 +238,8 @@ const classSlice = createSlice({
           console.log("Updating the task")
         })
         .addCase(editTeacherClassTask.fulfilled, (state, action) => {
-          console.log("action.payload")
-          console.log(action.payload)
+          // console.log("action.payload")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(editTeacherClassTask.rejected, (state, action) => {
@@ -252,8 +252,8 @@ const classSlice = createSlice({
           console.log("Quiz fetch pending")
         })
         .addCase(getSlipTestStatus.fulfilled, (state, action) => {
-          console.log("Quiz fetch fulfilled")
-          console.log(action.payload)
+          // console.log("Quiz fetch fulfilled")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(getSlipTestStatus.rejected, (state, action) => {
@@ -266,8 +266,8 @@ const classSlice = createSlice({
           console.log("Quiz fetch pending")
         })
         .addCase(addSlipTestToClass.fulfilled, (state, action) => {
-          console.log("Quiz fetch fulfilled")
-          console.log(action.payload)
+          // console.log("Quiz fetch fulfilled")
+          // console.log(action.payload)
           state.loading = false;
           state.quiz_details = action.payload
         })
@@ -281,8 +281,8 @@ const classSlice = createSlice({
           console.log("Quiz fetch pending")
         })
         .addCase(updateSlipTest.fulfilled, (state, action) => {
-          console.log("Quiz fetch fulfilled")
-          console.log(action.payload)
+          // console.log("Quiz fetch fulfilled")
+          // console.log(action.payload)
           state.loading = false;
           state.quiz_details = action.payload
         })
@@ -297,8 +297,8 @@ const classSlice = createSlice({
           console.log("Quiz fetch pending")
         })
         .addCase(getClassQuiz.fulfilled, (state, action) => {
-          console.log("Quiz fetch fulfilled")
-          console.log(action.payload)
+          // console.log("Quiz fetch fulfilled")
+          // console.log(action.payload)
           state.loading = false;
           state.quiz_details = action.payload
         })
@@ -312,8 +312,8 @@ const classSlice = createSlice({
           console.log("Quiz being published")
         })
         .addCase(publishQuiz.fulfilled, (state, action) => {
-          console.log("Quiz published")
-          console.log(action.payload)
+          // console.log("Quiz published")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(publishQuiz.rejected, (state, action) => {
@@ -326,8 +326,8 @@ const classSlice = createSlice({
           console.log("Question being Deleted")
         })
         .addCase(deleteQuestion.fulfilled, (state, action) => {
-          console.log("Question deleted successfully")
-          console.log(action.payload)
+          // console.log("Question deleted successfully")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(deleteQuestion.rejected, (state, action) => {
@@ -340,8 +340,8 @@ const classSlice = createSlice({
           console.log("Question being Replaced")
         })
         .addCase(replaceQuestion.fulfilled, (state, action) => {
-          console.log("Question replaced successfully")
-          console.log(action.payload)
+          // console.log("Question replaced successfully")
+          // console.log(action.payload)
           // state.loading = false;
         })
         .addCase(replaceQuestion.rejected, (state, action) => {
@@ -354,8 +354,8 @@ const classSlice = createSlice({
           console.log("Topics beings fetched")
         })
         .addCase(getClassTopicSubTopics.fulfilled, (state, action) => {
-          console.log("Topics fetched successfully")
-          console.log(action.payload)
+          // console.log("Topics fetched successfully")
+          // console.log(action.payload)
           state.loading = false;
           state.topics = action.payload
         })
@@ -369,8 +369,8 @@ const classSlice = createSlice({
           console.log("Topic set pending")
         })
         .addCase(setClassTopicSubTopic.fulfilled, (state, action) => {
-          console.log("Topic set successfully")
-          console.log(action.payload)
+          // console.log("Topic set successfully")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(setClassTopicSubTopic.rejected, (state, action) => {
@@ -383,8 +383,8 @@ const classSlice = createSlice({
           console.log("Slip Test save pending")
         })
         .addCase(saveSlipTestQuiz.fulfilled, (state, action) => {
-          console.log("Slip Test saved successfully")
-          console.log(action.payload)
+          // console.log("Slip Test saved successfully")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(saveSlipTestQuiz.rejected, (state, action) => {
@@ -397,8 +397,8 @@ const classSlice = createSlice({
           console.log("Slip Test cancel pending")
         })
         .addCase(cancelSlipTestQuiz.fulfilled, (state, action) => {
-          console.log("Slip Test cancelled successfully")
-          console.log(action.payload)
+          // console.log("Slip Test cancelled successfully")
+          // console.log(action.payload)
           state.loading = false;
         })
         .addCase(cancelSlipTestQuiz.rejected, (state, action) => {
@@ -407,8 +407,8 @@ const classSlice = createSlice({
           console.log(action.payload)
         })
         .addCase(publishClasswork.fulfilled, (state, action) => {
-          console.log("classwork publish successfully")
-          console.log(action.payload)
+          // console.log("classwork publish successfully")
+          // console.log(action.payload)
           console.log(action.payload.detail)
           state.loading = false;
         })

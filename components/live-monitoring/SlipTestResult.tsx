@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Constants from 'expo-constants';
@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import SlipTestQuestionResultModal from './SlipTestQuestionResult';
 import SlipTestAnalysisModal from './SlipTestAnalysis';
 import STAnalysisModal from './STAnalysis';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Props {
   visible: boolean;
@@ -21,10 +22,16 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
   const [showResult, setShowResult] = useState(false)
   const [showAnalysisResult, setShowAnalysisResult] = useState(false)
   const [studentResult, setStudentResult] = useState({})
+  const faceIcons: any = {
+    "pass": require('../../assets/images/tasks/face-pass.png'),
+    "average": require('../../assets/images/tasks/face-average.png'),
+    "fail": require('../../assets/images/tasks/face-fail.png'),
+  }
 
   const getStudentSTResult = async () => {
     
   }
+  const [faceIcon, setFaceIcon] = useState('pass')
 
   console.log("student")
   console.log(student)
@@ -37,6 +44,20 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
     setShowResult(false)
     setShowAnalysisResult(false)
   }
+  useFocusEffect(useCallback(() => {
+    if(student.percentage) {
+      const percentage = Math.round(parseFloat(student.percentage.replace("%", "")))
+      if(percentage >= 70) {
+        setFaceIcon('pass')
+      } else if(percentage >= 40) {
+        setFaceIcon('average')
+      } else {
+        setFaceIcon('fail')
+      }
+    }
+    
+  }, [])
+  )
   return (
     <Modal
       animationType="slide"
@@ -55,7 +76,7 @@ const SlipTestResultModal = ({ visible, student, onClose }: Props) => {
             
             <View style={styles.studentDetails}>
                 <View style={[styles.iconView, {backgroundColor: 'lightgray', borderRadius: 10}]}>
-                    <Image style={{width: 40, height: 40}} source={require('../../assets/images/ss/face.png')} />
+                    <Image style={{width: 40, height: 40}} source={faceIcons[faceIcon]} />
                 </View>
                 <View style={styles.nameContnet}>
                     <View style={[styles.nameSection, {marginBottom: 9.14}]}>

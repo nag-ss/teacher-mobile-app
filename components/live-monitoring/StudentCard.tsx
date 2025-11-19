@@ -23,19 +23,20 @@ const StudentCard = (studentData: any) => {
     const [cwResultModalVisible, setcwResultModalVisible] = useState(false);
     const [aiResultModalVisible, setaiResultModalVisible] = useState(false);
 
-  console.log("studentData")
-  console.log(studentData)
+  // console.log("studentData")
+  // console.log(studentData)
   const closeModal = () => {
     setNotesModalVisible(false);
     setstResultModalVisible(false)
     setcwResultModalVisible(false)
+    setaiResultModalVisible(false)
   };
 
   const showStudentInfo = async () => {
-    console.log(selectedTaskSection)
+    // console.log(selectedTaskSection)
     if(selectedTaskSection == 'Attendance') {
       console.log("calling modal ....")
-      setSelectedStudent(student);
+      // setSelectedStudent(student);
       setNotesModalVisible(true);
     } else if(selectedTaskSection == 'SlipTest') {
       // setSelectedStudent(student);
@@ -45,7 +46,7 @@ const StudentCard = (studentData: any) => {
       // setSelectedStudent(student);
       // setNotesModalVisible(true);
       setcwResultModalVisible(true)
-    } else if(selectedTaskSection == 'v') {
+    } else if(selectedTaskSection == 'AICheck') {
       // setSelectedStudent(student);
       // setNotesModalVisible(true);
       setaiResultModalVisible(true)
