@@ -105,8 +105,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
+    fontFamily: 'Montserrat_700Bold',
     fontSize: 18,
-    fontWeight: '700',
     color: '#222',
     marginBottom: 4,
   },

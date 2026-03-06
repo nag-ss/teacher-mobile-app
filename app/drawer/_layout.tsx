@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { CardStyleInterpolators } from '@react-navigation/stack';
 import Sidebar from './Sidebar'
 import DrawerLayout from './menu';
 import Home from '../home';
@@ -28,7 +29,13 @@ export default function App() {
             <Stack.Screen name="Analytics" component={Analytics} />
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Logout" component={Logout} />
-            <Stack.Screen name="Feedback" component={Feedback} />
+            <Stack.Screen
+              name="Feedback"
+              component={Feedback}
+              options={{
+                cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+              }}
+            />
             <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
           </Stack.Navigator>
         </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,16 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import { Colors } from '@/constants/Colors';
 import FeedbackQuestionCard from '@/components/feedback/FeedbackQuestionCard';
 import SubmitFeedbackModal from '@/components/feedback/SubmitFeedbackModal';
+import { submitFeedback as submitFeedbackThunk } from '@/store/feedbackSlice';
 
-const ROLES = ['Principal', 'Teacher', 'Admin', 'Other'];
+const ROLES = ['Teacher', 'Principal', 'Administrator'];
 
 const LIKERT_OPTIONS = [
   'Highly Likely',
@@ -41,7 +45,7 @@ type FormState = {
 
 const initialForm: FormState = {
   name: '',
-  role: 'Principal',
+  role: '',
   school: '',
   q1: '',
   q2: '',
@@ -54,11 +58,39 @@ const initialForm: FormState = {
 };
 
 const Feedback = () => {
+  const navigation = useNavigation<any>();
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [page, setPage] = useState(1);
   const [form, setForm] = useState<FormState>(initialForm);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<Array<{ uri: string; type?: string; name: string }>>([]);
+  const dispatch = useDispatch<any>();
+
+  const goToHome = () => {
+    if (redirectTimerRef.current) {
+      clearTimeout(redirectTimerRef.current);
+      redirectTimerRef.current = null;
+    }
+    setShowSuccessModal(false);
+    setForm(initialForm);
+    setPage(1);
+    setAttachedFiles([]);
+    navigation.navigate('Home');
+  };
+
+  useEffect(() => {
+    if (showSuccessModal) {
+      redirectTimerRef.current = setTimeout(goToHome, 3000);
+    }
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+    };
+  }, [showSuccessModal]);
 
   const update = (key: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -78,11 +110,31 @@ const Feedback = () => {
     }
   };
 
-  const doSubmitFeedback = () => {
-    // TODO: submit to API
-    console.log('Feedback saved', form);
-    setShowSubmitModal(false);
-    setShowSuccessModal(true);
+  const doSubmitFeedback = async () => {
+    const user_type = form.role ? form.role.toLowerCase() : 'teacher';
+    const feedback = JSON.stringify(form);
+
+    const body = new FormData();
+    body.append('user_type', user_type);
+    body.append('feedback', feedback);
+    attachedFiles.forEach((f, i) => {
+      body.append('files', {
+        uri: f.uri,
+        type: f.type || 'image/jpeg',
+        name: f.name || `image_${i + 1}.jpg`,
+      } as any);
+    });
+
+    const res = await dispatch(submitFeedbackThunk(body));
+    if (submitFeedbackThunk.fulfilled.match(res)) {
+      setShowSubmitModal(false);
+      setShowSuccessModal(true);
+    } else {
+      const payload = res.payload as any;
+      const message = payload?.message || payload?.detail || 'Failed to submit feedback. Please try again.';
+      const displayMessage = typeof message === 'string' ? message : JSON.stringify(message);
+      Alert.alert('Error', displayMessage);
+    }
   };
 
   return (
@@ -251,46 +303,55 @@ const Feedback = () => {
 
           {/* Pagination & actions */}
           <View style={styles.nav}>
-            <TouchableOpacity style={styles.navButton} onPress={prev} disabled={page === 1}>
-              <Image
-                source={require('../../assets/images/back-icon.png')}
-                style={styles.navArrowIcon}
-              />
-              <Text style={styles.navButtonText}>Previous</Text>
-            </TouchableOpacity>
-            <View style={styles.pagination}>
-              {[1, 2, 3].map((p) => (
-                <TouchableOpacity
-                  key={p}
-                  style={[styles.pageDot, p === page && styles.pageDotActive]}
-                  onPress={() => setPage(p)}
-                  activeOpacity={0.7}
-                >
-                  <Text
-                    style={[styles.pageDotText, p === page && styles.pageDotTextActive]}
-                  >
-                    {String(p).padStart(2, '0')}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <View style={styles.navLeft}>
+              <TouchableOpacity style={styles.navButton} onPress={prev} disabled={page === 1}>
+                <Image
+                  source={require('../../assets/images/back-icon.png')}
+                  style={styles.navArrowIcon}
+                />
+                <Text style={styles.navButtonText}>Previous</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={[styles.navButton, styles.nextButton]}
-              onPress={next}
-              disabled={page === 3}
-            >
-              <Text style={styles.nextButtonText}>Next</Text>
-              <Image
-                source={require('../../assets/images/arrow_forward_ios.png')}
-                style={styles.navArrowIcon}
-              />
-            </TouchableOpacity>
+            <View style={styles.navCenter}>
+              <View style={styles.pagination}>
+                {[1, 2, 3].map((p) => (
+                  <TouchableOpacity
+                    key={p}
+                    style={[styles.pageDot, p === page && styles.pageDotActive]}
+                    onPress={() => setPage(p)}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[styles.pageDotText, p === page && styles.pageDotTextActive]}
+                    >
+                      {String(p).padStart(2, '0')}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+            <View style={styles.navRight}>
+              {page === 3 ? (
+                <TouchableOpacity
+                  style={[styles.navButton, styles.nextButton]}
+                  onPress={onSavePress}
+                >
+                  <Text style={styles.nextButtonText}>Save</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.navButton, styles.nextButton]}
+                  onPress={next}
+                >
+                  <Text style={styles.nextButtonText}>Next</Text>
+                  <Image
+                    source={require('../../assets/images/arrow_forward_ios.png')}
+                    style={styles.navArrowIcon}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-          {page === 3 && (
-          <TouchableOpacity style={styles.saveButton} onPress={onSavePress}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-        )}
         </ScrollView>
 
         <SubmitFeedbackModal
@@ -308,8 +369,8 @@ const Feedback = () => {
           subtitle="Submitted Successfully!"
           imageSource={require('../../assets/images/feedback_submit.png')}
           primaryButtonText="OK"
-          onCancel={() => setShowSuccessModal(false)}
-          onSubmit={() => setShowSuccessModal(false)}
+          onCancel={goToHome}
+          onSubmit={goToHome}
           singleButton
         />
       </SafeAreaView>
@@ -347,7 +408,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   headerTitle: {
-    fontWeight: '700',
+    fontFamily: 'Montserrat_700Bold',
     fontSize: 18,
     color: '#222',
   },
@@ -386,37 +447,41 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   label: {
-    fontWeight: '700',
+    fontFamily: 'Montserrat_700Bold',
     fontSize: 13,
     color: '#222',
     marginBottom: 8,
   },
   input: {
+    fontFamily: 'Montserrat_400Regular',
     backgroundColor: '#fff',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    fontSize: 13,
     color: '#222',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 40,
+    minHeight: 36,
   },
   inputOpen: {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
   roleText: {
-    fontSize: 14,
+    fontFamily: 'Montserrat_400Regular',
+    fontSize: 13,
     color: '#222',
   },
   placeholder: {
+    fontFamily: 'Montserrat_400Regular',
     color: '#9E9E9E',
   },
   chevron: {
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 10,
     color: '#666',
   },
@@ -433,8 +498,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dropdownOption: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
   },
@@ -442,17 +507,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   dropdownOptionText: {
-    fontSize: 14,
+    fontFamily: 'Montserrat_400Regular',
+    fontSize: 13,
     color: '#222',
   },
   nav: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     marginTop: 20,
     marginBottom: 12,
     width: '100%',
     paddingHorizontal: 4,
+  },
+  navLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  navCenter: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navRight: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   navButton: {
     flexDirection: 'row',
@@ -466,6 +549,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
   },
   navButtonText: {
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 16,
     color: '#000',
   },
@@ -476,6 +560,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   nextButtonText: {
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 16,
     color: '#000',
     fontWeight: '600',
@@ -502,11 +587,13 @@ const styles = StyleSheet.create({
     borderColor: '#21C17C',
   },
   pageDotText: {
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 14,
     fontWeight: '600',
     color: '#666',
   },
   pageDotTextActive: {
+    fontFamily: 'Montserrat_400Regular',
     color: '#fff',
   },
   saveButton: {
@@ -518,6 +605,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   saveButtonText: {
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 16,
     color: '#fff',
     fontWeight: '600',
