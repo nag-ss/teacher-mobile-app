@@ -10,6 +10,7 @@ const menuItems = [
   { icon: require('../../assets/images/sidebar/user.png'), label: 'Profile', route: 'Profile' },
   { icon: require('../../assets/images/sidebar/analytics.png'), label: 'Analytics', route: 'Analitics' },
   { icon: require('../../assets/images/sidebar/logout.png'), label: 'Logout', route: 'Logout' },
+  { icon: require('../../assets/images/sidebar/feedback.png'), label: 'Feedback', route: 'Feedback' },
 ];
 import { PixelRatio } from 'react-native';
 

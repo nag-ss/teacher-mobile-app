@@ -1,0 +1,203 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Colors } from '@/constants/Colors';
+
+export type FeedbackQuestionType = 'multiple_choice' | 'text';
+
+export interface FeedbackQuestionCardProps {
+  index: number;
+  question: string;
+  type: FeedbackQuestionType;
+  options?: string[];
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}
+
+/**
+ * Reuses the same UI pattern as PrepClass/QuestionCard:
+ * - Numbered index box, question text
+ * - Multiple choice: option rows (A, B, C...) with selected state
+ * - Text: "Answer:" + text area
+ */
+const FeedbackQuestionCard = ({
+  index,
+  question,
+  type,
+  options = [],
+  value,
+  onChange,
+  placeholder = 'Your answer...',
+}: FeedbackQuestionCardProps) => {
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <View style={styles.indexBox}>
+          <Text style={styles.indexText}>{String(index).padStart(2, '0')}</Text>
+        </View>
+        <Text style={styles.questionText}>{question}</Text>
+      </View>
+
+      {type === 'text' ? (
+        <View style={styles.answerBox}>
+          <View style={styles.answerRow}>
+            <Text style={styles.answerLabel}>Answer :</Text>
+            <TextInput
+              style={styles.textArea}
+              placeholder={placeholder}
+              placeholderTextColor="#9E9E9E"
+              value={value}
+              onChangeText={onChange}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.optionsContainer}>
+          {options.map((opt, i) => {
+            const letter = String.fromCharCode(65 + i);
+            const selected = value === opt;
+            return (
+              <TouchableOpacity
+                key={opt}
+                style={[
+                  styles.optionBox,
+                  selected && styles.optionBoxSelected,
+                  i < options.length - 1 && styles.optionBoxMargin,
+                ]}
+                onPress={() => onChange(opt)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.optionContent}>
+                  <Text style={styles.optionLetter}>{letter})</Text>
+                  <Text style={styles.optionText}>{opt}</Text>
+                </View>
+                {selected && (
+                  <AntDesign
+                    name="checkcircle"
+                    size={18}
+                    color={Colors.primaryColor}
+                    style={styles.optionCheck}
+                  />
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </View>
+  );
+};
+
+export default FeedbackQuestionCard;
+
+const styles = StyleSheet.create({
+  card: {
+    width: '100%',
+    borderRadius: 12,
+    padding: 13.7,
+    marginBottom: 16,
+    marginHorizontal: 0,
+    borderColor: 'lightgray',
+    borderWidth: 0.5,
+    backgroundColor: '#fff',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 9.14,
+  },
+  indexBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    borderColor: '#E5E7EB',
+    borderWidth: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  indexText: {
+    fontWeight: 'bold',
+    fontSize: 12,
+  },
+  questionText: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 14,
+    color: '#222',
+    lineHeight: 20,
+  },
+  answerBox: {
+    backgroundColor: '#E8E8E8',
+    borderRadius: 10,
+    padding: 12,
+    minHeight: 160,
+  },
+  answerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  answerLabel: {
+    fontSize: 14,
+    marginRight: 6,
+    color: '#222',
+    fontWeight: '400',
+    paddingTop: 4,
+  },
+  textArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    fontSize: 14,
+    color: '#222',
+    minHeight: 140,
+    textAlign: 'left',
+  },
+  optionsContainer: {
+    marginTop: 4,
+  },
+  optionBox: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    padding: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  optionBoxSelected: {
+    borderColor: '#059669',
+  },
+  optionBoxMargin: {
+    marginBottom: 9.14,
+  },
+  optionContent: {
+    flexDirection: 'row',
+    flex: 1,
+    alignItems: 'center',
+  },
+  optionLetter: {
+    fontSize: 12,
+    marginRight: 8,
+    color: '#444',
+  },
+  optionText: {
+    fontSize: 12,
+    color: '#222',
+    flex: 1,
+  },
+  optionCheck: {
+    marginLeft: 8,
+  },
+});

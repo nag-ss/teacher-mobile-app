@@ -9,6 +9,7 @@ import Classes from '../classes';
 import Analytics from '../analytics';
 import Profile from '../profile';
 import Logout from '../logout';
+import Feedback from '../feedback';
 import LiveMonitoring from '../live-monitoring';
 import { PaperProvider } from "react-native-paper";
 
@@ -27,6 +28,7 @@ export default function App() {
             <Stack.Screen name="Analytics" component={Analytics} />
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Logout" component={Logout} />
+            <Stack.Screen name="Feedback" component={Feedback} />
             <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
           </Stack.Navigator>
         </View>
