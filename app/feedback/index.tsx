@@ -15,47 +15,17 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { Colors } from '@/constants/Colors';
+import {
+  PAGE_COUNT,
+  FEEDBACK_QUESTIONS,
+  initialForm,
+  type FormState,
+} from '@/constants/feedbackConstants';
+import { FeedbackHeader } from '@/components/feedback/FeedbackHeader';
 import FeedbackQuestionCard from '@/components/feedback/FeedbackQuestionCard';
+import { RoleDropdown } from '@/components/feedback/RoleDropdown';
 import SubmitFeedbackModal from '@/components/feedback/SubmitFeedbackModal';
 import { submitFeedback as submitFeedbackThunk } from '@/store/feedbackSlice';
-
-const ROLES = ['Teacher', 'Principal', 'Administrator'];
-
-const LIKERT_OPTIONS = [
-  'Highly Likely',
-  'Very Likely',
-  'Neutral',
-  'Unlikely',
-  'Highly Unlikely',
-];
-
-type FormState = {
-  name: string;
-  role: string;
-  school: string;
-  q1: string;
-  q2: string;
-  q3: string;
-  q4: string;
-  q5: string;
-  q6: string;
-  q7: string;
-  q8: string;
-};
-
-const initialForm: FormState = {
-  name: '',
-  role: '',
-  school: '',
-  q1: '',
-  q2: '',
-  q3: '',
-  q4: '',
-  q5: '',
-  q6: '',
-  q7: '',
-  q8: '',
-};
 
 const Feedback = () => {
   const navigation = useNavigation<any>();
@@ -65,7 +35,7 @@ const Feedback = () => {
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<Array<{ uri: string; type?: string; name: string }>>([]);
+  const [requiredErrors, setRequiredErrors] = useState<Array<'name' | 'role' | 'school'>>([]);
   const dispatch = useDispatch<any>();
 
   const goToHome = () => {
@@ -76,7 +46,6 @@ const Feedback = () => {
     setShowSuccessModal(false);
     setForm(initialForm);
     setPage(1);
-    setAttachedFiles([]);
     navigation.navigate('Home');
   };
 
@@ -94,20 +63,29 @@ const Feedback = () => {
 
   const update = (key: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    if (key === 'name' || key === 'role' || key === 'school') {
+      setRequiredErrors((prev) => prev.filter((k) => k !== key));
+    }
   };
 
   const next = () => {
-    if (page < 3) setPage(page + 1);
+    if (page < PAGE_COUNT) setPage(page + 1);
   };
   const prev = () => {
     if (page > 1) setPage(page - 1);
   };
   const onSavePress = () => {
-    if (page === 3) {
-      setShowSubmitModal(true);
-    } else {
-      doSubmitFeedback();
+    const missing: Array<'name' | 'role' | 'school'> = [];
+    if (!form.name?.trim()) missing.push('name');
+    if (!form.role?.trim()) missing.push('role');
+    if (!form.school?.trim()) missing.push('school');
+    if (missing.length > 0) {
+      setRequiredErrors(missing);
+      setPage(1);
+      return;
     }
+    setRequiredErrors([]);
+    setShowSubmitModal(true);
   };
 
   const doSubmitFeedback = async () => {
@@ -117,13 +95,6 @@ const Feedback = () => {
     const body = new FormData();
     body.append('user_type', user_type);
     body.append('feedback', feedback);
-    attachedFiles.forEach((f, i) => {
-      body.append('files', {
-        uri: f.uri,
-        type: f.type || 'image/jpeg',
-        name: f.name || `image_${i + 1}.jpg`,
-      } as any);
-    });
 
     const res = await dispatch(submitFeedbackThunk(body));
     if (submitFeedbackThunk.fulfilled.match(res)) {
@@ -144,23 +115,7 @@ const Feedback = () => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>Feedback Session</Text>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton}>
-              <Image
-                style={styles.headerIcon}
-                source={require('../../assets/images/ss/search.png')}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <Image
-                style={styles.headerIcon}
-                source={require('../../assets/images/ss/Notification.png')}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <FeedbackHeader />
 
         <ScrollView
           style={styles.content}
@@ -168,138 +123,57 @@ const Feedback = () => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Page 1: Name, Role, School + Q01–Q03 */}
+          {/* Page 1: Name, Role, School */}
           {page === 1 && (
             <>
               <View style={styles.card}>
-                <Text style={styles.label}>Name</Text>
+                <Text style={styles.label}>Name *</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Please enter your name"
+                  placeholder={requiredErrors.includes('name') ? 'This field is required' : 'Please enter your name'}
                   placeholderTextColor="#9E9E9E"
                   value={form.name}
                   onChangeText={(v) => update('name', v)}
                 />
               </View>
+              <RoleDropdown
+                value={form.role}
+                open={roleDropdownOpen}
+                onToggle={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                onSelect={(r) => {
+                  update('role', r);
+                  setRoleDropdownOpen(false);
+                }}
+                hasError={requiredErrors.includes('role')}
+                emptyPlaceholder="This field is required"
+                defaultPlaceholder="Select role"
+              />
               <View style={styles.card}>
-                <Text style={styles.label}>Role</Text>
-                <TouchableOpacity
-                  style={[styles.input, roleDropdownOpen && styles.inputOpen]}
-                  onPress={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.roleText, !form.role && styles.placeholder]}>
-                    {form.role || 'Select role'}
-                  </Text>
-                  <Text style={[styles.chevron, roleDropdownOpen && styles.chevronUp]}>▼</Text>
-                </TouchableOpacity>
-                {roleDropdownOpen && (
-                  <View style={styles.dropdownList}>
-                    {ROLES.map((r) => (
-                      <TouchableOpacity
-                        key={r}
-                        style={[styles.dropdownOption, r === form.role && styles.dropdownOptionSelected]}
-                        onPress={() => {
-                          update('role', r);
-                          setRoleDropdownOpen(false);
-                        }}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.dropdownOptionText}>{r}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                )}
-              </View>
-              <View style={styles.card}>
-                <Text style={styles.label}>School</Text>
+                <Text style={styles.label}>School *</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter school name"
+                  placeholder={requiredErrors.includes('school') ? 'This field is required' : 'Enter school name'}
                   placeholderTextColor="#9E9E9E"
                   value={form.school}
                   onChangeText={(v) => update('school', v)}
                 />
               </View>
-
-              <FeedbackQuestionCard
-                index={1}
-                question="Do you like using our teacher app in the class ?"
-                type="multiple_choice"
-                options={LIKERT_OPTIONS}
-                value={form.q1}
-                onChange={(v) => update('q1', v)}
-              />
-              <FeedbackQuestionCard
-                index={2}
-                question="Do you think this will be helpful for the teachers to use in classroom?"
-                type="multiple_choice"
-                options={['Yes', 'No']}
-                value={form.q2}
-                onChange={(v) => update('q2', v)}
-              />
-              <FeedbackQuestionCard
-                index={3}
-                question="Was the navigation and flow intuitive/ feel natural to you?"
-                type="multiple_choice"
-                options={['Yes', 'No']}
-                value={form.q3}
-                onChange={(v) => update('q3', v)}
-              />
             </>
           )}
 
-          {/* Page 2: Q04–Q06 */}
-          {page === 2 && (
-            <>
-              <FeedbackQuestionCard
-                index={4}
-                question="Will this help you to reduce the amount of time spent on correcting notes, assignments, and quizzes?"
-                type="multiple_choice"
-                options={LIKERT_OPTIONS}
-                value={form.q4}
-                onChange={(v) => update('q4', v)}
-              />
-              <FeedbackQuestionCard
-                index={5}
-                question="Which feature did you like the most in the teacher app and why?"
-                type="text"
-                value={form.q5}
-                onChange={(v) => update('q5', v)}
-                placeholder=""
-              />
-              <FeedbackQuestionCard
-                index={6}
-                question="What did you not like about the experience?"
-                type="text"
-                value={form.q6}
-                onChange={(v) => update('q6', v)}
-                placeholder=""
-              />
-            </>
-          )}
-
-          {/* Page 3: Q07–Q08 */}
-          {page === 3 && (
-            <>
-              <FeedbackQuestionCard
-                index={7}
-                question="What are few things that you think if added to this app will help teachers the most?"
-                type="text"
-                value={form.q7}
-                onChange={(v) => update('q7', v)}
-                placeholder=""
-              />
-              <FeedbackQuestionCard
-                index={8}
-                question="Please write down your thoughts on using superslate teacher app:"
-                type="text"
-                value={form.q8}
-                onChange={(v) => update('q8', v)}
-                placeholder=""
-              />
-            </>
-          )}
+          {/* Questions: single array, loop by current page */}
+          {FEEDBACK_QUESTIONS.filter((q) => q.page === page).map((q) => (
+            <FeedbackQuestionCard
+              key={q.key}
+              index={q.index}
+              question={q.question}
+              type={q.type}
+              options={q.options}
+              value={form[q.key]}
+              onChange={(v) => update(q.key, v)}
+              placeholder={q.placeholder}
+            />
+          ))}
 
           {/* Pagination & actions */}
           <View style={styles.nav}>
@@ -314,7 +188,7 @@ const Feedback = () => {
             </View>
             <View style={styles.navCenter}>
               <View style={styles.pagination}>
-                {[1, 2, 3].map((p) => (
+                {Array.from({ length: PAGE_COUNT }, (_, i) => i + 1).map((p) => (
                   <TouchableOpacity
                     key={p}
                     style={[styles.pageDot, p === page && styles.pageDotActive]}
@@ -331,7 +205,7 @@ const Feedback = () => {
               </View>
             </View>
             <View style={styles.navRight}>
-              {page === 3 ? (
+              {page === PAGE_COUNT ? (
                 <TouchableOpacity
                   style={[styles.navButton, styles.nextButton]}
                   onPress={onSavePress}
@@ -390,40 +264,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 14,
     marginTop: 13.7,
   },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    height: 64,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    width: '100%',
-    alignSelf: 'center',
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  headerTitle: {
-    fontFamily: 'Montserrat_700Bold',
-    fontSize: 18,
-    color: '#222',
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    padding: 8,
-  },
-  headerIcon: {
-    width: 20,
-    height: 20,
-    marginLeft: 8,
-  },
   content: {
     flex: 1,
     width: '100%',
@@ -466,50 +306,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: 36,
-  },
-  inputOpen: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  roleText: {
-    fontFamily: 'Montserrat_400Regular',
-    fontSize: 13,
-    color: '#222',
-  },
-  placeholder: {
-    fontFamily: 'Montserrat_400Regular',
-    color: '#9E9E9E',
-  },
-  chevron: {
-    fontFamily: 'Montserrat_400Regular',
-    fontSize: 10,
-    color: '#666',
-  },
-  chevronUp: {
-    transform: [{ rotate: '180deg' }],
-  },
-  dropdownList: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderTopWidth: 0,
-    borderColor: '#E0E0E0',
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    overflow: 'hidden',
-  },
-  dropdownOption: {
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E0E0E0',
-  },
-  dropdownOptionSelected: {
-    backgroundColor: '#F5F5F5',
-  },
-  dropdownOptionText: {
-    fontFamily: 'Montserrat_400Regular',
-    fontSize: 13,
-    color: '#222',
   },
   nav: {
     flexDirection: 'row',
@@ -595,19 +391,5 @@ const styles = StyleSheet.create({
   pageDotTextActive: {
     fontFamily: 'Montserrat_400Regular',
     color: '#fff',
-  },
-  saveButton: {
-    alignSelf: 'flex-end',
-    backgroundColor: Colors.primaryColor,
-    paddingVertical: 12,
-    paddingHorizontal: 28,
-    borderRadius: 8,
-    marginRight: 4,
-  },
-  saveButtonText: {
-    fontFamily: 'Montserrat_400Regular',
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: '600',
   },
 });
