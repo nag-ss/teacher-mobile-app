@@ -1,23 +1,23 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 
 export function FeedbackHeader() {
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.headerTitle}>Feedback Session</Text>
       <View style={styles.headerIcons}>
-        <TouchableOpacity style={styles.iconButton}>
+        <View style={styles.iconButton}>
           <Image
             style={styles.headerIcon}
             source={require('../../assets/images/ss/search.png')}
           />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
+        </View>
+        <View style={styles.iconButton}>
           <Image
             style={styles.headerIcon}
             source={require('../../assets/images/ss/Notification.png')}
           />
-        </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
