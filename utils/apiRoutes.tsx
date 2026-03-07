@@ -33,3 +33,4 @@ export const GET_CW_PERFORMANCE = 'monitoring/get_classwork_eval_page';
 export const LAUNCH_AI_CHECK_TASK = 'teacher/launch_ai_check_task';
 export const GET_TASK_STATUS = 'teacher/get_task_status';
 export const GET_TASK_SUMMARY = 'monitoring/get_task_summary';
+export const SUBMIT_FEEDBACK = 'app_feedback/submit';
