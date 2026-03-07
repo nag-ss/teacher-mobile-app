@@ -42,8 +42,15 @@ const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
       animationType="fade"
       statusBarTranslucent
     >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={singleButton ? onSubmit : undefined}
+      >
+        <View
+          style={styles.modalContainer}
+          onStartShouldSetResponder={singleButton ? () => true : undefined}
+        >
           <Image
             source={imageSource}
             style={styles.image}
@@ -52,21 +59,18 @@ const SubmitFeedbackModal: React.FC<SubmitFeedbackModalProps> = ({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.subtitle}>{subtitle}</Text>
 
-          <View style={[styles.buttonRow, singleButton && styles.buttonRowSingle]}>
-            {!singleButton && (
+          {!singleButton && (
+            <View style={styles.buttonRow}>
               <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={onSubmit}
-              style={[styles.primaryButton, singleButton && styles.primaryButtonSingle]}
-            >
-              <Text style={styles.primaryButtonText}>{primaryButtonText}</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity onPress={onSubmit} style={styles.primaryButton}>
+                <Text style={styles.primaryButtonText}>{primaryButtonText}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
@@ -121,9 +125,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
   },
-  buttonRowSingle: {
-    justifyContent: 'center',
-  },
   cancelButton: {
     flex: 1,
     paddingVertical: 10,
@@ -143,9 +144,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: Colors.primaryColor,
     alignItems: 'center',
-  },
-  primaryButtonSingle: {
-    minWidth: 140,
   },
   primaryButtonText: {
     color: '#fff',
