@@ -19,13 +19,14 @@ export interface FeedbackQuestionCardProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  onFocusField?: () => void;
 }
 
 /**
  * Reuses the same UI pattern as PrepClass/QuestionCard:
  * - Numbered index box, question text
  * - Multiple choice: option rows (A, B, C...) with selected state
- * - Text: "Answer:" + text area
+ * - Text: text area only
  */
 const FeedbackQuestionCard = ({
   index,
@@ -35,7 +36,9 @@ const FeedbackQuestionCard = ({
   value,
   onChange,
   placeholder = '',
+  onFocusField,
 }: FeedbackQuestionCardProps) => {
+  const answerPlaceholder = placeholder || 'Answer :';
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
@@ -47,19 +50,17 @@ const FeedbackQuestionCard = ({
 
       {type === 'text' ? (
         <View style={styles.answerBox}>
-          <View style={styles.answerRow}>
-            <Text style={styles.answerLabel}>Answer :</Text>
-            <TextInput
-              style={styles.textArea}
-              placeholder={placeholder}
-              placeholderTextColor="#9E9E9E"
-              value={value}
-              onChangeText={onChange}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
+          <TextInput
+            style={styles.textArea}
+            placeholder={answerPlaceholder}
+            placeholderTextColor="#9E9E9E"
+            value={value}
+            onChangeText={onChange}
+            onFocus={onFocusField}
+            multiline
+            numberOfLines={6}
+            textAlignVertical="top"
+          />
         </View>
       ) : (
         <View style={styles.optionsContainer}>
@@ -74,7 +75,10 @@ const FeedbackQuestionCard = ({
                   selected && styles.optionBoxSelected,
                   i < options.length - 1 && styles.optionBoxMargin,
                 ]}
-                onPress={() => onChange(opt)}
+                onPress={() => {
+                  onChange(opt);
+                  onFocusField?.();
+                }}
                 activeOpacity={0.7}
               >
                 <View style={styles.optionContent}>
@@ -140,24 +144,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   answerBox: {
+    width: '100%',
     backgroundColor: '#E8E8E8',
     borderRadius: 10,
     padding: 12,
     minHeight: 160,
   },
-  answerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  answerLabel: {
-    fontFamily: 'Montserrat_400Regular',
-    fontSize: 12,
-    lineHeight: 20,
-    marginRight: 6,
-    color: '#222',
-    fontWeight: '400',
-  },
   textArea: {
+    width: '100%',
     fontFamily: 'Montserrat_400Regular',
     flex: 1,
     backgroundColor: 'transparent',
@@ -169,7 +163,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#222',
     minHeight: 140,
-    textAlign: 'left',
+    textAlign: 'justify',
   },
   optionsContainer: {
     marginTop: 4,
