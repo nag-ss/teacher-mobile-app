@@ -34,7 +34,7 @@ const FeedbackQuestionCard = ({
   options = [],
   value,
   onChange,
-  placeholder = 'Your answer...',
+  placeholder = '',
 }: FeedbackQuestionCardProps) => {
   return (
     <View style={styles.card}>
