@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Image,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Alert,
 } from 'react-native';
@@ -134,12 +135,16 @@ const Feedback = () => {
                   placeholderTextColor="#9E9E9E"
                   value={form.name}
                   onChangeText={(v) => update('name', v)}
+                  onFocus={() => setRoleDropdownOpen(false)}
                 />
               </View>
               <RoleDropdown
                 value={form.role}
                 open={roleDropdownOpen}
-                onToggle={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                onToggle={() => {
+                  Keyboard.dismiss();
+                  setRoleDropdownOpen((prev) => !prev);
+                }}
                 onSelect={(r) => {
                   update('role', r);
                   setRoleDropdownOpen(false);
@@ -156,6 +161,7 @@ const Feedback = () => {
                   placeholderTextColor="#9E9E9E"
                   value={form.school}
                   onChangeText={(v) => update('school', v)}
+                  onFocus={() => setRoleDropdownOpen(false)}
                 />
               </View>
             </>
@@ -172,6 +178,7 @@ const Feedback = () => {
               value={form[q.key]}
               onChange={(v) => update(q.key, v)}
               placeholder={q.placeholder}
+              onFocusField={() => setRoleDropdownOpen(false)}
             />
           ))}
 
