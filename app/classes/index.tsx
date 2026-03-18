@@ -6,6 +6,7 @@ import LiveMonitorHeader from '@/components/live-monitoring/LiveMonitorHeader';
 import ClassOverviewFilters from '@/components/classes/filter/ClassOverviewFilters';
 import QuizTable from '@/components/classes/QuizSection/QuizTable';
 import AssignmentTable from '@/components/classes/AssignmentSection/AssignmentTable';
+import Sumarry from '@/components/classes/Insights/Insights';
 
 const Classes = () => {
   return (
@@ -23,6 +24,7 @@ const Classes = () => {
       <StudentTable />
       <QuizTable />
       <AssignmentTable />
+      <Sumarry />
     </ScrollView>
   );
 };
