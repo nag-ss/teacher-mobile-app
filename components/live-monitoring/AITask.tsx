@@ -27,6 +27,7 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
     const [taskStatusName, setTaskStatusName] = useState<string>(task.status_name)
     const [taskCTAName, setTaskCTAName] = useState<string>(task.status_name)
     const [menuVisible, setMenuVisible] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
     const taskCTANames: any = {
       "in_queue": 'Launch',
       "completed": 'Update Results',
@@ -234,7 +235,10 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                   >
                     {
                       taskStatus != 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => viewTask(task.quiz_id, task.task_id)}>
+                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => {
+                        setMenuVisible(false);
+                        setShowViewModal(true);
+                      }}>
                         <View
                           style={{
                             width: 80, // ✅ smaller than menu width
@@ -338,6 +342,15 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
             </View>
             </View>
         </Modal>
+        <AiCheckModal
+          visible={showViewModal}
+          selectedTask={task}
+          taskType="AICheck"
+          viewMode={true}
+          onClose={() => setShowViewModal(false)}
+          goBack={() => setShowViewModal(false)}
+          saveAICheckDetails={() => {}}
+        />
       </View>
     )
 };

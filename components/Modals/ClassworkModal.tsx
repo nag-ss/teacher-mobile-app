@@ -25,9 +25,10 @@ interface AiCheckModalProps {
   goBack: () => void;
   goBackToTasksModal: () => void;
   saveAICheckDetails: (AICheckDetails:any) => void;
+  viewMode?: boolean;
 }
 
-const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, goBackToTasksModal, saveAICheckDetails }: AiCheckModalProps) => {
+const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, goBackToTasksModal, saveAICheckDetails, viewMode = false }: AiCheckModalProps) => {
   const dispatch = useDispatch<any>();
   const [checkType] = useState('Custom (Manual Input)');
   // const radioButtons = useMemo(() => ([
@@ -170,10 +171,6 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
 
   const clearData = () => {
     setShowMandatoryMsg(false)
-    setTitle('')
-    setTextInput('')
-    setSelectedMarks(5)
-    setSelectedTime(5)
   }
 
   useEffect(() => {
@@ -212,7 +209,8 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             <Text style={styles.label}>*Title</Text>
             <TextInput
               value={title}
-              readOnly={selectedTask?.published_work_id}
+              readOnly={viewMode || !!selectedTask?.published_work_id}
+              editable={!viewMode}
               onChangeText={setTitle}
               placeholder="Enter check title"
               style={styles.textInput}
@@ -237,7 +235,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                     placeholder="Select Time"
                     placeholderStyle={{ fontSize: 12 }}
                     open={timeOpen}
-                    disabled={!!(selectedTask?.published_work_id)}
+                    disabled={viewMode || !!(selectedTask?.published_work_id)}
                     value={selectedTime}
                     items={timeOptions}
                     setOpen={setTimeOpen}
@@ -262,7 +260,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
                   <DropDownPicker
                     placeholder="Select Marks"
                     placeholderStyle={{ fontSize: 12 }}
-                    disabled={!!(selectedTask?.published_work_id)}
+                    disabled={viewMode || !!(selectedTask?.published_work_id)}
                     open={marksOpen}
                     value={selectedMarks}
                     items={marksOptions}
@@ -316,23 +314,21 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
           {/* Text Input */}
 
           <View style={styles.inputGroup}>
+            {!viewMode && (
             <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 9.17, alignItems: 'center'}}>
-                {/* <View>
-                  <Text style={styles.label}>Text Input</Text>
-                </View> */}
                 <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={{marginRight: 8}}>Insert Formula</Text>
                   <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
                       <FontAwesome name="pencil" size={18} color="white" />
                   </TouchableOpacity>
                 </View>
-                
-                
               </View>
+            )}
             <View style={{borderWidth: 1, borderColor: showMandatoryMsg ? 'red' : '#D1D5DB', borderRadius: 8 }}>
               <TextInput
                 value={textInput}
-                readOnly={selectedTask?.published_work_id}
+                readOnly={viewMode || !!selectedTask?.published_work_id}
+                editable={!viewMode}
                 onChangeText={setTextInput}
                 placeholder="Type Here:"
                 multiline
@@ -341,8 +337,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             </View>
           </View>
 
-          {
-            showMandatoryMsg ? 
+          {!viewMode && showMandatoryMsg ? 
             <View style={{justifyContent: 'center', alignItems: 'center'}}>
               <Text style={{color: 'red'}}>Please fill all the details</Text>
             </View> : null
@@ -353,8 +348,8 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
         </View>
         
         }
-          {/* Footer Buttons */}
-          {!(selectedTask?.published_work_id) ? (<View style={styles.footer}>
+          {/* Footer Buttons - hidden in viewMode; only header X closes */}
+          {!viewMode && !(selectedTask?.published_work_id) ? (<View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={() => {
               clearData()
               goBack()
@@ -366,7 +361,7 @@ const ClassworkCheckModal = ({ selectedTask, visible, taskType, onClose, goBack,
             }}>
               <Text style={{ textAlign: 'center' }}>{loading ? 'Processing..' : 'Save'}</Text>
             </TouchableOpacity>
-          </View>): (<View style={styles.footerRight}>
+          </View>): !viewMode && (<View style={styles.footerRight}>
             <TouchableOpacity style={[styles.saveBtn]} onPress={goBackToTasksModal}>
               <Text style={{textAlign: 'center'}}>Close</Text>
             </TouchableOpacity>

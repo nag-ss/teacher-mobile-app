@@ -22,9 +22,10 @@ interface AiCheckModalProps {
   onClose: () => void;
   goBack: () => void; 
   saveAICheckDetails: (AICheckDetails:any) => void;
+  viewMode?: boolean;
 }
 
-const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails }: AiCheckModalProps) => {
+const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAICheckDetails, viewMode = false }: AiCheckModalProps) => {
   const dispatch = useDispatch<any>();
   const radioButtons = useMemo(() => ([
     {
@@ -103,8 +104,6 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
   };
 
   const cancelOrGoBack = () => {
-    setTitle('')
-    setTextInput('')
     setTextInputError('')
     setTitleError('')
     setLoading(false)
@@ -167,9 +166,10 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
               value={title}
               onChangeText={setTitle}
               placeholder="Enter check title"
+              editable={!viewMode}
               style={[styles.textInput, {borderColor: titleError ? 'red' : '#D1D5DB'}]}
             />
-            {titleError && <Text style={{color : "red" }}>{titleError}</Text>}
+            {!viewMode && titleError && <Text style={{color : "red" }}>{titleError}</Text>}
           </View>
 
           {/* Match Type */}
@@ -177,26 +177,23 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
             <RadioGroup 
               radioButtons={radioButtons} 
               selectedId={selectedId}
-              onPress={setSelectedId}
+              onPress={viewMode ? () => {} : setSelectedId}
               layout='row'
             />
           </View>
 
           {/* Text Input */}
           <View style={styles.inputGroup}>
+            {!viewMode && (
             <View style={{flexDirection: 'row', justifyContent: 'space-between', padding: 4, alignItems: 'baseline', marginBottom: 9.17}}>
-              {/* <View>
-                <Text style={styles.label}>Text Input</Text>
-              </View> */}
-              
               <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={{marginRight: 8}}>Insert Formula</Text>
                 <TouchableOpacity onPress={showEditWrite} style={{ height:35, width: 35, borderRadius: 999, backgroundColor: '#21c17c', justifyContent: 'center', alignItems: 'center'  }}>
                     <FontAwesome name="pencil" size={18} color="white" />
                 </TouchableOpacity>
               </View>
-              
             </View>
+            )}
             
             <View style={{borderWidth: 1, borderColor: textInputError ? 'red' : '#D1D5DB', borderRadius: 8 }}>
               <TextInput
@@ -206,13 +203,15 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
                 onSelectionChange={({ nativeEvent: { selection } }) => setSelection(selection)}
                 placeholder="Type Here:"
                 multiline
+                editable={!viewMode}
                 style={styles.textArea}
               />
             </View>
-            {textInputError && <Text style={{color : "red" }}>{textInputError}</Text>}
+            {!viewMode && textInputError && <Text style={{color : "red" }}>{textInputError}</Text>}
           </View>
 
           {/* Footer Buttons */}
+          {!viewMode && (
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={cancelOrGoBack}>
               <Text style={{textAlign: 'center'}}>Cancel</Text>
@@ -221,6 +220,7 @@ const AiCheckModal = ({ selectedTask, visible, taskType, onClose, goBack, saveAI
               <Text style={{ textAlign: 'center' }}>{loading ? 'Processing' : 'Save'}</Text>
             </TouchableOpacity>
           </View>
+          )}
         </View>
       </View>
       <WritePadViewModal show={showEditWriteModal} onCancel={hideEditWrite} updateText={updateText} />

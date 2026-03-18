@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TouchableHighlight } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import AiCheckModal from '../Modals/Modal_4_AICheckModal';
+import ClassworkCheckModal from '../Modals/ClassworkModal';
 import { addTaskToClass, getTaskStatus, publishClasswork } from '@/store/classSlice';
 import moment from 'moment-timezone';
 import { useFocusEffect } from '@react-navigation/native';
@@ -27,6 +28,7 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
     const [taskStatusName, setTaskStatusName] = useState<string>(task.status_name)
     const [taskCTAName, setTaskCTAName] = useState<string>(task.status_name)
     const [menuVisible, setMenuVisible] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(false);
     const taskCTANames: any = {
       "in_queue": 'Publish',
@@ -302,7 +304,10 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
                   >
                     {
                       taskStatus != 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => viewTask(task.quiz_id, task.task_id)}>
+                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => {
+                        setMenuVisible(false);
+                        setShowViewModal(true);
+                      }}>
                         <View
                           style={{
                             width: 80, // ✅ smaller than menu width
@@ -410,6 +415,16 @@ const ClassWork = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) =>
             </View>
             </View>
         </Modal>
+        <ClassworkCheckModal
+          visible={showViewModal}
+          selectedTask={task}
+          taskType="Classwork"
+          viewMode={true}
+          onClose={() => setShowViewModal(false)}
+          goBack={() => setShowViewModal(false)}
+          goBackToTasksModal={() => setShowViewModal(false)}
+          saveAICheckDetails={() => {}}
+        />
       </View>
     )
 };
