@@ -10,8 +10,8 @@ const InsightsCard = () => {
         <Text style={styles.rightTitle}>Behavior Highlights</Text>
 
         <View style={styles.itemRow}>
-          <View style={styles.tickOnly}>
-            <MaterialIcons name="check" size={18} color="#19B56B" />
+          <View style={styles.iconWrap}>
+            <Image source={require('@/assets/images/ss/check.png')} style={styles.iconImg} />
           </View>
           <Text style={styles.itemText}>5 students consistently participate.</Text>
         </View>

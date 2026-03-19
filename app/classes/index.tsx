@@ -7,6 +7,7 @@ import ClassOverviewFilters from '@/components/classes/filter/ClassOverviewFilte
 import QuizTable from '@/components/classes/QuizSection/QuizTable';
 import AssignmentTable from '@/components/classes/AssignmentSection/AssignmentTable';
 import Sumarry from '@/components/classes/Insights/Insights';
+import AiSuggestion from '@/components/classes/AiSuggestion/AiSuggestion';
 
 const Classes = () => {
   return (
@@ -25,6 +26,7 @@ const Classes = () => {
       <QuizTable />
       <AssignmentTable />
       <Sumarry />
+      <AiSuggestion />
     </ScrollView>
   );
 };
