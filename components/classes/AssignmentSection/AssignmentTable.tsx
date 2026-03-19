@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
   },
   colSno: { flex: 0.6, textAlign: 'center' },
-  colTitle: { flex: 1.7, textAlign: 'left' },
+  colTitle: { flex: 1.7, textAlign: 'center' },
   colDue: { flex: 0.9, textAlign: 'center' },
   colStats: { flex: 1.0, textAlign: 'center' },
   colStatus: { flex: 1.0, textAlign: 'center' },

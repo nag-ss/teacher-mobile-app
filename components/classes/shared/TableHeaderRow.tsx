@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     fontFamily: 'Roboto_500Medium',
-    fontSize: 10,
+    fontSize: 11,
     color: '#6B7280',
     paddingHorizontal: 4,
     textAlign: 'center',

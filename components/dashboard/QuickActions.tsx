@@ -86,8 +86,10 @@ const QuickActions = ({
             ) : (
               <Image style={[styles.icon, iconStyle]} source={item.icon} />
             )}
-            <Text style={[styles.title, titleStyle]}>{item.title}</Text>
           </View>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, titleStyle]}>
+            {item.title}
+          </Text>
           <Text style={[styles.subTitle, subTitleStyle]}>{item.description}</Text>
           <Button
             title={item.cta}
@@ -110,7 +112,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     padding: 5,
-    fontWeight: 'bold',
     fontSize: 16,
   },
   cardsContainer: {
@@ -126,8 +127,7 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray',
   },
   cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   iconWrapper: {
     width: 34,
@@ -143,11 +143,11 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   title: {
-    flex: 1,
-    fontWeight: 'bold',
+    fontFamily: 'Montserrat_600SemiBold',
     marginBottom: 4,
   },
   subTitle: {
+    fontFamily: 'Roboto_400Regular',
     fontSize: 10,
     height: 40,
   },
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonTitle: {
+    fontFamily: 'Roboto_500Medium',
     color: 'black',
   },
 });

@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   title: {
     padding: 0,
     fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 18,
+    fontSize: 18.28,
     color: '#111827',
   },
   cardsContainer: {
@@ -69,25 +69,29 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 14,
+    fontSize: 12,
     color: '#111827',
+    marginTop: 8,
     marginBottom: 6,
   },
   cardDesc: {
     fontFamily: 'Roboto_400Regular',
-    fontSize: 12,
+    fontSize: 11,
     color: '#6B7280',
     lineHeight: 16,
     height: 48,
   },
   button: {
-    height: 36,
+    height: 40,
     borderRadius: 8,
     borderColor: '#9FD5C2',
   },
   buttonText: {
     fontFamily: 'Roboto_500Medium',
-    fontSize: 13,
+    fontSize: 12,
+    lineHeight: 16,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
     color: '#111827',
   },
   iconWrapper: {
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#9FD5C2',
     backgroundColor: '#fff',
-    marginRight: 10,
+    marginRight: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },

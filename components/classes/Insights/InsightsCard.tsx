@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   rightTitle: {
     fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 10,
     color: '#111827',
   },
@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
   },
   itemText: {
     flex: 1,
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 13,
+    fontFamily: 'Montserrat_500Medium',
+    fontSize: 12,
     color: '#111827',
   },
   tickOnly: {

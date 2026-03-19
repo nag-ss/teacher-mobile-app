@@ -41,7 +41,7 @@ const StudentTableRow = ({ item }: Props) => {
           <Image source={require('@/assets/images/sms.png')} style={styles.smsIcon} />
         </View>
         <View style={styles.actionIconCircle}>
-          <MaterialIcons name="chevron-right" size={20} color="#111827" />
+          <MaterialIcons name="chevron-right" size={16} color="#111827" />
         </View>
       </View>
     </View>
@@ -79,9 +79,11 @@ const styles = StyleSheet.create({
   },
   gradeCell: {
     fontFamily: 'Roboto_400Regular',
+    fontSize: 11,
   },
   progressCell: {
     fontFamily: 'Montserrat_400Regular',
+    fontSize: 10,
   },
   progressWrap: {
     flexDirection: 'row',
@@ -91,33 +93,37 @@ const styles = StyleSheet.create({
   },
   attendanceCell: {
     fontFamily: 'Montserrat_400Regular',
+    fontSize: 10,
   },
   engagementCell: {
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Montserrat_400Regular',
+    fontSize: 10,
   },
   quizCell: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Montserrat_400Regular',
+    fontSize: 10,
   },
   actionCell: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
   },
   actionIconCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#D3D3D3',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#E5E7EB',
     alignItems: 'center',
     justifyContent: 'center',
   },
   smsIcon: {
-    width: 14,
-    height: 14,
+    width: 12,
+    height: 12,
   },
   rnNumber: {
     fontFamily: 'Montserrat_400Regular',
+    fontSize: 11,
   },
 });
 

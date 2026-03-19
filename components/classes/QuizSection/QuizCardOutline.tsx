@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 
 const QuizCardOutline = () => {
   const quizCards = [
@@ -50,10 +49,6 @@ const QuizCardOutline = () => {
 
   return (
     <View style={styles.row}>
-      <TouchableOpacity style={styles.arrowBtn} activeOpacity={0.7}>
-        <MaterialIcons name="chevron-left" size={22} color="#111827" />
-      </TouchableOpacity>
-
       <View style={styles.cards}>
         {quizCards.map((card, cardIndex) => (
           <View key={`${card.title}-${cardIndex}`} style={styles.card}>
@@ -80,8 +75,12 @@ const QuizCardOutline = () => {
 
             {card.details.map((detail, detailIndex) => (
               <View key={`${detail.label}-${detailIndex}`} style={styles.infoRow}>
-                <Text style={styles.infoLabel}>{detail.label}</Text>
-                <Text style={styles.infoSep}>:</Text>
+                <View style={styles.infoLabelGroup}>
+                  <Text numberOfLines={1} style={styles.infoLabel}>
+                    {detail.label}
+                  </Text>
+                  <Text style={styles.infoSep}>:</Text>
+                </View>
                 <Text numberOfLines={1} style={styles.infoValue}>
                   {detail.value}
                 </Text>
@@ -101,10 +100,6 @@ const QuizCardOutline = () => {
           </View>
         ))}
       </View>
-
-      <TouchableOpacity style={styles.arrowBtn} activeOpacity={0.7}>
-        <MaterialIcons name="chevron-right" size={22} color="#111827" />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -116,22 +111,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
   },
-  arrowBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   cards: {
     flex: 1,
     flexDirection: 'row',
     gap: 10,
     paddingHorizontal: 8,
+    alignItems: 'stretch',
   },
   card: {
     flex: 1,
+    minHeight: 300,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#D1D5DB',
@@ -154,8 +143,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconImg: {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     resizeMode: 'contain',
   },
   headerTextWrap: {
@@ -163,7 +152,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 10,
+    fontSize: 12,
     color: '#111827',
     marginBottom: 3,
   },
@@ -187,8 +176,8 @@ const styles = StyleSheet.create({
   },
   metaValue: {
     flex: 1,
-    fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 9,
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 8,
     color: '#111827',
   },
   divider: {
@@ -203,15 +192,18 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
     paddingVertical: 4,
   },
+  infoLabelGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   infoLabel: {
-    width: 74,
-    fontFamily: 'Roboto_400Regular',
-    fontSize: 10,
+    fontFamily: 'Montserrat_500Medium',
+    fontSize: 9,
     color: '#6B7280',
   },
   infoSep: {
-    width: 8,
-    textAlign: 'center',
+    marginLeft: 2,
+    marginRight: 8,
     fontFamily: 'Roboto_400Regular',
     fontSize: 9,
     color: '#6B7280',
@@ -219,23 +211,23 @@ const styles = StyleSheet.create({
   infoValue: {
     flex: 1,
     textAlign: 'right',
-    fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 9,
+    fontFamily: 'Roboto_400Regular',
+    fontSize: 8,
     color: '#111827',
   },
   stepsTitle: {
-    marginTop: 7,
+    marginTop: 9,
     marginBottom: 4,
-    fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 10,
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 11,
     color: '#111827',
   },
   stepsItem: {
     fontFamily: 'Roboto_400Regular',
-    fontSize: 9,
+    fontSize: 8,
     lineHeight: 13,
     color: '#111827',
-    marginBottom: 1,
+    marginBottom: 2,
   },
   actionBtn: {
     marginTop: 'auto',
@@ -247,8 +239,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionBtnText: {
-    fontFamily: 'Montserrat_500Medium',
-    fontSize: 10.5,
+    fontFamily: 'Roboto_500Medium',
+    fontSize: 9,
     color: '#111827',
   },
 });

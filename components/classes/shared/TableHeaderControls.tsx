@@ -28,7 +28,7 @@ const TableHeaderControls = ({
             value={query}
             onChangeText={onChangeQuery}
             placeholder={searchPlaceholder}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#111827"
             style={styles.searchInput}
           />
           <MaterialIcons name="search" size={18} color="#111827" />
@@ -51,7 +51,7 @@ const TableHeaderControls = ({
 const styles = StyleSheet.create({
   title: {
     fontFamily: 'Montserrat_600SemiBold',
-    fontSize: 18,
+    fontSize: 18.28,
     paddingBottom: 12,
   },
   topRow: {
@@ -70,17 +70,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: '#111827',
     borderRadius: 8,
     paddingHorizontal: 12,
-    height: 36,
-    width: 210,
+    height: 32,
+    width: 180,
     backgroundColor: '#fff',
   },
   searchInput: {
     flex: 1,
     fontFamily: 'Roboto_400Regular',
-    fontSize: 12,
+    fontSize: 11,
     color: '#111827',
     paddingVertical: 0,
     paddingRight: 8,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   outlineActionText: {
     fontFamily: 'Roboto_400Regular',
-    fontSize: 12,
+    fontSize: 11,
     color: '#111827',
   },
 });

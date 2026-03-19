@@ -25,12 +25,12 @@ const AssignmentTableRow = ({ item }: Props) => {
 
   return (
     <View style={styles.dataRow}>
-      <Text style={[styles.cell, styles.colSno]}>{item.id}</Text>
+      <Text style={[styles.cell, styles.colSno, styles.snoCell]}>{item.id}</Text>
       <Text style={[styles.cell, styles.colTitle, styles.titleCell]} numberOfLines={1}>
         {item.title}
       </Text>
-      <Text style={[styles.cell, styles.colDue]}>{item.dueDate}</Text>
-      <Text style={[styles.cell, styles.colStats]}>{item.stats}</Text>
+      <Text style={[styles.cell, styles.colDue, styles.dueCell]}>{item.dueDate}</Text>
+      <Text style={[styles.cell, styles.colStats, styles.statsCell]}>{item.stats}</Text>
       <View style={[styles.colStatus, styles.statusCell]}>
         <View style={[styles.statusPill, s.pill]}>
           <Text style={[styles.statusText, s.text]} numberOfLines={1}>
@@ -43,7 +43,7 @@ const AssignmentTableRow = ({ item }: Props) => {
           <Image source={require('@/assets/images/sms.png')} style={styles.smsIcon} />
         </View>
         <View style={styles.actionIconCircle}>
-          <MaterialIcons name="chevron-right" size={20} color="#111827" />
+          <MaterialIcons name="chevron-right" size={16} color="#111827" />
         </View>
       </View>
     </View>
@@ -60,19 +60,29 @@ const styles = StyleSheet.create({
   },
   cell: {
     fontFamily: 'Roboto_400Regular',
-    fontSize: 11,
+    fontSize: 10,
     color: '#111827',
     paddingHorizontal: 4,
     textAlign: 'center',
   },
   colSno: { flex: 0.6, textAlign: 'center' },
-  colTitle: { flex: 1.7, textAlign: 'left' },
+  colTitle: { flex: 1.7, textAlign: 'center' },
   colDue: { flex: 0.9, textAlign: 'center' },
   colStats: { flex: 1.0, textAlign: 'center' },
   colStatus: { flex: 1.0 },
   colAction: { flex: 0.7 },
   titleCell: {
-    fontFamily: 'Roboto_500Medium',
+    fontFamily: 'Montserrat_600SemiBold',
+  },
+  dueCell: {
+    fontFamily: 'Roboto_400Regular',
+  },
+  snoCell: {
+    fontFamily: 'Montserrat_400Regular',
+  },
+  statsCell: {
+    fontFamily: 'Montserrat_400Regular',
+    fontSize: 10,
   },
   statusCell: {
     alignItems: 'center',
@@ -80,16 +90,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   statusPill: {
-    minWidth: 124,
-    paddingHorizontal: 14,
-    height: 28,
-    borderRadius: 8,
+    minWidth: 104,
+    paddingHorizontal: 10,
+    height: 24,
+    borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
   },
   statusText: {
     fontFamily: 'Roboto_500Medium',
-    fontSize: 11,
+    fontSize: 10,
   },
   pillClosed: {
     backgroundColor: '#19B56B',
@@ -113,22 +123,22 @@ const styles = StyleSheet.create({
   },
   actionCell: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 10,
-    paddingRight: 2,
+    gap: 8,
+    paddingRight: 0,
   },
   actionIconCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: '#E5E7EB',
     alignItems: 'center',
     justifyContent: 'center',
   },
   smsIcon: {
-    width: 16,
-    height: 16,
+    width: 12,
+    height: 12,
     tintColor: '#111827',
   },
 });
