@@ -1,49 +1,22 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import TableHeaderControls from '@/components/classes/shared/TableHeaderControls';
-import TablePagination from '@/components/classes/shared/TablePagination';
-import TableHeaderRow from '@/components/classes/shared/TableHeaderRow';
-import StudentTableRow, { type StudentItem } from '@/components/classes/StudentSection/StudentTableRow';
+import TableHeaderControls from '@/components/classes/shared/Header';
+import TablePagination from '@/components/classes/shared/Pagination';
+import TableHeaderRow from '@/components/classes/shared/ColumnsTitles';
+import usePagination from '@/components/classes/shared/usePagination';
+import StudentTableRow, { type StudentItem } from '@/components/classes/StudentSection/StudentItem';
+import { classStudents } from '@/data/Classdata';
 
 const StudentTable = () => {
   const PAGE_SIZE = 6;
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState('');
-  const seedStudents = [
-    { name: 'Akshay Kumar .N', grade: 'B Grade - 82%', progress: '-02%', attendance: '92%', engagement: 'High', quiz: '85% (A)' },
-    { name: 'Diya Choudhary.k', grade: 'A Grade - 92%', progress: '+05%', attendance: '88%', engagement: 'Medium', quiz: '56% (D)' },
-    { name: 'Kabir Joshi Singh', grade: 'C Grade -75%', progress: '-02%', attendance: '72%', engagement: 'Low', quiz: '73% (B)' },
-    { name: 'Aditi Desai', grade: 'A Grade -86%', progress: '+10%', attendance: '64%', engagement: 'High', quiz: '64% (C)' },
-    { name: 'G.Saanvi Reddy', grade: 'D Grade -62%', progress: '+00%', attendance: '88%', engagement: 'Medium', quiz: '45% (E)' },
-    { name: 'Rohan Gupta', grade: 'B Grade -79%', progress: '-06%', attendance: '45%', engagement: 'Low', quiz: '85% (A)' },
-    { name: 'Rohan Gupta', grade: 'B Grade -79%', progress: '-06%', attendance: '45%', engagement: 'Low', quiz: '85% (A)' },
-  ];
-
-  const students = useMemo(
-    () =>
-      seedStudents.map((s, i) => ({
-        id: String(i + 1).padStart(2, '0'),
-        ...s,
-      })),
-    [seedStudents]
-  );
-
-  const pageCount = Math.max(1, Math.ceil(students.length / PAGE_SIZE));
-  const pagedStudents = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return students.slice(start, start + PAGE_SIZE);
-  }, [page, students]);
-
-  const prev = () => {
-    if (page > 1) setPage(page - 1);
-  };
-  const next = () => {
-    if (page < pageCount) setPage(page + 1);
-  };
+  const students = useMemo(() => classStudents as StudentItem[], []);
+  const { page, pageCount, pagedItems: pagedStudents, setPage, prev, next } = usePagination(students, {
+    pageSize: PAGE_SIZE,
+  });
 
   return (
     <View style={styles.container}>
-      <TableHeaderControls title="Student Performance" query={query} onChangeQuery={setQuery} />
+      <TableHeaderControls title="Student Performance" searchDisabled />
       <View style={styles.tableBox}>
         <TableHeaderRow
           columns={[

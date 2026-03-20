@@ -16,7 +16,7 @@ type Props = {
   item: StudentItem;
 };
 
-const StudentTableRow = ({ item }: Props) => {
+const StudentItem = ({ item }: Props) => {
   const trimmed = (item.progress ?? '').trim();
   const progressValue = Number.parseInt(trimmed.replace('%', ''), 10);
   const isPositiveProgress = Number.isFinite(progressValue) && progressValue > 0;
@@ -142,5 +142,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StudentTableRow;
+export default StudentItem;
 

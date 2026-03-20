@@ -1,56 +1,30 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import TableHeaderControls from '@/components/classes/shared/TableHeaderControls';
-import TablePagination from '@/components/classes/shared/TablePagination';
-import TableHeaderRow from '@/components/classes/shared/TableHeaderRow';
-import AssignmentTableRow, { type AssignmentItem } from '@/components/classes/AssignmentSection/AssignmentTableRow';
+import TableHeaderControls from '@/components/classes/shared/Header';
+import TablePagination from '@/components/classes/shared/Pagination';
+import TableHeaderRow from '@/components/classes/shared/ColumnsTitles';
+import usePagination from '@/components/classes/shared/usePagination';
+import AssignmentTableRow, { type AssignmentItem } from '@/components/classes/AssignmentSection/AssignmentItem';
+import { classAssignments } from '@/data/Classdata';
 
 const AssignmentTable = () => {
   const PAGE_SIZE = 6;
-  const [page, setPage] = useState(1);
-  const [query, setQuery] = useState('');
-
-  const assignments: AssignmentItem[] = useMemo(
-    () => [
-      { id: '01', title: 'Algebra Homework', dueDate: 'Apr 30', stats: '28/30 Submitted', status: 'Closed' },
-      { id: '02', title: 'Trigonometry Assignment', dueDate: 'May 2', stats: '15/30 Submitted', status: 'In Progress' },
-      { id: '03', title: 'Calculus Assignment', dueDate: 'May 5', stats: '10/30 Submitted', status: 'Low Participation' },
-      { id: '04', title: 'Algebra Homework', dueDate: 'Apr 30', stats: '28/30 Submitted', status: 'Closed' },
-      { id: '05', title: 'Trigonometry Assignment', dueDate: 'May 2', stats: '15/30 Submitted', status: 'In Progress' },
-      { id: '06', title: 'Geometry Worksheet', dueDate: 'May 8', stats: '22/30 Submitted', status: 'In Progress' },
-      { id: '07', title: 'Statistics Project', dueDate: 'May 12', stats: '09/30 Submitted', status: 'Low Participation' },
-    ],
-    []
-  );
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return assignments;
-    return assignments.filter((a) => `${a.title} ${a.dueDate} ${a.stats} ${a.status}`.toLowerCase().includes(q));
-  }, [assignments, query]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [query]);
-
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pagedAssignments = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filtered.slice(start, start + PAGE_SIZE);
-  }, [filtered, page]);
-
-  const showPagination = filtered.length > PAGE_SIZE;
-
-  const prev = () => {
-    if (page > 1) setPage(page - 1);
-  };
-  const next = () => {
-    if (page < pageCount) setPage(page + 1);
-  };
+  const assignments = useMemo(() => classAssignments as AssignmentItem[], []);
+  const {
+    page,
+    pageCount,
+    pagedItems: pagedAssignments,
+    showPagination,
+    setPage,
+    prev,
+    next,
+  } = usePagination(assignments, {
+    pageSize: PAGE_SIZE,
+  });
 
   return (
     <View style={styles.container}>
-      <TableHeaderControls title="Assignments" query={query} onChangeQuery={setQuery} />
+      <TableHeaderControls title="Assignments" searchDisabled />
 
       <View style={styles.tableBox}>
         <TableHeaderRow

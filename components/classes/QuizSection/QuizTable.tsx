@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import QuizCardOutline from '@/components/classes/QuizSection/QuizCardOutline';
-import TableHeaderControls from '@/components/classes/shared/TableHeaderControls';
+import QuizCardOutline from '@/components/classes/QuizSection/QuizCard';
+import TableHeaderControls from '@/components/classes/shared/Header';
 
 const QuizTable = () => {
-  const [query, setQuery] = useState('');
-
   return (
     <View style={styles.container}>
-      <TableHeaderControls title="Quiz Performance" query={query} onChangeQuery={setQuery} />
+      <TableHeaderControls title="Quiz Performance" searchDisabled />
 
       <QuizCardOutline />
     </View>

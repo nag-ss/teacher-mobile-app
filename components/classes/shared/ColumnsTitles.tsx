@@ -11,7 +11,7 @@ type Props = {
   columns: TableHeaderColumn[];
 };
 
-const TableHeaderRow = ({ columns }: Props) => {
+const ColumnsTitles = ({ columns }: Props) => {
   return (
     <View style={styles.headerRow}>
       {columns.map((c) => (
@@ -42,5 +42,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TableHeaderRow;
+export default ColumnsTitles;
 

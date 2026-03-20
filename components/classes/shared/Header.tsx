@@ -4,8 +4,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = {
   title: string;
-  query: string;
-  onChangeQuery: (next: string) => void;
+  query?: string;
+  onChangeQuery?: (next: string) => void;
+  searchDisabled?: boolean;
   searchPlaceholder?: string;
   onPressSort?: () => void;
   onPressFilter?: () => void;
@@ -13,8 +14,9 @@ type Props = {
 
 const TableHeaderControls = ({
   title,
-  query,
+  query = '',
   onChangeQuery,
+  searchDisabled = false,
   searchPlaceholder = 'Search Keywords',
   onPressSort,
   onPressFilter,
@@ -30,6 +32,8 @@ const TableHeaderControls = ({
             placeholder={searchPlaceholder}
             placeholderTextColor="#111827"
             style={styles.searchInput}
+            editable={!searchDisabled}
+            selectTextOnFocus={!searchDisabled}
           />
           <MaterialIcons name="search" size={18} color="#111827" />
         </View>

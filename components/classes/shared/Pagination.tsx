@@ -10,7 +10,7 @@ type Props = {
   onSetPage: (p: number) => void;
 };
 
-const TablePagination = ({ page, pageCount, onPrev, onNext, onSetPage }: Props) => {
+const Pagination = ({ page, pageCount, onPrev, onNext, onSetPage }: Props) => {
   const paginationItems = useMemo(() => {
     if (pageCount <= 5) return Array.from({ length: pageCount }, (_, i) => i + 1);
     if (page <= 2) return [1, 2, 'ellipsis', pageCount - 1, pageCount] as const;
@@ -129,5 +129,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TablePagination;
+export default Pagination;
 

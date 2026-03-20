@@ -16,7 +16,7 @@ type Props = {
   item: AssignmentItem;
 };
 
-const AssignmentTableRow = ({ item }: Props) => {
+const AssignmentItem = ({ item }: Props) => {
   const s = useMemo(() => {
     if (item.status === 'Closed') return { pill: styles.pillClosed, text: styles.pillTextClosed };
     if (item.status === 'Low Participation') return { pill: styles.pillLow, text: styles.pillTextLow };
@@ -143,5 +143,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AssignmentTableRow;
+export default AssignmentItem;
 
