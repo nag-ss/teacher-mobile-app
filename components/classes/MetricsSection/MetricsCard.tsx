@@ -93,12 +93,13 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
     padding: 10,
     flex: 1,
     flexDirection: 'row',
     minWidth: 200,
     // maxWidth: 200,
-    elevation: 2,
     margin: 6,
     // width: 200
   },

@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     gap: 10,
-    paddingHorizontal: 8,
+    paddingHorizontal: 0,
     alignItems: 'stretch',
   },
   card: {

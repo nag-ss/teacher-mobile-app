@@ -50,16 +50,20 @@ const MetricsGrid = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#fff',
-        borderRadius: 5,
-        padding: 15,
-        marginTop:10,
-    },
-    sectionHeading: {
-        fontFamily: 'Montserrat_600SemiBold',
-        fontSize: 18,
-    },
+  container: {
+    backgroundColor: '#fff',
+    paddingVertical: 15,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginTop: 10,
+  },
+  sectionHeading: {
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 18,
+    marginBottom: 8,
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
