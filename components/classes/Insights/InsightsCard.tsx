@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
-    marginTop: 12,
+    gap: 12
+
   },
   boxLeft: {
     flex: 1,
@@ -63,20 +63,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     backgroundColor: '#fff',
-    paddingHorizontal: 14,
-    paddingVertical: 16,
+    padding: 16,
   },
   rightTitle: {
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 14,
-    marginBottom: 10,
+    marginBottom: 0,
     color: '#111827',
+    paddingBottom: 8,
   },
   itemRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 10,
-    paddingVertical: 8,
+    paddingVertical:8,
   },
   itemText: {
     flex: 1,

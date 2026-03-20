@@ -75,7 +75,7 @@ const StudentTable = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    padding: 15,
+    padding: 20,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E5E7EB',

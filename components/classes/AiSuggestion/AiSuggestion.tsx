@@ -6,7 +6,7 @@ const aiSuggestionItems: QuickActionItem[] = [
   {
     icon: require('@/assets/images/cast_for_education.png'),
     title: 'Reteach Trigonometry',
-    description: '30% of students scored below 50% in the last quiz.',
+    description: '30% of students scored below 50% in the last quiz.  students are struggling with recent topics.',
     cta: 'Schedule Review',
   },
   {
@@ -34,6 +34,7 @@ const AiSuggestion = () => {
       cardStyle={styles.card}
       titleStyle={styles.cardTitle}
       subTitleStyle={styles.cardDesc}
+      buttonContainerStyle={styles.buttonContainer}
       buttonStyle={styles.button}
       buttonTitleStyle={styles.buttonText}
       iconStyle={styles.icon}
@@ -55,36 +56,39 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 18.28,
     color: '#111827',
+    paddingBottom: 16,
   },
   cardsContainer: {
-    marginTop: 12,
     gap: 12,
+
   },
   card: {
-    minHeight: 180,
     borderRadius: 12,
     borderColor: '#D1D5DB',
-    padding: 14,
+    padding: 16,
     marginHorizontal: 0,
   },
   cardTitle: {
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 12,
     color: '#111827',
-    marginTop: 8,
-    marginBottom: 6,
   },
   cardDesc: {
     fontFamily: 'Roboto_400Regular',
     fontSize: 11,
     color: '#6B7280',
+    height: 'auto',
+    paddingBottom: 10,
     lineHeight: 16,
-    height: 48,
   },
   button: {
-    height: 40,
+    height: 'auto',
     borderRadius: 8,
     borderColor: '#9FD5C2',
+  },
+  buttonContainer: {
+    paddingVertical: 0,
+    marginTop: 'auto',
   },
   buttonText: {
     fontFamily: 'Roboto_500Medium',

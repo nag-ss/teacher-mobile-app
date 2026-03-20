@@ -61,12 +61,16 @@ const QuizCardOutline = () => {
                 <View style={styles.metaRow}>
                   <Text style={styles.metaLabel}>Scheduled at</Text>
                   <Text style={styles.metaSep}>:</Text>
-                  <Text style={styles.metaValue}>{card.scheduledAt}</Text>
+                  <Text numberOfLines={1} style={styles.metaValue}>
+                    {card.scheduledAt}
+                  </Text>
                 </View>
                 <View style={styles.metaRow}>
                   <Text style={styles.metaLabel}>Status</Text>
                   <Text style={styles.metaSep}>:</Text>
-                  <Text style={styles.metaValue}>{card.status}</Text>
+                  <Text numberOfLines={1} style={styles.metaValue}>
+                    {card.status}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -88,11 +92,13 @@ const QuizCardOutline = () => {
             ))}
 
             <Text style={styles.stepsTitle}>Suggested Next Steps</Text>
-            {card.nextSteps.map((step, stepIndex) => (
-              <Text key={`${step.slice(0, 12)}-${stepIndex}`} style={styles.stepsItem}>
-                • {step}
-              </Text>
-            ))}
+            <View style={styles.stepsList}>
+              {card.nextSteps.map((step, stepIndex) => (
+                <Text key={`${step.slice(0, 12)}-${stepIndex}`} style={styles.stepsItem}>
+                  • {step}
+                </Text>
+              ))}
+            </View>
 
             <TouchableOpacity activeOpacity={0.7} style={styles.actionBtn}>
               <Text style={styles.actionBtnText}>{card.buttonText}</Text>
@@ -120,7 +126,6 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    minHeight: 300,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#D1D5DB',
@@ -154,12 +159,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 12,
     color: '#111827',
-    marginBottom: 3,
+    marginBottom: 0,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 2,
+    marginBottom: 0,
   },
   metaLabel: {
     width: 74,
@@ -183,7 +188,7 @@ const styles = StyleSheet.create({
   divider: {
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
-    marginVertical: 7,
+    marginVertical: 6,
   },
   infoRow: {
     flexDirection: 'row',
@@ -203,7 +208,7 @@ const styles = StyleSheet.create({
   },
   infoSep: {
     marginLeft: 2,
-    marginRight: 8,
+    marginRight: 0,
     fontFamily: 'Roboto_400Regular',
     fontSize: 9,
     color: '#6B7280',
@@ -216,8 +221,8 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
   stepsTitle: {
-    marginTop: 9,
-    marginBottom: 4,
+    paddingTop: 8,
+    paddingBottom: 4,
     fontFamily: 'Roboto_500Medium',
     fontSize: 11,
     color: '#111827',
@@ -227,7 +232,10 @@ const styles = StyleSheet.create({
     fontSize: 8,
     lineHeight: 13,
     color: '#111827',
-    marginBottom: 2,
+    paddingBottom: 0,
+  },
+  stepsList: {
+    paddingBottom: 8,
   },
   actionBtn: {
     marginTop: 'auto',

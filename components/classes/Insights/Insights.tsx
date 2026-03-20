@@ -14,7 +14,7 @@ const Insights = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    padding: 15,
+    padding: 20,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E5E7EB',
@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 18,
+    paddingBottom: 16,
   },
 });
 

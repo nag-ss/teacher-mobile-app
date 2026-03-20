@@ -52,8 +52,8 @@ const MetricsGrid = () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    paddingVertical: 15,
-    paddingHorizontal: 8,
+    paddingVertical: 20,
+    paddingHorizontal: 12,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E5E7EB',

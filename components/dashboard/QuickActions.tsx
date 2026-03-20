@@ -30,6 +30,7 @@ type QuickActionsProps = {
   cardStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;
   subTitleStyle?: StyleProp<TextStyle>;
+  buttonContainerStyle?: StyleProp<ViewStyle>;
   buttonStyle?: StyleProp<ViewStyle>;
   buttonTitleStyle?: StyleProp<TextStyle>;
   iconStyle?: StyleProp<ImageStyle>;
@@ -67,6 +68,7 @@ const QuickActions = ({
   cardStyle,
   titleStyle,
   subTitleStyle,
+  buttonContainerStyle,
   buttonStyle,
   buttonTitleStyle,
   iconStyle,
@@ -87,12 +89,15 @@ const QuickActions = ({
               <Image style={[styles.icon, iconStyle]} source={item.icon} />
             )}
           </View>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, titleStyle]}>
-            {item.title}
-          </Text>
+          <View style={styles.titleContainer}>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, titleStyle]}>
+              {item.title}
+            </Text>
+          </View>
           <Text style={[styles.subTitle, subTitleStyle]}>{item.description}</Text>
           <Button
             title={item.cta}
+            containerStyle={buttonContainerStyle}
             buttonStyle={[styles.button, buttonStyle]}
             titleStyle={[styles.buttonTitle, buttonTitleStyle]}
             onPress={item.onPress ?? (() => {})}
@@ -108,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginBottom: 5,
     borderRadius: 10,
-    padding: 15,
+    padding: 20,
   },
   headerText: {
     padding: 5,
@@ -128,6 +133,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     alignItems: 'flex-start',
+    paddingBottom: 8,
   },
   iconWrapper: {
     width: 34,
@@ -144,7 +150,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Montserrat_600SemiBold',
-    marginBottom: 4,
+    lineHeight: 16,
+    includeFontPadding: false,
+  },
+  titleContainer: {
+    minHeight: 20,
+    justifyContent: 'flex-start',
+    paddingBottom: 6,
   },
   subTitle: {
     fontFamily: 'Roboto_400Regular',
