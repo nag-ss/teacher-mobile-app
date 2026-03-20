@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     backgroundColor: '#fff',
     overflow: 'hidden',
+    height: 335,
   },
   colRn: { flex: 0.6, textAlign: 'center' },
   colName: { flex: 1.6, textAlign: 'center' },

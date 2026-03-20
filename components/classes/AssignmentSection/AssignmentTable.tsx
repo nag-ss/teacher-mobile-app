@@ -42,7 +42,6 @@ const AssignmentTable = () => {
           keyExtractor={(item) => item.id}
           scrollEnabled={false}
           renderItem={({ item }) => <AssignmentTableRow item={item} />}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       </View>
 
@@ -69,10 +68,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     backgroundColor: '#fff',
     overflow: 'hidden',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#F3F4F6',
+    height: 335,
   },
   colSno: { flex: 0.6, textAlign: 'center' },
   colTitle: { flex: 1.7, textAlign: 'center' },
