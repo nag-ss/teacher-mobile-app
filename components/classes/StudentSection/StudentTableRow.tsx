@@ -18,6 +18,10 @@ type Props = {
 
 const StudentTableRow = ({ item }: Props) => {
   const trimmed = (item.progress ?? '').trim();
+  const progressValue = Number.parseInt(trimmed.replace('%', ''), 10);
+  const isPositiveProgress = Number.isFinite(progressValue) && progressValue > 0;
+  const isNegativeProgress = Number.isFinite(progressValue) && progressValue < 0;
+  const isZeroProgress = Number.isFinite(progressValue) && progressValue === 0;
 
   return (
     <View style={styles.dataRow}>
@@ -30,6 +34,13 @@ const StudentTableRow = ({ item }: Props) => {
       </Text>
       <View style={styles.colProgress}>
         <View style={styles.progressWrap}>
+          {isPositiveProgress ? (
+            <Image source={require('@/assets/images/arrow_circle_up.png')} style={styles.progressIcon} />
+          ) : isNegativeProgress ? (
+            <Image source={require('@/assets/images/arrow_circle_down.png')} style={styles.progressIcon} />
+          ) : isZeroProgress ? (
+            <Image source={require('@/assets/images/do_not_disturb_on.png')} style={styles.progressIcon} />
+          ) : null}
           <Text style={[styles.cell, styles.progressCell]}>{trimmed}</Text>
         </View>
       </View>
@@ -90,6 +101,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+  },
+  progressIcon: {
+    width: 12,
+    height: 12,
   },
   attendanceCell: {
     fontFamily: 'Montserrat_400Regular',

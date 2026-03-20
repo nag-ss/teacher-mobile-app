@@ -10,7 +10,7 @@ const StudentTable = () => {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState('');
   const seedStudents = [
-    { name: 'Akshay Kumar .N', grade: 'B Grade - 82%', progress: '+02%', attendance: '92%', engagement: 'High', quiz: '85% (A)' },
+    { name: 'Akshay Kumar .N', grade: 'B Grade - 82%', progress: '-02%', attendance: '92%', engagement: 'High', quiz: '85% (A)' },
     { name: 'Diya Choudhary.k', grade: 'A Grade - 92%', progress: '+05%', attendance: '88%', engagement: 'Medium', quiz: '56% (D)' },
     { name: 'Kabir Joshi Singh', grade: 'C Grade -75%', progress: '-02%', attendance: '72%', engagement: 'Low', quiz: '73% (B)' },
     { name: 'Aditi Desai', grade: 'A Grade -86%', progress: '+10%', attendance: '64%', engagement: 'High', quiz: '64% (C)' },
