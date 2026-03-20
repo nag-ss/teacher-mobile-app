@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, Image } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Image, FlatList } from 'react-native';
 import { classQuizCards } from '@/data/Classdata';
 
 type QuizCard = {
@@ -16,8 +16,13 @@ const QuizCard = () => {
 
   return (
     <View style={styles.row}>
-      <View style={styles.cards}>
-        {quizCards.map((card, cardIndex) => (
+      <FlatList
+        data={quizCards}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(card, cardIndex) => `${card.title}-${cardIndex}`}
+        contentContainerStyle={styles.cards}
+        renderItem={({ item: card, index: cardIndex }) => (
           <View key={`${card.title}-${cardIndex}`} style={styles.card}>
             <View style={styles.headerRow}>
               <View style={styles.iconWrap}>
@@ -71,34 +76,32 @@ const QuizCard = () => {
               <Text style={styles.actionBtnText}>{card.buttonText}</Text>
             </TouchableOpacity>
           </View>
-        ))}
-      </View>
+        )}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'column',
-    alignItems: 'center',
     paddingVertical: 8,
     alignSelf: 'stretch',
   },
   cards: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 10,
     alignItems: 'stretch',
-    alignSelf: 'stretch',
+    paddingRight: 10,
   },
   card: {
-    width: '32%',
+    width: 260,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#D1D5DB',
     backgroundColor: '#fff',
     padding: 10,
     overflow: 'hidden',
+    minHeight: 220,
   },
   headerRow: {
     flexDirection: 'row',
