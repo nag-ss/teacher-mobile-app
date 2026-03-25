@@ -1,15 +1,18 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import TableHeaderControls from '@/components/classes/shared/Header';
 import TablePagination from '@/components/classes/shared/Pagination';
 import TableHeaderRow from '@/components/classes/shared/ColumnsTitles';
 import usePagination from '@/components/classes/shared/usePagination';
+import { ASSIGNMENT_TABLE_SEARCH_KEYS, useFilteredBySearch } from '@/components/classes/shared/tableSearchFilter';
 import AssignmentTableRow, { type AssignmentItem } from '@/components/classes/AssignmentSection/AssignmentItem';
 import { classAssignments } from '@/data/Classdata';
 
 const AssignmentTable = () => {
   const PAGE_SIZE = 6;
+  const [searchTerm, setSearchTerm] = useState('');
   const assignments = useMemo(() => classAssignments as AssignmentItem[], []);
+  const filteredAssignments = useFilteredBySearch(assignments, searchTerm, ASSIGNMENT_TABLE_SEARCH_KEYS);
   const {
     page,
     pageCount,
@@ -18,13 +21,22 @@ const AssignmentTable = () => {
     setPage,
     prev,
     next,
-  } = usePagination(assignments, {
+  } = usePagination(filteredAssignments, {
     pageSize: PAGE_SIZE,
   });
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, setPage]);
+
   return (
     <View style={styles.container}>
-      <TableHeaderControls title="Assignments" searchDisabled />
+      <TableHeaderControls
+        title="Assignments"
+        query={searchTerm}
+        onChangeQuery={setSearchTerm}
+        searchPlaceholder="Search assignments"
+      />
 
       <View style={styles.tableBox}>
         <TableHeaderRow

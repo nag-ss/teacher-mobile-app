@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import QuizCardOutline from '@/components/classes/QuizSection/QuizCard';
+import QuizCardOutline, { type QuizCardData } from '@/components/classes/QuizSection/QuizCard';
 import TableHeaderControls from '@/components/classes/shared/Header';
+import { QUIZ_CARD_SEARCH_KEYS, useFilteredBySearch } from '@/components/classes/shared/tableSearchFilter';
+import { classQuizCards } from '@/data/Classdata';
 
 const QuizTable = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const quizCards = useMemo(() => classQuizCards as QuizCardData[], []);
+  const filteredQuizCards = useFilteredBySearch(quizCards, searchTerm, QUIZ_CARD_SEARCH_KEYS);
+
   return (
     <View style={styles.container}>
-      <TableHeaderControls title="Quiz Performance" searchDisabled />
+      <TableHeaderControls
+        title="Quiz Performance"
+        query={searchTerm}
+        onChangeQuery={setSearchTerm}
+        searchPlaceholder="Search quizzes"
+      />
 
-      <QuizCardOutline />
+      <QuizCardOutline cards={filteredQuizCards} />
     </View>
   );
 };

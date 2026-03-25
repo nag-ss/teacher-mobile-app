@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Image, FlatList } from 'react-native';
 import { classQuizCards } from '@/data/Classdata';
 
-type QuizCard = {
+export type QuizCardData = {
   title: string;
   scheduledAt: string;
   status: string;
@@ -11,8 +11,12 @@ type QuizCard = {
   buttonText: string;
 };
 
-const QuizCard = () => {
-  const quizCards = useMemo(() => classQuizCards as QuizCard[], []);
+type Props = {
+  cards?: QuizCardData[];
+};
+
+const QuizCard = ({ cards: cardsProp }: Props) => {
+  const quizCards = useMemo(() => (cardsProp ?? (classQuizCards as QuizCardData[])), [cardsProp]);
 
   return (
     <View style={styles.row}>

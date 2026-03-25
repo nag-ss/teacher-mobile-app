@@ -1,22 +1,34 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import TableHeaderControls from '@/components/classes/shared/Header';
 import TablePagination from '@/components/classes/shared/Pagination';
 import TableHeaderRow from '@/components/classes/shared/ColumnsTitles';
 import usePagination from '@/components/classes/shared/usePagination';
+import { STUDENT_TABLE_SEARCH_KEYS, useFilteredBySearch } from '@/components/classes/shared/tableSearchFilter';
 import StudentTableRow, { type StudentItem } from '@/components/classes/StudentSection/StudentItem';
 import { classStudents } from '@/data/Classdata';
 
 const StudentTable = () => {
   const PAGE_SIZE = 6;
+  const [searchTerm, setSearchTerm] = useState('');
   const students = useMemo(() => classStudents as StudentItem[], []);
-  const { page, pageCount, pagedItems: pagedStudents, setPage, prev, next } = usePagination(students, {
+  const filteredStudents = useFilteredBySearch(students, searchTerm, STUDENT_TABLE_SEARCH_KEYS);
+  const { page, pageCount, pagedItems: pagedStudents, setPage, prev, next } = usePagination(filteredStudents, {
     pageSize: PAGE_SIZE,
   });
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, setPage]);
+
   return (
     <View style={styles.container}>
-      <TableHeaderControls title="Student Performance" searchDisabled />
+      <TableHeaderControls
+        title="Student Performance"
+        query={searchTerm}
+        onChangeQuery={setSearchTerm}
+        searchPlaceholder="Search students"
+      />
       <View style={styles.tableBox}>
         <TableHeaderRow
           columns={[
