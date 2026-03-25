@@ -7,10 +7,9 @@ export const STUDENT_TABLE_SEARCH_KEYS = [
   'attendance',
   'engagement',
   'quiz',
-  'id',
 ] as const;
 
-export const ASSIGNMENT_TABLE_SEARCH_KEYS = ['title', 'dueDate', 'stats', 'status', 'id'] as const;
+export const ASSIGNMENT_TABLE_SEARCH_KEYS = ['title', 'dueDate', 'stats', 'status'] as const;
 
 export const QUIZ_CARD_SEARCH_KEYS = ['title', 'scheduledAt', 'status'] as const;
 
