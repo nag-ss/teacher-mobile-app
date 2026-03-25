@@ -60,13 +60,13 @@ const StudentItem = ({ item }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  colRn: { flex: 0.6, textAlign: 'center' },
+  colRn: { flex: 0.6, textAlign: 'center' , paddingLeft: 0 },
   colName: { flex: 1.6, textAlign: 'center' },
   colGrade: { flex: 1.2, textAlign: 'center' },
   colProgress: { flex: 1.0, textAlign: 'center' },
   colAttendance: { flex: 1.0, textAlign: 'center' },
   colEngagement: { flex: 1.0, textAlign: 'center' },
-  colQuiz: { flex: 1.0, textAlign: 'center' },
+  colQuiz: { flex: 1.0, textAlign: 'center', paddingRight: 20 },
   colAction: { flex: 0.7, textAlign: 'center' },
   dataRow: {
     flexDirection: 'row',
@@ -95,12 +95,15 @@ const styles = StyleSheet.create({
   progressCell: {
     fontFamily: 'Montserrat_400Regular',
     fontSize: 10,
+    // Keep the icon-to-value spacing controlled by `progressWrap.gap`
+    // (instead of adding extra padding from the shared `cell` style).
+    paddingHorizontal: 0,
   },
   progressWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 3,
   },
   progressIcon: {
     width: 12,

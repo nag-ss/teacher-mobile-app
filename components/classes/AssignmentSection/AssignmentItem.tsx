@@ -67,11 +67,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     textAlign: 'center',
   },
-  colSno: { flex: 0.6, textAlign: 'center' },
+  colSno: { flex: 0.6, textAlign: 'center' , paddingLeft: 0 },
   colTitle: { flex: 1.7, textAlign: 'center' },
   colDue: { flex: 0.9, textAlign: 'center' },
   colStats: { flex: 1.0, textAlign: 'center' },
-  colStatus: { flex: 1.0 },
+  colStatus: { flex: 1.0 ,paddingRight: 20},
   colAction: { flex: 0.7 },
   titleCell: {
     fontFamily: 'Montserrat_600SemiBold',
