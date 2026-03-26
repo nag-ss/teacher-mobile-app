@@ -4,22 +4,36 @@ import TableHeaderControls from '@/components/classes/shared/Header';
 import TablePagination from '@/components/classes/shared/Pagination';
 import TableHeaderRow from '@/components/classes/shared/ColumnsTitles';
 import usePagination from '@/components/classes/shared/usePagination';
+import { type GetValue, useSort } from '@/components/classes/shared/useColumnSort';
 import { STUDENT_TABLE_SEARCH_KEYS, useFilteredBySearch } from '@/components/classes/shared/tableSearchFilter';
 import StudentTableRow, { type StudentItem } from '@/components/classes/StudentSection/StudentItem';
 import { classStudents } from '@/data/Classdata';
+
+const parseNumericCell = (value: string) => Number.parseFloat((value ?? '').replace(/[^0-9.-]/g, ''));
+
+const STUDENT_SORT_GETTERS: GetValue<StudentItem> = {
+  rn: (s) => Number(s.id),
+  name: (s) => s.name,
+  grade: (s) => parseNumericCell(s.grade),
+  progress: (s) => parseNumericCell(s.progress),
+  attendance: (s) => parseNumericCell(s.attendance),
+  engagement: (s) => s.engagement,
+  quiz: (s) => parseNumericCell(s.quiz),
+};
 
 const StudentTable = () => {
   const PAGE_SIZE = 6;
   const [searchTerm, setSearchTerm] = useState('');
   const students = useMemo(() => classStudents as StudentItem[], []);
   const filteredStudents = useFilteredBySearch(students, searchTerm, STUDENT_TABLE_SEARCH_KEYS);
-  const { page, pageCount, pagedItems: pagedStudents, setPage, prev, next } = usePagination(filteredStudents, {
+  const { sortedItems: sortedStudents, key, sortBy, sortState } = useSort(filteredStudents, STUDENT_SORT_GETTERS);
+  const { page, pageCount, pagedItems: pagedStudents, setPage, prev, next } = usePagination(sortedStudents, {
     pageSize: PAGE_SIZE,
   });
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, setPage]);
+  }, [searchTerm, sortState, setPage]);
 
   return (
     <View style={styles.container}>
@@ -30,8 +44,7 @@ const StudentTable = () => {
         searchPlaceholder="Search students"
       />
       <View style={styles.tableBox}>
-        <TableHeaderRow
-          columns={[
+        <TableHeaderRow sortKey={key ?? undefined} onPressSortColumn={sortBy} columns={[
             { key: 'rn', label: 'R.no', textStyle: styles.colRn },
             { key: 'name', label: 'Student Name', textStyle: styles.colName },
             { key: 'grade', label: 'Overall Grade', textStyle: styles.colGrade },

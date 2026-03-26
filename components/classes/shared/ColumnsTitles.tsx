@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, type StyleProp, type TextStyle } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, type StyleProp, type TextStyle } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export type TableHeaderColumn = {
@@ -10,9 +10,11 @@ export type TableHeaderColumn = {
 
 type Props = {
   columns: TableHeaderColumn[];
+  sortKey?: string;
+  onPressSortColumn?: (key: string) => void;
 };
 
-const ColumnsTitles = ({ columns }: Props) => {
+const ColumnsTitles = ({ columns, sortKey, onPressSortColumn }: Props) => {
   return (
     <View style={styles.headerRow}>
       {columns.map((c) => (
@@ -27,7 +29,11 @@ const ColumnsTitles = ({ columns }: Props) => {
           >
             {c.label}
           </Text>
-          {c.key === 'action' ? null : <MaterialIcons name="sort" size={12} color="#9CA3AF" />}
+          {c.key === 'action' ? null : (
+            <TouchableOpacity onPress={() => onPressSortColumn?.(c.key)} hitSlop={8}>
+              <MaterialIcons name="sort" size={12} color={sortKey === c.key ? '#111827' : '#9CA3AF'} />
+            </TouchableOpacity>
+          )}
         </View>
       ))}
     </View>

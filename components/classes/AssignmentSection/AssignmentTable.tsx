@@ -4,15 +4,29 @@ import TableHeaderControls from '@/components/classes/shared/Header';
 import TablePagination from '@/components/classes/shared/Pagination';
 import TableHeaderRow from '@/components/classes/shared/ColumnsTitles';
 import usePagination from '@/components/classes/shared/usePagination';
+import { type GetValue, useSort } from '@/components/classes/shared/useColumnSort';
 import { ASSIGNMENT_TABLE_SEARCH_KEYS, useFilteredBySearch } from '@/components/classes/shared/tableSearchFilter';
 import AssignmentTableRow, { type AssignmentItem } from '@/components/classes/AssignmentSection/AssignmentItem';
 import { classAssignments } from '@/data/Classdata';
+
+const ASSIGNMENT_SORT_GETTERS: GetValue<AssignmentItem> = {
+  sno: (a) => Number(a.id),
+  title: (a) => a.title,
+  due: (a) => a.dueDate,
+  stats: (a) => Number.parseInt((a.stats ?? '').split('/')[0], 10) || 0,
+  status: (a) => a.status,
+};
 
 const AssignmentTable = () => {
   const PAGE_SIZE = 6;
   const [searchTerm, setSearchTerm] = useState('');
   const assignments = useMemo(() => classAssignments as AssignmentItem[], []);
   const filteredAssignments = useFilteredBySearch(assignments, searchTerm, ASSIGNMENT_TABLE_SEARCH_KEYS);
+  const { sortedItems: sortedAssignments, key, sortBy, sortState } = useSort(
+    filteredAssignments,
+    ASSIGNMENT_SORT_GETTERS,
+  );
+
   const {
     page,
     pageCount,
@@ -21,13 +35,13 @@ const AssignmentTable = () => {
     setPage,
     prev,
     next,
-  } = usePagination(filteredAssignments, {
+  } = usePagination(sortedAssignments, {
     pageSize: PAGE_SIZE,
   });
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, setPage]);
+  }, [searchTerm, sortState, setPage]);
 
   return (
     <View style={styles.container}>
@@ -39,8 +53,7 @@ const AssignmentTable = () => {
       />
 
       <View style={styles.tableBox}>
-        <TableHeaderRow
-          columns={[
+        <TableHeaderRow sortKey={key ?? undefined} onPressSortColumn={sortBy} columns={[
             { key: 'sno', label: 'S.no', textStyle: styles.colSno },
             { key: 'title', label: 'Title', textStyle: styles.colTitle },
             { key: 'due', label: 'Due Date', textStyle: styles.colDue },
