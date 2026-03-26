@@ -22,7 +22,7 @@ const AssignmentTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const assignments = useMemo(() => classAssignments as AssignmentItem[], []);
   const filteredAssignments = useFilteredBySearch(assignments, searchTerm, ASSIGNMENT_TABLE_SEARCH_KEYS);
-  const { sortedItems: sortedAssignments, key, sortBy, sortState } = useSort(
+  const { sortedItems: sortedAssignments, key, sortBy, direction } = useSort(
     filteredAssignments,
     ASSIGNMENT_SORT_GETTERS,
   );
@@ -41,7 +41,7 @@ const AssignmentTable = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, sortState, setPage]);
+  }, [searchTerm, key, direction, setPage]);
 
   return (
     <View style={styles.container}>

@@ -26,14 +26,14 @@ const StudentTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const students = useMemo(() => classStudents as StudentItem[], []);
   const filteredStudents = useFilteredBySearch(students, searchTerm, STUDENT_TABLE_SEARCH_KEYS);
-  const { sortedItems: sortedStudents, key, sortBy, sortState } = useSort(filteredStudents, STUDENT_SORT_GETTERS);
+  const { sortedItems: sortedStudents, key, sortBy, direction } = useSort(filteredStudents, STUDENT_SORT_GETTERS);
   const { page, pageCount, pagedItems: pagedStudents, setPage, prev, next } = usePagination(sortedStudents, {
     pageSize: PAGE_SIZE,
   });
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, sortState, setPage]);
+  }, [searchTerm, key, direction, setPage]);
 
   return (
     <View style={styles.container}>
