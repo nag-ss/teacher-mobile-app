@@ -12,6 +12,7 @@ export type GetValue<T> = Record<string, (item: T) => string | number>;
 export function useSort<T>(items: T[], getValue: GetValue<T>) {
   const [key, setKey] = useState<string | null>(null);
   const [direction, setDirection] = useState<Direction>('asc');
+  const firstClickDescColumns = new Set(['rn', 'sno']);
 
   const sortedItems = useMemo(() => {
     if (!key) return items;
@@ -38,7 +39,7 @@ export function useSort<T>(items: T[], getValue: GetValue<T>) {
       setDirection(direction === 'asc' ? 'desc' : 'asc');
     } else {
       setKey(column);
-      setDirection('asc');
+      setDirection(firstClickDescColumns.has(column) ? 'desc' : 'asc');
     }
   };
 
