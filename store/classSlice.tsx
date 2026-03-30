@@ -112,6 +112,11 @@ const classSlice = createSlice({
       liveClass:  {},
       quiz_details: {},
       topics: [],
+      classOverviewFilters: {
+        grade: '',
+        section: '',
+        students: 'all',
+      },
     //   liveClass: {
     //     "class_id": 0,
     //     "date": "2025-05-05",
@@ -146,6 +151,12 @@ const classSlice = createSlice({
     reducers: {
       setUnAuth: (state) => {
         state.unAuthorised = false
+      },
+      setClassOverviewFilters: (state, action) => {
+        state.classOverviewFilters = {
+          ...state.classOverviewFilters,
+          ...action.payload,
+        };
       },
     },
     extraReducers: (builder) => {
@@ -415,6 +426,6 @@ const classSlice = createSlice({
     },
 });
   
-export const { setUnAuth } = classSlice.actions;
+export const { setUnAuth, setClassOverviewFilters } = classSlice.actions;
   
 export default classSlice.reducer;

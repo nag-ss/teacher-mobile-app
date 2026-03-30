@@ -1,53 +1,51 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setClassOverviewFilters } from '@/store/classSlice';
+import { buildGradeOptions, buildSectionOptions } from './filterLogic';
 
 type Option = { label: string; value: string };
+type TeacherClassItem = {
+  division?: {
+    name?: string;
+  };
+};
 
 const ClassOverviewFilters = () => {
-  const { liveClass } = useSelector((state: any) => state.classes);
-
-  const [gradeOpen, setGradeOpen] = useState(false);
-  const [sectionOpen, setSectionOpen] = useState(false);
-  const [studentsOpen, setStudentsOpen] = useState(false);
-
-  const gradeOptions: Option[] = useMemo(
-    () => [
-      { label: 'VII', value: 'VII' },
-      { label: 'VIII', value: 'VIII' },
-      { label: 'IX', value: 'IX' },
-      { label: 'X', value: 'X' },
-    ],
-    []
+  const dispatch = useDispatch();
+  const { grade: selectedGrade = '', section: selectedSection = '', students: selectedStudents = 'all' } = useSelector(
+    (state: any) => state.classes?.classOverviewFilters ?? {}
   );
+  const teacherClasses: TeacherClassItem[] = useSelector((state: any) => state.user?.user?.classes ?? []);
 
+  const [openDropdown, setOpenDropdown] = useState<'grade' | 'section' | 'students' | null>(null);
+  const gradeOptions: Option[] = useMemo(() => buildGradeOptions(teacherClasses), [teacherClasses]);
   const sectionOptions: Option[] = useMemo(
-    () => [
-      { label: 'A', value: 'A' },
-      { label: 'B', value: 'B' },
-      { label: 'C', value: 'C' },
-    ],
-    []
+    () => buildSectionOptions(teacherClasses, selectedGrade),
+    [teacherClasses, selectedGrade]
   );
 
   const studentOptions: Option[] = useMemo(
     () => [
       { label: 'All', value: 'all' },
-      { label: 'Active', value: 'active' },
-      { label: 'Inactive', value: 'inactive' },
     ],
     []
   );
 
-  const [selectedGrade, setSelectedGrade] = useState<string>(liveClass?.division_name ?? 'VII');
-  const [selectedSection, setSelectedSection] = useState<string>(liveClass?.section_name ?? 'A');
-  const [selectedStudents, setSelectedStudents] = useState<string>('all');
-
   useEffect(() => {
-    if (liveClass?.division_name) setSelectedGrade(liveClass.division_name);
-    if (liveClass?.section_name) setSelectedSection(liveClass.section_name);
-  }, [liveClass]);
+    if (!gradeOptions.length) return;
+    const hasValidGrade = gradeOptions.some((item) => item.value === selectedGrade);
+    if (hasValidGrade) return;
+    const defaultGrade = gradeOptions[0].value;
+    const defaultSections = buildSectionOptions(teacherClasses, defaultGrade);
+    dispatch(
+      setClassOverviewFilters({
+        grade: defaultGrade,
+        section: defaultSections[0]?.value ?? '',
+      })
+    );
+  }, [dispatch, gradeOptions, selectedGrade]);
 
   return (
     <View style={styles.container}>
@@ -56,19 +54,21 @@ const ClassOverviewFilters = () => {
         <Text style={styles.colon}>:</Text>
         <View style={styles.pickerWrap}>
           <DropDownPicker
-            open={gradeOpen}
+            open={openDropdown === 'grade'}
             value={selectedGrade}
             items={gradeOptions}
-            setOpen={setGradeOpen}
-            setValue={setSelectedGrade}
-            onOpen={() => {
-              setSectionOpen(false);
-              setStudentsOpen(false);
+            setOpen={(next: any) => {
+              const open = typeof next === 'function' ? next(openDropdown === 'grade') : next;
+              setOpenDropdown(open ? 'grade' : null);
+            }}
+            setValue={(callback: any) => {
+              const value = typeof callback === 'function' ? callback(selectedGrade) : callback;
+              dispatch(setClassOverviewFilters({ grade: value, section: '' }));
             }}
             style={styles.picker}
             dropDownContainerStyle={styles.dropDownContainer}
             textStyle={styles.pickerText}
-            placeholder="VII"
+            placeholder="Select"
             listMode="SCROLLVIEW"
           />
         </View>
@@ -79,19 +79,21 @@ const ClassOverviewFilters = () => {
         <Text style={styles.colon}>:</Text>
         <View style={styles.pickerWrap}>
           <DropDownPicker
-            open={sectionOpen}
+            open={openDropdown === 'section'}
             value={selectedSection}
             items={sectionOptions}
-            setOpen={setSectionOpen}
-            setValue={setSelectedSection}
-            onOpen={() => {
-              setGradeOpen(false);
-              setStudentsOpen(false);
+            setOpen={(next: any) => {
+              const open = typeof next === 'function' ? next(openDropdown === 'section') : next;
+              setOpenDropdown(open ? 'section' : null);
+            }}
+            setValue={(callback: any) => {
+              const value = typeof callback === 'function' ? callback(selectedSection) : callback;
+              dispatch(setClassOverviewFilters({ section: value }));
             }}
             style={styles.picker}
             dropDownContainerStyle={styles.dropDownContainer}
             textStyle={styles.pickerText}
-            placeholder="A"
+            placeholder="Select"
             listMode="SCROLLVIEW"
           />
         </View>
@@ -102,14 +104,16 @@ const ClassOverviewFilters = () => {
         <Text style={styles.colon}>:</Text>
         <View style={styles.pickerWrap}>
           <DropDownPicker
-            open={studentsOpen}
+            open={openDropdown === 'students'}
             value={selectedStudents}
             items={studentOptions}
-            setOpen={setStudentsOpen}
-            setValue={setSelectedStudents}
-            onOpen={() => {
-              setGradeOpen(false);
-              setSectionOpen(false);
+            setOpen={(next: any) => {
+              const open = typeof next === 'function' ? next(openDropdown === 'students') : next;
+              setOpenDropdown(open ? 'students' : null);
+            }}
+            setValue={(callback: any) => {
+              const value = typeof callback === 'function' ? callback(selectedStudents) : callback;
+              dispatch(setClassOverviewFilters({ students: value }));
             }}
             style={styles.picker}
             dropDownContainerStyle={styles.dropDownContainer}
