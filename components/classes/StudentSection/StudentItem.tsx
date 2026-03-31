@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export type StudentItem = {
   id: string;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 const StudentItem = ({ item }: Props) => {
+  const navigation = useNavigation<any>();
   const trimmed = (item.progress ?? '').trim();
   const progressValue = Number.parseInt(trimmed.replace('%', ''), 10);
   const isPositiveProgress = Number.isFinite(progressValue) && progressValue > 0;
@@ -51,9 +53,13 @@ const StudentItem = ({ item }: Props) => {
         <View style={styles.actionIconCircle}>
           <Image source={require('@/assets/images/sms.png')} style={styles.smsIcon} />
         </View>
-        <View style={styles.actionIconCircle}>
+        <TouchableOpacity
+          style={styles.actionIconCircle}
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate('student-performance', { studentName: item.name })}
+        >
           <MaterialIcons name="chevron-right" size={16} color="#111827" />
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

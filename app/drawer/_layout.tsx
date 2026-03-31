@@ -12,6 +12,7 @@ import Profile from '../profile';
 import Logout from '../logout';
 import Feedback from '../feedback';
 import LiveMonitoring from '../live-monitoring';
+import StudentPerformance from '../student-performance';
 import { PaperProvider } from "react-native-paper";
 
 const Stack = createStackNavigator();
@@ -37,6 +38,7 @@ export default function App() {
               }}
             />
             <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
+            <Stack.Screen name="student-performance" component={StudentPerformance} />
           </Stack.Navigator>
         </View>
       </View>

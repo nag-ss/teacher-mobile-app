@@ -9,6 +9,7 @@ type LiveMonitorHeaderProps = {
     showNotificationsIcon?: boolean;
     onPressNotifications?: () => void;
     notificationButtonStyle?: StyleProp<ViewStyle>;
+    centerTitle?: boolean;
 };
 
 const LiveMonitorHeader = ({
@@ -17,6 +18,7 @@ const LiveMonitorHeader = ({
     showNotificationsIcon = false,
     onPressNotifications,
     notificationButtonStyle,
+    centerTitle = false,
 }: LiveMonitorHeaderProps) => {
     const [activeStudentsCount, setActiveStudentsCount] = useState(0)
     const [totalStudentsCount, setTotalStudentsCount] = useState(0)
@@ -50,12 +52,14 @@ const LiveMonitorHeader = ({
     }
   return (
     <View style={styles.headerContainer}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={styles.leftSection}>
             <TouchableOpacity onPress={gotoHome} style={{marginTop: 8}}>
-                <Image style={{width: 12, height: 12, marginTop: 0, marginRight: 10}} source={require('../../assets/images/ss/left-arrow.png')} />
+                <Image style={{width: 12, height: 12, marginTop: 0}} source={require('../../assets/images/ss/left-arrow.png')} />
             </TouchableOpacity>
-            <Text style={{fontWeight: '600', fontSize: 18.28}}>{title ?? defaultTitle}</Text>
         </View>
+        <Text style={[styles.titleText, centerTitle && styles.centeredTitle]} numberOfLines={1}>
+            {title ?? defaultTitle}
+        </Text>
         {showStudentsCount ? (
             <View>
                 <Text>Students {`${activeStudentsCount} / ${totalStudentsCount}`}</Text>
@@ -93,6 +97,21 @@ const styles = StyleSheet.create({
         marginTop: 13.7
 
      },
+    leftSection: {
+        width: 28,
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+    },
+    titleText: {
+        fontWeight: '600',
+        fontSize: 18.28,
+        marginLeft: 10,
+        flex: 1,
+    },
+    centeredTitle: {
+        textAlign: 'center',
+        marginLeft: 0,
+    },
     notificationButton: {
         padding: 8,
     },
