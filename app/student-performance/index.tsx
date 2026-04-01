@@ -4,6 +4,7 @@ import { useRoute } from '@react-navigation/native';
 import LiveMonitorHeader from '@/components/live-monitoring/LiveMonitorHeader';
 import StudentAiSuggestion from '@/components/student-performance/studentAiSuggestion/studentAiSuggestion';
 import StudentInsights from '@/components/student-performance/studentInsights/studentInsights';
+import KeyHighlightGrid from '@/components/student-performance/keyHighlight/KeyHighlightGrid';
 import TaskPerformanceTable from '@/components/student-performance/taskPerformance/TaskPerformanceTable';
 
 const StudentPerformance = () => {
@@ -20,6 +21,7 @@ const StudentPerformance = () => {
         notificationButtonStyle={styles.notificationButton}
       />
       <View style={styles.suggestionsWrap}>
+        <KeyHighlightGrid />
         <TaskPerformanceTable />
         <StudentInsights />
         <StudentAiSuggestion />
