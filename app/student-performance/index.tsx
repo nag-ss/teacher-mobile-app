@@ -2,7 +2,8 @@ import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import LiveMonitorHeader from '@/components/live-monitoring/LiveMonitorHeader';
-import StudentAiSuggestion from '@/components/student-performance/StudentAiSuggestion';
+import StudentAiSuggestion from '@/components/student-performance/stdentAiSuggestion/StudentAiSuggestion';
+import StudentInsights from '@/components/student-performance/studentInsights/studentInsights';
 
 const StudentPerformance = () => {
   const route = useRoute<any>();
@@ -18,6 +19,7 @@ const StudentPerformance = () => {
         notificationButtonStyle={styles.notificationButton}
       />
       <View style={styles.suggestionsWrap}>
+        <StudentInsights />
         <StudentAiSuggestion />
       </View>
     </ScrollView>

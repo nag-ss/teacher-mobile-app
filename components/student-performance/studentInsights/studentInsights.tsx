@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import InsightsCard from '@/components/classes/Insights/InsightsCard';
+import StudentInsightCard from './studentInsightCard';
 
-const Insights = () => {
+const StudentInsights = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Engagement and Behavior Insights</Text>
-      <InsightsCard />
+      <StudentInsightCard />
     </View>
   );
 };
@@ -27,4 +27,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Insights;
+export default StudentInsights;
