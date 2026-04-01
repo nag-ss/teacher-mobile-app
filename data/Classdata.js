@@ -148,7 +148,7 @@ export const classAiItems = [
   },
 ];
 
-/** AI suggestion cards for the per-student performance screen. */
+
 export const studentAiItems = [
   {
     title: 'Extra Practice Needed',
