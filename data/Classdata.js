@@ -131,3 +131,35 @@ export const classQuizCards = [
     buttonText: 'View Results',
   },
 ];
+
+export const classAiItems = [
+  {
+    title: 'Reteach Trigonometry',
+    description:
+      '30% of students scored below 50% in the last quiz.  students are struggling with recent topics.',
+  },
+  {
+    title: 'Low Assignment Completion',
+    description: '40% of students missed the last two assignments.',
+  },
+  {
+    title: 'Provide 1-on-1 Support',
+    description: '3 students are struggling with recent topics.',
+  },
+];
+
+/** AI suggestion cards for the per-student performance screen. */
+export const studentAiItems = [
+  {
+    title: 'Extra Practice Needed',
+    description: 'Scored 55% in the last Quadratic Equations test.',
+  },
+  {
+    title: 'Encourage Revision',
+    description: 'Frequent errors in Geometry proofs indicate gaps in understanding.',
+  },
+  {
+    title: 'Monitor Performance Drop',
+    description: 'Scores declined by 10% across recent assessments.',
+  },
+];

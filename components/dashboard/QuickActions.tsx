@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  Image,
-  ImageSourcePropType,
-  ImageStyle,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { Image, ImageSourcePropType, StyleSheet, Text, View } from 'react-native';
 import { Button } from 'react-native-elements';
 
 export type QuickActionItem = {
@@ -24,18 +13,6 @@ export type QuickActionItem = {
 type QuickActionsProps = {
   title?: string;
   items?: QuickActionItem[];
-  containerStyle?: StyleProp<ViewStyle>;
-  headerTextStyle?: StyleProp<TextStyle>;
-  cardsContainerStyle?: StyleProp<ViewStyle>;
-  cardStyle?: StyleProp<ViewStyle>;
-  titleStyle?: StyleProp<TextStyle>;
-  subTitleStyle?: StyleProp<TextStyle>;
-  buttonContainerStyle?: StyleProp<ViewStyle>;
-  buttonStyle?: StyleProp<ViewStyle>;
-  buttonTitleStyle?: StyleProp<TextStyle>;
-  iconStyle?: StyleProp<ImageStyle>;
-  iconWrapperStyle?: StyleProp<ViewStyle>;
-  showIconWrapper?: boolean;
 };
 
 const defaultItems: QuickActionItem[] = [
@@ -59,47 +36,28 @@ const defaultItems: QuickActionItem[] = [
   },
 ];
 
-const QuickActions = ({
-  title = 'Quick Actions',
-  items = defaultItems,
-  containerStyle,
-  headerTextStyle,
-  cardsContainerStyle,
-  cardStyle,
-  titleStyle,
-  subTitleStyle,
-  buttonContainerStyle,
-  buttonStyle,
-  buttonTitleStyle,
-  iconStyle,
-  iconWrapperStyle,
-  showIconWrapper = false,
-}: QuickActionsProps) => (
-  <View style={[styles.container, containerStyle]}>
-    <Text style={[styles.headerText, headerTextStyle]}>{title}</Text>
-    <View style={[styles.cardsContainer, cardsContainerStyle]}>
-      {items.map((item) => (
-        <View key={item.title} style={[styles.card, cardStyle]}>
+const QuickActions = ({ title = 'Quick Actions', items = defaultItems }: QuickActionsProps) => (
+  <View style={styles.container}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={styles.cardsContainer}>
+      {items.map((item, index) => (
+        <View key={`${item.title}-${index}`} style={styles.card}>
           <View style={styles.cardHeader}>
-            {showIconWrapper ? (
-              <View style={[styles.iconWrapper, iconWrapperStyle]}>
-                <Image style={[styles.icon, iconStyle]} source={item.icon} />
-              </View>
-            ) : (
-              <Image style={[styles.icon, iconStyle]} source={item.icon} />
-            )}
+            <View style={styles.iconWrapper}>
+              <Image style={styles.icon} source={item.icon} />
+            </View>
           </View>
           <View style={styles.titleContainer}>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={[styles.title, titleStyle]}>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.cardTitle}>
               {item.title}
             </Text>
           </View>
-          <Text style={[styles.subTitle, subTitleStyle]}>{item.description}</Text>
+          <Text style={styles.cardDescription}>{item.description}</Text>
           <Button
             title={item.cta}
-            containerStyle={buttonContainerStyle}
-            buttonStyle={[styles.button, buttonStyle]}
-            titleStyle={[styles.buttonTitle, buttonTitleStyle]}
+            containerStyle={styles.buttonContainer}
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonTitle}
             onPress={item.onPress ?? (() => {})}
           />
         </View>
@@ -111,25 +69,32 @@ const QuickActions = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
     marginBottom: 5,
-    borderRadius: 10,
+    marginTop: 10,
     padding: 20,
   },
-  headerText: {
-    padding: 5,
-    fontSize: 16,
+  sectionTitle: {
+    padding: 0,
+    paddingBottom: 16,
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 18.28,
+    color: '#111827',
   },
   cardsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 12,
   },
   card: {
     flex: 1,
     padding: 16,
+    marginHorizontal: 0,
     borderRadius: 12,
-    marginHorizontal: 8,
     borderWidth: 1,
-    borderColor: 'lightgray',
+    borderColor: '#D1D5DB',
   },
   cardHeader: {
     alignItems: 'flex-start',
@@ -139,39 +104,57 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#9FD5C2',
+    backgroundColor: '#fff',
+    marginRight: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
   },
   icon: {
-    width: 20,
-    height: 20,
-    marginRight: 5,
-  },
-  title: {
-    fontFamily: 'Montserrat_600SemiBold',
-    lineHeight: 16,
-    includeFontPadding: false,
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
+    marginRight: 0,
   },
   titleContainer: {
     minHeight: 20,
     justifyContent: 'flex-start',
     paddingBottom: 6,
   },
-  subTitle: {
+  cardTitle: {
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 12,
+    color: '#111827',
+    lineHeight: 16,
+    includeFontPadding: false,
+  },
+  cardDescription: {
     fontFamily: 'Roboto_400Regular',
-    fontSize: 10,
-    height: 40,
+    fontSize: 11,
+    color: '#6B7280',
+    height: 'auto',
+    paddingBottom: 10,
+    lineHeight: 16,
+  },
+  buttonContainer: {
+    paddingVertical: 0,
+    marginTop: 'auto',
   },
   button: {
+    height: 'auto',
     backgroundColor: '#fff',
+    borderRadius: 6,
     borderWidth: 1,
-    borderColor: Colors.primaryColor,
-    borderRadius: 5,
+    borderColor: '#9FD5C2',
   },
   buttonTitle: {
     fontFamily: 'Roboto_500Medium',
-    color: 'black',
+    fontSize: 12,
+    lineHeight: 16,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    color: '#111827',
   },
 });
 

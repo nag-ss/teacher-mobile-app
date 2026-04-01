@@ -1,7 +1,9 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import AiSuggestion from '@/components/classes/AiSuggestion/AiSuggestion';
 import LiveMonitorHeader from '@/components/live-monitoring/LiveMonitorHeader';
+import { studentAiItems } from '@/data/Classdata';
 
 const StudentPerformance = () => {
   const route = useRoute<any>();
@@ -16,6 +18,9 @@ const StudentPerformance = () => {
         showNotificationsIcon
         notificationButtonStyle={styles.notificationButton}
       />
+      <View style={styles.suggestionsWrap}>
+        <AiSuggestion items={studentAiItems} variant="student" />
+      </View>
     </ScrollView>
   );
 };
@@ -36,6 +41,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E7EB',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  suggestionsWrap: {
+    marginTop: 8,
   },
 });
 
