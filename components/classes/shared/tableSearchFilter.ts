@@ -13,6 +13,15 @@ export const ASSIGNMENT_TABLE_SEARCH_KEYS = ['title', 'dueDate', 'stats', 'statu
 
 export const QUIZ_CARD_SEARCH_KEYS = ['title', 'scheduledAt', 'status'] as const;
 
+export const TASK_PERFORMANCE_SEARCH_KEYS = [
+  'title',
+  'taskType',
+  'dueDate',
+  'score',
+  'classAverage',
+  'status',
+] as const;
+
 function normalizeValue(value: unknown): string {
   if (value === null || value === undefined) return '';
   return String(value).toLowerCase();

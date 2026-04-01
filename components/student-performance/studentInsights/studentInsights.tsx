@@ -4,15 +4,15 @@ import StudentInsightCard from './studentInsightCard';
 
 const StudentInsights = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Engagement and Behavior Insights</Text>
+    <View style={styles.siRoot}>
+      <Text style={styles.siHeading}>Engagement and Behavior Insights</Text>
       <StudentInsightCard />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  siRoot: {
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 12,
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     marginTop: 10,
   },
-  title: {
+  siHeading: {
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 18,
     paddingBottom: 16,

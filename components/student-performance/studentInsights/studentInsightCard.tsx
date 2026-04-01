@@ -3,37 +3,37 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 const StudentInsightCard = () => {
   return (
-    <View style={styles.wrap}>
-      <View style={styles.boxLeft} />
-      <View style={styles.boxRight}>
-        <Text style={styles.rightTitle}>Behavior Highlights</Text>
+    <View style={styles.siWrap}>
+      <View style={styles.siBoxLeft} />
+      <View style={styles.siBoxRight}>
+        <Text style={styles.siSectionTitle}>Behavior Highlights</Text>
 
-        <View style={styles.itemRow}>
-          <View style={styles.iconWrap}>
-            <Image source={require('@/assets/images/ss/check.png')} style={styles.iconImg} />
+        <View style={styles.siItemRow}>
+          <View style={styles.siIconWrap}>
+            <Image source={require('@/assets/images/ss/check.png')} style={styles.siIconImg} />
           </View>
-          <Text style={styles.itemText}>Consistently participates in discussions.</Text>
+          <Text style={styles.siItemText}>Consistently participates in discussions.</Text>
         </View>
 
-        <View style={styles.itemRow}>
-          <View style={styles.iconWrap}>
-            <Image source={require('@/assets/images/warning.png')} style={styles.iconImg} />
+        <View style={styles.siItemRow}>
+          <View style={styles.siIconWrap}>
+            <Image source={require('@/assets/images/warning.png')} style={styles.siIconImg} />
           </View>
-          <Text style={styles.itemText}>Frequently submits assignments late.</Text>
+          <Text style={styles.siItemText}>Frequently submits assignments late.</Text>
         </View>
 
-        <View style={styles.itemRow}>
-          <View style={styles.iconWrap}>
-            <Image source={require('@/assets/images/arrow_circle_down.png')} style={styles.iconImg} />
+        <View style={styles.siItemRow}>
+          <View style={styles.siIconWrap}>
+            <Image source={require('@/assets/images/arrow_circle_down.png')} style={styles.siIconImg} />
           </View>
-          <Text style={styles.itemText}>Rarely interacts with quizzes & assignments.</Text>
+          <Text style={styles.siItemText}>Rarely interacts with quizzes & assignments.</Text>
         </View>
 
-        <View style={styles.itemRow}>
-          <View style={styles.iconWrap}>
-            <Image source={require('@/assets/images/star_rate.png')} style={styles.iconImg} />
+        <View style={styles.siItemRow}>
+          <View style={styles.siIconWrap}>
+            <Image source={require('@/assets/images/star_rate.png')} style={styles.siIconImg} />
           </View>
-          <Text style={styles.itemText}>Scores above 90% in tests consistently.</Text>
+          <Text style={styles.siItemText}>Scores above 90% in tests consistently.</Text>
         </View>
       </View>
     </View>
@@ -41,13 +41,13 @@ const StudentInsightCard = () => {
 };
 
 const styles = StyleSheet.create({
-  wrap: {
+  siWrap: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 12
 
   },
-  boxLeft: {
+  siBoxLeft: {
     flex: 1,
     minHeight: 220,
     borderRadius: 10,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     backgroundColor: '#fff',
   },
-  boxRight: {
+  siBoxRight: {
     flex: 1,
     minHeight: 200,
     borderRadius: 10,
@@ -64,39 +64,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 16,
   },
-  rightTitle: {
+  siSectionTitle: {
     fontFamily: 'Montserrat_600SemiBold',
     fontSize: 14,
     marginBottom: 0,
     color: '#111827',
     paddingBottom: 8,
   },
-  itemRow: {
+  siItemRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
     paddingVertical:8,
   },
-  itemText: {
+  siItemText: {
     flex: 1,
     fontFamily: 'Montserrat_500Medium',
     fontSize: 12,
     color: '#111827',
   },
-  tickOnly: {
-    width: 22,
-    height: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconWrap: {
+  siIconWrap: {
     width: 22,
     height: 22,
     borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconImg: {
+  siIconImg: {
     width: 22,
     height: 22,
     resizeMode: 'contain',
@@ -104,4 +98,3 @@ const styles = StyleSheet.create({
 });
 
 export default StudentInsightCard;
-
