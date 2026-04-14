@@ -38,7 +38,13 @@ export default function App() {
               }}
             />
             <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
-            <Stack.Screen name="student-performance" component={StudentPerformance} />
+            <Stack.Screen
+              name="student-performance"
+              component={StudentPerformance}
+              options={{
+                cardStyleInterpolator: CardStyleInterpolators.forNoAnimation,
+              }}
+            />
           </Stack.Navigator>
         </View>
       </View>

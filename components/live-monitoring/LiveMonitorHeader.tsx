@@ -8,6 +8,7 @@ type LiveMonitorHeaderProps = {
     showStudentsCount?: boolean;
     showNotificationsIcon?: boolean;
     onPressNotifications?: () => void;
+    onPressBack?: () => void;
     notificationButtonStyle?: StyleProp<ViewStyle>;
     centerTitle?: boolean;
 };
@@ -17,6 +18,7 @@ const LiveMonitorHeader = ({
     showStudentsCount = true,
     showNotificationsIcon = false,
     onPressNotifications,
+    onPressBack,
     notificationButtonStyle,
     centerTitle = false,
 }: LiveMonitorHeaderProps) => {
@@ -48,13 +50,17 @@ const LiveMonitorHeader = ({
             }
         }, [studentsCountData])
     const gotoHome = () => {
+        if (onPressBack) {
+            onPressBack()
+            return
+        }
         navigation.navigate('Home')
     }
   return (
     <View style={styles.headerContainer}>
         <View style={styles.leftSection}>
-            <TouchableOpacity onPress={gotoHome} style={{marginTop: 8}}>
-                <Image style={{width: 12, height: 12, marginTop: 0}} source={require('../../assets/images/ss/left-arrow.png')} />
+            <TouchableOpacity onPress={gotoHome} style={styles.backButton}>
+                <Image style={styles.backIcon} source={require('../../assets/images/ss/left-arrow.png')} />
             </TouchableOpacity>
         </View>
         <Text style={[styles.titleText, centerTitle && styles.centeredTitle]} numberOfLines={1}>
@@ -101,6 +107,16 @@ const styles = StyleSheet.create({
         width: 28,
         justifyContent: 'center',
         alignItems: 'flex-start',
+    },
+    backButton: {
+        padding: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    backIcon: {
+        width: 14,
+        height: 14,
+        resizeMode: 'contain',
     },
     titleText: {
         fontWeight: '600',
