@@ -72,6 +72,7 @@ const Login = () => {
           /> */}
           <View style={styles.passContainer}>
             <TextInput
+              testID="password-input"
               style={styles.pinput}
               placeholder="Enter your password"
               value={password}
@@ -80,6 +81,7 @@ const Login = () => {
               autoCapitalize="none"
             />
             <TouchableOpacity
+              testID="toggle-password-visibility"
               onPress={() => setShowPassword(!showPassword)}
               style={styles.iconContainer}
             >
@@ -91,7 +93,7 @@ const Login = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={() => loginAction()}>
+          <TouchableOpacity testID="sign-in-button" style={styles.button} onPress={() => loginAction()}>
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
         </View>
