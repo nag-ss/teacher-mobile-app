@@ -12,6 +12,7 @@ import Profile from '../profile';
 import Logout from '../logout';
 import Feedback from '../feedback';
 import LiveMonitoring from '../live-monitoring';
+import Notes from '../notes/index';
 import { PaperProvider } from "react-native-paper";
 
 const Stack = createStackNavigator();
@@ -36,6 +37,7 @@ export default function App() {
                 cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
               }}
             />
+            <Stack.Screen name="Notes" component={Notes} />
             <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
           </Stack.Navigator>
         </View>
