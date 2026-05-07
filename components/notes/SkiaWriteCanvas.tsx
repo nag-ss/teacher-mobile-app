@@ -1,7 +1,7 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Canvas, Path, Skia } from '@shopify/react-native-skia';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, PointerType } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { eraseStrokesAtPoint, pushUndoState, redoStroke, undoStroke } from './notesOperation';
 
@@ -11,6 +11,7 @@ type DrawPath = ReturnType<typeof Skia.Path.Make>;
 type SkiaWriteCanvasProps = {
   eraserEnabled?: boolean;
 };
+
 export type SkiaWriteCanvasRef = {
   clearAll: () => void;
   undo: () => void;
@@ -176,32 +177,37 @@ const SkiaWriteCanvas = forwardRef<SkiaWriteCanvasRef, SkiaWriteCanvasProps>(fun
     []
   );
 
-  const panGesture = Gesture.Pan()
-    .runOnJS(true)
-    .minDistance(0)
-    .onBegin((event) => {
-      const { x, y } = event;
-      if (eraserEnabled) {
-        eraseAtPoint(x, y);
-        return;
-      }
-      startStroke(x, y);
-    })
-    .onUpdate((event) => {
-      const { x, y } = event;
-      if (eraserEnabled) {
-        eraseAtPoint(x, y);
-        return;
-      }
-      addPointToStroke(x, y);
-    })
-    .onFinalize(() => {
-      if (eraserEnabled) {
-        isErasingSessionRef.current = false;
-        return;
-      }
-      finishStroke();
-    });
+  const panGesture = useMemo(() => {
+    return Gesture.Pan()
+      .runOnJS(true)
+      .minDistance(0)
+      .onBegin((event) => {
+        if (event.pointerType !== PointerType.STYLUS) return;
+        const { x, y } = event;
+        if (eraserEnabled) {
+          eraseAtPoint(x, y);
+          return;
+        }
+        startStroke(x, y);
+      })
+      .onUpdate((event) => {
+        if (event.pointerType !== PointerType.STYLUS) return;
+        const { x, y } = event;
+        if (eraserEnabled) {
+          eraseAtPoint(x, y);
+          return;
+        }
+        addPointToStroke(x, y);
+      })
+      .onFinalize(() => {
+        if (!isDrawingRef.current && !isErasingSessionRef.current) return;
+        if (eraserEnabled) {
+          isErasingSessionRef.current = false;
+          return;
+        }
+        finishStroke();
+      });
+  }, [eraserEnabled]);
 
   const allPaths = strokePathsRef.current;
   void refreshTick;
@@ -216,7 +222,7 @@ const SkiaWriteCanvas = forwardRef<SkiaWriteCanvasRef, SkiaWriteCanvasProps>(fun
               path={path}
               color="#222"
               style="stroke"
-              strokeWidth={3}
+              strokeWidth={2}
               strokeCap="round"
               strokeJoin="round"
             />
@@ -225,7 +231,7 @@ const SkiaWriteCanvas = forwardRef<SkiaWriteCanvasRef, SkiaWriteCanvasProps>(fun
             path={activePath}
             color="#222"
             style="stroke"
-            strokeWidth={3}
+            strokeWidth={2}
             strokeCap="round"
             strokeJoin="round"
           />
