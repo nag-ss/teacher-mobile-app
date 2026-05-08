@@ -7,6 +7,7 @@ import { usePathname } from 'expo-router';
 const menuItems = [
   { icon: require('../../assets/images/sidebar/home.png'), label: 'Home', route: 'Home' },
   { icon: require('../../assets/images/sidebar/book.png'), label: 'Classes', route: 'Classes' },
+  { iconName: 'note-text-outline', label: 'Notes', route: 'Notes' },
   { icon: require('../../assets/images/sidebar/user.png'), label: 'Profile', route: 'Profile' },
   { icon: require('../../assets/images/sidebar/analytics.png'), label: 'Analytics', route: 'Analitics' },
   { icon: require('../../assets/images/sidebar/logout.png'), label: 'Logout', route: 'Logout' },
@@ -59,8 +60,13 @@ const Sidebar = ({navigation}: any) =>  {
           style={[styles.menuItem, (pathname == '/'+item.label || (pathname == '/live-monitoring' && item.label == 'Home')) ? styles.selectedMenu : {}, expanded ? {width: 200} : {justifyContent: 'center'}]}
           onPress={() => navigation.navigate(item.route)}
         >
-          {/* <MaterialCommunityIcons name={item.icon} size={24} color="#222" /> */}
-          <Image  style={[styles.iconStyle, {width: 48, height: 48}]} source={item.icon} />
+          {item.iconName ? (
+            <View style={styles.materialIconWrap}>
+              <MaterialCommunityIcons name={item.iconName} size={28} color="#222" />
+            </View>
+          ) : (
+            <Image style={[styles.iconStyle, { width: 48, height: 48 }]} source={item.icon} />
+          )}
           {expanded && <Text style={styles.menuLabel}>{item.label}</Text>}
         </TouchableOpacity>
       ))}
@@ -128,5 +134,11 @@ const styles = StyleSheet.create({
   },
   selectedMenu: {
     backgroundColor: '#21C17C',
+  },
+  materialIconWrap: {
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });
