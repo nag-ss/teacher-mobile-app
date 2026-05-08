@@ -1,6 +1,15 @@
-import React, { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Canvas, Path, Skia } from '@shopify/react-native-skia';
+import React, { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import {
+  Canvas,
+  Path,
+  Picture,
+  Skia,
+  PaintStyle,
+  StrokeCap,
+  StrokeJoin,
+  useCanvasRef,
+} from '@shopify/react-native-skia';
 import { Gesture, GestureDetector, PointerType } from 'react-native-gesture-handler';
 import { useSharedValue } from 'react-native-reanimated';
 import { eraseStrokesAtPoint, pushUndoState, redoStroke, undoStroke } from './notesOperation';
@@ -8,6 +17,7 @@ import { eraseStrokesAtPoint, pushUndoState, redoStroke, undoStroke } from './no
 type Point = { x: number; y: number };
 type Stroke = Point[];
 type DrawPath = ReturnType<typeof Skia.Path.Make>;
+
 type SkiaWriteCanvasProps = {
   eraserEnabled?: boolean;
 };
@@ -18,128 +28,144 @@ export type SkiaWriteCanvasRef = {
   redo: () => void;
 };
 
-const pointsToPath = (points: Stroke) => {
+// Pen style.
+const strokePaint = Skia.Paint();
+strokePaint.setColor(Skia.Color('#222222'));
+strokePaint.setStyle(PaintStyle.Stroke);
+strokePaint.setStrokeWidth(2);
+strokePaint.setStrokeCap(StrokeCap.Round);
+strokePaint.setStrokeJoin(StrokeJoin.Round);
+strokePaint.setAntiAlias(true);
+
+const makeEmptyPicture = (width: number, height: number) => {
+  const recorder = Skia.PictureRecorder();
+  const safeWidth = Math.max(width, 1);
+  const safeHeight = Math.max(height, 1);
+  recorder.beginRecording(Skia.XYWHRect(0, 0, safeWidth, safeHeight));
+  return recorder.finishRecordingAsPicture();
+};
+
+const pointsToPath = (points: Stroke): DrawPath => {
   const path = Skia.Path.Make();
   if (points.length === 0) return path;
-
   path.moveTo(points[0].x, points[0].y);
   if (points.length === 1) {
     path.lineTo(points[0].x + 0.1, points[0].y + 0.1);
     return path;
   }
-
   if (points.length === 2) {
     path.lineTo(points[1].x, points[1].y);
     return path;
   }
-
-  for (let i = 1; i < points.length - 1; i += 1) {
+  for (let i = 1; i < points.length - 1; i++) {
     const midX = (points[i].x + points[i + 1].x) / 2;
     const midY = (points[i].y + points[i + 1].y) / 2;
     path.quadTo(points[i].x, points[i].y, midX, midY);
   }
-
-  const last = points[points.length - 1];
-  path.lineTo(last.x, last.y);
+  path.lineTo(points[points.length - 1].x, points[points.length - 1].y);
   return path;
 };
 
-const SkiaWriteCanvas = forwardRef<SkiaWriteCanvasRef, SkiaWriteCanvasProps>(function SkiaWriteCanvas(
-  { eraserEnabled = false },
-  ref
-) {
-  const strokesRef = useRef<Stroke[]>([]);
-  const strokePathsRef = useRef<DrawPath[]>([]);
-  const undoStackRef = useRef<Stroke[][]>([]);
-  const redoStackRef = useRef<Stroke[][]>([]);
-  const isErasingSessionRef = useRef(false);
-  const currentStrokeRef = useRef<Stroke>([]);
-  const currentPathRef = useRef<DrawPath | null>(null);
-  const isDrawingRef = useRef(false);
-  const activePath = useSharedValue<DrawPath>(Skia.Path.Make());
-  const [refreshTick, forceUpdate] = useState(0);
-  const ERASER_RADIUS = 10;
+const SkiaWriteCanvas = forwardRef<SkiaWriteCanvasRef, SkiaWriteCanvasProps>(
+  function SkiaWriteCanvas({ eraserEnabled = false }, ref) {
+    const { width, height } = useWindowDimensions();
 
-  const refresh = () => forceUpdate((p) => p + 1);
+    // Drawing data.
+    const strokesRef = useRef<Stroke[]>([]);
+    const strokePathsRef = useRef<DrawPath[]>([]);
+    const undoStackRef = useRef<Stroke[][]>([]);
+    const redoStackRef = useRef<Stroke[][]>([]);
+    const currentStrokeRef = useRef<Stroke>([]);
+    const currentPathRef = useRef<DrawPath | null>(null);
+    const isDrawingRef = useRef(false);
+    const isErasingSessionRef = useRef(false);
+    const ERASER_RADIUS = 10;
 
-  const eraseAtPoint = (x: number, y: number) => {
-    if (!isErasingSessionRef.current) {
-      pushUndoState(strokesRef, undoStackRef, redoStackRef);
-      isErasingSessionRef.current = true;
-    }
-    const nextStrokes = eraseStrokesAtPoint(strokesRef.current, x, y, ERASER_RADIUS);
+    // What Skia draws.
+    const committedPicture = useSharedValue(makeEmptyPicture(width, height));
+    const activePath = useSharedValue<DrawPath>(Skia.Path.Make());
 
-    if (nextStrokes.length !== strokesRef.current.length) {
-      strokesRef.current = nextStrokes;
-      strokePathsRef.current = nextStrokes.map(pointsToPath);
-      refresh();
-      return;
-    }
+    // Recreate saved drawing.
+    const rebuildPicture = () => {
+      if (width <= 0 || height <= 0) {
+        committedPicture.value = makeEmptyPicture(1, 1);
+        return;
+      }
+      const recorder = Skia.PictureRecorder();
+      const skCanvas = recorder.beginRecording(
+        Skia.XYWHRect(0, 0, width, height)
+      );
+      for (const path of strokePathsRef.current) {
+        skCanvas.drawPath(path, strokePaint);
+      }
+      committedPicture.value = recorder.finishRecordingAsPicture();
+    };
 
-    const changedByLength = nextStrokes.some(
-      (stroke, idx) => stroke.length !== (strokesRef.current[idx]?.length ?? 0)
-    );
-    if (changedByLength) {
-      strokesRef.current = nextStrokes;
-      strokePathsRef.current = nextStrokes.map(pointsToPath);
-      refresh();
-    }
-  };
+    // Eraser logic.
+    const eraseAtPoint = (x: number, y: number) => {
+      if (!isErasingSessionRef.current) {
+        pushUndoState(strokesRef, undoStackRef, redoStackRef);
+        isErasingSessionRef.current = true;
+      }
+      const next = eraseStrokesAtPoint(strokesRef.current, x, y, ERASER_RADIUS);
+      const changed =
+        next.length !== strokesRef.current.length ||
+        next.some((s, i) => s.length !== strokesRef.current[i]?.length);
+      if (changed) {
+        strokesRef.current = next;
+        strokePathsRef.current = next.map(pointsToPath);
+        rebuildPicture();
+      }
+    };
 
-  const startStroke = (x: number, y: number) => {
-    currentStrokeRef.current = [{ x, y }];
-    const nextPath = Skia.Path.Make();
-    nextPath.moveTo(x, y);
-    currentPathRef.current = nextPath;
-    activePath.value = nextPath;
-    isDrawingRef.current = true;
-  };
+    // Pen logic.
+    const startStroke = (x: number, y: number) => {
+      const path = Skia.Path.Make();
+      path.moveTo(x, y);
+      currentPathRef.current = path;
+      currentStrokeRef.current = [{ x, y }];
+      isDrawingRef.current = true;
+      activePath.value = path.copy();
+    };
 
-  const addPointToStroke = (x: number, y: number) => {
-    const last = currentStrokeRef.current[currentStrokeRef.current.length - 1];
-    if (!last) return;
-
-    currentStrokeRef.current.push({ x, y });
-    const points = currentStrokeRef.current;
-    if (points.length >= 2) {
-      const prev = points[points.length - 2];
-      const midX = (prev.x + x) / 2;
-      const midY = (prev.y + y) / 2;
-      currentPathRef.current?.quadTo(prev.x, prev.y, midX, midY);
-    } else {
-      currentPathRef.current?.lineTo(x, y);
-    }
-    if (currentPathRef.current) {
-      // Reuse same mutable path to avoid per-move allocations/flicker.
-      activePath.value = currentPathRef.current;
-    }
-  };
-
-  const finishStroke = () => {
-    if (currentStrokeRef.current.length && currentPathRef.current) {
+    const addPointToStroke = (x: number, y: number) => {
+      if (!currentPathRef.current) return;
       const pts = currentStrokeRef.current;
+      pts.push({ x, y });
 
       if (pts.length >= 2) {
-        const last = pts[pts.length - 1];
-        currentPathRef.current.lineTo(last.x, last.y);
+        const prev = pts[pts.length - 2];
+        const midX = (prev.x + x) / 2;
+        const midY = (prev.y + y) / 2;
+        currentPathRef.current.quadTo(prev.x, prev.y, midX, midY);
+      } else {
+        currentPathRef.current.lineTo(x, y);
       }
 
-      pushUndoState(strokesRef, undoStackRef, redoStackRef);
-      strokesRef.current.push(currentStrokeRef.current);
-      strokePathsRef.current.push(currentPathRef.current);
-    }
-    currentStrokeRef.current = [];
-    currentPathRef.current = null;
-    isDrawingRef.current = false;
-    refresh();
-    requestAnimationFrame(() => {
-      activePath.value = Skia.Path.Make();
-    });
-  };
+      activePath.value = currentPathRef.current.copy();
+    };
 
-  useImperativeHandle(
-    ref,
-    () => ({
+    const finishStroke = () => {
+      if (currentStrokeRef.current.length && currentPathRef.current) {
+        const pts = currentStrokeRef.current;
+        if (pts.length >= 2) {
+          currentPathRef.current.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+        }
+        pushUndoState(strokesRef, undoStackRef, redoStackRef);
+        strokesRef.current.push([...currentStrokeRef.current]);
+        strokePathsRef.current.push(currentPathRef.current);
+      }
+
+      currentStrokeRef.current = [];
+      currentPathRef.current = null;
+      isDrawingRef.current = false;
+
+      rebuildPicture();
+      activePath.value = Skia.Path.Make();
+    };
+
+    // Functions parent can call.
+    useImperativeHandle(ref, () => ({
       clearAll: () => {
         if (strokesRef.current.length > 0) {
           pushUndoState(strokesRef, undoStackRef, redoStackRef);
@@ -149,105 +175,73 @@ const SkiaWriteCanvas = forwardRef<SkiaWriteCanvasRef, SkiaWriteCanvasProps>(fun
         redoStackRef.current = [];
         currentStrokeRef.current = [];
         currentPathRef.current = null;
-        activePath.value = Skia.Path.Make();
         isDrawingRef.current = false;
-        refresh();
+        activePath.value = Skia.Path.Make();
+        rebuildPicture();
       },
       undo: () => {
-        const changed = undoStroke(strokesRef, undoStackRef, redoStackRef);
-        if (!changed) return;
+        if (!undoStroke(strokesRef, undoStackRef, redoStackRef)) return;
         strokePathsRef.current = strokesRef.current.map(pointsToPath);
-        currentStrokeRef.current = [];
-        currentPathRef.current = null;
         activePath.value = Skia.Path.Make();
         isDrawingRef.current = false;
-        refresh();
+        rebuildPicture();
       },
       redo: () => {
-        const changed = redoStroke(strokesRef, undoStackRef, redoStackRef);
-        if (!changed) return;
+        if (!redoStroke(strokesRef, undoStackRef, redoStackRef)) return;
         strokePathsRef.current = strokesRef.current.map(pointsToPath);
-        currentStrokeRef.current = [];
-        currentPathRef.current = null;
         activePath.value = Skia.Path.Make();
         isDrawingRef.current = false;
-        refresh();
+        rebuildPicture();
       },
-    }),
-    []
-  );
+    }), []);
 
-  const panGesture = useMemo(() => {
-    return Gesture.Pan()
-      .runOnJS(true)
-      .minDistance(0)
-      .onBegin((event) => {
-        if (event.pointerType !== PointerType.STYLUS) return;
-        const { x, y } = event;
-        if (eraserEnabled) {
-          eraseAtPoint(x, y);
-          return;
-        }
-        startStroke(x, y);
-      })
-      .onUpdate((event) => {
-        if (event.pointerType !== PointerType.STYLUS) return;
-        const { x, y } = event;
-        if (eraserEnabled) {
-          eraseAtPoint(x, y);
-          return;
-        }
-        addPointToStroke(x, y);
-      })
-      .onFinalize(() => {
-        if (!isDrawingRef.current && !isErasingSessionRef.current) return;
-        if (eraserEnabled) {
-          isErasingSessionRef.current = false;
-          return;
-        }
-        finishStroke();
-      });
-  }, [eraserEnabled]);
+    // Stylus touch handling.
+    const panGesture = useMemo(() =>
+      Gesture.Pan()
+        .runOnJS(true)
+        .minDistance(0)
+        .onBegin((e) => {
+          if (e.pointerType !== PointerType.STYLUS) return;
+          eraserEnabled ? eraseAtPoint(e.x, e.y) : startStroke(e.x, e.y);
+        })
+        .onUpdate((e) => {
+          if (e.pointerType !== PointerType.STYLUS) return;
+          eraserEnabled ? eraseAtPoint(e.x, e.y) : addPointToStroke(e.x, e.y);
+        })
+        .onFinalize(() => {
+          if (eraserEnabled) {
+            isErasingSessionRef.current = false;
+            return;
+          }
+          if (isDrawingRef.current) finishStroke();
+        }),
+    [eraserEnabled]);
 
-  const allPaths = strokePathsRef.current;
-  void refreshTick;
-
-  return (
-    <GestureDetector gesture={panGesture}>
-      <View style={styles.canvasTouchLayer}>
-        <Canvas style={styles.canvas}>
-          {allPaths.map((path, idx) => (
+    // UI.
+    return (
+      <GestureDetector gesture={panGesture}>
+        <View style={styles.canvasTouchLayer}>
+          <Canvas style={styles.canvas}>
+            <Picture picture={committedPicture} />
             <Path
-              key={idx}
-              path={path}
+              path={activePath}
               color="#222"
               style="stroke"
               strokeWidth={2}
               strokeCap="round"
               strokeJoin="round"
             />
-          ))}
-          <Path
-            path={activePath}
-            color="#222"
-            style="stroke"
-            strokeWidth={2}
-            strokeCap="round"
-            strokeJoin="round"
-          />
-        </Canvas>
-      </View>
-    </GestureDetector>
-  );
-});
+          </Canvas>
+        </View>
+      </GestureDetector>
+    );
+  }
+);
 
 export default SkiaWriteCanvas;
 
 const styles = StyleSheet.create({
-  canvas: {
-    flex: 1,
-  },
-  canvasTouchLayer: {
-    flex: 1,
-  },
+  canvas: { flex: 1 },
+  canvasTouchLayer: { flex: 1 },
 });
+
