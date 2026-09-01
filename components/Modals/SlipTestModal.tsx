@@ -146,7 +146,7 @@ const SlipTestDetailsModal = ({  selectedClass, selectedTask, new_quiz, visible,
                   <TouchableOpacity style={styles.cancelButton} onPress={() => cancelSlipTest(quiz_details.task_id)}>
                     <Text>Cancel</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.saveButton} onPress={() => saveSlipTest(quiz_details.task_id)}>
+                  <TouchableOpacity testID="slip-test-save-button" style={styles.saveButton} onPress={() => saveSlipTest(quiz_details.task_id)}>
                     <Text>Save</Text>
                   </TouchableOpacity>
                 </View>) : (<View style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', margin: 10 }}>

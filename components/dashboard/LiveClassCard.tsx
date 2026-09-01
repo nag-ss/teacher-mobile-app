@@ -96,9 +96,7 @@ const LiveSessionCard = () => {
   }, [unAuthorised])
 
   useEffect(() => {
-    // console.log("liveClass ********************************************")
-    // console.log(liveClass)
-    if(liveClass.class_schedule_id) {
+    if (liveClass?.class_schedule_id) {
       setNextClass(liveClass)
     } 
   }, [liveClass])

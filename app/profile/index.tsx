@@ -38,8 +38,8 @@ const Profile = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button title="Cancel" buttonStyle={[styles.button, {backgroundColor: '#ccc'}]} titleStyle={styles.buttonTitle} onPress={() => {}} />
-        <Button title="Save Changes" buttonStyle={[styles.button]} titleStyle={styles.buttonTitle} onPress={() => {}} />
+        <Button testID="profile-cancel-button" title="Cancel" buttonStyle={[styles.button, {backgroundColor: '#ccc'}]} titleStyle={styles.buttonTitle} onPress={() => {}} />
+        <Button testID="profile-save-button" title="Save Changes" buttonStyle={[styles.button]} titleStyle={styles.buttonTitle} onPress={() => {}} />
       </View>
     </ScrollView>
   );

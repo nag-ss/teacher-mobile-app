@@ -323,7 +323,7 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                   >
                     {
                       taskStatus != 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => viewTask(task.quiz_id, task.task_id)}>
+                      <TouchableHighlight testID="quiz-view-button" style={{ alignItems: "center" }} underlayColor='#bdedd7' onPress={() => viewTask(task.quiz_id, task.task_id)}>
                         <View
                           style={{
                             width: 80, // ✅ smaller than menu width
@@ -340,7 +340,7 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                     }
                     {
                       taskStatus == 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => editTask(task.task_id, task.task_type)}>
+                      <TouchableHighlight testID="quiz-edit-button" style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => editTask(task.task_id, task.task_type)}>
                         <View
                           style={{
                             width: 80, // ✅ smaller than menu width
@@ -361,7 +361,7 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                     }
                     {
                       taskStatus == 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => deleteTask(task.task_id, task.task_type)}>
+                      <TouchableHighlight testID="quiz-delete-button" style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => deleteTask(task.task_id, task.task_type)}>
                         <View
                           style={{
                             width: 80,
@@ -400,7 +400,11 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
               <Text style={styles.buttonText}>{'Results'}</Text>
             </TouchableOpacity>
             } */}
-            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : '', borderColor:  taskStatus.toLowerCase() == 'evaluated' ? 'lightgray' : Colors.primaryColor}]} onPress={fetchResult}>
+            <TouchableOpacity
+              testID="quiz-publish-button"
+              style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : '', borderColor:  taskStatus.toLowerCase() == 'evaluated' ? 'lightgray' : Colors.primaryColor}]}
+              onPress={fetchResult}
+            >
               <Text style={styles.buttonText}>{taskCTAName}</Text>
             </TouchableOpacity>
             
@@ -428,7 +432,7 @@ const Quiz = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                 <TouchableOpacity style={styles.cancelBtn} onPress={() => {setShowModal4AICheckModal(false); setPublishError(null)}}>
                   <Text>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun}>
+                <TouchableOpacity testID="quiz-start-now-button" style={styles.saveBtn} onPress={publishQuizFun}>
                   <Text style={{ color: 'white' }}>Start Now</Text>
                 </TouchableOpacity>
               </View>

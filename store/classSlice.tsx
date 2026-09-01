@@ -6,7 +6,9 @@ export const getLiveClass = createAsyncThunk('class/getLiveClass', async (reqDat
   return handleAuthApiCall(classService.getLiveClass, reqData, thunkAPI);
 });
 
-export const getScheduleClasses = createAsyncThunk('class/getScheduleClasses', async (reqData, thunkAPI) => {
+export const getScheduleClasses = createAsyncThunk<any, { date?: string } | void>(
+  'class/getScheduleClasses',
+  async (reqData, thunkAPI) => {
   return handleAuthApiCall(classService.getScheduleClasses, reqData, thunkAPI);
 });
 

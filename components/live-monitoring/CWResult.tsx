@@ -106,9 +106,9 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
                         {
                           studentAnswer.strengths?.map((strength: any, i: number) => {
                             return (
-                            <View style={{flexDirection: 'row', padding: 5}}>
+                            <View key={`strength-${i}`} style={{flexDirection: 'row', padding: 5}}>
                               <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/Correct.png')} />
-                              <Text key={i+"s"}>{strength}</Text>
+                              <Text>{strength}</Text>
                             </View>
                         )
                           })
@@ -128,9 +128,9 @@ const CWResultModal = ({ visible, studentAnswer, onClose }: Props) => {
                         {
                           studentAnswer.areas_for_improvement?.map((strength: any, i: number) => {
                             return (
-                              <View style={{flexDirection: 'row', padding: 5}}>
+                              <View key={`improvement-${i}`} style={{flexDirection: 'row', padding: 5}}>
                                 <Image style={{width: 20.5, height: 20.5}} source={require('../../assets/images/ss/close.png')} />
-                                <Text key={i+"ai"}>{strength}</Text>
+                                <Text>{strength}</Text>
                               </View>
                           )
                           })

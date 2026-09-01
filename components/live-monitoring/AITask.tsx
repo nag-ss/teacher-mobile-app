@@ -255,7 +255,7 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                     }
                     {
                       taskStatus == 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => editTask(task.task_id, task.task_type)}>
+                      <TouchableHighlight testID="ai-check-edit-button" style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => editTask(task.task_id, task.task_type)}>
                         <View
                           style={{
                             width: 80, // ✅ smaller than menu width
@@ -276,7 +276,7 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                     }
                     {
                       taskStatus == 'in_queue' && 
-                      <TouchableHighlight style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => deleteTask(task.task_id, task.task_type)}>
+                      <TouchableHighlight testID="ai-check-delete-button" style={{ alignItems: "center" }} underlayColor='#bdedd7'  onPress={() => deleteTask(task.task_id, task.task_type)}>
                         <View
                           style={{
                             width: 80,
@@ -314,7 +314,11 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                   <Text style={styles.buttonText}>{'Evaluating ...'}</Text>
                 </TouchableOpacity>)
             } */}
-            <TouchableOpacity style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : '', borderColor:  taskStatus.toLowerCase() == 'evaluated' ? 'lightgray' : Colors.primaryColor}]} onPress={fetchResult}>
+            <TouchableOpacity
+              testID="ai-check-launch-button"
+              style={[styles.button, {backgroundColor: isTaskLive ? '#fff' : '', borderColor:  taskStatus.toLowerCase() == 'evaluated' ? 'lightgray' : Colors.primaryColor}]}
+              onPress={fetchResult}
+            >
               <Text style={styles.buttonText}>{taskCTAName}</Text>
             </TouchableOpacity>
         </View>
@@ -335,7 +339,7 @@ const AITask = ({task, refreshTasks, editTask, deleteTask, viewTask}: any) => {
                 <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal4AICheckModal(false)}>
                     <Text>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.saveBtn} onPress={publishQuizFun} disabled={submitStatus}>
+                <TouchableOpacity testID="ai-check-launch-confirm-button" style={styles.saveBtn} onPress={publishQuizFun} disabled={submitStatus}>
                     <Text style={{ color: 'white' }}>{taskCTAName}</Text>
                 </TouchableOpacity>
                 </View>

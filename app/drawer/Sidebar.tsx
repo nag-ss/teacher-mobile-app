@@ -56,6 +56,7 @@ const Sidebar = ({navigation}: any) =>  {
       {menuItems.map((item: any, idx) => (
         <TouchableOpacity
           key={item.label}
+          testID={`sidebar-menu-${item.route}`}
           style={[styles.menuItem, (pathname == '/'+item.label || (pathname == '/live-monitoring' && item.label == 'Home')) ? styles.selectedMenu : {}, expanded ? {width: 200} : {justifyContent: 'center'}]}
           onPress={() => navigation.navigate(item.route)}
         >

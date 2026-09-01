@@ -1,84 +1,31 @@
 import React, { useRef } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { fireEvent, render } from '@testing-library/react-native';
-
+import { fireEvent } from '@testing-library/react-native';
 import ClassPrep from '@/components/dashboard/ClassPrep';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-
-jest.mock('react-redux', () => ({
-  useDispatch: jest.fn(),
-  useSelector: jest.fn(),
-}));
+import { renderWithProviders } from '../test-utils/renderWithProviders';
+import { createClassPrepState } from '../test-utils/defaultState';
+import { mockClassPrepOpenApis } from '../test-utils/mockApi';
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
-);
-
 jest.mock('@/components/Modals/Modal_1_SummaryModal', () => {
-  const React = require('react');
-  const { Text, TouchableOpacity } = require('react-native');
-  return function MockSummaryModal(props: any) {
-    if (!props.visible) return null;
-    return (
-      <>
-        <Text>Prepare for Class</Text>
-        <TouchableOpacity
-          onPress={() =>
-            props.setTopicSubTopicAndMoveToNext(
-              { topic: 'Ratios' },
-              { id: 99, sub_topic: 'Basics' }
-            )
-          }
-        >
-          <Text>Next</Text>
-        </TouchableOpacity>
-      </>
-    );
-  };
+  const { createSummaryModalMock } = require('../mocks/classPrepModals');
+  return createSummaryModalMock();
 });
 
 jest.mock('@/components/Modals/Modal_2_ClassTaskModal', () => {
-  const React = require('react');
-  const { Text, TouchableOpacity } = require('react-native');
-  return function MockClassTaskModal(props: any) {
-    if (!props.visible) return null;
-    return (
-      <>
-        <Text>Your AI-Powered Assistant</Text>
-        <TouchableOpacity onPress={props.goBack}>
-          <Text>Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={props.addTask}>
-          <Text>+ Add a Task</Text>
-        </TouchableOpacity>
-      </>
-    );
-  };
+  const { createClassTaskModalMock } = require('../mocks/classPrepModals');
+  return createClassTaskModalMock({ secondaryAction: { label: 'Edit', onPress: 'goBack' } });
 });
 
 jest.mock('@/components/Modals/Modal_3_CreateTaskModal', () => {
-  const React = require('react');
-  const { Text, TouchableOpacity } = require('react-native');
-  return function MockNewTaskModal(props: any) {
-    if (!props.visible) return null;
-    return (
-      <>
-        <Text>Task Modal</Text>
-        <TouchableOpacity onPress={props.onClose}>
-          <Text>Cancel</Text>
-        </TouchableOpacity>
-      </>
-    );
-  };
+  const { createTaskModalMock } = require('../mocks/classPrepModals');
+  return createTaskModalMock('AICheck', { showCancel: true });
 });
 
-const mockedUseDispatch = useDispatch as unknown as jest.Mock;
-const mockedUseSelector = useSelector as unknown as jest.Mock;
 const mockedUseNavigation = useNavigation as unknown as jest.Mock;
 
 const TEXT = {
@@ -120,9 +67,11 @@ const ClassPrepHarness = ({ selectedClassData = selectedClass }: { selectedClass
 };
 
 const setup = (selectedClassData?: any) => {
-  mockedUseDispatch.mockReturnValue(jest.fn());
+  mockClassPrepOpenApis();
   mockedUseNavigation.mockReturnValue({ navigate: jest.fn(), setOptions: jest.fn() });
-  return render(<ClassPrepHarness selectedClassData={selectedClassData} />);
+  return renderWithProviders(<ClassPrepHarness selectedClassData={selectedClassData} />, {
+    preloadedState: createClassPrepState(),
+  });
 };
 
 const openAIModal = async (
@@ -135,22 +84,7 @@ const openAIModal = async (
   await findByText(TEXT.AI);
 };
 
-describe('Live monitoring add task flow', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    const mockState = {
-      classes: {
-        classTasks: [],
-        topics: [{ topic: 'Ratios', sub_topic: [{ id: 99, sub_topic: 'Basics' }] }],
-        quiz_details: { questions: [], title: '' },
-        loading: false,
-      },
-      user: { user: { id: 44 } },
-    };
-    mockedUseSelector.mockImplementation((selector) => selector(mockState));
-  });
-
+describe('Task modal flow', () => {
   it('opens AI assistant popup after selecting topic/subtopic and pressing Next', async () => {
     const { getByLabelText, findByText } = setup();
     await openAIModal(getByLabelText, findByText);

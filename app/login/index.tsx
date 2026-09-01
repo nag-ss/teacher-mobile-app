@@ -11,7 +11,7 @@ const Login = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false);
-    const { userToken, error } = useSelector((state: any) => state.user)
+    const { userToken, error, loading } = useSelector((state: any) => state.user)
 
     const loginAction = async () => {
         const loginReqObj: any = {
@@ -93,7 +93,12 @@ const Login = () => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity testID="sign-in-button" style={styles.button} onPress={() => loginAction()}>
+          <TouchableOpacity
+            testID="sign-in-button"
+            style={styles.button}
+            onPress={() => loginAction()}
+            disabled={loading}
+          >
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
         </View>
