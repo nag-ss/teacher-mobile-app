@@ -1,6 +1,6 @@
 import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const FORM_WIDTH = 384;
 
@@ -31,78 +31,29 @@ const ResetPassword = ({
 
   if (showResetSent) {
     return (
-      <View
-        className="flex-col items-start flex-none"
-        style={{
-          width: FORM_WIDTH,
-          height: 260,
-          padding: 0,
-        }}
-      >
-        <View style={{ width: FORM_WIDTH, marginBottom: 32 }}>
-          <View
-            className="flex-row items-center justify-center flex-none"
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 28,
-              backgroundColor: '#EFFBF5',
-              padding: 0,
-            }}
-          >
-            <View className="flex-none" style={{ width: 24, height: 24 }}>
+      <View style={styles.confirmBox}>
+        <View style={styles.block32}>
+          <View style={styles.emailCircle}>
+            <View style={styles.emailIcon}>
               <SvgLoader svgFilePath="loginEmail" width={24} height={24} />
             </View>
           </View>
         </View>
 
-        <View style={{ width: FORM_WIDTH, gap: 8, marginBottom: 32 }}>
-          <Text
-            style={{
-              width: FORM_WIDTH,
-              fontFamily: 'Montserrat_700Bold',
-              fontSize: 24,
-              lineHeight: 32,
-              color: '#1A1A1A',
-            }}
-          >
-            Check your email
-          </Text>
-          <Text
-            style={{
-              width: FORM_WIDTH,
-              fontFamily: 'Inter_400Regular',
-              fontSize: 16,
-              lineHeight: 24,
-              color: '#6B6960',
-            }}
-          >
+        <View style={styles.header}>
+          <Text style={styles.title}>Check your email</Text>
+          <Text style={styles.subtitle}>
             We've sent a reset link to {resetEmail.trim()}. It expires in 30 minutes.
           </Text>
         </View>
 
-        <View style={{ width: FORM_WIDTH }}>
+        <View style={styles.fullWidth}>
           <TouchableOpacity
-            className="items-center justify-center"
-            style={{
-              width: FORM_WIDTH,
-              height: 48,
-              borderRadius: 8,
-              backgroundColor: '#21C17C',
-            }}
+            style={[styles.primaryBtn, styles.primaryBtnOn]}
             onPress={onBackToSignIn}
             activeOpacity={0.8}
           >
-            <Text
-              style={{
-                fontFamily: 'Montserrat_600SemiBold',
-                fontSize: 16,
-                lineHeight: 20,
-                color: '#FFFFFF',
-              }}
-            >
-              Back to sign in
-            </Text>
+            <Text style={styles.primaryBtnTextOn}>Back to sign in</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -110,102 +61,40 @@ const ResetPassword = ({
   }
 
   return (
-    <View
-      className="flex-col items-start flex-none"
-      style={{
-        width: FORM_WIDTH,
-        height: 299,
-        padding: 0,
-      }}
-    >
-      <View style={{ width: FORM_WIDTH, marginBottom: 32 }}>
-        <TouchableOpacity
-          className="flex-row items-center"
-          style={{ gap: 8 }}
-          onPress={onBackToSignIn}
-          activeOpacity={0.7}
-        >
-          <View className="flex-none items-center justify-center" style={{ width: 7, height: 22 }}>
+    <View style={styles.resetBox}>
+      <View style={styles.block32}>
+        <TouchableOpacity style={styles.backRow} onPress={onBackToSignIn} activeOpacity={0.7}>
+          <View style={styles.backArrow}>
             <SvgLoader svgFilePath="loginLeftArrow" width={7} height={22} />
           </View>
-          <Text
-            style={{
-              fontFamily: 'Inter_600SemiBold',
-              fontSize: 14,
-              lineHeight: 17,
-              color: '#6B6960',
-            }}
-          >
-            Back to sign in
-          </Text>
+          <Text style={styles.backText}>Back to sign in</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={{ width: FORM_WIDTH, gap: 8, marginBottom: 32 }}>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            fontFamily: 'Montserrat_700Bold',
-            fontSize: 24,
-            lineHeight: 32,
-            color: '#1A1A1A',
-          }}
-        >
-          Reset your password
-        </Text>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            fontFamily: 'Inter_400Regular',
-            fontSize: 16,
-            lineHeight: 24,
-            color: '#6B6960',
-          }}
-        >
+      <View style={styles.header}>
+        <Text style={styles.title}>Reset your password</Text>
+        <Text style={styles.subtitle}>
           Enter your school email and we'll send you a reset link.
         </Text>
       </View>
 
-      <View style={{ width: FORM_WIDTH, marginBottom: 24 }}>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            height: 17,
-            fontFamily: 'Inter_600SemiBold',
-            fontSize: 14,
-            lineHeight: 17,
-            color: '#6B6960',
-            marginBottom: 8,
-          }}
-        >
-          Email
-        </Text>
+      <View style={styles.fieldBlock}>
+        <Text style={styles.label}>Email</Text>
         <View
-          className="flex-row items-center"
-          style={{
-            width: FORM_WIDTH,
-            height: 48,
-            borderRadius: 8,
-            backgroundColor: showResetEmailError ? '#FDF2F1' : '#FFFFFF',
-            borderWidth: 1,
-            borderColor: showResetEmailError
-              ? '#D65B44'
-              : resetEmailFocused
-                ? '#21C17C'
-                : '#C8C6BE',
-            paddingLeft: 16,
-            paddingRight: 8,
-          }}
+          style={[
+            styles.inputBox,
+            {
+              backgroundColor: showResetEmailError ? '#FDF2F1' : '#FFFFFF',
+              borderColor: showResetEmailError
+                ? '#D65B44'
+                : resetEmailFocused
+                  ? '#21C17C'
+                  : '#C8C6BE',
+            },
+          ]}
         >
           <TextInput
-            className="flex-1 p-0"
-            style={{
-              fontFamily: 'Inter_400Regular',
-              fontSize: 16,
-              lineHeight: 19,
-              color: '#1A1A1A',
-              outlineStyle: 'none',
-            } as any}
+            style={styles.input}
             value={resetEmail}
             placeholder="you@school.edu"
             placeholderTextColor="#A9A7A0"
@@ -220,51 +109,25 @@ const ResetPassword = ({
           />
         </View>
         {showResetEmailError ? (
-          <View
-            className="flex-row items-center"
-            style={{ width: FORM_WIDTH, height: 24, marginTop: 8, gap: 8 }}
-          >
-            <View className="w-6 h-6 flex-none items-center justify-center">
+          <View style={styles.errorRow}>
+            <View style={styles.errorIcon}>
               <SvgLoader svgFilePath="loginError" width={24} height={24} />
             </View>
-            <Text
-              numberOfLines={1}
-              style={{
-                fontFamily: 'Inter_400Regular',
-                fontSize: 14,
-                lineHeight: 17,
-                color: '#D65B44',
-                includeFontPadding: false,
-                textAlignVertical: 'center',
-              }}
-            >
+            <Text numberOfLines={1} style={styles.errorText}>
               Incorrect email. Please try again.
             </Text>
           </View>
         ) : null}
       </View>
 
-      <View style={{ width: FORM_WIDTH }}>
+      <View style={styles.fullWidth}>
         <TouchableOpacity
-          className="items-center justify-center"
-          style={{
-            width: FORM_WIDTH,
-            height: 48,
-            borderRadius: 8,
-            backgroundColor: canSendReset ? '#21C17C' : '#E5E5E5',
-          }}
+          style={[styles.primaryBtn, canSendReset ? styles.primaryBtnOn : styles.primaryBtnOff]}
           onPress={onSendResetLink}
           disabled={!canSendReset}
           activeOpacity={0.8}
         >
-          <Text
-            style={{
-              fontFamily: 'Montserrat_600SemiBold',
-              fontSize: 16,
-              lineHeight: 20,
-              color: canSendReset ? '#FFFFFF' : '#A9A7A0',
-            }}
-          >
+          <Text style={[styles.primaryBtnText, { color: canSendReset ? '#FFFFFF' : '#A9A7A0' }]}>
             Send reset link
           </Text>
         </TouchableOpacity>
@@ -272,5 +135,157 @@ const ResetPassword = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  resetBox: {
+    width: FORM_WIDTH,
+    height: 299,
+    padding: 0,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  confirmBox: {
+    width: FORM_WIDTH,
+    height: 260,
+    padding: 0,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  block32: {
+    width: FORM_WIDTH,
+    marginBottom: 32,
+  },
+  header: {
+    width: FORM_WIDTH,
+    gap: 8,
+    marginBottom: 32,
+  },
+  title: {
+    width: FORM_WIDTH,
+    fontFamily: 'Montserrat_700Bold',
+    fontSize: 24,
+    lineHeight: 32,
+    color: '#1A1A1A',
+  },
+  subtitle: {
+    width: FORM_WIDTH,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#6B6960',
+  },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  backArrow: {
+    width: 7,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#6B6960',
+  },
+  emailCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#EFFBF5',
+    padding: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emailIcon: {
+    width: 24,
+    height: 24,
+  },
+  fieldBlock: {
+    width: FORM_WIDTH,
+    marginBottom: 24,
+  },
+  label: {
+    width: FORM_WIDTH,
+    height: 17,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#6B6960',
+    marginBottom: 8,
+  },
+  inputBox: {
+    width: FORM_WIDTH,
+    height: 48,
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+    paddingRight: 8,
+  },
+  input: {
+    flex: 1,
+    padding: 0,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#1A1A1A',
+    outlineStyle: 'none',
+  } as any,
+  errorRow: {
+    width: FORM_WIDTH,
+    height: 24,
+    marginTop: 8,
+    gap: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  errorIcon: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorText: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#D65B44',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  fullWidth: {
+    width: FORM_WIDTH,
+  },
+  primaryBtn: {
+    width: FORM_WIDTH,
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryBtnOn: {
+    backgroundColor: '#21C17C',
+  },
+  primaryBtnOff: {
+    backgroundColor: '#E5E5E5',
+  },
+  primaryBtnText: {
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 16,
+    lineHeight: 20,
+  },
+  primaryBtnTextOn: {
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#FFFFFF',
+  },
+});
 
 export default ResetPassword;

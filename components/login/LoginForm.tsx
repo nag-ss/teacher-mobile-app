@@ -1,6 +1,6 @@
 import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const FORM_WIDTH = 384;
 
@@ -48,75 +48,25 @@ const LoginForm = ({
   const canSubmit = username.trim().length > 0 && password.length > 0 && !loading;
 
   return (
-    <View
-      className="flex-col items-start flex-none"
-      style={{
-        width: FORM_WIDTH,
-        height: 451,
-        padding: 0,
-      }}
-    >
-      <View style={{ width: FORM_WIDTH, gap: 8, marginBottom: 32 }}>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            fontFamily: 'Montserrat_700Bold',
-            fontSize: 24,
-            lineHeight: 32,
-            color: '#1A1A1A',
-          }}
-        >
-          Welcome back
-        </Text>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            fontFamily: 'Inter_400Regular',
-            fontSize: 16,
-            lineHeight: 24,
-            color: '#6B6960',
-          }}
-        >
+    <View style={styles.form}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Welcome back</Text>
+        <Text style={styles.subtitle}>
           Sign in with the email and password provided by your school admin.
         </Text>
       </View>
 
-      <View style={{ width: FORM_WIDTH, marginBottom: 24 }}>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            height: 17,
-            fontFamily: 'Inter_600SemiBold',
-            fontSize: 14,
-            lineHeight: 17,
-            color: '#6B6960',
-            marginBottom: 8,
-          }}
-        >
-          Email
-        </Text>
+      <View style={styles.fieldBlock}>
+        <Text style={styles.label}>Email</Text>
         <View
-          className="flex-row items-center"
-          style={{
-            width: FORM_WIDTH,
-            height: 48,
-            borderRadius: 8,
-            backgroundColor: '#FFFFFF',
-            borderWidth: 1,
-            borderColor: activeBox === 'email' ? '#21C17C' : '#C8C6BE',
-            paddingLeft: 16,
-            paddingRight: 8,
-          }}
+          style={[
+            styles.inputBox,
+            styles.inputBoxEmail,
+            { borderColor: activeBox === 'email' ? '#21C17C' : '#C8C6BE' },
+          ]}
         >
           <TextInput
-            className="flex-1 p-0"
-            style={{
-              fontFamily: 'Inter_400Regular',
-              fontSize: 16,
-              lineHeight: 19,
-              color: '#1A1A1A',
-              outlineStyle: 'none',
-            } as any}
+            style={styles.input}
             value={username}
             placeholder="you@school.edu"
             placeholderTextColor="#A9A7A0"
@@ -132,46 +82,24 @@ const LoginForm = ({
         </View>
       </View>
 
-      <View style={{ width: FORM_WIDTH, marginBottom: keepForgotBelow ? 0 : 24 }}>
-        <Text
-          style={{
-            width: FORM_WIDTH,
-            height: 17,
-            fontFamily: 'Inter_600SemiBold',
-            fontSize: 14,
-            lineHeight: 17,
-            color: '#6B6960',
-            marginBottom: 8,
-          }}
-        >
-          Password
-        </Text>
+      <View style={[styles.fieldBlock, { marginBottom: keepForgotBelow ? 0 : 24 }]}>
+        <Text style={styles.label}>Password</Text>
         <View
-          className="flex-row items-center"
-          style={{
-            width: FORM_WIDTH,
-            height: 48,
-            borderRadius: 8,
-            backgroundColor: showAuthError ? '#FDF2F1' : '#FFFFFF',
-            borderWidth: 1,
-            borderColor: showAuthError
-              ? '#D65B44'
-              : activeBox === 'password'
-                ? '#21C17C'
-                : '#C8C6BE',
-            paddingLeft: 16,
-            paddingRight: 16,
-          }}
+          style={[
+            styles.inputBox,
+            styles.inputBoxPassword,
+            {
+              backgroundColor: showAuthError ? '#FDF2F1' : '#FFFFFF',
+              borderColor: showAuthError
+                ? '#D65B44'
+                : activeBox === 'password'
+                  ? '#21C17C'
+                  : '#C8C6BE',
+            },
+          ]}
         >
           <TextInput
-            className="flex-1 p-0"
-            style={{
-              fontFamily: 'Inter_400Regular',
-              fontSize: 16,
-              lineHeight: 19,
-              color: '#1A1A1A',
-              outlineStyle: 'none',
-            } as any}
+            style={styles.input}
             placeholder="••••••••"
             placeholderTextColor="#A9A7A0"
             value={password}
@@ -184,38 +112,16 @@ const LoginForm = ({
             selectionColor="#21C17C"
             cursorColor="#21C17C"
           />
-          <TouchableOpacity className="h-12 justify-center" onPress={onTogglePassword}>
-            <Text
-              style={{
-                fontFamily: 'Inter_600SemiBold',
-                fontSize: 14,
-                lineHeight: 17,
-                color: '#6B6960',
-              }}
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </Text>
+          <TouchableOpacity style={styles.showBtn} onPress={onTogglePassword}>
+            <Text style={styles.showText}>{showPassword ? 'Hide' : 'Show'}</Text>
           </TouchableOpacity>
         </View>
         {showAuthError ? (
-          <View
-            className="flex-row items-center"
-            style={{ width: FORM_WIDTH, height: 24, marginTop: 8, gap: 8 }}
-          >
-            <View className="w-6 h-6 flex-none items-center justify-center">
+          <View style={styles.errorRow}>
+            <View style={styles.errorIcon}>
               <SvgLoader svgFilePath="loginError" width={24} height={24} />
             </View>
-            <Text
-              numberOfLines={1}
-              style={{
-                fontFamily: 'Inter_400Regular',
-                fontSize: 14,
-                lineHeight: 17,
-                color: '#D65B44',
-                includeFontPadding: false,
-                textAlignVertical: 'center',
-              }}
-            >
+            <Text numberOfLines={1} style={styles.errorText}>
               Incorrect email or password. Please try again.
             </Text>
           </View>
@@ -223,106 +129,231 @@ const LoginForm = ({
       </View>
 
       {keepForgotBelow ? (
-        <View style={{ width: FORM_WIDTH, marginTop: 24, marginBottom: 24 }}>
-          <TouchableOpacity className="items-center" onPress={onForgotPassword}>
-            <Text
-              style={{
-                width: FORM_WIDTH,
-                fontFamily: 'Inter_600SemiBold',
-                fontSize: 14,
-                lineHeight: 20,
-                color: '#6B6960',
-                textAlign: 'center',
-              }}
-            >
-              Forgot password?
-            </Text>
+        <View style={styles.forgotWrapBelow}>
+          <TouchableOpacity style={styles.forgotBtn} onPress={onForgotPassword}>
+            <Text style={styles.forgotText}>Forgot password?</Text>
           </TouchableOpacity>
         </View>
       ) : null}
 
-      <View style={{ width: FORM_WIDTH, marginBottom: 20 }}>
+      <View style={styles.checkboxWrap}>
         <TouchableOpacity
-          className="flex-row items-center"
+          style={styles.checkboxRow}
           onPress={onToggleKeepSignedIn}
           activeOpacity={0.7}
         >
           <View
-            className="flex-none items-center justify-center"
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 6,
-              borderWidth: 2,
-              marginRight: 12,
-              backgroundColor: keepSignedIn ? '#21C17C' : '#FFFFFF',
-              borderColor: keepSignedIn ? '#21C17C' : '#C8C6BE',
-            }}
+            style={[
+              styles.checkbox,
+              keepSignedIn ? styles.checkboxOn : styles.checkboxOff,
+            ]}
           >
-            {keepSignedIn ? (
-              <Text className="text-white text-xs font-bold">✓</Text>
-            ) : null}
+            {keepSignedIn ? <Text style={styles.checkMark}>✓</Text> : null}
           </View>
-          <Text
-            style={{
-              flex: 1,
-              fontFamily: 'Inter_400Regular',
-              fontSize: 14,
-              lineHeight: 20,
-              color: '#1A1A1A',
-            }}
-          >
-            Keep me signed in on this device
-          </Text>
+          <Text style={styles.checkboxLabel}>Keep me signed in on this device</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={{ width: FORM_WIDTH }}>
+      <View style={styles.fullWidth}>
         <TouchableOpacity
-          className="items-center justify-center"
-          style={{
-            width: FORM_WIDTH,
-            height: 48,
-            borderRadius: 8,
-            backgroundColor: canSubmit ? '#21C17C' : '#E5E5E5',
-          }}
+          style={[styles.primaryBtn, canSubmit ? styles.primaryBtnOn : styles.primaryBtnOff]}
           onPress={onLogin}
           disabled={!canSubmit}
           activeOpacity={0.8}
         >
-          <Text
-            style={{
-              fontFamily: 'Montserrat_600SemiBold',
-              fontSize: 16,
-              lineHeight: 20,
-              color: canSubmit ? '#FFFFFF' : '#A9A7A0',
-            }}
-          >
+          <Text style={[styles.primaryBtnText, { color: canSubmit ? '#FFFFFF' : '#A9A7A0' }]}>
             {loading ? 'Logging in...' : 'Log in'}
           </Text>
         </TouchableOpacity>
       </View>
 
       {!keepForgotBelow ? (
-        <View style={{ width: FORM_WIDTH, marginTop: 24 }}>
-          <TouchableOpacity className="items-center" onPress={onForgotPassword}>
-            <Text
-              style={{
-                width: FORM_WIDTH,
-                fontFamily: 'Inter_600SemiBold',
-                fontSize: 14,
-                lineHeight: 20,
-                color: '#6B6960',
-                textAlign: 'center',
-              }}
-            >
-              Forgot password?
-            </Text>
+        <View style={styles.forgotWrapBottom}>
+          <TouchableOpacity style={styles.forgotBtn} onPress={onForgotPassword}>
+            <Text style={styles.forgotText}>Forgot password?</Text>
           </TouchableOpacity>
         </View>
       ) : null}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  form: {
+    width: FORM_WIDTH,
+    height: 451,
+    padding: 0,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  header: {
+    width: FORM_WIDTH,
+    gap: 8,
+    marginBottom: 32,
+  },
+  title: {
+    width: FORM_WIDTH,
+    fontFamily: 'Montserrat_700Bold',
+    fontSize: 24,
+    lineHeight: 32,
+    color: '#1A1A1A',
+  },
+  subtitle: {
+    width: FORM_WIDTH,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#6B6960',
+  },
+  fieldBlock: {
+    width: FORM_WIDTH,
+    marginBottom: 24,
+  },
+  label: {
+    width: FORM_WIDTH,
+    height: 17,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#6B6960',
+    marginBottom: 8,
+  },
+  inputBox: {
+    width: FORM_WIDTH,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputBoxEmail: {
+    paddingLeft: 16,
+    paddingRight: 8,
+  },
+  inputBoxPassword: {
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  input: {
+    flex: 1,
+    padding: 0,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#1A1A1A',
+    outlineStyle: 'none',
+  } as any,
+  showBtn: {
+    height: 48,
+    justifyContent: 'center',
+  },
+  showText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#6B6960',
+  },
+  errorRow: {
+    width: FORM_WIDTH,
+    height: 24,
+    marginTop: 8,
+    gap: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  errorIcon: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorText: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#D65B44',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  forgotWrapBelow: {
+    width: FORM_WIDTH,
+    marginTop: 24,
+    marginBottom: 24,
+  },
+  forgotWrapBottom: {
+    width: FORM_WIDTH,
+    marginTop: 24,
+  },
+  forgotBtn: {
+    alignItems: 'center',
+  },
+  forgotText: {
+    width: FORM_WIDTH,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#6B6960',
+    textAlign: 'center',
+  },
+  checkboxWrap: {
+    width: FORM_WIDTH,
+    marginBottom: 20,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: {
+    backgroundColor: '#21C17C',
+    borderColor: '#21C17C',
+  },
+  checkboxOff: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#C8C6BE',
+  },
+  checkMark: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  checkboxLabel: {
+    flex: 1,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#1A1A1A',
+  },
+  fullWidth: {
+    width: FORM_WIDTH,
+  },
+  primaryBtn: {
+    width: FORM_WIDTH,
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryBtnOn: {
+    backgroundColor: '#21C17C',
+  },
+  primaryBtnOff: {
+    backgroundColor: '#E5E5E5',
+  },
+  primaryBtnText: {
+    fontFamily: 'Montserrat_600SemiBold',
+    fontSize: 16,
+    lineHeight: 20,
+  },
+});
 
 export default LoginForm;

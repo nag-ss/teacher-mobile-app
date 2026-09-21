@@ -3,7 +3,14 @@ import LoginForm from '@/components/login/LoginForm';
 import ResetPassword from '@/components/login/ResetPassword';
 import { clearError, userDetails, userLogin } from '@/store/authSlice';
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
@@ -20,6 +27,8 @@ const Login = () => {
   const [showResetEmailError, setShowResetEmailError] = useState(false);
   const [showResetSent, setShowResetSent] = useState(false);
   const { userToken, error, loading } = useSelector((state: any) => state.user);
+  const { width } = useWindowDimensions();
+  const isSplit = width >= 768;
 
   const canSendReset = resetEmail.trim().length > 0;
   const canSubmit = username.trim().length > 0 && password.length > 0 && !loading;
@@ -88,71 +97,97 @@ const Login = () => {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View className="flex-1 flex-col md:flex-row">
-        <BrandPanel />
+      <View style={[styles.shell, isSplit ? styles.shellRow : styles.shellCol]}>
+        <BrandPanel isSplit={isSplit} />
 
-        <View className="flex-1 flex-row justify-center items-center bg-white p-16">
+        <View style={styles.formPane}>
           <ScrollView
-            className="w-full"
-            contentContainerStyle={{
-              flexGrow: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
           >
-            <View className="flex-col items-start flex-none">
-              {showResetPassword ? (
-                <ResetPassword
-                  showResetSent={showResetSent}
-                  resetEmail={resetEmail}
-                  resetEmailFocused={resetEmailFocused}
-                  showResetEmailError={showResetEmailError}
-                  onResetEmailChange={(text) => {
-                    setShowResetEmailError(false);
-                    setResetEmail(text);
-                  }}
-                  onFocusEmail={() => setResetEmailFocused(true)}
-                  onBlurEmail={() => setResetEmailFocused(false)}
-                  onSendResetLink={sendResetLink}
-                  onBackToSignIn={backToSignIn}
-                />
-              ) : (
-                <LoginForm
-                  username={username}
-                  password={password}
-                  showPassword={showPassword}
-                  keepSignedIn={keepSignedIn}
-                  activeBox={activeBox}
-                  showAuthError={showAuthError}
-                  loading={loading}
-                  onUsernameChange={(text) => {
-                    setShowAuthError(false);
-                    setUsername(text);
-                  }}
-                  onPasswordChange={(text) => {
-                    setShowAuthError(false);
-                    setPassword(text);
-                  }}
-                  onTogglePassword={() => setShowPassword(!showPassword)}
-                  onToggleKeepSignedIn={() => setKeepSignedIn(!keepSignedIn)}
-                  onFocusBox={setActiveBox}
-                  onBlurBox={() => setActiveBox(null)}
-                  onLogin={loginAction}
-                  onForgotPassword={openResetPassword}
-                />
-              )}
-            </View>
+            {showResetPassword ? (
+              <ResetPassword
+                showResetSent={showResetSent}
+                resetEmail={resetEmail}
+                resetEmailFocused={resetEmailFocused}
+                showResetEmailError={showResetEmailError}
+                onResetEmailChange={(text) => {
+                  setShowResetEmailError(false);
+                  setResetEmail(text);
+                }}
+                onFocusEmail={() => setResetEmailFocused(true)}
+                onBlurEmail={() => setResetEmailFocused(false)}
+                onSendResetLink={sendResetLink}
+                onBackToSignIn={backToSignIn}
+              />
+            ) : (
+              <LoginForm
+                username={username}
+                password={password}
+                showPassword={showPassword}
+                keepSignedIn={keepSignedIn}
+                activeBox={activeBox}
+                showAuthError={showAuthError}
+                loading={loading}
+                onUsernameChange={(text) => {
+                  setShowAuthError(false);
+                  setUsername(text);
+                }}
+                onPasswordChange={(text) => {
+                  setShowAuthError(false);
+                  setPassword(text);
+                }}
+                onTogglePassword={() => setShowPassword(!showPassword)}
+                onToggleKeepSignedIn={() => setKeepSignedIn(!keepSignedIn)}
+                onFocusBox={setActiveBox}
+                onBlurBox={() => setActiveBox(null)}
+                onLogin={loginAction}
+                onForgotPassword={openResetPassword}
+              />
+            )}
           </ScrollView>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  shell: {
+    flex: 1,
+  },
+  shellCol: {
+    flexDirection: 'column',
+  },
+  shellRow: {
+    flexDirection: 'row',
+  },
+  formPane: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 64,
+  },
+  scroll: {
+    width: '100%',
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default Login;
