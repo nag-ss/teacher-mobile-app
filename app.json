@@ -3,7 +3,7 @@
     "name": "teacher-mobile-app",
     "slug": "teacher-mobile-app",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/s-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",

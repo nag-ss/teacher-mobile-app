@@ -7,12 +7,14 @@ import { useEffect, useState } from 'react';
 import DrawerLayout from './drawer/_layout';
 import Login from './login';
 import 'react-native-reanimated';
+import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Provider, useSelector } from 'react-redux';
 import { store } from '@/store'
 import Layout from '@/components/navigation/layout';
-import { Montserrat_400Regular, Montserrat_500Medium, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
+import { Montserrat_400Regular, Montserrat_500Medium, Montserrat_600SemiBold, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
+import { Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,7 +27,10 @@ export default function RootLayout() {
     SpaceMono: require('@/assets/fonts/SpaceMono-Regular.ttf'),
     Montserrat_400Regular,
     Montserrat_500Medium,
+    Montserrat_600SemiBold,
     Montserrat_700Bold,
+    Inter_400Regular,
+    Inter_600SemiBold,
   });
 
   useEffect(() => {

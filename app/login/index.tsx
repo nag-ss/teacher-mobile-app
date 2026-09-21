@@ -1,209 +1,345 @@
 import { userDetails, userLogin } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const { width } = Dimensions.get('window');
 const Login = () => {
-    const dispatch = useDispatch<any>()
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [showPassword, setShowPassword] = useState(false);
-    const { userToken, error } = useSelector((state: any) => state.user)
+  const dispatch = useDispatch<any>();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const [activeBox, setActiveBox] = useState<'email' | 'password' | null>(null);
+  const [showAuthError, setShowAuthError] = useState(false);
+  const { userToken, error, loading } = useSelector((state: any) => state.user);
 
-    const loginAction = async () => {
-        const loginReqObj: any = {
-            grant_type: 'password',
-            username,
-            password
-        }
-        await dispatch(userLogin(loginReqObj))
+  const keepForgotBelow =
+    showAuthError ||
+    activeBox !== null ||
+    username.trim().length > 0 ||
+    password.length > 0 ||
+    keepSignedIn;
+
+  const canSubmit = username.trim().length > 0 && password.length > 0 && !loading;
+
+  const loginAction = async () => {
+    if (!canSubmit) return;
+    const loginReqObj: any = {
+      grant_type: 'password',
+      username,
+      password,
+    };
+    await dispatch(userLogin(loginReqObj));
+  };
+
+  const getTeacherDetails = async () => {
+    await dispatch(userDetails(userToken));
+  };
+
+  useEffect(() => {
+    if (error) {
+      setShowAuthError(true);
     }
+  }, [error]);
 
-    const getTeacherDetails = async () => {
-        await dispatch(userDetails(userToken))
+  useEffect(() => {
+    if (userToken) {
+      getTeacherDetails();
     }
+  }, [userToken]);
 
-    useEffect(() => {
-        if(userToken) {
-            getTeacherDetails()
-        }
-    }, [userToken])
   return (
-    <View style={styles.container}>
-      <View style={styles.leftPanel}>
-        <View style={styles.logoCircle}>
-        {/* <SvgLoader
-            svgFilePath='logo' // Replace with your own logo
-            style={styles.logo}
-            resizeMode="contain"
-          /> */}
-            {/* <Image style={{width: 34, height: 64}} source={require('@/assets/images/ss/s-logo.png')} /> */}
-            <Image style={{width: 250, height: 250}} source={require('@/assets/images/ss/Logo_F2.png')} />
-        </View>
-        <Text style={styles.appName}>Super Slate</Text>
-      </View>
-
-      <View style={styles.rightPanel}>
-        <View style={styles.card}>
-          {/* <Text style={styles.signInTitle}>Sign In</Text> */}
-
-          {
-            error ?
-            <View>
-              <Text style={styles.errorMsg}>{error}</Text>
-          </View> : null
-          }
-          
-          <Text style={styles.label}>Username</Text>
-          <View style={styles.passContainer}>
-            <TextInput style={styles.input} value={username} placeholder="Username" onChangeText={(uname) => setUsername(uname)} />
-          </View>
-          
-
-          <Text style={[styles.label, {marginTop: 13.4}]}>Password</Text>
-          {/* <TextInput
-            style={styles.input}
-            placeholder="password"
-            secureTextEntry
-            onChangeText={(uname) => setPassword(uname)}
-          /> */}
-          <View style={styles.passContainer}>
-            <TextInput
-              style={styles.pinput}
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              onPress={() => setShowPassword(!showPassword)}
-              style={styles.iconContainer}
+    <KeyboardAvoidingView
+      className="flex-1 bg-white"
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <View className="flex-1 flex-col md:flex-row">
+        <View
+          className="w-full md:w-[480px] h-full p-16 flex-col justify-center items-start gap-12"
+          style={{ backgroundColor: '#1A1A1A' }}
+        >
+          <View className="flex-row items-center gap-[12px] h-10">
+            <View className="w-10 h-10 items-center justify-center">
+              <SvgLoader svgFilePath="loginLogo" width={40} height={40} />
+            </View>
+            <Text
+              className="text-white text-[20px] leading-[24px]"
+              style={{
+                fontFamily: 'Montserrat_700Bold',
+                includeFontPadding: false,
+                textAlignVertical: 'center',
+              }}
             >
-              <MaterialCommunityIcons
-                name={showPassword ? 'eye-off' : 'eye'}
-                size={24}
-                color="#888"
-              />
-            </TouchableOpacity>
+              Super Slate
+            </Text>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={() => loginAction()}>
-            <Text style={styles.buttonText}>Sign In</Text>
-          </TouchableOpacity>
+          <View className="w-[176px] h-[176px] flex-none self-center" style={{ overflow: 'visible' }}>
+            <SvgLoader svgFilePath="loginIcon" width={176} height={176} />
+          </View>
+
+          <View className="gap-[16px]">
+            <Text
+              className="w-full text-[28px] leading-[36px] text-white"
+              style={{ fontFamily: 'Montserrat_700Bold' }}
+            >
+              Every class, prepared in{'\n'}minutes.
+            </Text>
+            <Text
+              className="w-[352px] h-[72px] text-[16px] leading-[24px] text-[#C8C6BE] flex-none self-stretch"
+              style={{ fontFamily: 'Inter_400Regular' }}
+            >
+              Your lessons, quizzes, and checks — ready before the bell, tuned to how your last class actually went.
+            </Text>
+          </View>
+
+          <View className="h-[40px] flex-none justify-center">
+            <Text
+              className="text-[14px] leading-[17px] text-[#E0DEDA]"
+              numberOfLines={1}
+              style={{ fontFamily: 'Inter_400Regular' }}
+            >
+              Keshava Reddy International School
+            </Text>
+          </View>
+        </View>
+
+        <View className="flex-1 flex-row justify-center items-center bg-white p-16">
+          <ScrollView
+            className="w-full"
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
+            <View className="w-full max-w-[420px]">
+            <View className="gap-[8px] mb-[32px]">
+              <Text
+                className="w-full text-[24px] leading-[32px] text-[#1A1A1A]"
+                style={{ fontFamily: 'Montserrat_700Bold' }}
+              >
+                Welcome back
+              </Text>
+              <Text
+                className="w-full text-[16px] leading-[24px] text-[#6B6960]"
+                style={{ fontFamily: 'Inter_400Regular' }}
+              >
+                Sign in with the email and password provided by your school admin.
+              </Text>
+            </View>
+
+            <View className={`gap-[24px] ${keepForgotBelow ? '' : 'mb-[24px]'}`}>
+              <View>
+                <Text
+                  className="h-[17px] text-[14px] leading-[17px] text-[#6B6960] mb-2"
+                  style={{ fontFamily: 'Inter_600SemiBold' }}
+                >
+                  Email
+                </Text>
+                <View
+                  className="flex-row items-center"
+                  style={{
+                    width: 420,
+                    maxWidth: '100%',
+                    height: 48,
+                    borderRadius: 8,
+                    backgroundColor: '#FFFFFF',
+                    borderWidth: 1,
+                    borderColor: activeBox === 'email' ? '#21C17C' : '#C8C6BE',
+                    paddingLeft: 16,
+                    paddingRight: 8,
+                  }}
+                >
+                  <TextInput
+                    className="flex-1 text-[16px] leading-[19px] text-[#1A1A1A] p-0"
+                    style={{
+                      fontFamily: 'Inter_400Regular',
+                      color: '#1A1A1A',
+                      outlineStyle: 'none',
+                    } as any}
+                    value={username}
+                    placeholder="you@school.edu"
+                    placeholderTextColor="#A9A7A0"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    onChangeText={(text) => {
+                      setShowAuthError(false);
+                      setUsername(text);
+                    }}
+                    onFocus={() => setActiveBox('email')}
+                    onBlur={() => setActiveBox(null)}
+                    underlineColorAndroid="transparent"
+                    selectionColor="#21C17C"
+                    cursorColor="#21C17C"
+                  />
+                </View>
+              </View>
+
+              <View>
+                <Text
+                  className="h-[17px] text-[14px] leading-[17px] text-[#6B6960] mb-2"
+                  style={{ fontFamily: 'Inter_600SemiBold' }}
+                >
+                  Password
+                </Text>
+                <View
+                  className="flex-row items-center"
+                  style={{
+                    width: 420,
+                    maxWidth: '100%',
+                    height: 48,
+                    borderRadius: 8,
+                    backgroundColor: showAuthError ? '#FDF2F1' : '#FFFFFF',
+                    borderWidth: 1,
+                    borderColor: showAuthError
+                      ? '#D65B44'
+                      : activeBox === 'password'
+                        ? '#21C17C'
+                        : '#C8C6BE',
+                    paddingLeft: 16,
+                    paddingRight: 16,
+                  }}
+                >
+                  <TextInput
+                    className="flex-1 text-[16px] leading-[19px] text-[#1A1A1A] p-0"
+                    style={{
+                      fontFamily: 'Inter_400Regular',
+                      color: '#1A1A1A',
+                      outlineStyle: 'none',
+                    } as any}
+                    placeholder="••••••••"
+                    placeholderTextColor="#A9A7A0"
+                    value={password}
+                    onChangeText={(text) => {
+                      setShowAuthError(false);
+                      setPassword(text);
+                    }}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                    onFocus={() => setActiveBox('password')}
+                    onBlur={() => setActiveBox(null)}
+                    underlineColorAndroid="transparent"
+                    selectionColor="#21C17C"
+                    cursorColor="#21C17C"
+                  />
+                  <TouchableOpacity
+                    className="h-12 justify-center"
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    <Text
+                      className="text-[14px] leading-[17px] text-[#6B6960]"
+                      style={{ fontFamily: 'Inter_600SemiBold' }}
+                    >
+                      {showPassword ? 'Hide' : 'Show'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {showAuthError ? (
+                  <View className="flex-row items-center mt-2 gap-2" style={{ width: 420, maxWidth: '100%' }}>
+                    <View className="w-6 h-6 flex-none">
+                      <SvgLoader svgFilePath="loginError" width={24} height={24} />
+                    </View>
+                    <Text
+                      className="text-[14px] leading-[17px] text-[#D65B44] flex-none"
+                      numberOfLines={1}
+                      style={{ fontFamily: 'Inter_400Regular' }}
+                    >
+                      Incorrect email or password. Please try again.
+                    </Text>
+                  </View>
+                ) : null}
+                {keepForgotBelow ? (
+                  <TouchableOpacity
+                    className="mt-[24px] items-center self-stretch"
+                    style={{ marginBottom: 24 }}
+                  >
+                    <Text
+                      className="w-full text-[14px] leading-[20px] text-center text-[#6B6960]"
+                      style={{ fontFamily: 'Inter_600SemiBold' }}
+                    >
+                      Forgot password?
+                    </Text>
+                  </TouchableOpacity>
+                ) : null}
+              </View>
+            </View>
+
+            <TouchableOpacity
+              className="flex-row items-center mb-5"
+              onPress={() => setKeepSignedIn(!keepSignedIn)}
+              activeOpacity={0.7}
+            >
+              <View
+                className="w-6 h-6 rounded-[6px] border-2 p-0 flex-none items-center justify-center mr-3"
+                style={{
+                  backgroundColor: keepSignedIn ? '#21C17C' : '#FFFFFF',
+                  borderColor: keepSignedIn ? '#21C17C' : '#C8C6BE',
+                }}
+              >
+                {keepSignedIn ? (
+                  <Text className="text-white text-xs font-bold">✓</Text>
+                ) : null}
+              </View>
+              <Text
+                className="flex-1 text-[14px] leading-[20px] text-[#1A1A1A]"
+                style={{ fontFamily: 'Inter_400Regular' }}
+              >
+                Keep me signed in on this device
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center justify-center"
+              style={{
+                width: 420,
+                maxWidth: '100%',
+                height: 48,
+                borderRadius: 8,
+                backgroundColor: canSubmit ? '#21C17C' : '#E5E5E5',
+              }}
+              onPress={loginAction}
+              disabled={!canSubmit}
+              activeOpacity={0.8}
+            >
+              <Text
+                className={`h-5 text-[16px] leading-5 ${
+                  canSubmit ? 'text-white' : 'text-[#A9A7A0]'
+                }`}
+                style={{ fontFamily: 'Montserrat_600SemiBold' }}
+              >
+                {loading ? 'Logging in...' : 'Log in'}
+              </Text>
+            </TouchableOpacity>
+
+            {!keepForgotBelow ? (
+              <TouchableOpacity className="mt-[24px] items-center self-stretch">
+                <Text
+                  className="w-full text-[14px] leading-[20px] text-center text-[#6B6960]"
+                  style={{ fontFamily: 'Inter_600SemiBold' }}
+                >
+                  Forgot password?
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          </ScrollView>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      flexDirection: 'row',
-      backgroundColor: '#f4f4f4',
-    },
-    leftPanel: {
-      // flex: 1,
-      backgroundColor: '#5AB87A',
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingVertical: 40,
-      // borderRadius: width > 768 ? 20 : 0,
-      borderTopRightRadius:  20,
-      borderBottomRightRadius: 20,
-      width: '50%'
-    },
-    logoCircle: {
-      // backgroundColor: '#1e1e1e',
-      width: 250,
-      height: 250,
-      borderRadius: 150,
-      justifyContent: 'center',
-      alignItems: 'center',
-      // marginBottom: 20,
-    },
-    logo: {
-      width: 80,
-      height: 80,
-    },
-    appName: {
-      fontSize: 30,
-      fontWeight: 'bold',
-      color: '#000',
-    },
-    rightPanel: {
-      // flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-      width: '50%'
-    },
-    card: {
-      backgroundColor: '#fff',
-      width: '100%',
-      maxWidth: 360,
-      padding: 32,
-      borderRadius: 12,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowRadius: 6,
-      elevation: 4,
-    },
-    signInTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 20,
-      textAlign: 'center',
-    },
-    label: {
-      fontSize: 12,
-      color: '#333',
-      marginBottom: 4,
-      // marginTop: 12,
-    },
-    input: {
-      // backgroundColor: 'red',
-      // padding: 10,
-      borderRadius: 6,
-      fontSize: 14,
-      width: '100%'
-    },
-    button: {
-      backgroundColor: '#5AB87A',
-      padding: 12,
-      marginTop: 20,
-      borderRadius: 6,
-      alignItems: 'center',
-    },
-    buttonText: {
-      color: '#fff',
-      fontWeight: '600',
-    },
-    passContainer: {
-      flexDirection: 'row',
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 8,
-      alignItems: 'center',
-      paddingHorizontal: 10,
-      // marginVertical: 12,
-      height:45
-    },
-    pinput: {
-      flex: 1,
-      paddingVertical: 10,
-      fontSize: 16,
-    },
-    iconContainer: {
-      paddingLeft: 8,
-      paddingVertical: 10,
-    },
-    errorMsg: {
-      color: 'red'
-    }
-  });
 export default Login;

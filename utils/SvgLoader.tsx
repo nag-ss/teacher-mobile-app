@@ -20,6 +20,9 @@ const svgAssets = {
   activityTrend: require('../assets/images/ss/activityTrend.svg'),
   alertAlert: require('../assets/images/ss/alertAlert.svg'),
   alertCorrect: require('../assets/images/ss/alertCorrect.svg'),
+  loginLogo: require('../assets/beta_images/login_logo.svg'),
+  loginIcon: require('../assets/beta_images/login_icon.svg'),
+  loginError: require('../assets/beta_images/error.svg'),
 //   icon: require('../../assets/images/icon.svg'),
 //   background: require('../../assets/images/background.svg'),
 };
