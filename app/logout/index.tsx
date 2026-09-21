@@ -1,17 +1,27 @@
+import LogoutConfirmModal from '@/components/Modals/LogoutConfirmModal';
 import { logout } from '@/store/authSlice';
-import SvgLoader from '@/utils/SvgLoader';
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 const Logout = () => {
-    const dispatch = useDispatch<any>()
-    useEffect(() => {
-        dispatch(logout())
-    }, [])
+  const dispatch = useDispatch<any>();
+  const navigation = useNavigation<any>();
+
   return (
     <View style={styles.container}>
-      <Text>Coming Soon ...!</Text>
+      <LogoutConfirmModal
+        visible
+        onCancel={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.navigate('Home');
+          }
+        }}
+        onConfirm={() => dispatch(logout())}
+      />
     </View>
   );
 };

@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { DrawerNavigationProp } from '@react-navigation/drawer'; // Import navigation prop type
 import { RootDrawerParamList } from './types'; // Define your types for the drawer screens
+import LogoutConfirmModal from '@/components/Modals/LogoutConfirmModal';
+import { logout } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import { usePathname, useRouter } from 'expo-router';
+import { useDispatch } from 'react-redux';
 
 type NavigationProp = DrawerNavigationProp<RootDrawerParamList, 'Home'>; // Specify the screen you are navigating to
 
 const CustomDrawerContent = () => {
   const navigation = useNavigation<NavigationProp>(); // Hook with correct typing for navigation
   const pathname  = usePathname();
+  const dispatch = useDispatch<any>();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   return (
     <View style={styles.container}>
       <TouchableOpacity 
@@ -83,7 +88,7 @@ const CustomDrawerContent = () => {
 
       <TouchableOpacity 
         style={styles.iconItem} 
-        onPress={() => navigation.navigate('Logout')}>
+        onPress={() => setShowLogoutModal(true)}>
         <View style={[styles.submenuContent, pathname == '/Logout' ? styles.selectedMenu : {}]}>
             <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/logout-menu.png')} />
             <Text style={styles.menuText}>
@@ -102,6 +107,14 @@ const CustomDrawerContent = () => {
             </Text>
         </View>
       </TouchableOpacity> */}
+      <LogoutConfirmModal
+        visible={showLogoutModal}
+        onCancel={() => setShowLogoutModal(false)}
+        onConfirm={() => {
+          setShowLogoutModal(false);
+          dispatch(logout());
+        }}
+      />
     </View>
   );
 };

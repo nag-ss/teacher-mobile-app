@@ -25,6 +25,7 @@ const svgAssets = {
   loginError: require('../assets/beta_images/error.svg'),
   loginLeftArrow: require('../assets/beta_images/left_arrow.svg'),
   loginEmail: require('../assets/beta_images/Email.svg'),
+  loginLogout: require('../assets/beta_images/logout.svg'),
 //   icon: require('../../assets/images/icon.svg'),
 //   background: require('../../assets/images/background.svg'),
 };

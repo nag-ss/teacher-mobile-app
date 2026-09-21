@@ -1,7 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Image } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { usePathname } from 'expo-router';
 
 const menuItems = [
@@ -17,7 +15,7 @@ import { PixelRatio } from 'react-native';
 const dpValue = 100;
 const pxValue = PixelRatio.getPixelSizeForLayoutSize(dpValue);
 
-const Sidebar = ({navigation}: any) =>  {
+const Sidebar = ({navigation, onLogoutPress}: any) =>  {
     
     const pathname  = usePathname();
   const [expanded, setExpanded] = useState(false);
@@ -57,7 +55,13 @@ const Sidebar = ({navigation}: any) =>  {
         <TouchableOpacity
           key={item.label}
           style={[styles.menuItem, (pathname == '/'+item.label || (pathname == '/live-monitoring' && item.label == 'Home')) ? styles.selectedMenu : {}, expanded ? {width: 200} : {justifyContent: 'center'}]}
-          onPress={() => navigation.navigate(item.route)}
+          onPress={() => {
+            if (item.route === 'Logout') {
+              onLogoutPress?.();
+              return;
+            }
+            navigation.navigate(item.route);
+          }}
         >
           {/* <MaterialCommunityIcons name={item.icon} size={24} color="#222" /> */}
           <Image  style={[styles.iconStyle, {width: 48, height: 48}]} source={item.icon} />

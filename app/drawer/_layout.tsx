@@ -1,4 +1,6 @@
-import React from 'react';
+import LogoutConfirmModal from '@/components/Modals/LogoutConfirmModal';
+import { logout } from '@/store/authSlice';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,15 +15,18 @@ import Logout from '../logout';
 import Feedback from '../feedback';
 import LiveMonitoring from '../live-monitoring';
 import { PaperProvider } from "react-native-paper";
+import { useDispatch } from 'react-redux';
 
 const Stack = createStackNavigator();
 
 export default function App() {
     const navigation = useNavigation<any>()
+    const dispatch = useDispatch<any>()
+    const [showLogoutModal, setShowLogoutModal] = useState(false)
   return (
     <PaperProvider>
         <View style={styles.container}>
-        <Sidebar navigation={navigation} />
+        <Sidebar navigation={navigation} onLogoutPress={() => setShowLogoutModal(true)} />
         <View style={[styles.content]}>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Home" component={Home} />
@@ -39,6 +44,14 @@ export default function App() {
             <Stack.Screen name="live-monitoring" component={LiveMonitoring} />
           </Stack.Navigator>
         </View>
+        <LogoutConfirmModal
+          visible={showLogoutModal}
+          onCancel={() => setShowLogoutModal(false)}
+          onConfirm={() => {
+            setShowLogoutModal(false);
+            dispatch(logout());
+          }}
+        />
       </View>
       </PaperProvider>
   );
