@@ -106,7 +106,7 @@ const Login = () => {
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
           >
-            <View className="w-full max-w-[420px]">
+            <View className="flex-col items-start flex-none">
               {showResetPassword ? (
                 <ResetPassword
                   showResetSent={showResetSent}

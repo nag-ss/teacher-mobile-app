@@ -5,10 +5,18 @@ import { Text, View } from 'react-native';
 const BrandPanel = () => {
   return (
     <View
-      className="w-full md:w-[480px] h-full p-16 flex-col justify-center items-start gap-12"
+      className="w-full md:w-[480px] h-full p-16 flex-col justify-center items-start"
       style={{ backgroundColor: '#1A1A1A' }}
     >
-      <View className="flex-row items-center gap-[12px] h-10">
+      <View
+        className="flex-row items-center flex-none"
+        style={{
+          width: '100%',
+          height: 40,
+          gap: 12,
+          marginBottom: 48,
+        }}
+      >
         <View className="w-10 h-10 items-center justify-center">
           <SvgLoader svgFilePath="loginLogo" width={40} height={40} />
         </View>
@@ -24,30 +32,62 @@ const BrandPanel = () => {
         </Text>
       </View>
 
-      <View className="w-[176px] h-[176px] flex-none self-center" style={{ overflow: 'visible' }}>
-        <SvgLoader svgFilePath="loginIcon" width={176} height={176} />
-      </View>
-
-      <View className="gap-[16px]">
+      <View
+        className="flex-none"
+        style={{
+          width: 376,
+          height: 434,
+          padding: 0,
+          gap: 16,
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginBottom: 48,
+          overflow: 'hidden',
+        }}
+      >
+        <View className="flex-none" style={{ width: 176, height: 176, overflow: 'visible' }}>
+          <SvgLoader svgFilePath="loginIcon" width={176} height={176} />
+        </View>
         <Text
-          className="w-full text-[28px] leading-[36px] text-white"
-          style={{ fontFamily: 'Montserrat_700Bold' }}
+          style={{
+            width: '100%',
+            fontFamily: 'Montserrat_700Bold',
+            fontSize: 28,
+            lineHeight: 36,
+            color: '#FFFFFF',
+          }}
         >
           Every class, prepared in{'\n'}minutes.
         </Text>
         <Text
-          className="w-[352px] h-[72px] text-[16px] leading-[24px] text-[#C8C6BE] flex-none self-stretch"
-          style={{ fontFamily: 'Inter_400Regular' }}
+          style={{
+            width: '100%',
+            height: 72,
+            fontFamily: 'Inter_400Regular',
+            fontSize: 16,
+            lineHeight: 24,
+            color: '#C8C6BE',
+          }}
         >
           Your lessons, quizzes, and checks — ready before the bell, tuned to how your last class actually went.
         </Text>
       </View>
 
-      <View className="h-[40px] flex-none justify-center">
+      <View
+        className="flex-none justify-center"
+        style={{
+          width: '100%',
+          height: 40,
+        }}
+      >
         <Text
-          className="text-[14px] leading-[17px] text-[#E0DEDA]"
           numberOfLines={1}
-          style={{ fontFamily: 'Inter_400Regular' }}
+          style={{
+            fontFamily: 'Inter_400Regular',
+            fontSize: 14,
+            lineHeight: 17,
+            color: '#E0DEDA',
+          }}
         >
           Keshava Reddy International School
         </Text>

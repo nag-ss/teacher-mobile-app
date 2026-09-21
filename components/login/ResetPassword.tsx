@@ -2,6 +2,8 @@ import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+const FORM_WIDTH = 384;
+
 type ResetPasswordProps = {
   showResetSent: boolean;
   resetEmail: string;
@@ -29,105 +31,159 @@ const ResetPassword = ({
 
   if (showResetSent) {
     return (
-      <View>
-        <View
-          className="flex-row items-center justify-center mb-[32px]"
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: '#EFFBF5',
-            padding: 0,
-          }}
-        >
-          <View className="w-6 h-6 flex-none items-center justify-center">
-            <SvgLoader svgFilePath="loginEmail" width={24} height={24} />
+      <View
+        className="flex-col items-start flex-none"
+        style={{
+          width: FORM_WIDTH,
+          height: 260,
+          padding: 0,
+        }}
+      >
+        <View style={{ width: FORM_WIDTH, marginBottom: 32 }}>
+          <View
+            className="flex-row items-center justify-center flex-none"
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: '#EFFBF5',
+              padding: 0,
+            }}
+          >
+            <View className="flex-none" style={{ width: 24, height: 24 }}>
+              <SvgLoader svgFilePath="loginEmail" width={24} height={24} />
+            </View>
           </View>
         </View>
 
-        <View className="gap-[8px] mb-[32px]">
+        <View style={{ width: FORM_WIDTH, gap: 8, marginBottom: 32 }}>
           <Text
-            className="w-full text-[24px] leading-[32px] text-[#1A1A1A]"
-            style={{ fontFamily: 'Montserrat_700Bold' }}
+            style={{
+              width: FORM_WIDTH,
+              fontFamily: 'Montserrat_700Bold',
+              fontSize: 24,
+              lineHeight: 32,
+              color: '#1A1A1A',
+            }}
           >
             Check your email
           </Text>
           <Text
-            className="w-full text-[16px] leading-[24px] text-[#6B6960]"
-            style={{ fontFamily: 'Inter_400Regular' }}
+            style={{
+              width: FORM_WIDTH,
+              fontFamily: 'Inter_400Regular',
+              fontSize: 16,
+              lineHeight: 24,
+              color: '#6B6960',
+            }}
           >
             We've sent a reset link to {resetEmail.trim()}. It expires in 30 minutes.
           </Text>
         </View>
 
-        <TouchableOpacity
-          className="items-center justify-center"
-          style={{
-            width: 420,
-            maxWidth: '100%',
-            height: 48,
-            borderRadius: 8,
-            backgroundColor: '#21C17C',
-          }}
-          onPress={onBackToSignIn}
-          activeOpacity={0.8}
-        >
-          <Text
-            className="h-5 text-[16px] leading-5 text-white"
-            style={{ fontFamily: 'Montserrat_600SemiBold' }}
+        <View style={{ width: FORM_WIDTH }}>
+          <TouchableOpacity
+            className="items-center justify-center"
+            style={{
+              width: FORM_WIDTH,
+              height: 48,
+              borderRadius: 8,
+              backgroundColor: '#21C17C',
+            }}
+            onPress={onBackToSignIn}
+            activeOpacity={0.8}
           >
-            Back to sign in
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontFamily: 'Montserrat_600SemiBold',
+                fontSize: 16,
+                lineHeight: 20,
+                color: '#FFFFFF',
+              }}
+            >
+              Back to sign in
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
 
   return (
-    <View>
-      <TouchableOpacity
-        className="flex-row items-center gap-2 mb-[32px]"
-        onPress={onBackToSignIn}
-        activeOpacity={0.7}
-      >
-        <View className="w-[7px] h-[22px] flex-none items-center justify-center">
-          <SvgLoader svgFilePath="loginLeftArrow" width={7} height={22} />
-        </View>
-        <Text
-          className="text-[14px] leading-[17px] text-[#6B6960] flex-none"
-          style={{ fontFamily: 'Inter_600SemiBold' }}
+    <View
+      className="flex-col items-start flex-none"
+      style={{
+        width: FORM_WIDTH,
+        height: 299,
+        padding: 0,
+      }}
+    >
+      <View style={{ width: FORM_WIDTH, marginBottom: 32 }}>
+        <TouchableOpacity
+          className="flex-row items-center"
+          style={{ gap: 8 }}
+          onPress={onBackToSignIn}
+          activeOpacity={0.7}
         >
-          Back to sign in
-        </Text>
-      </TouchableOpacity>
+          <View className="flex-none items-center justify-center" style={{ width: 7, height: 22 }}>
+            <SvgLoader svgFilePath="loginLeftArrow" width={7} height={22} />
+          </View>
+          <Text
+            style={{
+              fontFamily: 'Inter_600SemiBold',
+              fontSize: 14,
+              lineHeight: 17,
+              color: '#6B6960',
+            }}
+          >
+            Back to sign in
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      <View className="gap-[8px] mb-[32px]">
+      <View style={{ width: FORM_WIDTH, gap: 8, marginBottom: 32 }}>
         <Text
-          className="w-full text-[24px] leading-[32px] text-[#1A1A1A]"
-          style={{ fontFamily: 'Montserrat_700Bold' }}
+          style={{
+            width: FORM_WIDTH,
+            fontFamily: 'Montserrat_700Bold',
+            fontSize: 24,
+            lineHeight: 32,
+            color: '#1A1A1A',
+          }}
         >
           Reset your password
         </Text>
         <Text
-          className="w-full text-[16px] leading-[24px] text-[#6B6960]"
-          style={{ fontFamily: 'Inter_400Regular' }}
+          style={{
+            width: FORM_WIDTH,
+            fontFamily: 'Inter_400Regular',
+            fontSize: 16,
+            lineHeight: 24,
+            color: '#6B6960',
+          }}
         >
           Enter your school email and we'll send you a reset link.
         </Text>
       </View>
 
-      <View className="mb-[24px]">
+      <View style={{ width: FORM_WIDTH, marginBottom: 24 }}>
         <Text
-          className="h-[17px] text-[14px] leading-[17px] text-[#6B6960] mb-2"
-          style={{ fontFamily: 'Inter_600SemiBold' }}
+          style={{
+            width: FORM_WIDTH,
+            height: 17,
+            fontFamily: 'Inter_600SemiBold',
+            fontSize: 14,
+            lineHeight: 17,
+            color: '#6B6960',
+            marginBottom: 8,
+          }}
         >
           Email
         </Text>
         <View
           className="flex-row items-center"
           style={{
-            width: 420,
-            maxWidth: '100%',
+            width: FORM_WIDTH,
             height: 48,
             borderRadius: 8,
             backgroundColor: showResetEmailError ? '#FDF2F1' : '#FFFFFF',
@@ -142,9 +198,11 @@ const ResetPassword = ({
           }}
         >
           <TextInput
-            className="flex-1 text-[16px] leading-[19px] text-[#1A1A1A] p-0"
+            className="flex-1 p-0"
             style={{
               fontFamily: 'Inter_400Regular',
+              fontSize: 16,
+              lineHeight: 19,
               color: '#1A1A1A',
               outlineStyle: 'none',
             } as any}
@@ -162,15 +220,20 @@ const ResetPassword = ({
           />
         </View>
         {showResetEmailError ? (
-          <View className="flex-row items-center mt-2 gap-2 h-6" style={{ width: 420, maxWidth: '100%' }}>
+          <View
+            className="flex-row items-center"
+            style={{ width: FORM_WIDTH, height: 24, marginTop: 8, gap: 8 }}
+          >
             <View className="w-6 h-6 flex-none items-center justify-center">
               <SvgLoader svgFilePath="loginError" width={24} height={24} />
             </View>
             <Text
-              className="text-[14px] leading-[17px] text-[#D65B44] flex-none"
               numberOfLines={1}
               style={{
                 fontFamily: 'Inter_400Regular',
+                fontSize: 14,
+                lineHeight: 17,
+                color: '#D65B44',
                 includeFontPadding: false,
                 textAlignVertical: 'center',
               }}
@@ -181,28 +244,31 @@ const ResetPassword = ({
         ) : null}
       </View>
 
-      <TouchableOpacity
-        className="items-center justify-center"
-        style={{
-          width: 420,
-          maxWidth: '100%',
-          height: 48,
-          borderRadius: 8,
-          backgroundColor: canSendReset ? '#21C17C' : '#E5E5E5',
-        }}
-        onPress={onSendResetLink}
-        disabled={!canSendReset}
-        activeOpacity={0.8}
-      >
-        <Text
-          className={`h-5 text-[16px] leading-5 ${
-            canSendReset ? 'text-white' : 'text-[#A9A7A0]'
-          }`}
-          style={{ fontFamily: 'Montserrat_600SemiBold' }}
+      <View style={{ width: FORM_WIDTH }}>
+        <TouchableOpacity
+          className="items-center justify-center"
+          style={{
+            width: FORM_WIDTH,
+            height: 48,
+            borderRadius: 8,
+            backgroundColor: canSendReset ? '#21C17C' : '#E5E5E5',
+          }}
+          onPress={onSendResetLink}
+          disabled={!canSendReset}
+          activeOpacity={0.8}
         >
-          Send reset link
-        </Text>
-      </TouchableOpacity>
+          <Text
+            style={{
+              fontFamily: 'Montserrat_600SemiBold',
+              fontSize: 16,
+              lineHeight: 20,
+              color: canSendReset ? '#FFFFFF' : '#A9A7A0',
+            }}
+          >
+            Send reset link
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
