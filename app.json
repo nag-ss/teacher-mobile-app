@@ -3,7 +3,7 @@
     "name": "teacher-mobile-app",
     "slug": "teacher-mobile-app",
     "version": "1.0.0",
-    "orientation": "default",
+    "orientation": "landscape",
     "icon": "./assets/images/s-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -30,6 +30,12 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "LANDSCAPE"
+        }
+      ],
       [
         "expo-splash-screen",
         {
