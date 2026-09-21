@@ -58,6 +58,10 @@ const userSlice = createSlice({
         state.mobileNumber = null;
         AsyncStorage.removeItem('user');
         AsyncStorage.removeItem('userToken');
+        state.error = null;
+      },
+      clearError: (state) => {
+        state.error = null;
       },
       login: (state) => {
         state.isAuthenticated = true
@@ -119,6 +123,6 @@ const userSlice = createSlice({
     },
 });
   
-export const { logout, setMobileNumber, login } = userSlice.actions;
+export const { logout, setMobileNumber, login, clearError } = userSlice.actions;
   
 export default userSlice.reducer;

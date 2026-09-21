@@ -1,4 +1,4 @@
-import { userDetails, userLogin } from '@/store/authSlice';
+import { clearError, userDetails, userLogin } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import React, { useEffect, useState } from 'react';
 import {
@@ -51,13 +51,23 @@ const Login = () => {
   };
 
   const backToSignIn = () => {
+    setUsername('');
+    setPassword('');
+    setShowPassword(false);
+    setKeepSignedIn(false);
+    setActiveBox(null);
+    setShowAuthError(false);
+    setResetEmail('');
+    setResetEmailFocused(false);
     setShowResetEmailError(false);
     setShowResetSent(false);
     setShowResetPassword(false);
+    dispatch(clearError());
   };
 
   const openResetPassword = () => {
-    setResetEmail(username);
+    setResetEmail('');
+    setResetEmailFocused(false);
     setShowResetEmailError(false);
     setShowResetSent(false);
     setShowResetPassword(true);
