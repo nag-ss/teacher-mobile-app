@@ -152,18 +152,21 @@ const Login = () => {
             {showResetPassword ? (
               <View>
                 <TouchableOpacity
-                  className="flex-row items-center mb-[32px]"
+                  className="flex-row items-center gap-2 mb-[32px]"
                   onPress={() => {
                     setShowResetEmailError(false);
                     setShowResetPassword(false);
                   }}
                   activeOpacity={0.7}
                 >
+                  <View className="w-[7px] h-[22px] flex-none items-center justify-center">
+                    <SvgLoader svgFilePath="loginLeftArrow" width={7} height={22} />
+                  </View>
                   <Text
-                    className="text-[14px] leading-[17px] text-[#6B6960]"
-                    style={{ fontFamily: 'Inter_400Regular' }}
+                    className="text-[14px] leading-[17px] text-[#6B6960] flex-none"
+                    style={{ fontFamily: 'Inter_600SemiBold' }}
                   >
-                    ‹  Back to sign in
+                    Back to sign in
                   </Text>
                 </TouchableOpacity>
 
@@ -231,14 +234,18 @@ const Login = () => {
                     />
                   </View>
                   {showResetEmailError ? (
-                    <View className="flex-row items-center mt-2 gap-2" style={{ width: 420, maxWidth: '100%' }}>
-                      <View className="w-6 h-6 flex-none">
+                    <View className="flex-row items-center mt-2 gap-2 h-6" style={{ width: 420, maxWidth: '100%' }}>
+                      <View className="w-6 h-6 flex-none items-center justify-center">
                         <SvgLoader svgFilePath="loginError" width={24} height={24} />
                       </View>
                       <Text
                         className="text-[14px] leading-[17px] text-[#D65B44] flex-none"
                         numberOfLines={1}
-                        style={{ fontFamily: 'Inter_400Regular' }}
+                        style={{
+                          fontFamily: 'Inter_400Regular',
+                          includeFontPadding: false,
+                          textAlignVertical: 'center',
+                        }}
                       >
                         Incorrect email. Please try again.
                       </Text>
@@ -393,14 +400,18 @@ const Login = () => {
                   </TouchableOpacity>
                 </View>
                 {showAuthError ? (
-                  <View className="flex-row items-center mt-2 gap-2" style={{ width: 420, maxWidth: '100%' }}>
-                    <View className="w-6 h-6 flex-none">
+                  <View className="flex-row items-center mt-2 gap-2 h-6" style={{ width: 420, maxWidth: '100%' }}>
+                    <View className="w-6 h-6 flex-none items-center justify-center">
                       <SvgLoader svgFilePath="loginError" width={24} height={24} />
                     </View>
                     <Text
                       className="text-[14px] leading-[17px] text-[#D65B44] flex-none"
                       numberOfLines={1}
-                      style={{ fontFamily: 'Inter_400Regular' }}
+                      style={{
+                        fontFamily: 'Inter_400Regular',
+                        includeFontPadding: false,
+                        textAlignVertical: 'center',
+                      }}
                     >
                       Incorrect email or password. Please try again.
                     </Text>
