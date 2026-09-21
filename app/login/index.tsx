@@ -24,6 +24,7 @@ const Login = () => {
   const [resetEmail, setResetEmail] = useState('');
   const [resetEmailFocused, setResetEmailFocused] = useState(false);
   const [showResetEmailError, setShowResetEmailError] = useState(false);
+  const [showResetSent, setShowResetSent] = useState(false);
   const { userToken, error, loading } = useSelector((state: any) => state.user);
 
   const keepForgotBelow =
@@ -46,11 +47,19 @@ const Login = () => {
       return;
     }
     setShowResetEmailError(false);
+    setShowResetSent(true);
+  };
+
+  const backToSignIn = () => {
+    setShowResetEmailError(false);
+    setShowResetSent(false);
+    setShowResetPassword(false);
   };
 
   const openResetPassword = () => {
     setResetEmail(username);
     setShowResetEmailError(false);
+    setShowResetSent(false);
     setShowResetPassword(true);
   };
 
@@ -149,14 +158,63 @@ const Login = () => {
             showsHorizontalScrollIndicator={false}
           >
             <View className="w-full max-w-[420px]">
-            {showResetPassword ? (
+            {showResetSent ? (
+              <View>
+                <View
+                  className="flex-row items-center justify-center mb-[32px]"
+                  style={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 28,
+                    backgroundColor: '#EFFBF5',
+                    padding: 0,
+                  }}
+                >
+                  <View className="w-6 h-6 flex-none items-center justify-center">
+                    <SvgLoader svgFilePath="loginEmail" width={24} height={24} />
+                  </View>
+                </View>
+
+                <View className="gap-[8px] mb-[32px]">
+                  <Text
+                    className="w-full text-[24px] leading-[32px] text-[#1A1A1A]"
+                    style={{ fontFamily: 'Montserrat_700Bold' }}
+                  >
+                    Check your email
+                  </Text>
+                  <Text
+                    className="w-full text-[16px] leading-[24px] text-[#6B6960]"
+                    style={{ fontFamily: 'Inter_400Regular' }}
+                  >
+                    We've sent a reset link to {resetEmail.trim()}. It expires in 30 minutes.
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  className="items-center justify-center"
+                  style={{
+                    width: 420,
+                    maxWidth: '100%',
+                    height: 48,
+                    borderRadius: 8,
+                    backgroundColor: '#21C17C',
+                  }}
+                  onPress={backToSignIn}
+                  activeOpacity={0.8}
+                >
+                  <Text
+                    className="h-5 text-[16px] leading-5 text-white"
+                    style={{ fontFamily: 'Montserrat_600SemiBold' }}
+                  >
+                    Back to sign in
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : showResetPassword ? (
               <View>
                 <TouchableOpacity
                   className="flex-row items-center gap-2 mb-[32px]"
-                  onPress={() => {
-                    setShowResetEmailError(false);
-                    setShowResetPassword(false);
-                  }}
+                  onPress={backToSignIn}
                   activeOpacity={0.7}
                 >
                   <View className="w-[7px] h-[22px] flex-none items-center justify-center">
