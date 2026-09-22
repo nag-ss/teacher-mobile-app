@@ -28,7 +28,7 @@ const BrandPanel = ({
         <View style={styles.illustration}>
           <SvgLoader svgFilePath="loginIcon" width={176} height={176} />
         </View>
-        <Text style={styles.headline}>Every class, prepared in{'\n'}minutes.</Text>
+        <Text style={styles.headline}>Every class, prepared in minutes.</Text>
         <Text style={styles.body}>
           Your lessons, quizzes, and checks — ready before the bell, tuned to how your last class actually went.
         </Text>
