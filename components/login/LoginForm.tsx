@@ -265,8 +265,8 @@ const styles = StyleSheet.create({
   },
   forgotWrapBelow: {
     width: '100%',
-    marginTop: 24,
-    marginBottom: 24,
+    marginTop: 38,
+    marginBottom: 30,
   },
   forgotBtn: {
     alignItems: 'center',
