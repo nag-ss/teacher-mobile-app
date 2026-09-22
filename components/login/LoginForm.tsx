@@ -37,12 +37,6 @@ const LoginForm = ({
   onLogin,
   onForgotPassword,
 }: LoginFormProps) => {
-  const keepForgotBelow =
-    showAuthError ||
-    activeBox !== null ||
-    username.trim().length > 0 ||
-    password.length > 0 ||
-    keepSignedIn;
   const canSubmit = username.trim().length > 0 && password.length > 0 && !loading;
 
   return (
@@ -80,7 +74,7 @@ const LoginForm = ({
         </View>
       </View>
 
-      <View style={[styles.fieldBlock, { marginBottom: keepForgotBelow ? 0 : 24 }]}>
+      <View style={[styles.fieldBlock, styles.passwordBlock]}>
         <Text style={styles.label}>Password</Text>
         <View
           style={[
@@ -126,13 +120,11 @@ const LoginForm = ({
         ) : null}
       </View>
 
-      {keepForgotBelow ? (
-        <View style={styles.forgotWrapBelow}>
-          <TouchableOpacity style={styles.forgotBtn} onPress={onForgotPassword}>
-            <Text style={styles.forgotText}>Forgot password?</Text>
-          </TouchableOpacity>
-        </View>
-      ) : null}
+      <View style={styles.forgotWrapBelow}>
+        <TouchableOpacity style={styles.forgotBtn} onPress={onForgotPassword}>
+          <Text style={styles.forgotText}>Forgot password?</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.checkboxWrap}>
         <TouchableOpacity
@@ -164,14 +156,6 @@ const LoginForm = ({
           </Text>
         </TouchableOpacity>
       </View>
-
-      {!keepForgotBelow ? (
-        <View style={styles.forgotWrapBottom}>
-          <TouchableOpacity style={styles.forgotBtn} onPress={onForgotPassword}>
-            <Text style={styles.forgotText}>Forgot password?</Text>
-          </TouchableOpacity>
-        </View>
-      ) : null}
     </View>
   );
 };
@@ -208,6 +192,9 @@ const styles = StyleSheet.create({
   fieldBlock: {
     width: '100%',
     marginBottom: 24,
+  },
+  passwordBlock: {
+    marginBottom: 0,
   },
   label: {
     width: '100%',
@@ -280,10 +267,6 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 24,
     marginBottom: 24,
-  },
-  forgotWrapBottom: {
-    width: '100%',
-    marginTop: 24,
   },
   forgotBtn: {
     alignItems: 'center',
