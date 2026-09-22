@@ -3,18 +3,20 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 type BrandPanelProps = {
+  panelWidth?: number;
   artHeight?: number;
   padding?: number;
   sectionGap?: number;
 };
 
 const BrandPanel = ({
+  panelWidth = 480,
   artHeight = 434,
   padding = 64,
   sectionGap = 48,
 }: BrandPanelProps) => {
   return (
-    <View style={[styles.panel, { padding }]}>
+    <View style={[styles.panel, { width: panelWidth, padding }]}>
       <View style={[styles.logoRow, { marginBottom: sectionGap }]}>
         <View style={styles.logoIcon}>
           <SvgLoader svgFilePath="loginLogo" width={40} height={40} />

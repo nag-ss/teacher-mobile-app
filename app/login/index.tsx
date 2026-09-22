@@ -101,6 +101,7 @@ const Login = () => {
     >
       <View style={styles.shell}>
         <BrandPanel
+          panelWidth={layout.panelWidth}
           artHeight={layout.artHeight}
           padding={layout.panePadding}
           sectionGap={layout.sectionGap}
