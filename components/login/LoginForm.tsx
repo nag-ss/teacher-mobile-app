@@ -2,8 +2,6 @@ import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const FORM_WIDTH = 384;
-
 type LoginFormProps = {
   username: string;
   password: string;
@@ -180,37 +178,39 @@ const LoginForm = ({
 
 const styles = StyleSheet.create({
   form: {
-    width: FORM_WIDTH,
-    height: 451,
+    width: 384,
+    maxWidth: '100%',
+    minWidth: 280,
+    minHeight: 451,
     padding: 0,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
   header: {
-    width: FORM_WIDTH,
+    width: '100%',
     gap: 8,
     marginBottom: 32,
   },
   title: {
-    width: FORM_WIDTH,
+    width: '100%',
     fontFamily: 'Montserrat_700Bold',
     fontSize: 24,
     lineHeight: 32,
     color: '#1A1A1A',
   },
   subtitle: {
-    width: FORM_WIDTH,
+    width: '100%',
     fontFamily: 'Inter_400Regular',
     fontSize: 16,
     lineHeight: 24,
     color: '#6B6960',
   },
   fieldBlock: {
-    width: FORM_WIDTH,
+    width: '100%',
     marginBottom: 24,
   },
   label: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 17,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 14,
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputBox: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 48,
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     color: '#6B6960',
   },
   errorRow: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 24,
     marginTop: 8,
     gap: 8,
@@ -277,19 +277,19 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
   forgotWrapBelow: {
-    width: FORM_WIDTH,
+    width: '100%',
     marginTop: 24,
     marginBottom: 24,
   },
   forgotWrapBottom: {
-    width: FORM_WIDTH,
+    width: '100%',
     marginTop: 24,
   },
   forgotBtn: {
     alignItems: 'center',
   },
   forgotText: {
-    width: FORM_WIDTH,
+    width: '100%',
     fontFamily: 'Inter_600SemiBold',
     fontSize: 14,
     lineHeight: 20,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   checkboxWrap: {
-    width: FORM_WIDTH,
+    width: '100%',
     marginBottom: 20,
   },
   checkboxRow: {
@@ -334,10 +334,10 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
   },
   fullWidth: {
-    width: FORM_WIDTH,
+    width: '100%',
   },
   primaryBtn: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 48,
     borderRadius: 8,
     alignItems: 'center',

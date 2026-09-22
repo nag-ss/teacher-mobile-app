@@ -3,20 +3,26 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 type BrandPanelProps = {
-  isSplit?: boolean;
+  artHeight?: number;
+  padding?: number;
+  sectionGap?: number;
 };
 
-const BrandPanel = ({ isSplit = false }: BrandPanelProps) => {
+const BrandPanel = ({
+  artHeight = 434,
+  padding = 64,
+  sectionGap = 48,
+}: BrandPanelProps) => {
   return (
-    <View style={[styles.panel, isSplit ? styles.panelSplit : styles.panelStacked]}>
-      <View style={styles.logoRow}>
+    <View style={[styles.panel, { padding }]}>
+      <View style={[styles.logoRow, { marginBottom: sectionGap }]}>
         <View style={styles.logoIcon}>
           <SvgLoader svgFilePath="loginLogo" width={40} height={40} />
         </View>
         <Text style={styles.logoText}>Super Slate</Text>
       </View>
 
-      <View style={styles.middle}>
+      <View style={[styles.middle, { height: artHeight, minHeight: artHeight, marginBottom: sectionGap }]}>
         <View style={styles.illustration}>
           <SvgLoader svgFilePath="loginIcon" width={176} height={176} />
         </View>
@@ -37,17 +43,15 @@ const BrandPanel = ({ isSplit = false }: BrandPanelProps) => {
 
 const styles = StyleSheet.create({
   panel: {
+    width: 480,
+    minWidth: 320,
+    flexGrow: 0,
+    flexShrink: 1,
     height: '100%',
     padding: 64,
     backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'flex-start',
-  },
-  panelSplit: {
-    width: 480,
-  },
-  panelStacked: {
-    width: '100%',
   },
   logoRow: {
     flexDirection: 'row',
@@ -55,7 +59,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     gap: 12,
-    marginBottom: 48,
   },
   logoIcon: {
     width: 40,
@@ -72,13 +75,12 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
   middle: {
-    width: 376,
-    height: 434,
+    width: '100%',
+    maxWidth: 376,
     padding: 0,
     gap: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 48,
     overflow: 'hidden',
   },
   illustration: {
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
   },
   body: {
     width: '100%',
-    height: 72,
+    minHeight: 72,
     fontFamily: 'Inter_400Regular',
     fontSize: 16,
     lineHeight: 24,

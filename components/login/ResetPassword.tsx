@@ -2,8 +2,6 @@ import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const FORM_WIDTH = 384;
-
 type ResetPasswordProps = {
   showResetSent: boolean;
   resetEmail: string;
@@ -138,37 +136,41 @@ const ResetPassword = ({
 
 const styles = StyleSheet.create({
   resetBox: {
-    width: FORM_WIDTH,
-    height: 299,
+    width: 384,
+    maxWidth: '100%',
+    minWidth: 280,
+    minHeight: 299,
     padding: 0,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
   confirmBox: {
-    width: FORM_WIDTH,
-    height: 260,
+    width: 384,
+    maxWidth: '100%',
+    minWidth: 280,
+    minHeight: 260,
     padding: 0,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
   block32: {
-    width: FORM_WIDTH,
+    width: '100%',
     marginBottom: 32,
   },
   header: {
-    width: FORM_WIDTH,
+    width: '100%',
     gap: 8,
     marginBottom: 32,
   },
   title: {
-    width: FORM_WIDTH,
+    width: '100%',
     fontFamily: 'Montserrat_700Bold',
     fontSize: 24,
     lineHeight: 32,
     color: '#1A1A1A',
   },
   subtitle: {
-    width: FORM_WIDTH,
+    width: '100%',
     fontFamily: 'Inter_400Regular',
     fontSize: 16,
     lineHeight: 24,
@@ -206,11 +208,11 @@ const styles = StyleSheet.create({
     height: 24,
   },
   fieldBlock: {
-    width: FORM_WIDTH,
+    width: '100%',
     marginBottom: 24,
   },
   label: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 17,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 14,
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputBox: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 48,
     borderRadius: 8,
     borderWidth: 1,
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
     outlineStyle: 'none',
   } as any,
   errorRow: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 24,
     marginTop: 8,
     gap: 8,
@@ -260,10 +262,10 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
   fullWidth: {
-    width: FORM_WIDTH,
+    width: '100%',
   },
   primaryBtn: {
-    width: FORM_WIDTH,
+    width: '100%',
     height: 48,
     borderRadius: 8,
     alignItems: 'center',

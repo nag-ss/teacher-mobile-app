@@ -1,6 +1,7 @@
 import BrandPanel from '@/components/login/BrandPanel';
 import LoginForm from '@/components/login/LoginForm';
 import ResetPassword from '@/components/login/ResetPassword';
+import { useLoginLayout } from '@/hooks/useLoginLayout';
 import { clearError, userDetails, userLogin } from '@/store/authSlice';
 import React, { useEffect, useState } from 'react';
 import {
@@ -8,7 +9,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  useWindowDimensions,
   View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,8 +27,7 @@ const Login = () => {
   const [showResetEmailError, setShowResetEmailError] = useState(false);
   const [showResetSent, setShowResetSent] = useState(false);
   const { userToken, error, loading } = useSelector((state: any) => state.user);
-  const { width } = useWindowDimensions();
-  const isSplit = width >= 768;
+  const layout = useLoginLayout();
 
   const canSendReset = resetEmail.trim().length > 0;
   const canSubmit = username.trim().length > 0 && password.length > 0 && !loading;
@@ -100,10 +99,14 @@ const Login = () => {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={[styles.shell, isSplit ? styles.shellRow : styles.shellCol]}>
-        <BrandPanel isSplit={isSplit} />
+      <View style={styles.shell}>
+        <BrandPanel
+          artHeight={layout.artHeight}
+          padding={layout.panePadding}
+          sectionGap={layout.sectionGap}
+        />
 
-        <View style={styles.formPane}>
+        <View style={[styles.formPane, { padding: layout.panePadding }]}>
           <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.scrollContent}
@@ -165,20 +168,15 @@ const styles = StyleSheet.create({
   },
   shell: {
     flex: 1,
-  },
-  shellCol: {
-    flexDirection: 'column',
-  },
-  shellRow: {
     flexDirection: 'row',
   },
   formPane: {
     flex: 1,
+    minWidth: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    padding: 64,
   },
   scroll: {
     width: '100%',
