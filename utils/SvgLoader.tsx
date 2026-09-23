@@ -26,8 +26,18 @@ const svgAssets = {
   loginLeftArrow: require('../assets/beta_images/left_arrow.svg'),
   loginEmail: require('../assets/beta_images/Email.svg'),
   loginLogout: require('../assets/beta_images/logout.svg'),
-//   icon: require('../../assets/images/icon.svg'),
-//   background: require('../../assets/images/background.svg'),
+  sidebarLogo: require('../assets/beta_images/sidebar_logo.svg'),
+  sidebarHome: require('../assets/beta_images/home.svg'),
+  sidebarHomeActive: require('../assets/beta_images/home_active.svg'),
+  sidebarClasses: require('../assets/beta_images/classes.svg'),
+  sidebarClassesActive: require('../assets/beta_images/classes_active.svg'),
+  sidebarCalendar: require('../assets/beta_images/calendar.svg'),
+  sidebarCalendarActive: require('../assets/beta_images/calendar_active.svg'),
+  sidebarAnalytics: require('../assets/beta_images/analytics.svg'),
+  sidebarAnalyticsActive: require('../assets/beta_images/analytics_active.svg'),
+  sidebarProfile: require('../assets/beta_images/profile.svg'),
+  sidebarProfileActive: require('../assets/beta_images/profile_active.svg'),
+  sidebarLogout: require('../assets/beta_images/sidebar_logout.svg'),
 };
 
 interface SvgLoaderProps {
