@@ -10,6 +10,14 @@ import PerformanceSummary from '@/components/dashboard/PerformanceSummary';
 import TeacherTodos from '@/components/dashboard/Todos';
 import { MaterialIcons } from '@expo/vector-icons';
 import SvgLoader from '@/utils/SvgLoader';
+import moment from 'moment';
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+};
 
 const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 
@@ -24,9 +32,11 @@ const DashboardScreen = () => {
     { label: 'Auto Test Generator', icon: 'quiz' },
   ];
   const dayLabel = DAY_LABELS[dayIndex];
+  const greetingName = user?.first_name || 'Teacher';
+  const dateLabel = moment().format('dddd, D MMMM');
 
   return (
-    <SafeAreaView style={{ marginLeft: 13.7, height: '100%', marginTop: 13.7 }}>
+    <SafeAreaView style={{ flex: 1, marginLeft: 13.7, marginTop: 13.7 }}>
       <View style={styles.headerContainer}>
         <View style={styles.headerActions}>
           <View style={styles.dayPill}>
@@ -62,19 +72,24 @@ const DashboardScreen = () => {
       </View>
       <View style={styles.mainContainer}>
         <View style={styles.container}>
-          <View style={styles.leftColumn}>
-            <View style={styles.liveCardContainer}>
-              <View style={styles.teacherNameSection}>
-                <Text style={styles.title}>Welcome {`${user.first_name} ${user.last_name}`}</Text>
-                <Text style={styles.subTitle}>
-                  Welcome back! Let’s make today a meaningful day of learning.
-                </Text>
+          <View style={styles.mainContent}>
+            <View style={styles.pageHeader}>
+              <View style={styles.greetingBlock}>
+                <View style={styles.greetingBox}>
+                  <Text style={styles.title}>
+                    {getGreeting()}, {greetingName}
+                  </Text>
+                </View>
+                <View style={styles.dateBox}>
+                  <Text style={styles.subTitle}>{dateLabel}</Text>
+                </View>
               </View>
-
-              <LiveClassCard />
             </View>
 
-            <Timeline />
+            <LiveClassCard />
+            <View style={styles.timelineWrap}>
+              <Timeline />
+            </View>
           </View>
 
           <View style={styles.rightColumn}>
@@ -115,9 +130,10 @@ const DashboardScreen = () => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    height: '95%',
+    flex: 1,
   },
   container: {
+    flex: 1,
     flexDirection: 'row',
     marginTop: 13.7,
   },
@@ -211,9 +227,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  leftColumn: {
-    width: 450.28,
-    marginRight: 13.7,
+  mainContent: {
+    width: 636,
+    flexGrow: 1,
+    alignSelf: 'stretch',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: 32,
+    gap: 24,
   },
   rightColumn: {
     width: 270,
@@ -221,20 +242,51 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
-  liveCardContainer: {
-    backgroundColor: '#fff',
-    padding: 18.28,
-    borderRadius: 12,
-  },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 28,
+    lineHeight: 34,
+    color: '#1F1E1C',
+    fontFamily: 'Montserrat_700Bold',
+    includeFontPadding: false,
   },
   subTitle: {
-    marginTop: 9.14,
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
   },
-  teacherNameSection: {
-    marginBottom: 9.14,
+  pageHeader: {
+    width: 572,
+    height: 61,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    padding: 0,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  greetingBlock: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 6,
+  },
+  greetingBox: {
+    height: 34,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  dateBox: {
+    height: 19,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  timelineWrap: {
+    width: '100%',
+    flex: 1,
   },
   classProgressContainer: {
     backgroundColor: '#fff',
