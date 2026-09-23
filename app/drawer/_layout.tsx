@@ -34,7 +34,10 @@ export default function App() {
         />
         <View style={[styles.content]}>
           <Stack.Navigator
-            screenOptions={{ headerShown: false }}
+            screenOptions={{
+              headerShown: false,
+              cardStyle: { backgroundColor: '#FAFAF8' },
+            }}
             screenListeners={{
               state: (e) => {
                 const state = e.data.state;
@@ -73,6 +76,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: 'row' },
-  content: { flex: 1 },
+  container: { flex: 1, flexDirection: 'row', backgroundColor: '#FAFAF8' },
+  content: { flex: 1, backgroundColor: '#FAFAF8' },
 });

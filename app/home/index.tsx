@@ -4,7 +4,6 @@ import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
 import { useSelector } from 'react-redux';
-import { MaterialIcons } from '@expo/vector-icons';
 import SvgLoader from '@/utils/SvgLoader';
 import moment from 'moment';
 
@@ -19,53 +18,14 @@ const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 
 const DashboardScreen = () => {
   const { user } = useSelector((state: any) => state.user);
-  const [expanded, setExpanded] = useState(false);
   const [dayIndex, setDayIndex] = useState(1); // Today
   const hasNotifications = false;
-  const actions = [
-    { label: 'Upload Materials', icon: 'file-upload' },
-    { label: 'Assignment Generator', icon: 'assignment' },
-    { label: 'Auto Test Generator', icon: 'quiz' },
-  ];
   const dayLabel = DAY_LABELS[dayIndex];
   const greetingName = user?.first_name || 'Teacher';
   const dateLabel = moment().format('dddd, D MMMM');
 
   return (
-    <SafeAreaView style={{ flex: 1, marginLeft: 13.7, marginTop: 13.7 }}>
-      <View style={styles.headerContainer}>
-        <View style={styles.headerActions}>
-          <View style={styles.dayPill}>
-            <TouchableOpacity
-              style={styles.dayArrow}
-              onPress={() => setDayIndex((prev) => Math.max(0, prev - 1))}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <SvgLoader svgFilePath="notificationLeftArrow" width={7} height={10} />
-            </TouchableOpacity>
-            <View style={styles.dayLabelBox}>
-              <Text style={styles.dayLabel}>{dayLabel}</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.dayArrow}
-              onPress={() => setDayIndex((prev) => Math.min(2, prev + 1))}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity style={styles.notificationButton} activeOpacity={0.7}>
-            <View style={styles.notificationIconBox}>
-              <SvgLoader
-                svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
-                width={20}
-                height={20}
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#FAFAF8' }}>
       <View style={styles.mainContainer}>
         <View style={styles.container}>
           <View style={styles.mainContent}>
@@ -88,29 +48,43 @@ const DashboardScreen = () => {
             </View>
           </View>
 
-          <View style={styles.rightColumn}>
+          <View style={styles.rightSidebar}>
+            <View style={styles.rightHeader}>
+              <View style={styles.headerActions}>
+                <View style={styles.dayPill}>
+                  <TouchableOpacity
+                    style={styles.dayArrow}
+                    onPress={() => setDayIndex((prev) => Math.max(0, prev - 1))}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <SvgLoader svgFilePath="notificationLeftArrow" width={7} height={10} />
+                  </TouchableOpacity>
+                  <View style={styles.dayLabelBox}>
+                    <Text style={styles.dayLabel}>{dayLabel}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.dayArrow}
+                    onPress={() => setDayIndex((prev) => Math.min(2, prev + 1))}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.notificationButton} activeOpacity={0.7}>
+                  <View style={styles.notificationIconBox}>
+                    <SvgLoader
+                      svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
+                      width={20}
+                      height={20}
+                    />
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+
             <HomeSidePanels />
           </View>
-        </View>
-        <View style={styles.actionsContainer}>
-          {expanded &&
-            actions.map((action: any) => (
-              <View key={action.label} style={styles.menuRow}>
-                <View style={styles.menuCard}>
-                  <Text style={styles.menuLabel}>{action.label}</Text>
-                </View>
-                <View style={styles.menuIcon}>
-                  <MaterialIcons name={action.icon} size={24} color="#444" />
-                </View>
-              </View>
-            ))}
-          <TouchableOpacity
-            style={styles.fab}
-            activeOpacity={0.7}
-            onPress={() => setExpanded(!expanded)}
-          >
-            <MaterialIcons name="add" size={32} color="#fff" />
-          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -120,18 +94,12 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: '#FAFAF8',
   },
   container: {
     flex: 1,
     flexDirection: 'row',
-    marginTop: 13.7,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    height: 40,
-    marginRight: 13.7,
+    backgroundColor: '#FAFAF8',
   },
   headerActions: {
     flexDirection: 'row',
@@ -222,12 +190,31 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    padding: 32,
+    paddingTop: 24,
+    paddingHorizontal: 32,
+    paddingBottom: 32,
     gap: 24,
+    backgroundColor: '#FAFAF8',
   },
-  rightColumn: {
-    width: 270,
-    paddingTop: 8,
+  rightSidebar: {
+    width: 300,
+    alignSelf: 'stretch',
+    alignItems: 'flex-start',
+    paddingTop: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+    gap: 20,
+    flexGrow: 0,
+    flexShrink: 0,
+    borderLeftWidth: 1,
+    borderLeftColor: '#D9D6CF',
+    backgroundColor: '#FAFAF8',
+  },
+  rightHeader: {
+    height: 61,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 28,
@@ -245,7 +232,7 @@ const styles = StyleSheet.create({
   },
   pageHeader: {
     width: 572,
-    height: 61,
+    minHeight: 61,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -260,13 +247,11 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   greetingBox: {
-    height: 34,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
   },
   dateBox: {
-    height: 19,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
@@ -274,60 +259,6 @@ const styles = StyleSheet.create({
   timelineWrap: {
     width: '100%',
     flex: 1,
-  },
-  actionsContainer: {
-    position: 'absolute',
-    bottom: 30,
-    right: 100,
-    alignItems: 'flex-end',
-    zIndex: 99,
-  },
-  fab: {
-    backgroundColor: '#20C997',
-    borderRadius: 32,
-    width: 64,
-    height: 64,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  menuRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 18,
-  },
-  menuCard: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    marginRight: 10,
-  },
-  menuLabel: {
-    fontSize: 15,
-    color: '#222',
-  },
-  menuIcon: {
-    backgroundColor: '#fff',
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
   },
 });
 

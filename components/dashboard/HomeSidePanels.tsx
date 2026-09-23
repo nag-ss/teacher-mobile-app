@@ -61,8 +61,8 @@ const HomeSidePanels = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    gap: 16,
+    alignSelf: 'stretch',
+    gap: 20,
   },
   eventsCard: {
     alignSelf: 'stretch',

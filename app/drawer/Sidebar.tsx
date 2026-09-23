@@ -119,9 +119,9 @@ const styles = StyleSheet.create({
   sidebar: {
     width: 216,
     alignSelf: 'stretch',
-    backgroundColor: '#F7F7F5',
+    backgroundColor: '#FAFAF8',
     borderRightWidth: 1,
-    borderRightColor: '#E8E7E3',
+    borderRightColor: '#D9D6CF',
     paddingTop: 24,
     paddingHorizontal: 16,
     paddingBottom: 20,

@@ -125,6 +125,11 @@ const ClassTimelineRow = ({ item, currentDate }: { item: any; currentDate: strin
   );
 };
 
+const ROW_HEIGHT = 85; // padding 40 + subject/grade meta 45
+const ROW_GAP = 16;
+const VISIBLE_ROWS = 3;
+const LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS + ROW_GAP * (VISIBLE_ROWS - 1) + 32;
+
 const TimelineWithClassDetails = () => {
   const dispatch = useDispatch<any>();
   const { classTimeline } = useSelector((state: any) => state.classes);
@@ -220,9 +225,12 @@ const styles = StyleSheet.create({
   list: {
     width: '100%',
     alignSelf: 'stretch',
+    height: LIST_HEIGHT,
+    flexGrow: 0,
+    flexShrink: 0,
   },
   listContent: {
-    gap: 10,
+    gap: ROW_GAP,
     paddingBottom: 8,
   },
   row: {
@@ -230,7 +238,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     width: '100%',
-    padding: 20,
+    height: ROW_HEIGHT,
+    paddingHorizontal: 20,
+    paddingVertical: 0,
     flexGrow: 0,
     flexShrink: 0,
   },
@@ -315,7 +325,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   statusBox: {
-    height: 17,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
