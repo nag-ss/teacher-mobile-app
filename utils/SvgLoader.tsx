@@ -38,6 +38,10 @@ const svgAssets = {
   sidebarProfile: require('../assets/beta_images/profile.svg'),
   sidebarProfileActive: require('../assets/beta_images/profile_active.svg'),
   sidebarLogout: require('../assets/beta_images/sidebar_logout.svg'),
+  notificationLeftArrow: require('../assets/beta_images/notification_left_arrow.svg'),
+  notificationRightArrow: require('../assets/beta_images/notification_right_arrow.svg'),
+  notificationActive: require('../assets/beta_images/active_notification.svg'),
+  notificationInactive: require('../assets/beta_images/inactive_notification.svg'),
 };
 
 interface SvgLoaderProps {

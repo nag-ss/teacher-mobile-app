@@ -1,135 +1,225 @@
 import React, { useState } from 'react';
-import { ScrollView, View, StyleSheet, SafeAreaView, Text, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import ClassProgress from '@/components/dashboard/ClassProgress';
-import RecentActivity from '@/components/dashboard/RecentActivity';
 import ImportantAlerts from '@/components/dashboard/ImportantAlerts';
-import QuickActions from '@/components/dashboard/QuickActions';
 import UpcomingTopics from '@/components/dashboard/UpcomingTopics';
-import CompletedTopics from '@/components/dashboard/CompletedTopics';
 import { useSelector } from 'react-redux';
 import PerformanceSummary from '@/components/dashboard/PerformanceSummary';
 import TeacherTodos from '@/components/dashboard/Todos';
-import { MaterialIcons } from '@expo/vector-icons'; // For icons
+import { MaterialIcons } from '@expo/vector-icons';
+import SvgLoader from '@/utils/SvgLoader';
 
-
-
+const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 
 const DashboardScreen = () => {
-    
-    const {user} = useSelector((state: any) => state.user)
-    const [expanded, setExpanded] = useState(false);
-    const actions = [
-      { label: 'Upload Materials', icon: 'file-upload' },
-      { label: 'Assignment Generator', icon: 'assignment' },
-      { label: 'Auto Test Generator', icon: 'quiz' }
-    ];
+  const { user } = useSelector((state: any) => state.user);
+  const [expanded, setExpanded] = useState(false);
+  const [dayIndex, setDayIndex] = useState(1); // Today
+  const hasNotifications = false;
+  const actions = [
+    { label: 'Upload Materials', icon: 'file-upload' },
+    { label: 'Assignment Generator', icon: 'assignment' },
+    { label: 'Auto Test Generator', icon: 'quiz' },
+  ];
+  const dayLabel = DAY_LABELS[dayIndex];
+
   return (
-    <SafeAreaView style={{marginLeft: 13.7, height: '100%', marginTop: 13.7}}>
-        <View style={styles.headerContainer}>
-          <Text style={{padding: 13.7, fontWeight: '600', fontSize: 18.28}}>{user.school_name}</Text>
-          <View style={{flexDirection: 'row', marginRight: 20}}>
-            <Image  style={[{width: 20, height: 20, marginRight: 16}]} source={require('../../assets/images/ss/search.png')} />
-            <Image  style={[{width: 20, height: 20}]} source={require('../../assets/images/ss/Notification.png')} />
+    <SafeAreaView style={{ marginLeft: 13.7, height: '100%', marginTop: 13.7 }}>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerActions}>
+          <View style={styles.dayPill}>
+            <TouchableOpacity
+              style={styles.dayArrow}
+              onPress={() => setDayIndex((prev) => Math.max(0, prev - 1))}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <SvgLoader svgFilePath="notificationLeftArrow" width={7} height={10} />
+            </TouchableOpacity>
+            <View style={styles.dayLabelBox}>
+              <Text style={styles.dayLabel}>{dayLabel}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.dayArrow}
+              onPress={() => setDayIndex((prev) => Math.min(2, prev + 1))}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={styles.notificationButton} activeOpacity={0.7}>
+            <View style={styles.notificationIconBox}>
+              <SvgLoader
+                svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
+                width={20}
+                height={20}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.mainContainer}>
+        <View style={styles.container}>
+          <View style={styles.leftColumn}>
+            <View style={styles.liveCardContainer}>
+              <View style={styles.teacherNameSection}>
+                <Text style={styles.title}>Welcome {`${user.first_name} ${user.last_name}`}</Text>
+                <Text style={styles.subTitle}>
+                  Welcome back! Let’s make today a meaningful day of learning.
+                </Text>
+              </View>
+
+              <LiveClassCard />
+            </View>
+
+            <Timeline />
+          </View>
+
+          <View style={styles.rightColumn}>
+            <View style={styles.classProgressContainer}>
+              <ClassProgress />
+              <UpcomingTopics />
+            </View>
+
+            <PerformanceSummary />
+            <TeacherTodos />
+            <ImportantAlerts />
           </View>
         </View>
-        <View style={styles.mainContainer}>
-            <View style={styles.container}>
-                <View style={styles.leftColumn}>
-                    <View style={styles.liveCardContainer}>
-                      <View style={styles.teacherNameSection}>
-                        <Text style={styles.title}>Welcome {`${user.first_name} ${user.last_name}`}</Text>
-                        <Text style={styles.subTitle}>Welcome back! Let’s make today a meaningful day of learning.</Text>
-                      </View>
-                        
-                        <LiveClassCard />
-                    </View>
-                    
-                    <Timeline />
+        <View style={styles.actionsContainer}>
+          {expanded &&
+            actions.map((action: any) => (
+              <View key={action.label} style={styles.menuRow}>
+                <View style={styles.menuCard}>
+                  <Text style={styles.menuLabel}>{action.label}</Text>
                 </View>
-
-                <View style={styles.rightColumn}>
-                    <View style={styles.classProgressContainer}>
-                        <ClassProgress />
-                        <UpcomingTopics />
-                    </View>
-                    
-                    
-                    <PerformanceSummary />
-                    <TeacherTodos />
-                    <ImportantAlerts />
+                <View style={styles.menuIcon}>
+                  <MaterialIcons name={action.icon} size={24} color="#444" />
                 </View>
-            </View>
-            {/* <View style={{padding: 10}}>
-                <QuickActions />
-            </View> */}
-            <View  style={styles.actionsContainer}>
-              {expanded && actions.map((action: any, idx) => (
-                <View key={action.label} style={styles.menuRow}>
-                  <View style={styles.menuCard}>
-                    <Text style={styles.menuLabel}>{action.label}</Text>
-                  </View>
-                  <View style={styles.menuIcon}>
-                    <MaterialIcons name={action.icon} size={24} color="#444" />
-                  </View>
-                </View>
-              ))}
-              <TouchableOpacity
-                style={styles.fab}
-                activeOpacity={0.7}
-                onPress={() => setExpanded(!expanded)}
-              >
-                <MaterialIcons name="add" size={32} color="#fff" />
-              </TouchableOpacity>
-            </View>
+              </View>
+            ))}
+          <TouchableOpacity
+            style={styles.fab}
+            activeOpacity={0.7}
+            onPress={() => setExpanded(!expanded)}
+          >
+            <MaterialIcons name="add" size={32} color="#fff" />
+          </TouchableOpacity>
         </View>
-        
-      
-
-      
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
-    // marginLeft: 18
     height: '95%',
-    // backgroundColor: 'red'
   },
   container: {
-    // flex: 1,
-    // padding: 10,
     flexDirection: 'row',
-    // flexWrap: 'wrap',
-    // justifyContent: 'space-between',
-    // backgroundColor: 'yellow',
-    // height: '100%',
-    marginTop: 13.7
-
+    marginTop: 13.7,
   },
   headerContainer: {
-    flexDirection: 'row', 
-    justifyContent:'space-between', 
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    backgroundColor: '#fff', 
-    height: 64, 
-    borderRadius: 10, 
-    marginRight: 13.7
+    height: 40,
+    marginRight: 13.7,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: 252,
+    padding: 0,
+    gap: 8,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  dayPill: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 200,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 14,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EDEBE6',
+    borderRadius: 12,
+    flexGrow: 1,
+    flexShrink: 0,
+    shadowColor: '#000',
+    shadowOpacity: 0.0196078,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
+  },
+  dayArrow: {
+    width: 16,
+    height: 16,
+    padding: 0,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  dayLabelBox: {
+    height: 20,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dayLabel: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+    textAlign: 'center',
+  },
+  notificationButton: {
+    width: 44,
+    height: 44,
+    padding: 0,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EDEBE6',
+    borderRadius: 12,
+    flexGrow: 0,
+    flexShrink: 0,
+    shadowColor: '#000',
+    shadowOpacity: 0.0196078,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
+  },
+  notificationIconBox: {
+    width: 20,
+    height: 20,
+    flexGrow: 0,
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   leftColumn: {
-    // flex: 0.6,
     width: 450.28,
     marginRight: 13.7,
   },
   rightColumn: {
-    // flex: 0.4,
     width: 270,
-    // marginLeft: 5,
     backgroundColor: '#fff',
     padding: 10,
-    borderRadius: 10
+    borderRadius: 10,
   },
   liveCardContainer: {
     backgroundColor: '#fff',
@@ -139,25 +229,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    // marginBottom: 5,
   },
   subTitle: {
     marginTop: 9.14,
-    // fontWeight: '600',
   },
   teacherNameSection: {
-    // padding: 13.7,
-    marginBottom: 9.14
+    marginBottom: 9.14,
   },
   classProgressContainer: {
     backgroundColor: '#fff',
     padding: 13.7,
-    // paddingBottom: 5,
-    // marginVertical: 10,
     borderRadius: 8,
     borderColor: 'lightgray',
     borderWidth: 1,
-    marginBottom: 5
+    marginBottom: 5,
   },
   actionsContainer: {
     position: 'absolute',
@@ -167,21 +252,21 @@ const styles = StyleSheet.create({
     zIndex: 99,
   },
   fab: {
-    backgroundColor: "#20C997",
+    backgroundColor: '#20C997',
     borderRadius: 32,
     width: 64,
     height: 64,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
     shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 }
+    shadowOffset: { width: 0, height: 4 },
   },
   menuRow: {
     flexDirection: 'row',
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 18,
   },
   menuCard: {
@@ -190,29 +275,29 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     marginRight: 10,
   },
   menuLabel: {
     fontSize: 15,
-    color: "#222"
+    color: '#222',
   },
   menuIcon: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     width: 38,
     height: 38,
     borderRadius: 19,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 1,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOpacity: 0.08,
     shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 }
-  }
+    shadowOffset: { width: 0, height: 1 },
+  },
 });
 
 export default DashboardScreen;
