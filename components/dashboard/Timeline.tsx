@@ -1,508 +1,368 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'; 
-import TimelineCard from './TimelineCard';
-import { LayoutChangeEvent } from 'react-native';
-import { blue } from 'react-native-reanimated/lib/typescript/Colors';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getScheduleClasses } from '@/store/classSlice';
 import moment from 'moment';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Calendar } from "react-native-calendars";
 import { useFocusEffect } from '@react-navigation/native';
-import { Colors } from '@/constants/Colors';
+import ClassPrep from './ClassPrep';
+import SvgLoader from '@/utils/SvgLoader';
 
-/*const timelineData = [
-  {
-    time: '08:30 - 09:00',
-    subject: 'Algebra - Linear Equations',
-    category: 'Physics',
-    live: false,
-    startTime: '08:30', 
-    classLength: 30
-  },
-  {
-    time: '09:30 - 10:15',
-    subject: 'Algebra - Linear Equations',
-    category: 'Physics',
-    live: false,
-    startTime: '09:30', 
-    classLength: 45
-  },
-  {
-    time: '11:00 - 11:45',
-    subject: 'Chemistry - Periodic Table',
-    category: 'Chemistry',
-    live: true,
-    startTime: '11:00', 
-    classLength: 45
-  },
-  {
-    time: '12:00 - 12:30',
-    subject: 'Physics - Newton\'s Laws',
-    category: 'Physics',
-    live: false,
-    startTime: '12:00', 
-    classLength: 30
-  },
-  {
-    time: '14:00 - 14:15',
-    // subject: 'Biology - Cell Structure',
-    category: 'Biology',
-    live: false,
-    startTime: '14:00', 
-    classLength: 15
-  },
-];*/
+const toRoman = (value: string | number) => {
+  const num = typeof value === 'number' ? value : parseInt(String(value).replace(/\D/g, ''), 10);
+  if (!num || Number.isNaN(num) || num < 1 || num > 20) return String(value);
 
+  const map: [number, string][] = [
+    [10, 'X'],
+    [9, 'IX'],
+    [5, 'V'],
+    [4, 'IV'],
+    [1, 'I'],
+  ];
 
-
-// const timeSlots = ['08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45', '10:00', '10:15', '10:30', '10:45',
-//     '11:00', '11:15', '11:30', '11:45','12:00', '12:15', '12:30', '12:45','13:00', '13:15', '13:30', '13:45',
-//     '14:00', '14:15', '14:30', '14:45','15:00', '15:15', '15:30', '15:45'
-// ];
-// const timelimeIntervalHeight = 35
-// const timelimeEmptyHeight = 25
-const timelimeIntervalHeight = 27.5
-// const timelimeIntervalHeight = 0.458
-const timelimeEmptyHeight = 17.5
-const TimelineWithClassDetails = () => {
-    // const [noClass, setNoClass] = useState(0)
-    
-    let noClass = 0
-    let closestSlot = '08:00'
-    const [completeScrollBarHeight, setCompleteScrollBarHeight] = useState(1);
-  const [visibleScrollBarHeight, setVisibleScrollBarHeight] = useState(0);
-  const scrollIndicator = useRef(new Animated.Value(0)).current;
-
-  const scrollIndicatorSize =
-    completeScrollBarHeight > visibleScrollBarHeight
-      ? (visibleScrollBarHeight * visibleScrollBarHeight)
-        / completeScrollBarHeight
-      : visibleScrollBarHeight;
-
-  const difference =
-    visibleScrollBarHeight > scrollIndicatorSize
-      ? visibleScrollBarHeight - scrollIndicatorSize
-      : 1;
-
-  const scrollIndicatorPosition = Animated.multiply(
-    scrollIndicator,
-    visibleScrollBarHeight / completeScrollBarHeight,
-  ).interpolate({
-    extrapolate: 'clamp',
-    inputRange: [0, difference],
-    outputRange: [0, difference],
-  });
-
-  const onContentSizeChange = (_: any, contentHeight: any) => 
-    setCompleteScrollBarHeight(contentHeight);
-
-const onLayout = (event: LayoutChangeEvent): void => {
-  const { height } = event.nativeEvent.layout;
-  setVisibleScrollBarHeight(height);
+  let remaining = num;
+  let result = '';
+  for (const [n, symbol] of map) {
+    while (remaining >= n) {
+      result += symbol;
+      remaining -= n;
+    }
+  }
+  return result;
 };
 
-    const dispatch = useDispatch<any>();
-    const { classTimeline } = useSelector((state: any) => state.classes)
-    const [timelineData, setTimelineData] = useState([])
-    const [timeSlots, setTimeSlots] = useState<string[]>([])
-    const timelineRef = useRef<any>()
-    const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
-  const [show, setShow] = useState(false);
-  const [calendarDate, setCalendarDate] = useState(moment(date).format('DD-MM-YYYY'))
+const getTitle = (item: any) => {
+  const details = item?.class_details?.[0];
+  if (details) {
+    const topic = details.topic || details.Topic;
+    const subTopic = Array.isArray(details.sub_topic)
+      ? details.sub_topic[0]
+      : details.Sub_topic?.[0];
+    if (topic && subTopic) return `${topic} — ${subTopic}`;
+    if (topic) return topic;
+    if (subTopic) return subTopic;
+  }
+  return item?.subject_name || 'Class';
+};
 
-  const onDateChange = (selectedDate: any) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    // console.log("======================")
-    // console.log(currentDate);
-    // console.log("======================")
-    setDate(currentDate);
-    setCalendarDate(moment(currentDate).format('DD-MM-YYYY'));
-    getDetails(moment(currentDate).format('YYYY-MM-DD'))
+const getGradeLabel = (item: any) => {
+  const rawDivision = item?.division_name?.toString().trim() || '';
+  const section = item?.section_name?.toString().trim();
+  const cleaned = rawDivision.replace(/^class\s+/i, '');
+  const division = /\d/.test(cleaned) ? toRoman(cleaned) : cleaned;
+
+  if (division && section) return `Grade ${division} · Section ${section}`;
+  if (division) return `Grade ${division}`;
+  if (section) return `Section ${section}`;
+  return '—';
+};
+
+const ClassTimelineRow = ({ item, currentDate }: { item: any; currentDate: string }) => {
+  const classPrepRef = useRef<any>();
+  const isCompleted = item.isClassOver;
+  const isLive = item.live;
+  const canOpenPrep = !isCompleted;
+  const statusLabel = isCompleted ? 'Completed' : isLive ? 'Live now' : 'Prep ready';
+
+  const openClassPrep = () => {
+    if (canOpenPrep) {
+      classPrepRef.current?.setSelectedClass();
+    }
   };
 
-  const showDate = () => {
-    setShow(!show);
-  };
-
-    const getDetails = async (currentDate: string) => {
-      const reqObj: any = {
-        date: currentDate
-      }
-      // console.log("get classes by date")
-      // console.log(reqObj)
-       await dispatch(getScheduleClasses(reqObj))
-       
-    }
-
-    useFocusEffect(useCallback(() => {
-        // console.log("calling focus effect ....")
-        setCalendarDate(moment(new Date()).format('DD-MM-YYYY'))
-        getDetails(moment(new Date()).format('YYYY-MM-DD'))
-      }, [])
-      )
-
-    /*useEffect(() => {
-        getDetails(moment(new Date()).format('YYYY-MM-DD'))
-    }, [])*/
-
-    function generateTimeSlots(startTime: string, endTime: string, intervalMinutes: number) {
-        const slots = [];
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const [endHour, endMinute] = endTime.split(':').map(Number);
-    
-        const start = new Date();
-        start.setHours(startHour, startMinute, 0, 0);
-    
-        const end = new Date();
-        end.setHours(endHour, endMinute, 0, 0);
-    
-        while (start <= end) {
-            const hours = String(start.getHours()).padStart(2, '0');
-            const minutes = String(start.getMinutes()).padStart(2, '0');
-            slots.push(`${hours}:${minutes}`);
-            start.setMinutes(start.getMinutes() + intervalMinutes);
-        }
-    
-        return slots;
-    }
-
-    const getLastQuarterHour = (): string => {
-        const now = new Date();
-        const minutes = now.getMinutes();
-        const roundedMinutes = Math.floor(minutes / 15) * 15;
-        
-        now.setMinutes(roundedMinutes);
-        now.setSeconds(0);
-        now.setMilliseconds(0);
-      
-        const hh = now.getHours().toString().padStart(2, '0');
-        const mm = now.getMinutes().toString().padStart(2, '0');
-        return `${hh}:${mm}`;
-    };
-    
-    useEffect(() => {
-        if(classTimeline && classTimeline.length) {
-            let timelineDataArray = classTimeline.map((timeline: any) => {
-                var startTime = moment(timeline.start_time, 'HH:mm:ss');
-                var endTime = moment(timeline.end_time, 'HH:mm:ss');
-                let startTimeStr = startTime.format('HH:mm')
-                let endTimeStr = endTime.format('HH:mm')
-
-                var duration = moment.duration(endTime.diff(startTime));
-
-                var minutes = duration.asMinutes()
-                const start_date_time = moment(timeline.date + " " +timeline.start_time)
-                const end_date_time = moment(timeline.date + " " +timeline.end_time)
-                const now = moment(new Date())
-                now.isSameOrAfter(end_date_time)
-                return {
-                    classId: timeline.class_schedule_id,
-                    time: startTimeStr + " - " + endTimeStr,
-                    // subject: 'Biology - Cell Structure',
-                    category: timeline.subject_name,
-                    live: (now.isSameOrBefore(end_date_time) && now.isSameOrAfter(start_date_time)),
-                    startTime: startTimeStr, 
-                    classLength: minutes,
-                    isClassOver: now.isSameOrAfter(end_date_time)
-                }
-            })
-            setTimelineData(timelineDataArray)
-            const firstClassTime = moment(classTimeline[0].start_time, 'HH:mm:ss').format('HH:mm')
-            const lastClassTime = moment(classTimeline[classTimeline.length-1].end_time, 'HH:mm:ss').format('HH:mm')
-            const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
-            setTimeSlots(timeSlotsData)
-            closestSlot = timeSlots[0];
-            const preTime = getLastQuarterHour()
-            const ind = timeSlotsData.indexOf(preTime)
-            let y= ind*timelimeIntervalHeight;
-            if(moment(date).format('YYYY-MM-DD') == moment(new Date()).format('YYYY-MM-DD')) {
-              timelineRef.current.scrollTo({x: 0, y, animated: true});
-            } else {
-              timelineRef.current.scrollTo({x: 0, y:0, animated: true});
-            }
-            // timelineRef.current.scrollTo({x: 0, y, animated: true});
-        } else {
-            const timeSlotsData = generateTimeSlots('00:00', '23:59', 15);
-            setTimeSlots(timeSlotsData)
-            closestSlot = timeSlots[0];
-            setTimelineData([])
-            const preTime = getLastQuarterHour()
-            const ind = timeSlotsData.indexOf(preTime)
-            let y= ind*timelimeIntervalHeight;
-            if(moment(date).format('YYYY-MM-DD') == moment(new Date()).format('YYYY-MM-DD')) {
-              timelineRef.current.scrollTo({x: 0, y, animated: true});
-            } else {
-              timelineRef.current.scrollTo({x: 0, y: 0, animated: true});
-            }
-            
-        }
-    }, [classTimeline])
-
-    const toMinutes = (time: string) => {
-      const [h, m] = time.split(':').map(Number);
-      return h * 60 + m;
-    };
   return (
-    <View style={styles.mainContainer}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 0, paddingTop: 18.28, paddingBottom: 9.14}}> 
-            <Text style={styles.timelineText}>Today's Timeline</Text>
-            <View style={{flexDirection: 'row', borderWidth: 1, borderColor: 'grey', borderRadius: 5, paddingHorizontal: 8, paddingVertical: 8}}>
-                <MaterialIcons
-                    name="calendar-month"
-                    size={20}
-                    color={'gray' }
-                    onPress={showDate}
-                    />
-                <Text style={styles.timelineDateText} onPress={showDate} >{calendarDate}</Text>
-                
-                {show && (
-                  <View style={styles.calendarOverlay}>
-                    <Calendar
-                        onDayPress={(day: any) => {
-                          // setDate(day.dateString);
-                          // setShow(false);
-                          onDateChange(day.dateString)
-                        }}
-                        markedDates={{
-                          [date as any]: { selected: true, selectedColor: Colors.primaryColor },
-                        }}
-                        theme={{
-                          backgroundColor: '#ffffff',
-                          calendarBackground: '#ffffff',
-                          textSectionTitleColor: '#b6c1cd',
-                          selectedDayBackgroundColor: Colors.primaryColor,
-                          selectedDayTextColor: '#ffffff',
-                          todayTextColor: Colors.primaryColor,
-                          dayTextColor: '#2d4150',
-                          // textDisabledColor: '#dd99ee'
-                          textDisabledColor: '#ebe6ecdf',
-                          arrowColor: Colors.primaryColor
-                        }}
-                        
-                      />
-                  </View>
-                )}
-                
-            </View>
-            
-            
+    <>
+      <TouchableOpacity
+        style={[styles.row, !isCompleted && styles.rowCard]}
+        activeOpacity={canOpenPrep ? 0.7 : 1}
+        onPress={openClassPrep}
+        disabled={!canOpenPrep}
+      >
+        <View style={styles.timeBox}>
+          <Text style={[styles.time, isCompleted && styles.textMuted]}>
+            {item.timeLabel}
+          </Text>
+          <Text style={[styles.timePeriod, isCompleted && styles.textMuted]}>
+            {item.timePeriod}
+          </Text>
         </View>
-        <View style={{flexDirection: 'row', height: '93%', marginTop: 10}}>
-            <ScrollView  
-                // persistentScrollbar={true} style={{}} indicatorStyle='black' scrollEventThrottle={25} 
-                contentContainerStyle={{ paddingRight: 14 }}
-            onContentSizeChange={onContentSizeChange}
-            onLayout={onLayout}
-            onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollIndicator } } }],
-            { useNativeDriver: false },
-            )}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            ref={timelineRef}
-            
-                >
-                <View style={styles.container}>
-                    <View style={styles.leftColumn}>
-                        {/* Left Column with Time */}
-                        <ScrollView style={styles.timeColumn}>
-                        {timeSlots.map((time, index) => (
-                            <View key={index} style={{height: timelimeIntervalHeight}}>
-                                <Text  style={styles.timeText}>
-                                    {  parseInt(time.split(':')[1]) == 0 ? time : (parseInt(time.split(':')[1]) == 30 ? '-----' : '---')
-                                    }
-                                </Text>
-                            </View>
-                            
-                        ))}
-                        </ScrollView>
-                    </View>
 
-                    {/* Right Column with Class Details */}
-                    <View style={styles.rightColumn}>
-                        <ScrollView style={styles.classColumn}>
-                        {
-                        timeSlots.map((timeSlot, index) => {
-                            // Find the classes that start at or after the current time slot
-                            const classesForTimeSlot = timelineData.filter((item: any) => {
-                              // Check if class starts at or after the current time slot
-                              const [classHour, classMins] = item.startTime.split(':');
-                              const [slotHour, slotMins] = timeSlot.split(':');
-                              if((parseInt(classHour) === parseInt(slotHour) && parseInt(classMins) === parseInt(slotMins))) {
-                                
-                                return item
-                              }
-                              if(parseInt(classHour) === parseInt(slotHour) && parseInt(classMins)%15 != 0) {
-                                const slotMinutes = toMinutes(timeSlot);
-                                const targetMinutes = toMinutes(item.startTime);
-                                // const targetMinutes = toMinutes('18:50');
-                                // const diff = Math.abs(slotMinutes - targetMinutes);
-                                const diff = (targetMinutes - slotMinutes);
-                                
-                                // let smallestDiff = Math.abs(toMinutes(closestSlot) - targetMinutes);
-                                let smallestDiff = 14;
-                                // console.log(slotMinutes, targetMinutes, "-----------------", timeSlot, item.startTime, noClass)
-                                // console.log(diff, smallestDiff, "-----------------")
-                                if (diff > 0 && diff < smallestDiff) {
-                                  // console.log("item +++++")
-                                // console.log(item)
-                                // console.log(noClass)
-                                  closestSlot = timeSlots[index];
-                                  return item
-                                  
-                                }
-                              }
-                            
-                            });
-                            // console.log(classesForTimeSlot.length, timeSlot, noClass)
-                            if(noClass > 0) noClass = noClass-1
-                            if(noClass < 0) noClass = 0
-                            return (
-                            <View key={index} style={styles.classWrapper}>
-                                {classesForTimeSlot.length > 0 ? (
-                                classesForTimeSlot.map((item: any, idx) => {
-                                    const relevant_class = classTimeline.find((c: any) => c.class_schedule_id == item.classId);
-                                    // setNoClass(noClass + (item.classLength/15))
-                                    // console.log("relevant_class");
-                                    // console.log(relevant_class);
-                                    // noClass = noClass + (item.classLength == 15 ? -1 : (item.classLength)/15) + 1
-                                    noClass = Math.floor(noClass + (item.classLength == 15 ? 0 : item.classLength/15) )
-                                    let cardHeight = Math.round(item.classLength/15) 
-                                    return (<TimelineCard key={index+"-"+idx} idx={index+"-"+idx} item={item} selectedClass={relevant_class} height={cardHeight} currentDate={date} />)
-                                })
-                                ) : noClass < 1 ? (
-                                
-                                    <View style={[styles.emptySpace]}></View>
-                                    
-                                
-                                ) : null }
-                            </View>
-                            );
-                            
-                        })}
-                        </ScrollView>
-                    </View>
-                    </View>
-            </ScrollView>
-            <View style={styles.customScrollBarBackground}>
-            <Animated.View
-            style={[
-                styles.customScrollBar,
-                {
-                height: scrollIndicatorSize,
-                transform: [{ translateY: scrollIndicatorPosition }],
-                },
-            ]}
-            />
+        <View style={styles.classMeta}>
+          <View style={styles.subjectBox}>
+            <Text style={[styles.title, isCompleted && styles.textMuted]} numberOfLines={1}>
+              {item.title}
+            </Text>
+          </View>
+          <View style={styles.gradeBox}>
+            <Text style={styles.grade} numberOfLines={1}>
+              {item.gradeLabel}
+            </Text>
+          </View>
         </View>
+
+        <View style={styles.statusBlock}>
+          <View style={styles.statusBox}>
+            <Text style={[styles.status, isCompleted ? styles.statusCompleted : styles.statusReady]}>
+              {statusLabel}
+            </Text>
+          </View>
+          <View style={styles.arrowBox}>
+            <View style={styles.arrowVector}>
+              <SvgLoader svgFilePath="timelineArrow" width={8} height={14} />
+            </View>
+          </View>
         </View>
-        
+      </TouchableOpacity>
+
+      {moment(new Date()).format('YYYY-MM-DD') <= currentDate ? (
+        <ClassPrep
+          item={item}
+          selectedClass={item.raw}
+          updateTopicSubTopic={() => {}}
+          ref={classPrepRef}
+        />
+      ) : null}
+    </>
+  );
+};
+
+const TimelineWithClassDetails = () => {
+  const dispatch = useDispatch<any>();
+  const { classTimeline } = useSelector((state: any) => state.classes);
+  const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
+
+  const getDetails = async (currentDate: string) => {
+    await dispatch(getScheduleClasses({ date: currentDate }));
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const today = moment(new Date()).format('YYYY-MM-DD');
+      setDate(today);
+      getDetails(today);
+    }, [])
+  );
+
+  const rows = useMemo(() => {
+    if (!classTimeline?.length) return [];
+
+    return classTimeline.map((timeline: any) => {
+      const start = moment(timeline.start_time, 'HH:mm:ss');
+      const end = moment(timeline.end_time, 'HH:mm:ss');
+      const startDateTime = moment(`${timeline.date} ${timeline.start_time}`);
+      const endDateTime = moment(`${timeline.date} ${timeline.end_time}`);
+      const now = moment();
+
+      return {
+        classId: timeline.class_schedule_id,
+        time: `${start.format('HH:mm')} - ${end.format('HH:mm')}`,
+        timeLabel: start.format('h:mm'),
+        timePeriod: start.format('A'),
+        startTime: start.format('HH:mm'),
+        classLength: moment.duration(end.diff(start)).asMinutes(),
+        category: timeline.subject_name,
+        title: getTitle(timeline),
+        gradeLabel: getGradeLabel(timeline),
+        live: now.isSameOrBefore(endDateTime) && now.isSameOrAfter(startDateTime),
+        isClassOver: now.isSameOrAfter(endDateTime),
+        raw: timeline,
+      };
+    });
+  }, [classTimeline]);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.sectionLabelBox}>
+        <Text style={styles.header}>TODAY'S CLASSES</Text>
+      </View>
+
+      <ScrollView
+        style={styles.list}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {rows.length ? (
+          rows.map((item: any) => (
+            <ClassTimelineRow key={item.classId} item={item} currentDate={date} />
+          ))
+        ) : (
+          <Text style={styles.emptyText}>No classes scheduled for today.</Text>
+        )}
+      </ScrollView>
     </View>
-    
   );
 };
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1, 
-    flexDirection: 'column', 
-    marginTop: 13.7, 
-    marginBottom: 10,
-    // backgroundColor: 'red',
-    // paddingLeft: 15
-  },
   container: {
-    flexDirection: 'row',
-    marginTop: 20,
-    // backgroundColor: 'red'
-    // paddingHorizontal: 10,
+    alignSelf: 'stretch',
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: 0,
+    gap: 16,
+    flexGrow: 0,
+    flexShrink: 0,
   },
-  leftColumn: {
-    flex: 1,
-    marginRight: 10,
-    borderRightWidth: 1,
-    borderColor: '#ddd',
-    paddingRight: 5,
-    // backgroundColor: 'red'
+  sectionLabelBox: {
+    height: 15,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
   },
-  timeColumn: {
-    // paddingRight: 10,
-  },
-  timeText: {
+  header: {
     fontSize: 12,
-    // marginVertical: 10,
-    // textAlign: 'center',
-    // color: '#555',
-    // backgroundColor: 'red'
+    lineHeight: 15,
+    textTransform: 'uppercase',
+    color: '#8A8880',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
   },
-  rightColumn: {
-    flex: 9,
-    position: 'relative', 
-    // backgroundColor: 'red',
-    // paddingTop: 10
+  list: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
-  classColumn: {
-    // paddingLeft: 5,
+  listContent: {
+    gap: 10,
+    paddingBottom: 8,
   },
-  classWrapper: {
-    position: 'relative',
-    // marginBottom: 10,
-    // backgroundColor: 'red'
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
+    padding: 20,
+    flexGrow: 0,
+    flexShrink: 0,
   },
-  classCard: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 8,
+  rowCard: {
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 2,
-    // elevation: 5, // For Android shadow
+    borderColor: '#EDEBE6',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.0156863,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
   },
-  emptySpace: {
-    height: timelimeIntervalHeight,
-    // backgroundColor: '#f0f0f0',
-    // backgroundColor: '#fff',
-    // marginBottom: 10,
-    // backgroundColor: 'red'
+  timeBox: {
+    minWidth: 70,
+    height: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexGrow: 0,
+    flexShrink: 0,
   },
-  timelineText: {
-    fontSize: 18.28,
-    fontWeight: 'bold'
-  },
-  timelineDateText: {
+  time: {
     fontSize: 15,
-    marginLeft: 8
+    lineHeight: 18,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
   },
-  customScrollBar: {
-    // backgroundColor: '#ccc',
-    backgroundColor: 'gray',
-    borderRadius: 3,
-    width: 8,
+  timePeriod: {
+    fontSize: 15,
+    lineHeight: 18,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
   },
-  customScrollBarBackground: {
-    // backgroundColor: '#232323',
-    backgroundColor: 'lightgray',
-    borderRadius: 3,
-    // height: '100%',
-    width: 8,
+  classMeta: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: 0,
+    gap: 8,
+    minWidth: 0,
+    marginLeft: 28,
   },
-  calendarOverlay: {
-    position: "absolute",
-    top: 35, // adjust to place it below icon
-    zIndex: 999,
-    elevation: 10,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  }
+  subjectBox: {
+    height: 20,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
+  title: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#1F1E1C',
+    fontFamily: 'Montserrat_600SemiBold',
+    includeFontPadding: false,
+  },
+  gradeBox: {
+    height: 17,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
+  grade: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  statusBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
+    flexShrink: 0,
+    marginLeft: 16,
+  },
+  statusBox: {
+    height: 17,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  status: {
+    fontSize: 14,
+    lineHeight: 17,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  statusCompleted: {
+    color: '#8A8880',
+    fontFamily: 'Inter_500Medium',
+  },
+  statusReady: {
+    color: '#0D8A57',
+    fontFamily: 'Inter_600SemiBold',
+  },
+  arrowBox: {
+    width: 20,
+    height: 20,
+    padding: 0,
+    position: 'relative',
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  arrowVector: {
+    position: 'absolute',
+    left: '20%',
+    right: '20%',
+    top: '15%',
+    bottom: '15%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textMuted: {
+    color: '#8A8880',
+    fontFamily: 'Inter_500Medium',
+  },
+  emptyText: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+    paddingVertical: 12,
+  },
 });
 
 export default TimelineWithClassDetails;

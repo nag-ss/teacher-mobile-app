@@ -42,6 +42,7 @@ const svgAssets = {
   notificationRightArrow: require('../assets/beta_images/notification_right_arrow.svg'),
   notificationActive: require('../assets/beta_images/active_notification.svg'),
   notificationInactive: require('../assets/beta_images/inactive_notification.svg'),
+  timelineArrow: require('../assets/beta_images/timeline_arrow.svg'),
 };
 
 interface SvgLoaderProps {
