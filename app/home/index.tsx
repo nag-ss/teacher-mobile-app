@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
-import ClassProgress from '@/components/dashboard/ClassProgress';
-import ImportantAlerts from '@/components/dashboard/ImportantAlerts';
-import UpcomingTopics from '@/components/dashboard/UpcomingTopics';
+import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
 import { useSelector } from 'react-redux';
-import PerformanceSummary from '@/components/dashboard/PerformanceSummary';
-import TeacherTodos from '@/components/dashboard/Todos';
 import { MaterialIcons } from '@expo/vector-icons';
 import SvgLoader from '@/utils/SvgLoader';
 import moment from 'moment';
@@ -93,14 +89,7 @@ const DashboardScreen = () => {
           </View>
 
           <View style={styles.rightColumn}>
-            <View style={styles.classProgressContainer}>
-              <ClassProgress />
-              <UpcomingTopics />
-            </View>
-
-            <PerformanceSummary />
-            <TeacherTodos />
-            <ImportantAlerts />
+            <HomeSidePanels />
           </View>
         </View>
         <View style={styles.actionsContainer}>
@@ -238,9 +227,7 @@ const styles = StyleSheet.create({
   },
   rightColumn: {
     width: 270,
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 10,
+    paddingTop: 8,
   },
   title: {
     fontSize: 28,
@@ -287,14 +274,6 @@ const styles = StyleSheet.create({
   timelineWrap: {
     width: '100%',
     flex: 1,
-  },
-  classProgressContainer: {
-    backgroundColor: '#fff',
-    padding: 13.7,
-    borderRadius: 8,
-    borderColor: 'lightgray',
-    borderWidth: 1,
-    marginBottom: 5,
   },
   actionsContainer: {
     position: 'absolute',
