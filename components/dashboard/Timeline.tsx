@@ -44,6 +44,12 @@ const getTitle = (item: any) => {
   return item?.subject_name || 'Class';
 };
 
+const hasTopicSet = (item: any) => {
+  const details = item?.class_details?.[0];
+  const topic = details?.topic || details?.Topic;
+  return Boolean(topic?.toString?.().trim?.());
+};
+
 const getGradeLabel = (item: any) => {
   const rawDivision = item?.division_name?.toString().trim() || '';
   const section = item?.section_name?.toString().trim();
@@ -60,16 +66,25 @@ const ClassTimelineRow = ({
   item,
   currentDate,
   isPastDay,
+  isFutureDay,
 }: {
   item: any;
   currentDate: string;
   isPastDay?: boolean;
+  isFutureDay?: boolean;
 }) => {
   const classPrepRef = useRef<any>();
   const isCompleted = item.isClassOver;
   const isLive = item.live;
-  const canOpenPrep = !isCompleted;
-  const statusLabel = isCompleted ? 'Completed' : isLive ? 'Live now' : 'Prep ready';
+  const awaitingAdmin = Boolean(isFutureDay && item.awaitingAdmin);
+  const canOpenPrep = !isCompleted && !awaitingAdmin;
+  const statusLabel = isCompleted
+    ? 'Completed'
+    : isLive
+      ? 'Live now'
+      : awaitingAdmin
+        ? 'Awaiting admin'
+        : 'Prep ready';
   const showPastSummary = Boolean(isPastDay);
 
   const openClassPrep = () => {
@@ -89,10 +104,10 @@ const ClassTimelineRow = ({
   return (
     <>
       <TouchableOpacity
-        style={[styles.row, (!isCompleted || showPastSummary) && styles.rowCard]}
+        style={[styles.row, (!isCompleted || showPastSummary || isFutureDay) && styles.rowCard]}
         activeOpacity={0.7}
         onPress={onPress}
-        disabled={isCompleted && !showPastSummary}
+        disabled={(isCompleted && !showPastSummary) || awaitingAdmin}
       >
         <View style={styles.timeBox}>
           <Text
@@ -118,7 +133,9 @@ const ClassTimelineRow = ({
             <Text
               style={[
                 styles.title,
-                isCompleted && !showPastSummary && styles.textMuted,
+                (isCompleted && !showPastSummary) || awaitingAdmin
+                  ? styles.textMuted
+                  : null,
               ]}
               numberOfLines={1}
             >
@@ -147,7 +164,9 @@ const ClassTimelineRow = ({
               <Text
                 style={[
                   styles.status,
-                  isCompleted ? styles.statusCompleted : styles.statusReady,
+                  isCompleted || awaitingAdmin
+                    ? styles.statusCompleted
+                    : styles.statusReady,
                 ]}
               >
                 {statusLabel}
@@ -206,6 +225,7 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
 
   const today = moment().format('YYYY-MM-DD');
   const isPastDay = moment(date).isBefore(today, 'day');
+  const isFutureDay = moment(date).isAfter(today, 'day');
 
   const rows = useMemo(() => {
     const list = (classTimeline || []).filter(
@@ -213,10 +233,12 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
     );
     if (!list.length) return [];
 
-    const isFutureDay = moment(date).isAfter(today, 'day');
     const now = moment();
+    const normalizeStart = (t: any) => String(t.start_time || '').split('.')[0];
 
-    return list.map((timeline: any) => {
+    return [...list]
+      .sort((a, b) => normalizeStart(a).localeCompare(normalizeStart(b)))
+      .map((timeline: any) => {
       const startRaw = String(timeline.start_time).split('.')[0];
       const endRaw = String(timeline.end_time).split('.')[0];
       const start = moment(startRaw, 'HH:mm:ss');
@@ -224,6 +246,7 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
       const classDate = timeline.date || date;
       const startDateTime = moment(`${classDate} ${startRaw}`, 'YYYY-MM-DD HH:mm:ss');
       const endDateTime = moment(`${classDate} ${endRaw}`, 'YYYY-MM-DD HH:mm:ss');
+      const topicSet = hasTopicSet(timeline);
 
       const live =
         !isPastDay &&
@@ -240,14 +263,15 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
         startTime: start.format('HH:mm'),
         classLength: moment.duration(end.diff(start)).asMinutes(),
         category: timeline.subject_name,
-        title: getTitle(timeline),
+        title: isFutureDay && !topicSet ? 'Topic to be set' : getTitle(timeline),
         gradeLabel: getGradeLabel(timeline),
         live,
         isClassOver,
+        awaitingAdmin: isFutureDay && !topicSet,
         raw: timeline,
       };
     });
-  }, [classTimeline, date, isPastDay, today]);
+  }, [classTimeline, date, isPastDay, isFutureDay, today]);
 
   const canScroll = contentHeight > layoutHeight + 1;
   const thumbHeight = 24;
@@ -283,6 +307,7 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
                 item={item}
                 currentDate={date}
                 isPastDay={isPastDay}
+                isFutureDay={isFutureDay}
               />
             ))
           ) : (

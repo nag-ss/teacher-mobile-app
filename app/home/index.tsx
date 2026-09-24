@@ -14,7 +14,7 @@ const getGreeting = () => {
   return 'Good evening';
 };
 
-const DAY_LABELS = ['Yesterday', 'Today'] as const;
+const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 
 const DashboardScreen = () => {
   const { user } = useSelector((state: any) => state.user);
@@ -22,7 +22,7 @@ const DashboardScreen = () => {
   const hasNotifications = false;
   const dayLabel = DAY_LABELS[dayIndex];
   const greetingName = user?.first_name || 'Teacher';
-  // dayIndex 0/1 → yesterday / today
+  // dayIndex 0/1/2 → yesterday / today / tomorrow
   const selectedDate = moment().add(dayIndex - 1, 'days').format('YYYY-MM-DD');
   const dateLabel = moment(selectedDate).format('dddd, D MMMM');
 
@@ -66,7 +66,7 @@ const DashboardScreen = () => {
                   </View>
                   <TouchableOpacity
                     style={styles.dayArrow}
-                    onPress={() => setDayIndex((prev) => Math.min(1, prev + 1))}
+                    onPress={() => setDayIndex((prev) => Math.min(2, prev + 1))}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   >
                     <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />

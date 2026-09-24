@@ -46,6 +46,7 @@ const svgAssets = {
   clock: require('../assets/beta_images/clock.svg'),
   liveCalendar: require('../assets/beta_images/live_calendar.svg'),
   liveCorrect: require('../assets/beta_images/live_correct.svg'),
+  tomorrowLive: require('../assets/beta_images/tomorrow_live.svg'),
 };
 
 interface SvgLoaderProps {

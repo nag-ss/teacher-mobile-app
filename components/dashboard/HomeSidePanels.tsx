@@ -27,7 +27,11 @@ type Props = {
 const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
   const isToday = dayLabel === 'Today';
   const eventsTitle =
-    dayLabel === 'Yesterday' ? "Yesterday's events" : "Today's events";
+    dayLabel === 'Yesterday'
+      ? "Yesterday's events"
+      : dayLabel === 'Tomorrow'
+        ? "Tomorrow's events"
+        : "Today's events";
 
   // Mock events only for today until a day-based events API is wired.
   const events = isToday ? TODAY_EVENTS : [];

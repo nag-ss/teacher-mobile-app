@@ -61,7 +61,7 @@ const formatCountdown = (startTime?: string) => {
   return hours > 0 ? `IN ${hours}H ${minutes}M` : `IN ${minutes}M`;
 };
 
-type CardMode = 'live' | 'next' | 'done' | 'empty';
+type CardMode = 'live' | 'next' | 'done' | 'empty' | 'ahead';
 
 type ResolvedCard = {
   mode: CardMode;
@@ -85,12 +85,9 @@ const resolveCardFromSchedule = (
     return { mode: 'done', cls: null, completedCount: list.length };
   }
 
-  // Future day → first class as Next.
+  // Future day → head-start summary (not the Next/Prep card).
   if (moment(day).isAfter(today, 'day')) {
-    const sorted = [...list].sort((a, b) =>
-      normalizeTime(a.start_time).localeCompare(normalizeTime(b.start_time))
-    );
-    return { mode: 'next', cls: sorted[0], completedCount: 0 };
+    return { mode: 'ahead', cls: null, completedCount: list.length };
   }
 
   let live: any = null;
@@ -277,6 +274,26 @@ const AllDoneState = memo(
   </View>
 ));
 
+const AheadState = memo(({ count, dayName }: { count: number; dayName: string }) => (
+  <View style={styles.emptyContent}>
+    <View style={styles.emptyIconBox}>
+      <View style={styles.clockIcon}>
+        <SvgLoader svgFilePath="tomorrowLive" width={24} height={24} />
+      </View>
+    </View>
+    <View style={styles.emptyTextBlock}>
+      <View style={styles.emptyTitleBox}>
+        <Text style={styles.emptyTitle}>Get a head start on {dayName}</Text>
+      </View>
+      <View style={styles.emptySubtitleBox}>
+        <Text style={styles.emptySubtitle} numberOfLines={2}>
+          {count} {count === 1 ? 'class' : 'classes'} on the roster · check prep status and plan ahead
+        </Text>
+      </View>
+    </View>
+  </View>
+));
+
 /* ----------------------------- main component ----------------------------- */
 
 const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
@@ -376,6 +393,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const isLive = resolved.mode === 'live';
   const isNextClass = resolved.mode === 'next';
   const allClassesDone = resolved.mode === 'done';
+  const isAhead = resolved.mode === 'ahead';
   const completedClassCount = resolved.completedCount;
 
   // Prefer API live payload when it matches the clock-selected class (richer details).
@@ -418,16 +436,16 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
       <View
         style={[
           styles.card,
-          (!hasClass || allClassesDone) && styles.cardEmpty,
+          (!hasClass || allClassesDone || isAhead) && styles.cardEmpty,
           allClassesDone && styles.cardAllDone,
           isNextClass && styles.cardNext,
-          (isLive || isNextClass || allClassesDone) && styles.cardWithAccent,
+          (isLive || isNextClass || allClassesDone || isAhead) && styles.cardWithAccent,
         ]}
       >
         {isLive && (
           <View style={[styles.accentBar, !isPrepped && styles.accentBarLiveNotPrepped]} />
         )}
-        {isNextClass && <View style={styles.accentBarNext} />}
+        {(isNextClass || isAhead) && <View style={styles.accentBarNext} />}
         {allClassesDone && <View style={styles.accentBar} />}
 
         {isLive ? (
@@ -503,6 +521,11 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
               />
             </View>
           </View>
+        ) : isAhead ? (
+          <AheadState
+            count={completedClassCount}
+            dayName={moment(date).format('dddd')}
+          />
         ) : allClassesDone ? (
           <AllDoneState
             count={completedClassCount}
