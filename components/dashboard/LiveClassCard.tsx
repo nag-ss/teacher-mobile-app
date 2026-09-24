@@ -8,6 +8,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
+import ClassPrep from './ClassPrep';
 
 function useIntervalApi(callback: () => void, delay: number) {
   const savedCallback = useRef<() => void>();
@@ -36,6 +37,20 @@ const formatTimeRange = (start?: string, end?: string) => {
   return `${startLabel} – ${endLabel}`;
 };
 
+const formatCountdown = (startTime?: string) => {
+  if (!startTime) return 'SOON';
+  const startMoment = moment(`${moment().format('YYYY-MM-DD')} ${startTime}`, 'YYYY-MM-DD HH:mm:ss');
+  const diffMs = startMoment.diff(moment());
+  if (diffMs <= 0) return 'SOON';
+
+  const duration = moment.duration(diffMs);
+  const hours = Math.floor(duration.asHours());
+  const minutes = duration.minutes();
+
+  if (hours > 0) return `IN ${hours}H ${minutes}M`;
+  return `IN ${minutes}M`;
+};
+
 const toRoman = (value: string | number) => {
   const num = typeof value === 'number' ? value : parseInt(String(value).replace(/\D/g, ''), 10);
   if (!num || Number.isNaN(num) || num < 1 || num > 20) return String(value);
@@ -60,8 +75,15 @@ const toRoman = (value: string | number) => {
 };
 
 const getGradeLabel = (nextClass: any) => {
-  const rawDivision = nextClass?.division_name?.toString().trim() || '';
-  const section = nextClass?.section_name?.toString().trim();
+  const rawDivision =
+    nextClass?.division_name?.toString().trim() ||
+    nextClass?.division?.toString().trim() ||
+    nextClass?.grade_name?.toString().trim() ||
+    '';
+  const section =
+    nextClass?.section_name?.toString().trim() ||
+    nextClass?.section?.toString().trim() ||
+    '';
   const cleaned = rawDivision.replace(/^class\s+/i, '');
   const division = /\d/.test(cleaned) ? toRoman(cleaned) : cleaned;
 
@@ -71,12 +93,36 @@ const getGradeLabel = (nextClass: any) => {
   return '—';
 };
 
+const getClassDetails = (nextClass: any) => {
+  const details = nextClass?.class_details?.[0];
+  if (!details) {
+    return {
+      title: nextClass?.subject_name || 'Class',
+      subtitle: '',
+      isPrepped: false,
+    };
+  }
+
+  const topic = details.topic || details.Topic || '';
+  const subTopic = Array.isArray(details.sub_topic)
+    ? details.sub_topic[0]
+    : details.Sub_topic?.[0] || '';
+
+  return {
+    title: topic || nextClass?.subject_name || 'Class',
+    subtitle: subTopic || '',
+    isPrepped: Boolean(topic),
+  };
+};
+
 const LiveSessionCard = () => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>();
+  const classPrepRef = useRef<any>();
   const { liveClass, unAuthorised } = useSelector((state: any) => state.classes);
   const [nextClass, setNextClass] = useState<any>({});
   const [isNextClass, setIsNextClass] = useState(false);
+  const [, setTick] = useState(0);
 
   const getDetails = async () => {
     const liveClassDataRes = await dispatch(getLiveClass());
@@ -106,8 +152,15 @@ const LiveSessionCard = () => {
   useEffect(() => {
     if (liveClass.class_schedule_id) {
       setNextClass(liveClass);
+      setIsNextClass(false);
     }
   }, [liveClass]);
+
+  useEffect(() => {
+    if (!isNextClass) return;
+    const id = setInterval(() => setTick((t) => t + 1), 60000);
+    return () => clearInterval(id);
+  }, [isNextClass]);
 
   const getClassFromSchedule = async () => {
     const reqObj: any = {
@@ -146,79 +199,150 @@ const LiveSessionCard = () => {
     }
   };
 
+  const openClassPrep = () => {
+    classPrepRef.current?.setSelectedClass();
+  };
+
   const hasClass = Boolean(nextClass?.class_schedule_id);
   const isLive = hasClass && !isNextClass;
+  const classDetails = getClassDetails(nextClass);
+  const gradeLabel = getGradeLabel(nextClass);
 
   return (
-    <View style={[styles.card, !isLive && styles.cardEmpty]}>
-      {isLive && <View style={styles.accentBar} />}
+    <>
+      <View style={[styles.card, !hasClass && styles.cardEmpty, isNextClass && styles.cardNext]}>
+        {isLive && <View style={styles.accentBar} />}
+        {isNextClass && <View style={styles.accentBarNext} />}
 
-      {isLive ? (
-        <View style={styles.content}>
-          <View style={styles.statusRow}>
-            <View style={styles.statusDot} />
-            <View style={styles.liveLabelBox}>
-              <Text style={styles.statusText}>LIVE NOW</Text>
-            </View>
-          </View>
-
-          <View style={styles.heroInfoRow}>
-            <View style={styles.heroTextBlock}>
-              <View style={styles.timeBox}>
-                <Text style={styles.time}>
-                  {formatTimeRange(nextClass.start_time, nextClass.end_time)}
-                </Text>
-              </View>
-
-              <View style={styles.subjectBox}>
-                <Text style={styles.subject} numberOfLines={1}>
-                  {nextClass.subject_name || 'Class'}
-                </Text>
+        {isLive ? (
+          <View style={styles.content}>
+            <View style={styles.statusRow}>
+              <View style={styles.statusDot} />
+              <View style={styles.liveLabelBox}>
+                <Text style={styles.statusText}>LIVE NOW</Text>
               </View>
             </View>
 
-            <View style={styles.heroFooterRow}>
-              <View style={styles.gradeBox}>
-                <Text style={styles.meta} numberOfLines={1}>
-                  {getGradeLabel(nextClass)}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.joinButton}
-                onPress={navigateToMonitor}
-                activeOpacity={0.8}
-              >
-                <View style={styles.joinButtonTextBox}>
-                  <Text style={styles.joinButtonText}>Join Class</Text>
+            <View style={styles.heroInfoRow}>
+              <View style={styles.heroTextBlock}>
+                <View style={styles.timeBox}>
+                  <Text style={styles.time}>
+                    {formatTimeRange(nextClass.start_time, nextClass.end_time)}
+                  </Text>
                 </View>
-                <View style={styles.joinArrowBox}>
-                  <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
+
+                <View style={styles.subjectBox}>
+                  <Text style={styles.subject} numberOfLines={1}>
+                    {nextClass.subject_name || 'Class'}
+                  </Text>
                 </View>
-              </TouchableOpacity>
+              </View>
+
+              <View style={styles.heroFooterRow}>
+                <View style={styles.gradeBoxLive}>
+                  <Text style={styles.meta} numberOfLines={1}>
+                    {gradeLabel}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.joinButton}
+                  onPress={navigateToMonitor}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.joinButtonTextBox}>
+                    <Text style={styles.joinButtonText}>Join Class</Text>
+                  </View>
+                  <View style={styles.joinArrowBox}>
+                    <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      ) : (
-        <View style={styles.emptyContent}>
-          <View style={styles.emptyIconBox}>
-            <View style={styles.clockIcon}>
-              <SvgLoader svgFilePath="liveCalendar" width={24} height={24} />
+        ) : isNextClass ? (
+          <View style={styles.heroMainContentTypeA}>
+            <View style={styles.statusRow}>
+              <View style={styles.statusDotNext} />
+              <View style={styles.liveLabelNext}>
+                <Text>
+                  <Text style={styles.statusTextNext}>
+                    NEXT · {formatCountdown(nextClass.start_time)}
+                  </Text>
+                  {!classDetails.isPrepped && (
+                    <Text style={styles.notPreppedText}> - NOT PREPPED</Text>
+                  )}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.heroInfoRowNext}>
+              <View style={styles.heroTextBlockNext}>
+                <View style={styles.heroTimeBox}>
+                  <Text style={styles.heroTime}>
+                    {formatTimeRange(nextClass.start_time, nextClass.end_time)}
+                  </Text>
+                </View>
+
+                <View style={styles.heroTitleBox}>
+                  <Text style={styles.heroTitle} numberOfLines={1}>
+                    {nextClass.subject_name || classDetails.title || 'Class'}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.heroFooterRow}>
+                <View style={styles.gradeBoxLive}>
+                  <Text style={styles.heroGrade} numberOfLines={1}>
+                    {gradeLabel}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.joinButton}
+                  onPress={openClassPrep}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.joinButtonTextBox}>
+                    <Text style={styles.joinButtonText}>Prep Class</Text>
+                  </View>
+                  <View style={styles.joinArrowBox}>
+                    <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-          <View style={styles.emptyTextBlock}>
-            <View style={styles.emptyTitleBox}>
-              <Text style={styles.emptyTitle}>No classes scheduled today</Text>
+        ) : (
+          <View style={styles.emptyContent}>
+            <View style={styles.emptyIconBox}>
+              <View style={styles.clockIcon}>
+                <SvgLoader svgFilePath="liveCalendar" width={24} height={24} />
+              </View>
             </View>
-            <View style={styles.emptySubtitleBox}>
-              <Text style={styles.emptySubtitle} numberOfLines={2}>
-                Enjoy the break — or prep an upcoming class from Calendar
-              </Text>
+            <View style={styles.emptyTextBlock}>
+              <View style={styles.emptyTitleBox}>
+                <Text style={styles.emptyTitle}>No classes scheduled today</Text>
+              </View>
+              <View style={styles.emptySubtitleBox}>
+                <Text style={styles.emptySubtitle} numberOfLines={2}>
+                  Enjoy the break — or prep an upcoming class from Calendar
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      )}
-    </View>
+        )}
+      </View>
+
+      {isNextClass && nextClass?.class_schedule_id ? (
+        <ClassPrep
+          item={nextClass}
+          selectedClass={nextClass}
+          updateTopicSubTopic={() => {}}
+          ref={classPrepRef}
+        />
+      ) : null}
+    </>
   );
 };
 
@@ -255,19 +379,43 @@ const styles = StyleSheet.create({
     elevation: 1,
     overflow: 'visible',
   },
+  cardNext: {
+    height: 217,
+    overflow: 'hidden',
+  },
   accentBar: {
     position: 'absolute',
     left: 0,
     top: 0,
     bottom: 0,
-    width: 4,
+    width: 8,
     backgroundColor: '#21C17C',
+  },
+  accentBarNext: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 8,
+    backgroundColor: '#EDEBE6',
   },
   content: {
     alignSelf: 'stretch',
     width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    padding: 0,
+    gap: 20,
+    flexGrow: 0,
+    flexShrink: 0,
+    zIndex: 1,
+  },
+  heroMainContentTypeA: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    width: '100%',
     padding: 0,
     gap: 20,
     flexGrow: 0,
@@ -287,7 +435,21 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
   },
+  statusDotNext: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#8A8880',
+    borderRadius: 4,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   liveLabelBox: {
+    height: 17,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  liveLabelNext: {
     height: 17,
     flexGrow: 0,
     flexShrink: 0,
@@ -300,7 +462,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
   },
+  statusTextNext: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+  },
+  notPreppedText: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#E8A33D',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+  },
   heroInfoRow: {
+    alignSelf: 'stretch',
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    padding: 0,
+    gap: 8,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  heroInfoRowNext: {
     alignSelf: 'stretch',
     width: '100%',
     flexDirection: 'column',
@@ -315,6 +501,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: 0,
     gap: 8,
+  },
+  heroTextBlockNext: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    padding: 0,
+    gap: 8,
+    flexGrow: 0,
+    flexShrink: 0,
   },
   heroFooterRow: {
     flexDirection: 'row',
@@ -335,6 +530,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
     includeFontPadding: false,
   },
+  heroTimeBox: {
+    width: 111,
+    height: 17,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  heroTime: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_500Medium',
+    includeFontPadding: false,
+  },
   subjectBox: {
     height: 39,
     alignSelf: 'stretch',
@@ -349,13 +558,66 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_700Bold',
     includeFontPadding: false,
   },
-  gradeBox: {
-    height: 17,
+  heroTitleBox: {
+    alignSelf: 'stretch',
+    height: 39,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
   },
+  heroTitle: {
+    fontSize: 32,
+    lineHeight: 39,
+    color: '#1F1E1C',
+    fontFamily: 'Montserrat_700Bold',
+    includeFontPadding: false,
+  },
+  subTopicBox: {
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  subTopic: {
+    fontSize: 16,
+    lineHeight: 19,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  gradeBox: {
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
+  gradeBoxLive: {
+    flex: 1,
+    minWidth: 0,
+    marginRight: 12,
+    justifyContent: 'center',
+  },
+  heroGradeBox: {
+    height: 17,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
+  heroGrade: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
   meta: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  nextGradeText: {
     fontSize: 14,
     lineHeight: 17,
     color: '#8A8880',
