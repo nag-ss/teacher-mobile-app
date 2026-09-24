@@ -153,6 +153,26 @@ const EmptyState = memo(() => (
   </View>
 ));
 
+const AllDoneState = memo(({ count }: { count: number }) => (
+  <View style={styles.emptyContent}>
+    <View style={styles.doneIconBox}>
+      <View style={styles.clockIcon}>
+        <SvgLoader svgFilePath="liveCorrect" width={18} height={14} />
+      </View>
+    </View>
+    <View style={styles.emptyTextBlock}>
+      <View style={styles.emptyTitleBox}>
+        <Text style={styles.emptyTitle}>That's a wrap for today</Text>
+      </View>
+      <View style={styles.emptySubtitleBox}>
+        <Text style={styles.emptySubtitle} numberOfLines={2}>
+          {count} {count === 1 ? 'class' : 'classes'} done · review how they went in Analytics
+        </Text>
+      </View>
+    </View>
+  </View>
+));
+
 /* ----------------------------- main component ----------------------------- */
 
 const LiveSessionCard = () => {
@@ -163,6 +183,7 @@ const LiveSessionCard = () => {
 
   // Narrow selectors: re-render only when these slices change, not on any `classes` change.
   const liveClass = useSelector((state: any) => state.classes.liveClass);
+  const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const unAuthorised = useSelector((state: any) => state.classes.unAuthorised);
 
   const [nextClass, setNextClass] = useState<any>({});
@@ -252,6 +273,21 @@ const LiveSessionCard = () => {
   const hasClass = Boolean(classScheduleId);
   const isLive = hasClass && !isNextClass;
 
+  const completedClassCount = useMemo(() => {
+    if (!classTimeline?.length) return 0;
+    const today = moment().format('YYYY-MM-DD');
+    const now = moment();
+    return classTimeline.filter((item: any) => {
+      const date = item.date || today;
+      const endDateTime = moment(`${date} ${item.end_time}`);
+      return endDateTime.isValid() && now.isSameOrAfter(endDateTime);
+    }).length;
+  }, [classTimeline]);
+
+  const allClassesDone = Boolean(
+    !hasClass && classTimeline?.length && completedClassCount === classTimeline.length
+  );
+
   const classDetails = useMemo(() => getClassDetails(nextClass), [nextClass]);
   const gradeLabel = useMemo(() => getGradeLabel(nextClass), [nextClass]);
   const { isPrepped } = classDetails;
@@ -272,11 +308,19 @@ const LiveSessionCard = () => {
 
   return (
     <>
-      <View style={[styles.card, !hasClass && styles.cardEmpty, isNextClass && styles.cardNext]}>
+      <View
+        style={[
+          styles.card,
+          !hasClass && styles.cardEmpty,
+          allClassesDone && styles.cardAllDone,
+          isNextClass && styles.cardNext,
+        ]}
+      >
         {isLive && (
           <View style={[styles.accentBar, !isPrepped && styles.accentBarLiveNotPrepped]} />
         )}
         {isNextClass && <View style={styles.accentBarNext} />}
+        {allClassesDone && <View style={styles.accentBar} />}
 
         {isLive ? (
           <View style={styles.content}>
@@ -351,6 +395,8 @@ const LiveSessionCard = () => {
               />
             </View>
           </View>
+        ) : allClassesDone ? (
+          <AllDoneState count={completedClassCount} />
         ) : (
           <EmptyState />
         )}
@@ -405,6 +451,9 @@ const styles = StyleSheet.create({
     elevation: 1,
     overflow: 'visible',
   },
+  cardAllDone: {
+    overflow: 'hidden',
+  },
   cardNext: {
     height: 217,
     overflow: 'hidden',
@@ -416,6 +465,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 8,
     backgroundColor: '#21C17C',
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
   },
   accentBarLiveNotPrepped: {
     backgroundColor: '#E8A33D',
@@ -652,11 +703,25 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
   },
+  doneIconBox: {
+    width: 56,
+    height: 56,
+    padding: 0,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E8F8F0',
+    borderRadius: 12,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
   clockIcon: {
     width: 24,
     height: 24,
     flexGrow: 0,
     flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyTextBlock: {
     flexDirection: 'column',

@@ -45,6 +45,7 @@ const svgAssets = {
   timelineArrow: require('../assets/beta_images/timeline_arrow.svg'),
   clock: require('../assets/beta_images/clock.svg'),
   liveCalendar: require('../assets/beta_images/live_calendar.svg'),
+  liveCorrect: require('../assets/beta_images/live_correct.svg'),
 };
 
 interface SvgLoaderProps {
