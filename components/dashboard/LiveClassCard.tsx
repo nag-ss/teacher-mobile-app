@@ -32,37 +32,94 @@ function useIntervalApi(callback: () => void, delay: number) {
 
 /* ----------------------------- helpers (pure, module-level) ----------------------------- */
 
+/** Normalize API times like "14:16:00.054000" → "14:16:00" */
+const normalizeTime = (time?: string) => (time ? String(time).split('.')[0] : '');
+
+const parseClassMoment = (date: string | undefined, time?: string) => {
+  const day = date || moment().format('YYYY-MM-DD');
+  const t = normalizeTime(time);
+  const m = moment(`${day} ${t}`, 'YYYY-MM-DD HH:mm:ss');
+  return m;
+};
+
 const formatTimeRange = (start?: string, end?: string) => {
-  const startLabel = (start ? moment(start, TIME_FMT) : moment()).format('h:mm');
-  const endLabel = (end ? moment(end, TIME_FMT) : moment().add(30, 'minutes')).format('h:mm A');
+  const startLabel = (start ? moment(normalizeTime(start), TIME_FMT) : moment()).format('h:mm');
+  const endLabel = (
+    end ? moment(normalizeTime(end), TIME_FMT) : moment().add(30, 'minutes')
+  ).format('h:mm A');
   return `${startLabel} – ${endLabel}`;
 };
 
-const toTodayMoment = (time?: string) =>
-  moment(`${moment().format('YYYY-MM-DD')} ${time}`, 'YYYY-MM-DD HH:mm:ss');
-
 const formatCountdown = (startTime?: string) => {
   if (!startTime) return 'SOON';
-  const diffMs = toTodayMoment(startTime).diff(moment());
+  const diffMs = parseClassMoment(undefined, startTime).diff(moment());
   if (diffMs <= 0) return 'SOON';
 
-  // Ceil so e.g. 22m 10s still reads as the next full minute remaining.
   const totalMinutes = Math.max(1, Math.ceil(diffMs / 60000));
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   return hours > 0 ? `IN ${hours}H ${minutes}M` : `IN ${minutes}M`;
 };
 
-const isPastEnd = (c: any) => {
-  if (!c?.end_time) return false;
-  const end = toTodayMoment(c.end_time);
-  return end.isValid() && moment().isSameOrAfter(end);
+type CardMode = 'live' | 'next' | 'done' | 'empty';
+
+type ResolvedCard = {
+  mode: CardMode;
+  cls: any | null;
+  completedCount: number;
 };
 
-const isPastStart = (c: any) => {
-  if (!c?.start_time) return false;
-  const start = toTodayMoment(c.start_time);
-  return start.isValid() && moment().isSameOrAfter(start);
+/** Status from schedule + wall clock — same idea as Timeline (no API wait). */
+const resolveCardFromSchedule = (list: any[] | null | undefined, now = moment()): ResolvedCard => {
+  if (!list?.length) return { mode: 'empty', cls: null, completedCount: 0 };
+
+  let live: any = null;
+  let next: any = null;
+  let nextMs = Infinity;
+  let completedCount = 0;
+
+  for (const item of list) {
+    const start = parseClassMoment(item.date, item.start_time);
+    const end = parseClassMoment(item.date, item.end_time);
+    if (!start.isValid() || !end.isValid()) continue;
+
+    if (now.isSameOrAfter(end)) {
+      completedCount += 1;
+      continue;
+    }
+
+    if (now.isSameOrAfter(start) && now.isBefore(end)) {
+      live = item;
+      continue;
+    }
+
+    if (now.isBefore(start)) {
+      const ms = start.diff(now);
+      if (ms < nextMs) {
+        nextMs = ms;
+        next = item;
+      }
+    }
+  }
+
+  if (live) return { mode: 'live', cls: live, completedCount };
+  if (next) return { mode: 'next', cls: next, completedCount };
+  if (completedCount === list.length) return { mode: 'done', cls: null, completedCount };
+  return { mode: 'empty', cls: null, completedCount };
+};
+
+const msUntilNextBoundary = (list: any[] | null | undefined, now = moment()) => {
+  if (!list?.length) return null;
+  let soonest: number | null = null;
+  for (const item of list) {
+    for (const time of [item.start_time, item.end_time]) {
+      const m = parseClassMoment(item.date, time);
+      if (!m.isValid()) continue;
+      const diff = m.diff(now);
+      if (diff > 0 && (soonest === null || diff < soonest)) soonest = diff;
+    }
+  }
+  return soonest;
 };
 
 const ROMAN_MAP: [number, string][] = [
@@ -193,17 +250,13 @@ const LiveSessionCard = () => {
   const classPrepRef = useRef<any>(null);
   const mountedRef = useRef(true);
 
-  // Narrow selectors: re-render only when these slices change, not on any `classes` change.
   const liveClass = useSelector((state: any) => state.classes.liveClass);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const unAuthorised = useSelector((state: any) => state.classes.unAuthorised);
 
-  const [nextClass, setNextClass] = useState<any>({});
-  const [isNextClass, setIsNextClass] = useState(false);
+  // Local copy so pending schedule fetches don't flash empty (redux clears timeline on pending).
+  const [schedule, setSchedule] = useState<any[]>([]);
   const [tick, setTick] = useState(0);
-
-  const nextClassRef = useRef(nextClass);
-  const isNextClassRef = useRef(isNextClass);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -213,103 +266,49 @@ const LiveSessionCard = () => {
   }, []);
 
   useEffect(() => {
-    nextClassRef.current = nextClass;
-    isNextClassRef.current = isNextClass;
-  }, [nextClass, isNextClass]);
+    if (Array.isArray(classTimeline) && classTimeline.length) {
+      setSchedule(classTimeline);
+    }
+  }, [classTimeline]);
 
-  const getClassFromSchedule = useCallback(async () => {
+  const loadSchedule = useCallback(async () => {
     const res = await dispatch(getScheduleClasses({ date: moment().format('YYYY-MM-DD') }));
     if (!mountedRef.current) return;
-
-    const list = res.payload;
-    if (list?.length) {
-      const now = new Date();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      // Single pass: find the earliest class starting after now.
-      let best: any = null;
-      let bestMinutes = Infinity;
-      for (const item of list) {
-        const m = moment(item.start_time, TIME_FMT);
-        const itemMinutes = m.hours() * 60 + m.minutes();
-        if (itemMinutes > currentMinutes && itemMinutes < bestMinutes) {
-          best = item;
-          bestMinutes = itemMinutes;
-        }
-      }
-
-      if (best) {
-        setNextClass(best);
-        setIsNextClass(true);
-        return;
-      }
+    if (Array.isArray(res.payload)) {
+      setSchedule(res.payload);
+    } else if (res.meta?.requestStatus === 'fulfilled') {
+      setSchedule([]);
     }
-    setNextClass({});
-    setIsNextClass(false);
   }, [dispatch]);
 
-  const getDetails = useCallback(async () => {
-    const res = await dispatch(getLiveClass(undefined));
-    if (!mountedRef.current) return;
+  // Background only — enrich details; status comes from schedule + clock.
+  const refreshLiveInBackground = useCallback(async () => {
+    await dispatch(getLiveClass(undefined));
+  }, [dispatch]);
 
-    if (!res.payload) {
-      await getClassFromSchedule();
-    } else {
-      setNextClass(res.payload);
-      setIsNextClass(false);
-    }
-  }, [dispatch, getClassFromSchedule]);
+  const refreshAll = useCallback(async () => {
+    await Promise.all([loadSchedule(), refreshLiveInBackground()]);
+  }, [loadSchedule, refreshLiveInBackground]);
 
-  // If live ended or upcoming started, refetch so the card flips without a tab change.
-  const syncStatusIfNeeded = useCallback(() => {
-    const cls = nextClassRef.current;
-    if (!cls?.class_schedule_id) return;
+  useIntervalApi(refreshAll, REFRESH_MS);
 
-    if (isNextClassRef.current) {
-      if (isPastStart(cls)) getDetails();
-    } else if (isPastEnd(cls)) {
-      getDetails();
-    }
-  }, [getDetails]);
-
-  useIntervalApi(getDetails, REFRESH_MS);
-
-  // While Home is focused: countdown ticks every second.
   useFocusEffect(
     useCallback(() => {
-      getDetails();
+      refreshAll();
 
-      const id = setInterval(() => {
-        setTick((t) => t + 1);
-        syncStatusIfNeeded();
-      }, TICK_MS);
-
+      const id = setInterval(() => setTick((t) => t + 1), TICK_MS);
       return () => clearInterval(id);
-    }, [getDetails, syncStatusIfNeeded])
+    }, [refreshAll])
   );
 
-  // Flip card exactly at start/end time (no wait for the next interval).
+  // Flip exactly at the next start/end boundary (no waiting for the 1s tick).
   useEffect(() => {
-    if (!nextClass?.class_schedule_id) return;
+    const delay = msUntilNextBoundary(schedule);
+    if (delay == null) return;
 
-    const target = isNextClass
-      ? toTodayMoment(nextClass.start_time)
-      : toTodayMoment(nextClass.end_time);
-
-    if (!target.isValid()) return;
-
-    const delay = target.diff(moment());
-    if (delay <= 0) {
-      syncStatusIfNeeded();
-      return;
-    }
-
-    const id = setTimeout(() => {
-      getDetails();
-    }, delay);
-
+    const id = setTimeout(() => setTick((t) => t + 1), delay);
     return () => clearTimeout(id);
-  }, [nextClass, isNextClass, getDetails, syncStatusIfNeeded]);
+  }, [schedule, tick]);
 
   useEffect(() => {
     if (unAuthorised) {
@@ -318,38 +317,38 @@ const LiveSessionCard = () => {
     }
   }, [unAuthorised, dispatch]);
 
-  useEffect(() => {
-    if (liveClass?.class_schedule_id) {
-      setNextClass(liveClass);
-      setIsNextClass(false);
-    }
-  }, [liveClass]);
-
-  const classScheduleId = nextClass?.class_schedule_id;
-  const hasClass = Boolean(classScheduleId);
-  const isLive = hasClass && !isNextClass;
-
-  const completedClassCount = useMemo(() => {
-    if (!classTimeline?.length) return 0;
-    const today = moment().format('YYYY-MM-DD');
-    const now = moment();
-    return classTimeline.filter((item: any) => {
-      const date = item.date || today;
-      const endDateTime = moment(`${date} ${item.end_time}`);
-      return endDateTime.isValid() && now.isSameOrAfter(endDateTime);
-    }).length;
-    // tick keeps "all done" in sync as wall-clock time passes
+  const resolved = useMemo(
+    () => resolveCardFromSchedule(schedule),
+    // tick forces recompute as wall-clock time passes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [classTimeline, tick]);
-
-  const allClassesDone = Boolean(
-    !hasClass && classTimeline?.length && completedClassCount === classTimeline.length
+    [schedule, tick]
   );
 
-  const classDetails = useMemo(() => getClassDetails(nextClass), [nextClass]);
-  const gradeLabel = useMemo(() => getGradeLabel(nextClass), [nextClass]);
+  const isLive = resolved.mode === 'live';
+  const isNextClass = resolved.mode === 'next';
+  const allClassesDone = resolved.mode === 'done';
+  const completedClassCount = resolved.completedCount;
+
+  // Prefer API live payload when it matches the clock-selected class (richer details).
+  const activeClass = useMemo(() => {
+    const fromSchedule = resolved.cls;
+    if (
+      fromSchedule &&
+      liveClass?.class_schedule_id &&
+      liveClass.class_schedule_id === fromSchedule.class_schedule_id
+    ) {
+      return { ...fromSchedule, ...liveClass };
+    }
+    return fromSchedule || {};
+  }, [resolved.cls, liveClass]);
+
+  const classScheduleId = activeClass?.class_schedule_id;
+  const hasClass = Boolean(classScheduleId);
+
+  const classDetails = useMemo(() => getClassDetails(activeClass), [activeClass]);
+  const gradeLabel = useMemo(() => getGradeLabel(activeClass), [activeClass]);
   const { isPrepped } = classDetails;
-  const subjectLabel = nextClass.subject_name || classDetails.title || 'Class';
+  const subjectLabel = activeClass.subject_name || classDetails.title || 'Class';
 
   const navigateToMonitor = useCallback(() => {
     if (!classScheduleId) return;
@@ -369,7 +368,7 @@ const LiveSessionCard = () => {
       <View
         style={[
           styles.card,
-          !hasClass && styles.cardEmpty,
+          (!hasClass || allClassesDone) && styles.cardEmpty,
           allClassesDone && styles.cardAllDone,
           isNextClass && styles.cardNext,
           (isLive || isNextClass || allClassesDone) && styles.cardWithAccent,
@@ -401,7 +400,7 @@ const LiveSessionCard = () => {
               <View style={styles.heroTextBlock}>
                 <View style={styles.timeBox}>
                   <Text style={styles.time}>
-                    {formatTimeRange(nextClass.start_time, nextClass.end_time)}
+                    {formatTimeRange(activeClass.start_time, activeClass.end_time)}
                   </Text>
                 </View>
                 <View style={styles.subjectBox}>
@@ -425,7 +424,7 @@ const LiveSessionCard = () => {
               <View style={styles.liveLabelBox}>
                 <Text>
                   <Text style={styles.statusTextNext}>
-                    NEXT · {formatCountdown(nextClass.start_time)}
+                    NEXT · {formatCountdown(activeClass.start_time)}
                   </Text>
                   {!isPrepped && <Text style={styles.notPreppedText}> - NOT PREPPED</Text>}
                 </Text>
@@ -436,7 +435,7 @@ const LiveSessionCard = () => {
               <View style={styles.heroTextBlockNext}>
                 <View style={styles.heroTimeBox}>
                   <Text style={styles.time}>
-                    {formatTimeRange(nextClass.start_time, nextClass.end_time)}
+                    {formatTimeRange(activeClass.start_time, activeClass.end_time)}
                   </Text>
                 </View>
                 <View style={styles.subjectBox}>
@@ -463,8 +462,8 @@ const LiveSessionCard = () => {
 
       {showPrep ? (
         <ClassPrep
-          item={nextClass}
-          selectedClass={nextClass}
+          item={activeClass}
+          selectedClass={activeClass}
           updateTopicSubTopic={noop}
           ref={classPrepRef}
         />
