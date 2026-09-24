@@ -11,7 +11,7 @@ import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
 
 const REFRESH_MS = 300000;
-const TICK_MS = 60000;
+const TICK_MS = 1000;
 const TIME_FMT = 'HH:mm:ss';
 
 /* ----------------------------- hooks ----------------------------- */
@@ -38,19 +38,31 @@ const formatTimeRange = (start?: string, end?: string) => {
   return `${startLabel} – ${endLabel}`;
 };
 
+const toTodayMoment = (time?: string) =>
+  moment(`${moment().format('YYYY-MM-DD')} ${time}`, 'YYYY-MM-DD HH:mm:ss');
+
 const formatCountdown = (startTime?: string) => {
   if (!startTime) return 'SOON';
-  const startMoment = moment(
-    `${moment().format('YYYY-MM-DD')} ${startTime}`,
-    'YYYY-MM-DD HH:mm:ss'
-  );
-  const diffMs = startMoment.diff(moment());
+  const diffMs = toTodayMoment(startTime).diff(moment());
   if (diffMs <= 0) return 'SOON';
 
-  const duration = moment.duration(diffMs);
-  const hours = Math.floor(duration.asHours());
-  const minutes = duration.minutes();
+  // Ceil so e.g. 22m 10s still reads as the next full minute remaining.
+  const totalMinutes = Math.max(1, Math.ceil(diffMs / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
   return hours > 0 ? `IN ${hours}H ${minutes}M` : `IN ${minutes}M`;
+};
+
+const isPastEnd = (c: any) => {
+  if (!c?.end_time) return false;
+  const end = toTodayMoment(c.end_time);
+  return end.isValid() && moment().isSameOrAfter(end);
+};
+
+const isPastStart = (c: any) => {
+  if (!c?.start_time) return false;
+  const start = toTodayMoment(c.start_time);
+  return start.isValid() && moment().isSameOrAfter(start);
 };
 
 const ROMAN_MAP: [number, string][] = [
@@ -188,7 +200,10 @@ const LiveSessionCard = () => {
 
   const [nextClass, setNextClass] = useState<any>({});
   const [isNextClass, setIsNextClass] = useState(false);
-  const [, setTick] = useState(0);
+  const [tick, setTick] = useState(0);
+
+  const nextClassRef = useRef(nextClass);
+  const isNextClassRef = useRef(isNextClass);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -196,6 +211,11 @@ const LiveSessionCard = () => {
       mountedRef.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    nextClassRef.current = nextClass;
+    isNextClassRef.current = isNextClass;
+  }, [nextClass, isNextClass]);
 
   const getClassFromSchedule = useCallback(async () => {
     const res = await dispatch(getScheduleClasses({ date: moment().format('YYYY-MM-DD') }));
@@ -240,13 +260,56 @@ const LiveSessionCard = () => {
     }
   }, [dispatch, getClassFromSchedule]);
 
+  // If live ended or upcoming started, refetch so the card flips without a tab change.
+  const syncStatusIfNeeded = useCallback(() => {
+    const cls = nextClassRef.current;
+    if (!cls?.class_schedule_id) return;
+
+    if (isNextClassRef.current) {
+      if (isPastStart(cls)) getDetails();
+    } else if (isPastEnd(cls)) {
+      getDetails();
+    }
+  }, [getDetails]);
+
   useIntervalApi(getDetails, REFRESH_MS);
 
+  // While Home is focused: countdown ticks every second.
   useFocusEffect(
     useCallback(() => {
       getDetails();
-    }, [getDetails])
+
+      const id = setInterval(() => {
+        setTick((t) => t + 1);
+        syncStatusIfNeeded();
+      }, TICK_MS);
+
+      return () => clearInterval(id);
+    }, [getDetails, syncStatusIfNeeded])
   );
+
+  // Flip card exactly at start/end time (no wait for the next interval).
+  useEffect(() => {
+    if (!nextClass?.class_schedule_id) return;
+
+    const target = isNextClass
+      ? toTodayMoment(nextClass.start_time)
+      : toTodayMoment(nextClass.end_time);
+
+    if (!target.isValid()) return;
+
+    const delay = target.diff(moment());
+    if (delay <= 0) {
+      syncStatusIfNeeded();
+      return;
+    }
+
+    const id = setTimeout(() => {
+      getDetails();
+    }, delay);
+
+    return () => clearTimeout(id);
+  }, [nextClass, isNextClass, getDetails, syncStatusIfNeeded]);
 
   useEffect(() => {
     if (unAuthorised) {
@@ -262,13 +325,6 @@ const LiveSessionCard = () => {
     }
   }, [liveClass]);
 
-  // Re-render every minute only while a countdown is on screen.
-  useEffect(() => {
-    if (!isNextClass) return;
-    const id = setInterval(() => setTick((t) => t + 1), TICK_MS);
-    return () => clearInterval(id);
-  }, [isNextClass]);
-
   const classScheduleId = nextClass?.class_schedule_id;
   const hasClass = Boolean(classScheduleId);
   const isLive = hasClass && !isNextClass;
@@ -282,7 +338,9 @@ const LiveSessionCard = () => {
       const endDateTime = moment(`${date} ${item.end_time}`);
       return endDateTime.isValid() && now.isSameOrAfter(endDateTime);
     }).length;
-  }, [classTimeline]);
+    // tick keeps "all done" in sync as wall-clock time passes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classTimeline, tick]);
 
   const allClassesDone = Boolean(
     !hasClass && classTimeline?.length && completedClassCount === classTimeline.length
