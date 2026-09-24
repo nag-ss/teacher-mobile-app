@@ -138,7 +138,9 @@ const classSlice = createSlice({
     //     ]
     //   },
       classTasks: [],
-      classTimeline: [],
+      classTimeline: [] as any[],
+      // Per-day cache so Yesterday/Today/Tomorrow switches don't flash wrong card.
+      scheduleByDate: {} as Record<string, any[]>,
       loading: false,
       error: null,
       unAuthorised: false
@@ -176,15 +178,18 @@ const classSlice = createSlice({
             state.unAuthorised = true
           }
         })
-        .addCase(getScheduleClasses.pending, (state, action) => {
+        .addCase(getScheduleClasses.pending, (state) => {
             state.loading = true
-            state.classTimeline = []
+            // Keep scheduleByDate / classTimeline — clearing caused day-switch flashes.
           })
         .addCase(getScheduleClasses.fulfilled, (state, action) => {
-            // console.log("action.payload schedule classes ")
-            // console.log(action.payload)
-            state.classTimeline = action.payload
-            
+            const date = (action.meta?.arg as any)?.date as string | undefined;
+            const list = Array.isArray(action.payload) ? action.payload : [];
+            if (date) {
+              state.scheduleByDate[date] = list;
+            }
+            state.classTimeline = list;
+            state.loading = false;
         })
         .addCase(getScheduleClasses.rejected, (state, action) => {
           state.loading = false

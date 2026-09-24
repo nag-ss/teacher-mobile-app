@@ -77,17 +77,18 @@ const resolveCardFromSchedule = (
 ): ResolvedCard => {
   const today = moment().format('YYYY-MM-DD');
   const day = selectedDate || today;
+  const dayList = (list || []).filter((item) => !item?.date || item.date === day);
 
-  if (!list?.length) return { mode: 'empty', cls: null, completedCount: 0 };
+  if (!dayList.length) return { mode: 'empty', cls: null, completedCount: 0 };
 
   // Past day → wrap-up with all classes completed.
   if (moment(day).isBefore(today, 'day')) {
-    return { mode: 'done', cls: null, completedCount: list.length };
+    return { mode: 'done', cls: null, completedCount: dayList.length };
   }
 
   // Future day → head-start summary (not the Next/Prep card).
   if (moment(day).isAfter(today, 'day')) {
-    return { mode: 'ahead', cls: null, completedCount: list.length };
+    return { mode: 'ahead', cls: null, completedCount: dayList.length };
   }
 
   let live: any = null;
@@ -95,7 +96,7 @@ const resolveCardFromSchedule = (
   let nextMs = Infinity;
   let completedCount = 0;
 
-  for (const item of list) {
+  for (const item of dayList) {
     const start = parseClassMoment(item.date || day, item.start_time);
     const end = parseClassMoment(item.date || day, item.end_time);
     if (!start.isValid() || !end.isValid()) continue;
@@ -121,7 +122,7 @@ const resolveCardFromSchedule = (
 
   if (live) return { mode: 'live', cls: live, completedCount };
   if (next) return { mode: 'next', cls: next, completedCount };
-  if (completedCount === list.length) return { mode: 'done', cls: null, completedCount };
+  if (completedCount === dayList.length) return { mode: 'done', cls: null, completedCount };
   return { mode: 'empty', cls: null, completedCount };
 };
 
@@ -300,44 +301,19 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>();
   const classPrepRef = useRef<any>(null);
-  const mountedRef = useRef(true);
 
   const liveClass = useSelector((state: any) => state.classes.liveClass);
-  const classTimeline = useSelector((state: any) => state.classes.classTimeline);
+  const scheduleByDate = useSelector((state: any) => state.classes.scheduleByDate);
   const unAuthorised = useSelector((state: any) => state.classes.unAuthorised);
 
   const date = selectedDate || moment().format('YYYY-MM-DD');
   const isToday = moment(date).isSame(moment(), 'day');
   const isPastDay = moment(date).isBefore(moment(), 'day');
-
-  // Local copy so pending schedule fetches don't flash empty (redux clears timeline on pending).
-  const [schedule, setSchedule] = useState<any[]>([]);
+  const schedule = scheduleByDate?.[date] ?? [];
   const [tick, setTick] = useState(0);
 
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!Array.isArray(classTimeline) || !classTimeline.length) return;
-    // Only adopt redux timeline when it matches the selected day (avoid flash of wrong day).
-    const matchesDay = classTimeline.every(
-      (c: any) => !c.date || c.date === date
-    );
-    if (matchesDay) setSchedule(classTimeline);
-  }, [classTimeline, date]);
-
   const loadSchedule = useCallback(async () => {
-    const res = await dispatch(getScheduleClasses({ date } as any));
-    if (!mountedRef.current) return;
-    if (Array.isArray(res.payload)) {
-      setSchedule(res.payload);
-    } else if (res.meta?.requestStatus === 'fulfilled') {
-      setSchedule([]);
-    }
+    await dispatch(getScheduleClasses({ date } as any));
   }, [dispatch, date]);
 
   // Background only — enrich details; status comes from schedule + clock.

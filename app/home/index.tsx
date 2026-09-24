@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
+import { getScheduleClasses } from '@/store/classSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import moment from 'moment';
 
@@ -17,6 +19,7 @@ const getGreeting = () => {
 const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 
 const DashboardScreen = () => {
+  const dispatch = useDispatch<any>();
   const { user } = useSelector((state: any) => state.user);
   const [dayIndex, setDayIndex] = useState(1); // Today
   const hasNotifications = false;
@@ -25,6 +28,16 @@ const DashboardScreen = () => {
   // dayIndex 0/1/2 → yesterday / today / tomorrow
   const selectedDate = moment().add(dayIndex - 1, 'days').format('YYYY-MM-DD');
   const dateLabel = moment(selectedDate).format('dddd, D MMMM');
+
+  // Prefetch the day-pill window into scheduleByDate so switches are instant.
+  useFocusEffect(
+    useCallback(() => {
+      [-1, 0, 1].forEach((offset) => {
+        const date = moment().add(offset, 'days').format('YYYY-MM-DD');
+        dispatch(getScheduleClasses({ date } as any));
+      });
+    }, [dispatch])
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FAFAF8' }}>
