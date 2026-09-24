@@ -211,15 +211,34 @@ const LiveSessionCard = () => {
   return (
     <>
       <View style={[styles.card, !hasClass && styles.cardEmpty, isNextClass && styles.cardNext]}>
-        {isLive && <View style={styles.accentBar} />}
+        {isLive && (
+          <View
+            style={[
+              styles.accentBar,
+              !classDetails.isPrepped && styles.accentBarLiveNotPrepped,
+            ]}
+          />
+        )}
         {isNextClass && <View style={styles.accentBarNext} />}
 
         {isLive ? (
           <View style={styles.content}>
             <View style={styles.statusRow}>
-              <View style={styles.statusDot} />
+              <View
+                style={[
+                  styles.statusDot,
+                  !classDetails.isPrepped && styles.statusDotLiveNotPrepped,
+                ]}
+              />
               <View style={styles.liveLabelBox}>
-                <Text style={styles.statusText}>LIVE NOW</Text>
+                {classDetails.isPrepped ? (
+                  <Text style={styles.statusText}>LIVE NOW</Text>
+                ) : (
+                  <Text>
+                    <Text style={styles.statusTextLiveNotPrepped}>LIVE NOW</Text>
+                    <Text style={styles.notPreppedText}> · NOT PREPPED</Text>
+                  </Text>
+                )}
               </View>
             </View>
 
@@ -233,7 +252,7 @@ const LiveSessionCard = () => {
 
                 <View style={styles.subjectBox}>
                   <Text style={styles.subject} numberOfLines={1}>
-                    {nextClass.subject_name || 'Class'}
+                    {nextClass.subject_name || classDetails.title || 'Class'}
                   </Text>
                 </View>
               </View>
@@ -247,11 +266,13 @@ const LiveSessionCard = () => {
 
                 <TouchableOpacity
                   style={styles.joinButton}
-                  onPress={navigateToMonitor}
+                  onPress={classDetails.isPrepped ? navigateToMonitor : openClassPrep}
                   activeOpacity={0.8}
                 >
                   <View style={styles.joinButtonTextBox}>
-                    <Text style={styles.joinButtonText}>Join Class</Text>
+                    <Text style={styles.joinButtonText}>
+                      {classDetails.isPrepped ? 'Join Class' : 'Prep & Start'}
+                    </Text>
                   </View>
                   <View style={styles.joinArrowBox}>
                     <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
@@ -348,7 +369,8 @@ const LiveSessionCard = () => {
         )}
       </View>
 
-      {isNextClass && nextClass?.class_schedule_id ? (
+      {(isNextClass || (isLive && !classDetails.isPrepped)) &&
+      nextClass?.class_schedule_id ? (
         <ClassPrep
           item={nextClass}
           selectedClass={nextClass}
@@ -405,6 +427,9 @@ const styles = StyleSheet.create({
     width: 8,
     backgroundColor: '#21C17C',
   },
+  accentBarLiveNotPrepped: {
+    backgroundColor: '#E8A33D',
+  },
   accentBarNext: {
     position: 'absolute',
     left: 0,
@@ -449,6 +474,9 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
   },
+  statusDotLiveNotPrepped: {
+    backgroundColor: '#E8A33D',
+  },
   statusDotNext: {
     width: 8,
     height: 8,
@@ -473,6 +501,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 17,
     color: '#0D8A57',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+  },
+  statusTextLiveNotPrepped: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#E8A33D',
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
   },
