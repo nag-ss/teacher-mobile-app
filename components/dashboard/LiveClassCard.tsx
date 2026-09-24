@@ -314,6 +314,7 @@ const LiveSessionCard = () => {
           !hasClass && styles.cardEmpty,
           allClassesDone && styles.cardAllDone,
           isNextClass && styles.cardNext,
+          (isLive || isNextClass || allClassesDone) && styles.cardWithAccent,
         ]}
       >
         {isLive && (
@@ -458,6 +459,11 @@ const styles = StyleSheet.create({
     height: 217,
     overflow: 'hidden',
   },
+  // Drop left border so accent sits on the outer edge (no white gap inside the border).
+  cardWithAccent: {
+    borderLeftWidth: 0,
+    overflow: 'hidden',
+  },
   accentBar: {
     position: 'absolute',
     left: 0,
@@ -465,8 +471,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 8,
     backgroundColor: '#21C17C',
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
   },
   accentBarLiveNotPrepped: {
     backgroundColor: '#E8A33D',
