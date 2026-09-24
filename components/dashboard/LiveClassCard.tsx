@@ -299,15 +299,29 @@ const LiveSessionCard = () => {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.joinButton}
+                  style={[
+                    styles.joinButton,
+                    classDetails.isPrepped && styles.reviewPlanButton,
+                  ]}
                   onPress={openClassPrep}
                   activeOpacity={0.8}
                 >
                   <View style={styles.joinButtonTextBox}>
-                    <Text style={styles.joinButtonText}>Prep Class</Text>
+                    <Text
+                      style={[
+                        styles.joinButtonText,
+                        classDetails.isPrepped && styles.reviewPlanButtonText,
+                      ]}
+                    >
+                      {classDetails.isPrepped ? 'Review Plan' : 'Prep Class'}
+                    </Text>
                   </View>
                   <View style={styles.joinArrowBox}>
-                    <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
+                    <MaterialIcons
+                      name="arrow-forward"
+                      size={24}
+                      color={classDetails.isPrepped ? '#1F1E1C' : '#FFFFFF'}
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -637,6 +651,11 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
   },
+  reviewPlanButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#EDEBE6',
+  },
   joinButtonTextBox: {
     height: 24,
     flexGrow: 0,
@@ -649,6 +668,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Montserrat_600SemiBold',
     includeFontPadding: false,
+  },
+  reviewPlanButtonText: {
+    color: '#1F1E1C',
   },
   joinArrowBox: {
     width: 24,
