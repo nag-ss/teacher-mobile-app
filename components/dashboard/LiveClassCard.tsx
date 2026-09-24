@@ -211,7 +211,7 @@ const LiveSessionCard = () => {
               <Text style={styles.emptyTitle}>No classes scheduled today</Text>
             </View>
             <View style={styles.emptySubtitleBox}>
-              <Text style={styles.emptySubtitle} numberOfLines={1}>
+              <Text style={styles.emptySubtitle} numberOfLines={2}>
                 Enjoy the break — or prep an upcoming class from Calendar
               </Text>
             </View>
@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 1,
+    overflow: 'visible',
   },
   accentBar: {
     position: 'absolute',
@@ -400,7 +401,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'stretch',
     width: '100%',
-    height: 56,
     padding: 0,
     gap: 20,
     flexGrow: 0,
@@ -437,7 +437,6 @@ const styles = StyleSheet.create({
   },
   emptyTitleBox: {
     alignSelf: 'stretch',
-    height: 27,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
@@ -451,7 +450,6 @@ const styles = StyleSheet.create({
   },
   emptySubtitleBox: {
     alignSelf: 'stretch',
-    height: 19,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
