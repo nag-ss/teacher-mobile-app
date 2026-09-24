@@ -43,6 +43,8 @@ const svgAssets = {
   notificationActive: require('../assets/beta_images/active_notification.svg'),
   notificationInactive: require('../assets/beta_images/inactive_notification.svg'),
   timelineArrow: require('../assets/beta_images/timeline_arrow.svg'),
+  clock: require('../assets/beta_images/clock.svg'),
+  liveCalendar: require('../assets/beta_images/live_calendar.svg'),
 };
 
 interface SvgLoaderProps {

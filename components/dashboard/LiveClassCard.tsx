@@ -7,6 +7,7 @@ import moment from 'moment';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
+import SvgLoader from '@/utils/SvgLoader';
 
 function useIntervalApi(callback: () => void, delay: number) {
   const savedCallback = useRef<() => void>();
@@ -130,8 +131,11 @@ const LiveSessionCard = () => {
       if (timelineDataArray.length) {
         setNextClass(timelineDataArray[0]);
         setIsNextClass(true);
+        return;
       }
     }
+    setNextClass({});
+    setIsNextClass(false);
   };
 
   const navigateToMonitor = () => {
@@ -146,17 +150,15 @@ const LiveSessionCard = () => {
   const isLive = hasClass && !isNextClass;
 
   return (
-    <View style={[styles.card, !hasClass && styles.cardEmpty]}>
-      {hasClass && <View style={styles.accentBar} />}
+    <View style={[styles.card, !isLive && styles.cardEmpty]}>
+      {isLive && <View style={styles.accentBar} />}
 
-      {hasClass ? (
+      {isLive ? (
         <View style={styles.content}>
           <View style={styles.statusRow}>
-            <View style={[styles.statusDot, !isLive && styles.statusDotUpcoming]} />
+            <View style={styles.statusDot} />
             <View style={styles.liveLabelBox}>
-              <Text style={[styles.statusText, !isLive && styles.statusTextUpcoming]}>
-                {isLive ? 'LIVE NOW' : 'UPCOMING'}
-              </Text>
+              <Text style={styles.statusText}>LIVE NOW</Text>
             </View>
           </View>
 
@@ -183,29 +185,37 @@ const LiveSessionCard = () => {
               </View>
 
               <TouchableOpacity
-                style={[styles.joinButton, isNextClass && styles.joinButtonUpcoming]}
+                style={styles.joinButton}
                 onPress={navigateToMonitor}
                 activeOpacity={0.8}
-                disabled={isNextClass}
               >
                 <View style={styles.joinButtonTextBox}>
-                  <Text style={styles.joinButtonText}>
-                    {isNextClass ? 'Upcoming' : 'Join Class'}
-                  </Text>
+                  <Text style={styles.joinButtonText}>Join Class</Text>
                 </View>
-                {!isNextClass && (
-                  <View style={styles.joinArrowBox}>
-                    <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
-                  </View>
-                )}
+                <View style={styles.joinArrowBox}>
+                  <MaterialIcons name="arrow-forward" size={24} color="#FFFFFF" />
+                </View>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       ) : (
         <View style={styles.emptyContent}>
-          <Text style={styles.emptyTitle}>No Classes Found Today</Text>
-          <Text style={styles.emptySubtitle}>You’re all clear for now.</Text>
+          <View style={styles.emptyIconBox}>
+            <View style={styles.clockIcon}>
+              <SvgLoader svgFilePath="liveCalendar" width={24} height={24} />
+            </View>
+          </View>
+          <View style={styles.emptyTextBlock}>
+            <View style={styles.emptyTitleBox}>
+              <Text style={styles.emptyTitle}>No classes scheduled today</Text>
+            </View>
+            <View style={styles.emptySubtitleBox}>
+              <Text style={styles.emptySubtitle} numberOfLines={1}>
+                Enjoy the break — or prep an upcoming class from Calendar
+              </Text>
+            </View>
+          </View>
         </View>
       )}
     </View>
@@ -233,7 +243,17 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: 'hidden',
   },
-  cardEmpty: {},
+  cardEmpty: {
+    height: 120,
+    minHeight: 0,
+    padding: 24,
+    justifyContent: 'center',
+    borderRadius: 20,
+    shadowOpacity: 0.0156863,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
+  },
   accentBar: {
     position: 'absolute',
     left: 0,
@@ -266,9 +286,6 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
   },
-  statusDotUpcoming: {
-    backgroundColor: '#8A8880',
-  },
   liveLabelBox: {
     height: 17,
     flexGrow: 0,
@@ -281,9 +298,6 @@ const styles = StyleSheet.create({
     color: '#0D8A57',
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
-  },
-  statusTextUpcoming: {
-    color: '#8A8880',
   },
   heroInfoRow: {
     alignSelf: 'stretch',
@@ -360,9 +374,6 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
   },
-  joinButtonUpcoming: {
-    backgroundColor: '#C8C6BE',
-  },
   joinButtonTextBox: {
     height: 24,
     flexGrow: 0,
@@ -385,21 +396,69 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emptyContent: {
-    flex: 1,
-    padding: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
+    height: 56,
+    padding: 0,
+    gap: 20,
+    flexGrow: 0,
+    flexShrink: 0,
+    zIndex: 1,
+  },
+  emptyIconBox: {
+    width: 56,
+    height: 56,
+    padding: 0,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F2F1EC',
+    borderRadius: 12,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  clockIcon: {
+    width: 24,
+    height: 24,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  emptyTextBlock: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: 0,
+    gap: 8,
+    width: '100%',
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  emptyTitleBox: {
+    alignSelf: 'stretch',
+    height: 27,
+    flexGrow: 0,
+    flexShrink: 0,
     justifyContent: 'center',
   },
   emptyTitle: {
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 22,
+    lineHeight: 27,
     color: '#1F1E1C',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'Montserrat_600SemiBold',
     includeFontPadding: false,
   },
+  emptySubtitleBox: {
+    alignSelf: 'stretch',
+    height: 19,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+  },
   emptySubtitle: {
-    marginTop: 6,
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: 16,
+    lineHeight: 19,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
