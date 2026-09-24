@@ -19,40 +19,64 @@ const ATTENTION_ITEMS = [
   },
 ];
 
-const HomeSidePanels = () => {
+type Props = {
+  dayLabel?: string;
+  selectedDate?: string;
+};
+
+const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
+  const isToday = dayLabel === 'Today';
+  const eventsTitle =
+    dayLabel === 'Yesterday' ? "Yesterday's events" : "Today's events";
+
+  // Mock events only for today until a day-based events API is wired.
+  const events = isToday ? TODAY_EVENTS : [];
+
   return (
     <View style={styles.container}>
       <View style={styles.eventsCard}>
-        <Text style={styles.eventsTitle}>Today's events</Text>
+        <Text style={styles.eventsTitle}>{eventsTitle}</Text>
         <View style={styles.eventsList}>
-          {TODAY_EVENTS.map((event) => (
-            <View key={event.time + event.title} style={styles.eventItem}>
-              <Text style={styles.eventTime}>{event.time}</Text>
-              <Text style={styles.eventTitle}>{event.title}</Text>
-            </View>
-          ))}
+          {events.length ? (
+            events.map((event) => (
+              <View key={event.time + event.title} style={styles.eventItem}>
+                <Text style={styles.eventTime}>{event.time}</Text>
+                <Text style={styles.eventTitle}>{event.title}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.emptyText}>No events for this day</Text>
+          )}
         </View>
       </View>
 
       <View style={styles.attentionCard}>
         <Text style={styles.attentionTitle}>Needs your attention</Text>
         <View style={styles.attentionList}>
-          {ATTENTION_ITEMS.map((item, index) => (
-            <React.Fragment key={item.highlight}>
-              {index > 0 ? <View style={styles.divider} /> : null}
-              <View style={styles.attentionWrapper}>
-                <View style={styles.attentionItem}>
-                  <View style={styles.dotAligner}>
-                    <View style={[styles.dot, { backgroundColor: item.dotColor }]} />
+          {isToday ? (
+            ATTENTION_ITEMS.map((item, index) => (
+              <React.Fragment key={item.highlight}>
+                {index > 0 ? <View style={styles.divider} /> : null}
+                <View style={styles.attentionWrapper}>
+                  <View style={styles.attentionItem}>
+                    <View style={styles.dotAligner}>
+                      <View style={[styles.dot, { backgroundColor: item.dotColor }]} />
+                    </View>
+                    <Text style={styles.attentionText}>
+                      <Text style={styles.attentionHighlight}>{item.highlight}</Text>
+                      <Text style={styles.attentionRest}>{item.rest}</Text>
+                    </Text>
                   </View>
-                  <Text style={styles.attentionText}>
-                    <Text style={styles.attentionHighlight}>{item.highlight}</Text>
-                    <Text style={styles.attentionRest}>{item.rest}</Text>
-                  </Text>
                 </View>
-              </View>
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            ))
+          ) : (
+            <Text style={styles.emptyText}>
+              {selectedDate
+                ? `Attention items for ${dayLabel.toLowerCase()} will show here`
+                : 'No items'}
+            </Text>
+          )}
         </View>
       </View>
     </View>
@@ -182,6 +206,13 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     height: 1,
     backgroundColor: '#D9D6CF',
+  },
+  emptyText: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getScheduleClasses } from '@/store/classSlice';
@@ -56,12 +56,21 @@ const getGradeLabel = (item: any) => {
   return '—';
 };
 
-const ClassTimelineRow = ({ item, currentDate }: { item: any; currentDate: string }) => {
+const ClassTimelineRow = ({
+  item,
+  currentDate,
+  isPastDay,
+}: {
+  item: any;
+  currentDate: string;
+  isPastDay?: boolean;
+}) => {
   const classPrepRef = useRef<any>();
   const isCompleted = item.isClassOver;
   const isLive = item.live;
   const canOpenPrep = !isCompleted;
   const statusLabel = isCompleted ? 'Completed' : isLive ? 'Live now' : 'Prep ready';
+  const showPastSummary = Boolean(isPastDay);
 
   const openClassPrep = () => {
     if (canOpenPrep) {
@@ -69,26 +78,50 @@ const ClassTimelineRow = ({ item, currentDate }: { item: any; currentDate: strin
     }
   };
 
+  const onPress = () => {
+    if (showPastSummary) {
+      // Summary navigation can be wired later; keep row tappable.
+      return;
+    }
+    openClassPrep();
+  };
+
   return (
     <>
       <TouchableOpacity
-        style={[styles.row, !isCompleted && styles.rowCard]}
-        activeOpacity={canOpenPrep ? 0.7 : 1}
-        onPress={openClassPrep}
-        disabled={!canOpenPrep}
+        style={[styles.row, (!isCompleted || showPastSummary) && styles.rowCard]}
+        activeOpacity={0.7}
+        onPress={onPress}
+        disabled={isCompleted && !showPastSummary}
       >
         <View style={styles.timeBox}>
-          <Text style={[styles.time, isCompleted && styles.textMuted]}>
+          <Text
+            style={[
+              styles.time,
+              isCompleted && !showPastSummary && styles.textMuted,
+            ]}
+          >
             {item.timeLabel}
           </Text>
-          <Text style={[styles.timePeriod, isCompleted && styles.textMuted]}>
+          <Text
+            style={[
+              styles.timePeriod,
+              isCompleted && !showPastSummary && styles.textMuted,
+            ]}
+          >
             {item.timePeriod}
           </Text>
         </View>
 
         <View style={styles.classMeta}>
           <View style={styles.subjectBox}>
-            <Text style={[styles.title, isCompleted && styles.textMuted]} numberOfLines={1}>
+            <Text
+              style={[
+                styles.title,
+                isCompleted && !showPastSummary && styles.textMuted,
+              ]}
+              numberOfLines={1}
+            >
               {item.title}
             </Text>
           </View>
@@ -99,18 +132,34 @@ const ClassTimelineRow = ({ item, currentDate }: { item: any; currentDate: strin
           </View>
         </View>
 
-        <View style={styles.statusBlock}>
-          <View style={styles.statusBox}>
-            <Text style={[styles.status, isCompleted ? styles.statusCompleted : styles.statusReady]}>
-              {statusLabel}
-            </Text>
-          </View>
-          <View style={styles.arrowBox}>
-            <View style={styles.arrowVector}>
-              <SvgLoader svgFilePath="timelineArrow" width={8} height={14} />
+        {showPastSummary ? (
+          <View style={styles.summaryBlock}>
+            <Text style={styles.summaryText}>View summary</Text>
+            <View style={styles.arrowBox}>
+              <View style={styles.arrowVector}>
+                <SvgLoader svgFilePath="timelineArrow" width={8} height={14} />
+              </View>
             </View>
           </View>
-        </View>
+        ) : (
+          <View style={styles.statusBlock}>
+            <View style={styles.statusBox}>
+              <Text
+                style={[
+                  styles.status,
+                  isCompleted ? styles.statusCompleted : styles.statusReady,
+                ]}
+              >
+                {statusLabel}
+              </Text>
+            </View>
+            <View style={styles.arrowBox}>
+              <View style={styles.arrowVector}>
+                <SvgLoader svgFilePath="timelineArrow" width={8} height={14} />
+              </View>
+            </View>
+          </View>
+        )}
       </TouchableOpacity>
 
       {moment(new Date()).format('YYYY-MM-DD') <= currentDate ? (
@@ -130,32 +179,58 @@ const ROW_GAP = 16;
 const VISIBLE_ROWS = 3;
 const LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS + ROW_GAP * (VISIBLE_ROWS - 1) + 32;
 
-const TimelineWithClassDetails = () => {
+const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const { classTimeline } = useSelector((state: any) => state.classes);
-  const [date, setDate] = useState(moment(new Date()).format('YYYY-MM-DD'));
+  const date = selectedDate || moment().format('YYYY-MM-DD');
+  const [contentHeight, setContentHeight] = useState(1);
+  const [layoutHeight, setLayoutHeight] = useState(LIST_HEIGHT);
+  const [scrollY, setScrollY] = useState(0);
 
-  const getDetails = async (currentDate: string) => {
-    await dispatch(getScheduleClasses({ date: currentDate }));
-  };
+  const getDetails = useCallback(
+    async (currentDate: string) => {
+      await dispatch(getScheduleClasses({ date: currentDate } as any));
+    },
+    [dispatch]
+  );
 
   useFocusEffect(
     useCallback(() => {
-      const today = moment(new Date()).format('YYYY-MM-DD');
-      setDate(today);
-      getDetails(today);
-    }, [])
+      getDetails(date);
+    }, [date, getDetails])
   );
 
-  const rows = useMemo(() => {
-    if (!classTimeline?.length) return [];
+  useEffect(() => {
+    getDetails(date);
+  }, [date, getDetails]);
 
-    return classTimeline.map((timeline: any) => {
-      const start = moment(timeline.start_time, 'HH:mm:ss');
-      const end = moment(timeline.end_time, 'HH:mm:ss');
-      const startDateTime = moment(`${timeline.date} ${timeline.start_time}`);
-      const endDateTime = moment(`${timeline.date} ${timeline.end_time}`);
-      const now = moment();
+  const today = moment().format('YYYY-MM-DD');
+  const isPastDay = moment(date).isBefore(today, 'day');
+
+  const rows = useMemo(() => {
+    const list = (classTimeline || []).filter(
+      (t: any) => !t.date || t.date === date
+    );
+    if (!list.length) return [];
+
+    const isFutureDay = moment(date).isAfter(today, 'day');
+    const now = moment();
+
+    return list.map((timeline: any) => {
+      const startRaw = String(timeline.start_time).split('.')[0];
+      const endRaw = String(timeline.end_time).split('.')[0];
+      const start = moment(startRaw, 'HH:mm:ss');
+      const end = moment(endRaw, 'HH:mm:ss');
+      const classDate = timeline.date || date;
+      const startDateTime = moment(`${classDate} ${startRaw}`, 'YYYY-MM-DD HH:mm:ss');
+      const endDateTime = moment(`${classDate} ${endRaw}`, 'YYYY-MM-DD HH:mm:ss');
+
+      const live =
+        !isPastDay &&
+        !isFutureDay &&
+        now.isSameOrBefore(endDateTime) &&
+        now.isSameOrAfter(startDateTime);
+      const isClassOver = isPastDay || (!isFutureDay && now.isSameOrAfter(endDateTime));
 
       return {
         classId: timeline.class_schedule_id,
@@ -167,32 +242,67 @@ const TimelineWithClassDetails = () => {
         category: timeline.subject_name,
         title: getTitle(timeline),
         gradeLabel: getGradeLabel(timeline),
-        live: now.isSameOrBefore(endDateTime) && now.isSameOrAfter(startDateTime),
-        isClassOver: now.isSameOrAfter(endDateTime),
+        live,
+        isClassOver,
         raw: timeline,
       };
     });
-  }, [classTimeline]);
+  }, [classTimeline, date, isPastDay, today]);
+
+  const canScroll = contentHeight > layoutHeight + 1;
+  const thumbHeight = 24;
+  const maxScroll = Math.max(1, contentHeight - layoutHeight);
+  const thumbOffset = canScroll
+    ? (scrollY / maxScroll) * (layoutHeight - thumbHeight)
+    : 0;
+
+  const headerLabel = moment(date).isSame(moment(), 'day')
+    ? "TODAY'S CLASSES"
+    : `${moment(date).format('dddd').toUpperCase()}'S CLASSES`;
 
   return (
     <View style={styles.container}>
       <View style={styles.sectionLabelBox}>
-        <Text style={styles.header}>TODAY'S CLASSES</Text>
+        <Text style={styles.header}>{headerLabel}</Text>
       </View>
 
-      <ScrollView
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {rows.length ? (
-          rows.map((item: any) => (
-            <ClassTimelineRow key={item.classId} item={item} currentDate={date} />
-          ))
-        ) : (
-          <Text style={styles.emptyText}>No classes scheduled for today.</Text>
-        )}
-      </ScrollView>
+      <View style={styles.listRow}>
+        <ScrollView
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
+          onContentSizeChange={(_w, h) => setContentHeight(h)}
+          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+        >
+          {rows.length ? (
+            rows.map((item: any) => (
+              <ClassTimelineRow
+                key={item.classId}
+                item={item}
+                currentDate={date}
+                isPastDay={isPastDay}
+              />
+            ))
+          ) : (
+            <Text style={styles.emptyText}>No classes scheduled for this day.</Text>
+          )}
+        </ScrollView>
+
+        <View style={styles.scrollTrack}>
+          <View
+            style={[
+              styles.scrollThumb,
+              {
+                height: thumbHeight,
+                transform: [{ translateY: thumbOffset }],
+                opacity: canScroll ? 1 : 0.35,
+              },
+            ]}
+          />
+        </View>
+      </View>
     </View>
   );
 };
@@ -222,12 +332,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
   },
-  list: {
+  listRow: {
     width: '100%',
     alignSelf: 'stretch',
     height: LIST_HEIGHT,
-    flexGrow: 0,
-    flexShrink: 0,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: 8,
+  },
+  list: {
+    flex: 1,
+    alignSelf: 'stretch',
+    height: '100%',
+  },
+  scrollTrack: {
+    width: 4,
+    alignSelf: 'stretch',
+    height: '100%',
+    backgroundColor: '#EDEBE6',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  scrollThumb: {
+    width: 4,
+    backgroundColor: '#8A8880',
+    borderRadius: 2,
   },
   listContent: {
     gap: ROW_GAP,
@@ -323,6 +452,21 @@ const styles = StyleSheet.create({
     gap: 16,
     flexShrink: 0,
     marginLeft: 16,
+  },
+  summaryBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    flexShrink: 0,
+    marginLeft: 16,
+  },
+  summaryText: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#0D8A57',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
   },
   statusBox: {
     flexGrow: 0,

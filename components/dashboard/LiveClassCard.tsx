@@ -70,8 +70,28 @@ type ResolvedCard = {
 };
 
 /** Status from schedule + wall clock — same idea as Timeline (no API wait). */
-const resolveCardFromSchedule = (list: any[] | null | undefined, now = moment()): ResolvedCard => {
+const resolveCardFromSchedule = (
+  list: any[] | null | undefined,
+  selectedDate?: string,
+  now = moment()
+): ResolvedCard => {
+  const today = moment().format('YYYY-MM-DD');
+  const day = selectedDate || today;
+
   if (!list?.length) return { mode: 'empty', cls: null, completedCount: 0 };
+
+  // Past day → wrap-up with all classes completed.
+  if (moment(day).isBefore(today, 'day')) {
+    return { mode: 'done', cls: null, completedCount: list.length };
+  }
+
+  // Future day → first class as Next.
+  if (moment(day).isAfter(today, 'day')) {
+    const sorted = [...list].sort((a, b) =>
+      normalizeTime(a.start_time).localeCompare(normalizeTime(b.start_time))
+    );
+    return { mode: 'next', cls: sorted[0], completedCount: 0 };
+  }
 
   let live: any = null;
   let next: any = null;
@@ -79,8 +99,8 @@ const resolveCardFromSchedule = (list: any[] | null | undefined, now = moment())
   let completedCount = 0;
 
   for (const item of list) {
-    const start = parseClassMoment(item.date, item.start_time);
-    const end = parseClassMoment(item.date, item.end_time);
+    const start = parseClassMoment(item.date || day, item.start_time);
+    const end = parseClassMoment(item.date || day, item.end_time);
     if (!start.isValid() || !end.isValid()) continue;
 
     if (now.isSameOrAfter(end)) {
@@ -222,7 +242,16 @@ const EmptyState = memo(() => (
   </View>
 ));
 
-const AllDoneState = memo(({ count }: { count: number }) => (
+const AllDoneState = memo(
+  ({
+    count,
+    isPastDay,
+    dayName,
+  }: {
+    count: number;
+    isPastDay?: boolean;
+    dayName?: string;
+  }) => (
   <View style={styles.emptyContent}>
     <View style={styles.doneIconBox}>
       <View style={styles.clockIcon}>
@@ -231,11 +260,17 @@ const AllDoneState = memo(({ count }: { count: number }) => (
     </View>
     <View style={styles.emptyTextBlock}>
       <View style={styles.emptyTitleBox}>
-        <Text style={styles.emptyTitle}>That's a wrap for today</Text>
+        <Text style={styles.emptyTitle}>
+          {isPastDay && dayName
+            ? `${dayName}, all wrapped up`
+            : "That's a wrap for today"}
+        </Text>
       </View>
       <View style={styles.emptySubtitleBox}>
         <Text style={styles.emptySubtitle} numberOfLines={2}>
-          {count} {count === 1 ? 'class' : 'classes'} done · review how they went in Analytics
+          {isPastDay
+            ? `${count} ${count === 1 ? 'class' : 'classes'} taught · tap any class below to review how it went`
+            : `${count} ${count === 1 ? 'class' : 'classes'} done · review how they went in Analytics`}
         </Text>
       </View>
     </View>
@@ -244,7 +279,7 @@ const AllDoneState = memo(({ count }: { count: number }) => (
 
 /* ----------------------------- main component ----------------------------- */
 
-const LiveSessionCard = () => {
+const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>();
   const classPrepRef = useRef<any>(null);
@@ -253,6 +288,10 @@ const LiveSessionCard = () => {
   const liveClass = useSelector((state: any) => state.classes.liveClass);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const unAuthorised = useSelector((state: any) => state.classes.unAuthorised);
+
+  const date = selectedDate || moment().format('YYYY-MM-DD');
+  const isToday = moment(date).isSame(moment(), 'day');
+  const isPastDay = moment(date).isBefore(moment(), 'day');
 
   // Local copy so pending schedule fetches don't flash empty (redux clears timeline on pending).
   const [schedule, setSchedule] = useState<any[]>([]);
@@ -266,49 +305,59 @@ const LiveSessionCard = () => {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(classTimeline) && classTimeline.length) {
-      setSchedule(classTimeline);
-    }
-  }, [classTimeline]);
+    if (!Array.isArray(classTimeline) || !classTimeline.length) return;
+    // Only adopt redux timeline when it matches the selected day (avoid flash of wrong day).
+    const matchesDay = classTimeline.every(
+      (c: any) => !c.date || c.date === date
+    );
+    if (matchesDay) setSchedule(classTimeline);
+  }, [classTimeline, date]);
 
   const loadSchedule = useCallback(async () => {
-    const res = await dispatch(getScheduleClasses({ date: moment().format('YYYY-MM-DD') }));
+    const res = await dispatch(getScheduleClasses({ date } as any));
     if (!mountedRef.current) return;
     if (Array.isArray(res.payload)) {
       setSchedule(res.payload);
     } else if (res.meta?.requestStatus === 'fulfilled') {
       setSchedule([]);
     }
-  }, [dispatch]);
+  }, [dispatch, date]);
 
   // Background only — enrich details; status comes from schedule + clock.
   const refreshLiveInBackground = useCallback(async () => {
+    if (!isToday) return;
     await dispatch(getLiveClass(undefined));
-  }, [dispatch]);
+  }, [dispatch, isToday]);
 
   const refreshAll = useCallback(async () => {
     await Promise.all([loadSchedule(), refreshLiveInBackground()]);
   }, [loadSchedule, refreshLiveInBackground]);
 
-  useIntervalApi(refreshAll, REFRESH_MS);
+  useIntervalApi(refreshAll, isToday ? REFRESH_MS : 0);
 
   useFocusEffect(
     useCallback(() => {
       refreshAll();
 
+      if (!isToday) return;
       const id = setInterval(() => setTick((t) => t + 1), TICK_MS);
       return () => clearInterval(id);
-    }, [refreshAll])
+    }, [refreshAll, isToday])
   );
+
+  useEffect(() => {
+    loadSchedule();
+  }, [date, loadSchedule]);
 
   // Flip exactly at the next start/end boundary (no waiting for the 1s tick).
   useEffect(() => {
+    if (!isToday) return;
     const delay = msUntilNextBoundary(schedule);
     if (delay == null) return;
 
     const id = setTimeout(() => setTick((t) => t + 1), delay);
     return () => clearTimeout(id);
-  }, [schedule, tick]);
+  }, [schedule, tick, isToday]);
 
   useEffect(() => {
     if (unAuthorised) {
@@ -318,10 +367,10 @@ const LiveSessionCard = () => {
   }, [unAuthorised, dispatch]);
 
   const resolved = useMemo(
-    () => resolveCardFromSchedule(schedule),
+    () => resolveCardFromSchedule(schedule, date),
     // tick forces recompute as wall-clock time passes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [schedule, tick]
+    [schedule, tick, date]
   );
 
   const isLive = resolved.mode === 'live';
@@ -333,6 +382,7 @@ const LiveSessionCard = () => {
   const activeClass = useMemo(() => {
     const fromSchedule = resolved.cls;
     if (
+      isToday &&
       fromSchedule &&
       liveClass?.class_schedule_id &&
       liveClass.class_schedule_id === fromSchedule.class_schedule_id
@@ -340,7 +390,7 @@ const LiveSessionCard = () => {
       return { ...fromSchedule, ...liveClass };
     }
     return fromSchedule || {};
-  }, [resolved.cls, liveClass]);
+  }, [resolved.cls, liveClass, isToday]);
 
   const classScheduleId = activeClass?.class_schedule_id;
   const hasClass = Boolean(classScheduleId);
@@ -351,20 +401,20 @@ const LiveSessionCard = () => {
   const subjectLabel = activeClass.subject_name || classDetails.title || 'Class';
 
   const navigateToMonitor = useCallback(() => {
-    if (!classScheduleId) return;
+    if (!classScheduleId || !isToday) return;
     dispatch(setSelectedTask('Attendance'));
     dispatch(setClassId(classScheduleId));
     navigation.navigate('live-monitoring');
-  }, [dispatch, navigation, classScheduleId]);
+  }, [dispatch, navigation, classScheduleId, isToday]);
 
   const openClassPrep = useCallback(() => {
     classPrepRef.current?.setSelectedClass();
   }, []);
 
-  const showPrep = hasClass && (isNextClass || !isPrepped);
+  const showPrep = hasClass && !isPastDay && (isNextClass || !isPrepped);
 
   return (
-    <>
+    <View style={styles.wrap}>
       <View
         style={[
           styles.card,
@@ -424,7 +474,7 @@ const LiveSessionCard = () => {
               <View style={styles.liveLabelBox}>
                 <Text>
                   <Text style={styles.statusTextNext}>
-                    NEXT · {formatCountdown(activeClass.start_time)}
+                    NEXT · {isToday ? formatCountdown(activeClass.start_time) : moment(normalizeTime(activeClass.start_time), 'HH:mm:ss').format('h:mm A')}
                   </Text>
                   {!isPrepped && <Text style={styles.notPreppedText}> - NOT PREPPED</Text>}
                 </Text>
@@ -454,21 +504,27 @@ const LiveSessionCard = () => {
             </View>
           </View>
         ) : allClassesDone ? (
-          <AllDoneState count={completedClassCount} />
+          <AllDoneState
+            count={completedClassCount}
+            isPastDay={isPastDay}
+            dayName={moment(date).format('dddd')}
+          />
         ) : (
           <EmptyState />
         )}
       </View>
 
       {showPrep ? (
-        <ClassPrep
-          item={activeClass}
-          selectedClass={activeClass}
-          updateTopicSubTopic={noop}
-          ref={classPrepRef}
-        />
+        <View style={styles.prepHost} pointerEvents="box-none">
+          <ClassPrep
+            item={activeClass}
+            selectedClass={activeClass}
+            updateTopicSubTopic={noop}
+            ref={classPrepRef}
+          />
+        </View>
       ) : null}
-    </>
+    </View>
   );
 };
 
@@ -477,6 +533,17 @@ const noop = () => {};
 /* ----------------------------- styles (visually unchanged; duplicates merged, unused removed) ----------------------------- */
 
 const styles = StyleSheet.create({
+  wrap: {
+    alignSelf: 'stretch',
+    width: '100%',
+  },
+  // Keep ClassPrep/modals mounted without adding layout gap under the card.
+  prepHost: {
+    position: 'absolute',
+    width: 0,
+    height: 0,
+    overflow: 'visible',
+  },
   card: {
     alignSelf: 'stretch',
     width: '100%',
