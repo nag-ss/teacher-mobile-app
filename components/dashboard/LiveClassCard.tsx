@@ -380,12 +380,12 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
           </View>
         ) : isAhead ? (
           <AheadState
-            count={classCount}
+            count={3}
             dayName={moment(date).format('dddd')}
           />
         ) : allClassesDone ? (
           <AllDoneState
-            count={classCount}
+            count={3}
             isPastDay={isPastDay}
             dayName={moment(date).format('dddd')}
           />
