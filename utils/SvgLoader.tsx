@@ -42,6 +42,7 @@ const svgAssets = {
   notificationRightArrow: require('../assets/beta_images/notification_right_arrow.svg'),
   notificationActive: require('../assets/beta_images/active_notification.svg'),
   notificationInactive: require('../assets/beta_images/inactive_notification.svg'),
+  notificationClose: require('../assets/beta_images/notification_close.svg'),
   timelineArrow: require('../assets/beta_images/timeline_arrow.svg'),
   clock: require('../assets/beta_images/clock.svg'),
   liveCalendar: require('../assets/beta_images/live_calendar.svg'),

@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Modal, Pressable, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -8,6 +16,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import SvgLoader from '@/utils/SvgLoader';
 
 const PANEL_WIDTH = 400;
 const DISMISS_DISTANCE = PANEL_WIDTH * 0.28;
@@ -111,8 +120,6 @@ const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
 
   if (!mounted) return null;
 
-  // Modal covers whole app (left nav + home) so everything unfocuses.
-  // SafeAreaView keeps the white panel height inside the app safe area.
   return (
     <Modal
       visible={mounted}
@@ -128,7 +135,28 @@ const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
 
           <SafeAreaView style={styles.safeArea} pointerEvents="box-none">
             <GestureDetector gesture={pan}>
-              <Animated.View style={[styles.panel, panelStyle]} />
+              <Animated.View style={[styles.panel, panelStyle]}>
+                <View style={styles.header}>
+                  <Text style={styles.title}>Notifications</Text>
+
+                  <View style={styles.headerActions}>
+                    <TouchableOpacity activeOpacity={0.7} hitSlop={8}>
+                      <Text style={styles.markAllRead}>Mark all read</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      activeOpacity={0.7}
+                      onPress={animateClose}
+                      hitSlop={8}
+                    >
+                      <View style={styles.closeIconBox}>
+                        <SvgLoader svgFilePath="notificationClose" width={16} height={16} />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Animated.View>
             </GestureDetector>
           </SafeAreaView>
         </View>
@@ -154,7 +182,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   panel: {
-    // notification-panel — Figma
     flexDirection: 'column',
     alignItems: 'flex-start',
     padding: 0,
@@ -167,6 +194,71 @@ const styles = StyleSheet.create({
     shadowRadius: 32,
     elevation: 8,
     zIndex: 3,
+  },
+  header: {
+    // panel-header — Figma
+    alignSelf: 'stretch',
+    width: '100%',
+    minHeight: 88,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#D9D6CF',
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  title: {
+    // title — Figma (no fixed box — fixed 135×24 was clipping the last letters)
+    fontSize: 20,
+    lineHeight: 24,
+    color: '#1F1E1C',
+    fontFamily: 'Montserrat_700Bold',
+    includeFontPadding: false,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  headerActions: {
+    // header-actions — Figma
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 0,
+    gap: 12,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  markAllRead: {
+    // mark-all-read — Figma (no fixed 87×17 — clips text on device)
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#0D8A57',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  closeButton: {
+    // close-button — Figma
+    width: 40,
+    height: 40,
+    padding: 0,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F2F1EC',
+    borderRadius: 8,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  closeIconBox: {
+    // Close 1 — Figma
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexGrow: 0,
+    flexShrink: 0,
   },
 });
 
