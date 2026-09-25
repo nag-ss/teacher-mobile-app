@@ -29,14 +29,10 @@ const DashboardScreen = () => {
   const selectedDate = moment().add(dayIndex - 1, 'days').format('YYYY-MM-DD');
   const dateLabel = moment(selectedDate).format('dddd, D MMMM');
 
-  // Prefetch the day-pill window into scheduleByDate so switches are instant.
   useFocusEffect(
     useCallback(() => {
-      [-1, 0, 1].forEach((offset) => {
-        const date = moment().add(offset, 'days').format('YYYY-MM-DD');
-        dispatch(getScheduleClasses({ date } as any));
-      });
-    }, [dispatch])
+      dispatch(getScheduleClasses({ date: selectedDate } as any));
+    }, [dispatch, selectedDate])
   );
 
   return (

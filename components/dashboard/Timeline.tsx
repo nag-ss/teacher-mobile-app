@@ -200,7 +200,7 @@ const LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS + ROW_GAP * (VISIBLE_ROWS - 1) + 3
 
 const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
-  const scheduleByDate = useSelector((state: any) => state.classes.scheduleByDate);
+  const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const date = selectedDate || moment().format('YYYY-MM-DD');
   const [contentHeight, setContentHeight] = useState(1);
   const [layoutHeight, setLayoutHeight] = useState(LIST_HEIGHT);
@@ -226,7 +226,6 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
   const today = moment().format('YYYY-MM-DD');
   const isPastDay = moment(date).isBefore(today, 'day');
   const isFutureDay = moment(date).isAfter(today, 'day');
-  const classTimeline = scheduleByDate?.[date] ?? [];
 
   const rows = useMemo(() => {
     const list = (classTimeline || []).filter(

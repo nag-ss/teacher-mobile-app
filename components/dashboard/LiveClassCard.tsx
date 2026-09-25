@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,7 +11,6 @@ import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
 
 const REFRESH_MS = 300000;
-const TICK_MS = 1000;
 const TIME_FMT = 'HH:mm:ss';
 
 /* ----------------------------- hooks ----------------------------- */
@@ -35,109 +34,12 @@ function useIntervalApi(callback: () => void, delay: number) {
 /** Normalize API times like "14:16:00.054000" → "14:16:00" */
 const normalizeTime = (time?: string) => (time ? String(time).split('.')[0] : '');
 
-const parseClassMoment = (date: string | undefined, time?: string) => {
-  const day = date || moment().format('YYYY-MM-DD');
-  const t = normalizeTime(time);
-  const m = moment(`${day} ${t}`, 'YYYY-MM-DD HH:mm:ss');
-  return m;
-};
-
 const formatTimeRange = (start?: string, end?: string) => {
   const startLabel = (start ? moment(normalizeTime(start), TIME_FMT) : moment()).format('h:mm');
   const endLabel = (
     end ? moment(normalizeTime(end), TIME_FMT) : moment().add(30, 'minutes')
   ).format('h:mm A');
   return `${startLabel} – ${endLabel}`;
-};
-
-const formatCountdown = (startTime?: string) => {
-  if (!startTime) return 'SOON';
-  const diffMs = parseClassMoment(undefined, startTime).diff(moment());
-  if (diffMs <= 0) return 'SOON';
-
-  const totalMinutes = Math.max(1, Math.ceil(diffMs / 60000));
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return hours > 0 ? `IN ${hours}H ${minutes}M` : `IN ${minutes}M`;
-};
-
-type CardMode = 'live' | 'next' | 'done' | 'empty' | 'ahead';
-
-type ResolvedCard = {
-  mode: CardMode;
-  cls: any | null;
-  completedCount: number;
-};
-
-/** Status from schedule + wall clock — same idea as Timeline (no API wait). */
-const resolveCardFromSchedule = (
-  list: any[] | null | undefined,
-  selectedDate?: string,
-  now = moment()
-): ResolvedCard => {
-  const today = moment().format('YYYY-MM-DD');
-  const day = selectedDate || today;
-  const dayList = (list || []).filter((item) => !item?.date || item.date === day);
-
-  if (!dayList.length) return { mode: 'empty', cls: null, completedCount: 0 };
-
-  // Past day → wrap-up with all classes completed.
-  if (moment(day).isBefore(today, 'day')) {
-    return { mode: 'done', cls: null, completedCount: dayList.length };
-  }
-
-  // Future day → head-start summary (not the Next/Prep card).
-  if (moment(day).isAfter(today, 'day')) {
-    return { mode: 'ahead', cls: null, completedCount: dayList.length };
-  }
-
-  let live: any = null;
-  let next: any = null;
-  let nextMs = Infinity;
-  let completedCount = 0;
-
-  for (const item of dayList) {
-    const start = parseClassMoment(item.date || day, item.start_time);
-    const end = parseClassMoment(item.date || day, item.end_time);
-    if (!start.isValid() || !end.isValid()) continue;
-
-    if (now.isSameOrAfter(end)) {
-      completedCount += 1;
-      continue;
-    }
-
-    if (now.isSameOrAfter(start) && now.isBefore(end)) {
-      live = item;
-      continue;
-    }
-
-    if (now.isBefore(start)) {
-      const ms = start.diff(now);
-      if (ms < nextMs) {
-        nextMs = ms;
-        next = item;
-      }
-    }
-  }
-
-  if (live) return { mode: 'live', cls: live, completedCount };
-  if (next) return { mode: 'next', cls: next, completedCount };
-  if (completedCount === dayList.length) return { mode: 'done', cls: null, completedCount };
-  return { mode: 'empty', cls: null, completedCount };
-};
-
-const msUntilNextBoundary = (list: any[] | null | undefined, now = moment()) => {
-  if (!list?.length) return null;
-  let soonest: number | null = null;
-  for (const item of list) {
-    for (const time of [item.start_time, item.end_time]) {
-      const m = parseClassMoment(item.date, time);
-      if (!m.isValid()) continue;
-      const diff = m.diff(now);
-      if (diff > 0 && (soonest === null || diff < soonest)) soonest = diff;
-    }
-  }
-  return soonest;
 };
 
 const ROMAN_MAP: [number, string][] = [
@@ -303,20 +205,23 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const classPrepRef = useRef<any>(null);
 
   const liveClass = useSelector((state: any) => state.classes.liveClass);
-  const scheduleByDate = useSelector((state: any) => state.classes.scheduleByDate);
+  const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const unAuthorised = useSelector((state: any) => state.classes.unAuthorised);
 
   const date = selectedDate || moment().format('YYYY-MM-DD');
   const isToday = moment(date).isSame(moment(), 'day');
   const isPastDay = moment(date).isBefore(moment(), 'day');
-  const schedule = scheduleByDate?.[date] ?? [];
-  const [tick, setTick] = useState(0);
+  const isFutureDay = moment(date).isAfter(moment(), 'day');
+  const schedule = useMemo(
+    () => (classTimeline || []).filter((item: any) => !item?.date || item.date === date),
+    [classTimeline, date]
+  );
+  const classCount = schedule.length;
 
   const loadSchedule = useCallback(async () => {
     await dispatch(getScheduleClasses({ date } as any));
   }, [dispatch, date]);
 
-  // Background only — enrich details; status comes from schedule + clock.
   const refreshLiveInBackground = useCallback(async () => {
     if (!isToday) return;
     await dispatch(getLiveClass(undefined));
@@ -331,26 +236,12 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   useFocusEffect(
     useCallback(() => {
       refreshAll();
-
-      if (!isToday) return;
-      const id = setInterval(() => setTick((t) => t + 1), TICK_MS);
-      return () => clearInterval(id);
-    }, [refreshAll, isToday])
+    }, [refreshAll])
   );
 
   useEffect(() => {
     loadSchedule();
   }, [date, loadSchedule]);
-
-  // Flip exactly at the next start/end boundary (no waiting for the 1s tick).
-  useEffect(() => {
-    if (!isToday) return;
-    const delay = msUntilNextBoundary(schedule);
-    if (delay == null) return;
-
-    const id = setTimeout(() => setTick((t) => t + 1), delay);
-    return () => clearTimeout(id);
-  }, [schedule, tick, isToday]);
 
   useEffect(() => {
     if (unAuthorised) {
@@ -359,32 +250,22 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
     }
   }, [unAuthorised, dispatch]);
 
-  const resolved = useMemo(
-    () => resolveCardFromSchedule(schedule, date),
-    // tick forces recompute as wall-clock time passes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [schedule, tick, date]
-  );
+  // No clock math — live only if API says so; otherwise first scheduled class as next.
+  const hasLiveFromApi = Boolean(isToday && liveClass?.class_schedule_id);
+  const allClassesDone = isPastDay && classCount > 0;
+  const isAhead = isFutureDay && classCount > 0;
+  const isLive = hasLiveFromApi;
+  const isNextClass = isToday && !hasLiveFromApi && classCount > 0;
 
-  const isLive = resolved.mode === 'live';
-  const isNextClass = resolved.mode === 'next';
-  const allClassesDone = resolved.mode === 'done';
-  const isAhead = resolved.mode === 'ahead';
-  const completedClassCount = resolved.completedCount;
-
-  // Prefer API live payload when it matches the clock-selected class (richer details).
   const activeClass = useMemo(() => {
-    const fromSchedule = resolved.cls;
-    if (
-      isToday &&
-      fromSchedule &&
-      liveClass?.class_schedule_id &&
-      liveClass.class_schedule_id === fromSchedule.class_schedule_id
-    ) {
-      return { ...fromSchedule, ...liveClass };
+    if (hasLiveFromApi) {
+      const match = schedule.find(
+        (c: any) => c.class_schedule_id === liveClass.class_schedule_id
+      );
+      return match ? { ...match, ...liveClass } : liveClass;
     }
-    return fromSchedule || {};
-  }, [resolved.cls, liveClass, isToday]);
+    return schedule[0] || {};
+  }, [hasLiveFromApi, schedule, liveClass]);
 
   const classScheduleId = activeClass?.class_schedule_id;
   const hasClass = Boolean(classScheduleId);
@@ -468,7 +349,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
               <View style={styles.liveLabelBox}>
                 <Text>
                   <Text style={styles.statusTextNext}>
-                    NEXT · {isToday ? formatCountdown(activeClass.start_time) : moment(normalizeTime(activeClass.start_time), 'HH:mm:ss').format('h:mm A')}
+                    NEXT · IN 5H
                   </Text>
                   {!isPrepped && <Text style={styles.notPreppedText}> - NOT PREPPED</Text>}
                 </Text>
@@ -499,12 +380,12 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
           </View>
         ) : isAhead ? (
           <AheadState
-            count={completedClassCount}
+            count={classCount}
             dayName={moment(date).format('dddd')}
           />
         ) : allClassesDone ? (
           <AllDoneState
-            count={completedClassCount}
+            count={classCount}
             isPastDay={isPastDay}
             dayName={moment(date).format('dddd')}
           />
