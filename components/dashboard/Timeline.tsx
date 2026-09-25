@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getScheduleClasses } from '@/store/classSlice';
@@ -123,14 +123,32 @@ const ROW_HEIGHT = 85;
 const ROW_GAP = 16;
 const VISIBLE_ROWS = 3;
 const LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS + ROW_GAP * (VISIBLE_ROWS - 1) + 32;
+const THUMB_HEIGHT = 24;
 
 const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const date = selectedDate || moment().format('YYYY-MM-DD');
-  const [contentHeight, setContentHeight] = useState(1);
-  const [layoutHeight, setLayoutHeight] = useState(LIST_HEIGHT);
-  const [scrollY, setScrollY] = useState(0);
+  const thumbRef = useRef<View>(null);
+  const scrollYRef = useRef(0);
+  const metricsRef = useRef({ contentHeight: 1, layoutHeight: LIST_HEIGHT });
+
+  const updateThumb = useCallback((scrollY = scrollYRef.current) => {
+    const { contentHeight, layoutHeight } = metricsRef.current;
+    const canScroll = contentHeight > layoutHeight + 1;
+    const maxScroll = Math.max(1, contentHeight - layoutHeight);
+    const offset = canScroll
+      ? (scrollY / maxScroll) * (layoutHeight - THUMB_HEIGHT)
+      : 0;
+
+    thumbRef.current?.setNativeProps({
+      style: {
+        height: THUMB_HEIGHT,
+        opacity: canScroll ? 1 : 0.35,
+        transform: [{ translateY: offset }],
+      },
+    });
+  }, []);
 
   const getDetails = useCallback(
     async (currentDate: string) => {
@@ -176,13 +194,6 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
       });
   }, [classTimeline, date]);
 
-  const canScroll = contentHeight > layoutHeight + 1;
-  const thumbHeight = 24;
-  const maxScroll = Math.max(1, contentHeight - layoutHeight);
-  const thumbOffset = canScroll
-    ? (scrollY / maxScroll) * (layoutHeight - thumbHeight)
-    : 0;
-
   const headerLabel = moment(date).isSame(moment(), 'day')
     ? "TODAY'S CLASSES"
     : `${moment(date).format('dddd').toUpperCase()}'S CLASSES`;
@@ -199,9 +210,18 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
-          onContentSizeChange={(_w, h) => setContentHeight(h)}
-          onLayout={(e) => setLayoutHeight(e.nativeEvent.layout.height)}
+          onScroll={(e) => {
+            scrollYRef.current = e.nativeEvent.contentOffset.y;
+            updateThumb(scrollYRef.current);
+          }}
+          onContentSizeChange={(_w, h) => {
+            metricsRef.current.contentHeight = h;
+            updateThumb();
+          }}
+          onLayout={(e) => {
+            metricsRef.current.layoutHeight = e.nativeEvent.layout.height;
+            updateThumb();
+          }}
         >
           {rows.length ? (
             rows.map((item: any) => (
@@ -219,14 +239,8 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
 
         <View style={styles.scrollTrack}>
           <View
-            style={[
-              styles.scrollThumb,
-              {
-                height: thumbHeight,
-                transform: [{ translateY: thumbOffset }],
-                opacity: canScroll ? 1 : 0.35,
-              },
-            ]}
+            ref={thumbRef}
+            style={[styles.scrollThumb, { height: THUMB_HEIGHT, opacity: 0.35 }]}
           />
         </View>
       </View>
