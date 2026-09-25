@@ -7,6 +7,7 @@ import {
   Pressable,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -18,16 +19,114 @@ import Animated, {
 } from 'react-native-reanimated';
 import SvgLoader from '@/utils/SvgLoader';
 
-const PANEL_WIDTH = 400;
+const PANEL_WIDTH = 470;
 const DISMISS_DISTANCE = PANEL_WIDTH * 0.28;
 const DISMISS_VELOCITY = 800;
 const OPEN_MS = 280;
 const CLOSE_MS = 240;
 
+type NotificationIcon =
+  | 'notificationAlert'
+  | 'notificationClock'
+  | 'notificationTest'
+  | 'notificationCheckbox'
+  | 'notificationForward';
+
+type TextPart = { text: string; bold?: boolean };
+
+type NotificationItem = {
+  id: string;
+  icon: NotificationIcon;
+  iconBg: string;
+  unread?: boolean;
+  time: string;
+  parts: TextPart[];
+};
+
+const TODAY_ITEMS: NotificationItem[] = [
+  {
+    id: '1',
+    icon: 'notificationAlert',
+    iconBg: '#FDF2F1',
+    unread: true,
+    time: '20 min ago',
+    parts: [
+      { text: '3 students', bold: true },
+      { text: " scored below 50% in yesterday's Algebra Quiz" },
+    ],
+  },
+  {
+    id: '2',
+    icon: 'notificationClock',
+    iconBg: '#FEF6E9',
+    unread: true,
+    time: '1 hour ago',
+    parts: [
+      { text: 'Prep your ' },
+      { text: '11:00 Quadratic Equations class — starts in 1h 48m', bold: true },
+    ],
+  },
+  {
+    id: '3',
+    icon: 'notificationTest',
+    iconBg: '#F2F1EC',
+    time: '2 hours ago',
+    parts: [
+      { text: '2 assignments', bold: true },
+      { text: ' submitted in Grade VIII · Section A' },
+    ],
+  },
+];
+
+const EARLIER_ITEMS: NotificationItem[] = [
+  {
+    id: '4',
+    icon: 'notificationCheckbox',
+    iconBg: '#FEF6E9',
+    time: 'Yesterday',
+    parts: [
+      { text: '5 quizzes', bold: true },
+      { text: ' pending evaluation — due in 2 days' },
+    ],
+  },
+  {
+    id: '5',
+    icon: 'notificationForward',
+    iconBg: '#F2F1EC',
+    time: 'Yesterday',
+    parts: [
+      { text: 'Parent-teacher meeting scheduled for ' },
+      { text: 'Friday, 4:00 PM', bold: true },
+    ],
+  },
+];
+
 type NotificationPanelProps = {
   visible: boolean;
   onClose: () => void;
 };
+
+const NotificationRow = ({ item }: { item: NotificationItem }) => (
+  <View style={[styles.item, item.unread && styles.itemUnread]}>
+    <View style={styles.iconWrap}>
+      {item.unread ? <View style={styles.unreadDot} /> : null}
+      <View style={[styles.iconBox, { backgroundColor: item.iconBg }]}>
+        <SvgLoader svgFilePath={item.icon} width={20} height={20} />
+      </View>
+    </View>
+
+    <View style={styles.itemContent}>
+      <Text style={styles.itemText}>
+        {item.parts.map((part, index) => (
+          <Text key={`${item.id}-${index}`} style={part.bold ? styles.itemTextBold : undefined}>
+            {part.text}
+          </Text>
+        ))}
+      </Text>
+      <Text style={styles.itemTime}>{item.time}</Text>
+    </View>
+  </View>
+);
 
 const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
   const [mounted, setMounted] = useState(false);
@@ -150,12 +249,37 @@ const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
                       onPress={animateClose}
                       hitSlop={8}
                     >
-                      <View style={styles.closeIconBox}>
-                        <SvgLoader svgFilePath="notificationClose" width={16} height={16} />
-                      </View>
+                      <SvgLoader svgFilePath="notificationClose" width={16} height={16} />
                     </TouchableOpacity>
                   </View>
                 </View>
+
+                <ScrollView
+                  style={styles.body}
+                  contentContainerStyle={styles.bodyContent}
+                  showsVerticalScrollIndicator={false}
+                  bounces={false}
+                >
+                  <View style={styles.bodyInner}>
+                    <View style={styles.section}>
+                      <View style={styles.groupLabelContainer}>
+                        <Text style={styles.groupLabel}>TODAY</Text>
+                      </View>
+                      {TODAY_ITEMS.map((item) => (
+                        <NotificationRow key={item.id} item={item} />
+                      ))}
+                    </View>
+
+                    <View style={styles.section}>
+                      <View style={styles.groupLabelContainer}>
+                        <Text style={styles.groupLabel}>EARLIER</Text>
+                      </View>
+                      {EARLIER_ITEMS.map((item) => (
+                        <NotificationRow key={item.id} item={item} />
+                      ))}
+                    </View>
+                  </View>
+                </ScrollView>
               </Animated.View>
             </GestureDetector>
           </SafeAreaView>
@@ -182,9 +306,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   panel: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: 0,
     width: PANEL_WIDTH,
     height: '100%',
     backgroundColor: '#FFFFFF',
@@ -193,12 +314,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 32,
     elevation: 8,
-    zIndex: 3,
   },
   header: {
-    // panel-header — Figma
     alignSelf: 'stretch',
-    width: '100%',
     minHeight: 88,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -206,59 +324,116 @@ const styles = StyleSheet.create({
     padding: 24,
     borderBottomWidth: 1,
     borderBottomColor: '#D9D6CF',
-    flexGrow: 0,
-    flexShrink: 0,
   },
   title: {
-    // title — Figma (no fixed box — fixed 135×24 was clipping the last letters)
     fontSize: 20,
     lineHeight: 24,
     color: '#1F1E1C',
     fontFamily: 'Montserrat_700Bold',
     includeFontPadding: false,
-    flexGrow: 0,
-    flexShrink: 0,
   },
   headerActions: {
-    // header-actions — Figma
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 0,
     gap: 12,
-    flexGrow: 0,
-    flexShrink: 0,
   },
   markAllRead: {
-    // mark-all-read — Figma (no fixed 87×17 — clips text on device)
     fontSize: 14,
     lineHeight: 17,
     color: '#0D8A57',
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
-    flexGrow: 0,
-    flexShrink: 0,
   },
   closeButton: {
-    // close-button — Figma
     width: 40,
     height: 40,
-    padding: 0,
-    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F2F1EC',
     borderRadius: 8,
-    flexGrow: 0,
-    flexShrink: 0,
   },
-  closeIconBox: {
-    // Close 1 — Figma
-    width: 20,
-    height: 20,
-    alignItems: 'center',
+  body: {
+    flex: 1,
+    alignSelf: 'stretch',
+  },
+  bodyContent: {
+    flexGrow: 1,
+  },
+  bodyInner: {
+    alignSelf: 'stretch',
+    paddingVertical: 8,
+  },
+  section: {
+    alignSelf: 'stretch',
+  },
+  groupLabelContainer: {
+    alignSelf: 'stretch',
+    paddingTop: 16,
+    paddingHorizontal: 24,
+    paddingBottom: 8,
+  },
+  groupLabel: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+    textTransform: 'uppercase',
+  },
+  item: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  itemUnread: {
+    backgroundColor: '#F6FBF9',
+  },
+  unreadDot: {
+    position: 'absolute',
+    left: -16,
+    top: 0,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#21C17C',
+  },
+  iconWrap: {
+    width: 40,
+    height: 40,
+  },
+  iconBox: {
+    width: 40,
+    height: 40,
     justifyContent: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  itemContent: {
+    flex: 1,
+    minWidth: 0,
+    gap: 4,
+  },
+  itemText: {
+    alignSelf: 'stretch',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  itemTextBold: {
+    fontFamily: 'Inter_600SemiBold',
+    color: '#1F1E1C',
+  },
+  itemTime: {
+    fontSize: 14,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
   },
 });
 
