@@ -3,6 +3,7 @@ import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity } from 'react-na
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
+import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { getScheduleClasses } from '@/store/classSlice';
@@ -22,6 +23,7 @@ const DashboardScreen = () => {
   const dispatch = useDispatch<any>();
   const { user } = useSelector((state: any) => state.user);
   const [dayIndex, setDayIndex] = useState(1); // Today
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const hasNotifications = false;
   const dayLabel = DAY_LABELS[dayIndex];
   const greetingName = user?.first_name || 'Teacher';
@@ -82,7 +84,11 @@ const DashboardScreen = () => {
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.notificationButton} activeOpacity={0.7}>
+                <TouchableOpacity
+                  style={styles.notificationButton}
+                  activeOpacity={0.7}
+                  onPress={() => setNotificationsOpen(true)}
+                >
                   <View style={styles.notificationIconBox}>
                     <SvgLoader
                       svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
@@ -97,6 +103,11 @@ const DashboardScreen = () => {
             <HomeSidePanels dayLabel={dayLabel} selectedDate={selectedDate} />
           </View>
         </View>
+
+        <NotificationPanel
+          visible={notificationsOpen}
+          onClose={() => setNotificationsOpen(false)}
+        />
       </View>
     </SafeAreaView>
   );
@@ -106,6 +117,8 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: '#FAFAF8',
+    position: 'relative',
+    overflow: 'hidden',
   },
   container: {
     flex: 1,
