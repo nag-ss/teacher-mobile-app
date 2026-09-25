@@ -30,26 +30,6 @@ const toRoman = (value: string | number) => {
   return result;
 };
 
-const getTitle = (item: any) => {
-  const details = item?.class_details?.[0];
-  if (details) {
-    const topic = details.topic || details.Topic;
-    const subTopic = Array.isArray(details.sub_topic)
-      ? details.sub_topic[0]
-      : details.Sub_topic?.[0];
-    if (topic && subTopic) return `${topic} — ${subTopic}`;
-    if (topic) return topic;
-    if (subTopic) return subTopic;
-  }
-  return item?.subject_name || 'Class';
-};
-
-const hasTopicSet = (item: any) => {
-  const details = item?.class_details?.[0];
-  const topic = details?.topic || details?.Topic;
-  return Boolean(topic?.toString?.().trim?.());
-};
-
 const getGradeLabel = (item: any) => {
   const rawDivision = item?.division_name?.toString().trim() || '';
   const section = item?.section_name?.toString().trim();
@@ -66,79 +46,34 @@ const ClassTimelineRow = ({
   item,
   currentDate,
   isPastDay,
-  isFutureDay,
 }: {
   item: any;
   currentDate: string;
   isPastDay?: boolean;
-  isFutureDay?: boolean;
 }) => {
   const classPrepRef = useRef<any>();
-  const isCompleted = item.isClassOver;
-  const isLive = item.live;
-  const awaitingAdmin = Boolean(isFutureDay && item.awaitingAdmin);
-  const canOpenPrep = !isCompleted && !awaitingAdmin;
-  const statusLabel = isCompleted
-    ? 'Completed'
-    : isLive
-      ? 'Live now'
-      : awaitingAdmin
-        ? 'Awaiting admin'
-        : 'Prep ready';
   const showPastSummary = Boolean(isPastDay);
 
-  const openClassPrep = () => {
-    if (canOpenPrep) {
-      classPrepRef.current?.setSelectedClass();
-    }
-  };
-
   const onPress = () => {
-    if (showPastSummary) {
-      // Summary navigation can be wired later; keep row tappable.
-      return;
-    }
-    openClassPrep();
+    if (showPastSummary) return;
+    classPrepRef.current?.setSelectedClass();
   };
 
   return (
     <>
       <TouchableOpacity
-        style={[styles.row, (!isCompleted || showPastSummary || isFutureDay) && styles.rowCard]}
+        style={[styles.row, styles.rowCard]}
         activeOpacity={0.7}
         onPress={onPress}
-        disabled={(isCompleted && !showPastSummary) || awaitingAdmin}
       >
         <View style={styles.timeBox}>
-          <Text
-            style={[
-              styles.time,
-              isCompleted && !showPastSummary && styles.textMuted,
-            ]}
-          >
-            {item.timeLabel}
-          </Text>
-          <Text
-            style={[
-              styles.timePeriod,
-              isCompleted && !showPastSummary && styles.textMuted,
-            ]}
-          >
-            {item.timePeriod}
-          </Text>
+          <Text style={styles.time}>{item.timeLabel}</Text>
+          <Text style={styles.timePeriod}>{item.timePeriod}</Text>
         </View>
 
         <View style={styles.classMeta}>
           <View style={styles.subjectBox}>
-            <Text
-              style={[
-                styles.title,
-                (isCompleted && !showPastSummary) || awaitingAdmin
-                  ? styles.textMuted
-                  : null,
-              ]}
-              numberOfLines={1}
-            >
+            <Text style={styles.title} numberOfLines={1}>
               {item.title}
             </Text>
           </View>
@@ -161,16 +96,7 @@ const ClassTimelineRow = ({
         ) : (
           <View style={styles.statusBlock}>
             <View style={styles.statusBox}>
-              <Text
-                style={[
-                  styles.status,
-                  isCompleted || awaitingAdmin
-                    ? styles.statusCompleted
-                    : styles.statusReady,
-                ]}
-              >
-                {statusLabel}
-              </Text>
+              <Text style={[styles.status, styles.statusReady]}>Prep ready</Text>
             </View>
             <View style={styles.arrowBox}>
               <View style={styles.arrowVector}>
@@ -193,7 +119,7 @@ const ClassTimelineRow = ({
   );
 };
 
-const ROW_HEIGHT = 85; // padding 40 + subject/grade meta 45
+const ROW_HEIGHT = 85;
 const ROW_GAP = 16;
 const VISIBLE_ROWS = 3;
 const LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS + ROW_GAP * (VISIBLE_ROWS - 1) + 32;
@@ -223,9 +149,7 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
     getDetails(date);
   }, [date, getDetails]);
 
-  const today = moment().format('YYYY-MM-DD');
-  const isPastDay = moment(date).isBefore(today, 'day');
-  const isFutureDay = moment(date).isAfter(today, 'day');
+  const isPastDay = moment(date).isBefore(moment(), 'day');
 
   const rows = useMemo(() => {
     const list = (classTimeline || []).filter(
@@ -233,45 +157,24 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
     );
     if (!list.length) return [];
 
-    const now = moment();
     const normalizeStart = (t: any) => String(t.start_time || '').split('.')[0];
 
     return [...list]
       .sort((a, b) => normalizeStart(a).localeCompare(normalizeStart(b)))
       .map((timeline: any) => {
-      const startRaw = String(timeline.start_time).split('.')[0];
-      const endRaw = String(timeline.end_time).split('.')[0];
-      const start = moment(startRaw, 'HH:mm:ss');
-      const end = moment(endRaw, 'HH:mm:ss');
-      const classDate = timeline.date || date;
-      const startDateTime = moment(`${classDate} ${startRaw}`, 'YYYY-MM-DD HH:mm:ss');
-      const endDateTime = moment(`${classDate} ${endRaw}`, 'YYYY-MM-DD HH:mm:ss');
-      const topicSet = hasTopicSet(timeline);
+        const startRaw = String(timeline.start_time).split('.')[0];
+        const start = moment(startRaw, 'HH:mm:ss');
 
-      const live =
-        !isPastDay &&
-        !isFutureDay &&
-        now.isSameOrBefore(endDateTime) &&
-        now.isSameOrAfter(startDateTime);
-      const isClassOver = isPastDay || (!isFutureDay && now.isSameOrAfter(endDateTime));
-
-      return {
-        classId: timeline.class_schedule_id,
-        time: `${start.format('HH:mm')} - ${end.format('HH:mm')}`,
-        timeLabel: start.format('h:mm'),
-        timePeriod: start.format('A'),
-        startTime: start.format('HH:mm'),
-        classLength: moment.duration(end.diff(start)).asMinutes(),
-        category: timeline.subject_name,
-        title: isFutureDay && !topicSet ? 'Topic to be set' : getTitle(timeline),
-        gradeLabel: getGradeLabel(timeline),
-        live,
-        isClassOver,
-        awaitingAdmin: isFutureDay && !topicSet,
-        raw: timeline,
-      };
-    });
-  }, [classTimeline, date, isPastDay, isFutureDay, today]);
+        return {
+          classId: timeline.class_schedule_id,
+          timeLabel: start.format('h:mm'),
+          timePeriod: start.format('A'),
+          title: timeline.subject_name || 'Class',
+          gradeLabel: getGradeLabel(timeline),
+          raw: timeline,
+        };
+      });
+  }, [classTimeline, date]);
 
   const canScroll = contentHeight > layoutHeight + 1;
   const thumbHeight = 24;
@@ -307,7 +210,6 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
                 item={item}
                 currentDate={date}
                 isPastDay={isPastDay}
-                isFutureDay={isFutureDay}
               />
             ))
           ) : (
@@ -504,10 +406,6 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     textAlignVertical: 'center',
   },
-  statusCompleted: {
-    color: '#8A8880',
-    fontFamily: 'Inter_500Medium',
-  },
   statusReady: {
     color: '#0D8A57',
     fontFamily: 'Inter_600SemiBold',
@@ -528,10 +426,6 @@ const styles = StyleSheet.create({
     bottom: '15%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  textMuted: {
-    color: '#8A8880',
-    fontFamily: 'Inter_500Medium',
   },
   emptyText: {
     fontSize: 14,
