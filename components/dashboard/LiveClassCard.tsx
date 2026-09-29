@@ -122,7 +122,8 @@ const ClassFooter = memo(({ grade, label, onPress, outlined }: FooterProps) => (
   </View>
 ));
 
-const EmptyState = memo(() => (
+const EmptyState = memo(
+  ({ isYesterday, isTomorrow }: { isYesterday?: boolean; isTomorrow?: boolean }) => (
   <View style={styles.emptyContent}>
     <View style={styles.emptyIconBox}>
       <View style={styles.clockIcon}>
@@ -131,7 +132,13 @@ const EmptyState = memo(() => (
     </View>
     <View style={styles.emptyTextBlock}>
       <View style={styles.emptyTitleBox}>
-        <Text style={styles.emptyTitle}>No classes scheduled today</Text>
+        <Text style={styles.emptyTitle}>
+          {isYesterday
+            ? 'No classes scheduled yesterday'
+            : isTomorrow
+              ? 'No classes scheduled tomorrow'
+              : 'No classes scheduled today'}
+        </Text>
       </View>
       <View style={styles.emptySubtitleBox}>
         <Text style={styles.emptySubtitle} numberOfLines={2}>
@@ -390,7 +397,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
             dayName={moment(date).format('dddd')}
           />
         ) : (
-          <EmptyState />
+          <EmptyState isYesterday={isPastDay} isTomorrow={isFutureDay} />
         )}
       </View>
 
