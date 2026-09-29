@@ -1,7 +1,7 @@
 import BrandPanel from '@/components/login/BrandPanel';
 import LoginForm from '@/components/login/LoginForm';
 import ResetPassword from '@/components/login/ResetPassword';
-import { useLoginLayout } from '@/hooks/useLoginLayout';
+import { useLoginLayout } from '@/hooks/Responsive/useLoginLayout';
 import { clearError, userDetails, userLogin } from '@/store/authSlice';
 import React, { useEffect, useState } from 'react';
 import {

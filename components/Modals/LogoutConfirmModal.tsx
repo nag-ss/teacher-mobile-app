@@ -1,4 +1,4 @@
-import { useLoginLayout } from '@/hooks/useLoginLayout';
+import { useLoginLayout } from '@/hooks/Responsive/useLoginLayout';
 import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
