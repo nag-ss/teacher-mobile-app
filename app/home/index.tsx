@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
@@ -12,7 +12,6 @@ import SvgLoader from '@/utils/SvgLoader';
 import moment from 'moment';
 
 const FIGMA_DASHBOARD_WIDTH = 1152;
-const FIGMA_DASHBOARD_HEIGHT = 700;
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -27,11 +26,11 @@ const DashboardScreen = () => {
   const dispatch = useDispatch<any>();
   const { user } = useSelector((state: any) => state.user);
   const layout = useRightSidebarLayout();
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const widthFits = width >= FIGMA_DASHBOARD_WIDTH;
-  const heightFits = height >= FIGMA_DASHBOARD_HEIGHT;
   const mainPaddingH = widthFits ? 32 : 20;
-  const mainGap = heightFits ? 24 : 16;
+  /** Match left sidebar: paddingTop 24 + header 61 + navGap 24. */
+  const mainGap = 24;
   const [dayIndex, setDayIndex] = useState(1); // Today
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const hasNotifications = false;
@@ -48,19 +47,20 @@ const DashboardScreen = () => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FAFAF8' }}>
+    <View style={{ flex: 1, backgroundColor: '#FAFAF8' }}>
       <View style={styles.mainContainer}>
         <View style={styles.container}>
           <View
             style={[
               styles.mainContent,
               {
+                paddingTop: layout.paddingTop,
                 paddingHorizontal: mainPaddingH,
                 gap: mainGap,
               },
             ]}
           >
-            <View style={styles.pageHeader}>
+            <View style={[styles.pageHeader, { height: layout.headerHeight }]}>
               <View style={styles.greetingBlock}>
                 <View style={styles.greetingBox}>
                   <Text style={styles.title}>
@@ -159,7 +159,7 @@ const DashboardScreen = () => {
           onClose={() => setNotificationsOpen(false)}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -258,7 +258,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    paddingTop: 24,
     paddingBottom: 32,
     backgroundColor: '#FAFAF8',
   },
@@ -291,7 +290,6 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   pageHeader: {
-    minHeight: 61,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -300,6 +298,7 @@ const styles = StyleSheet.create({
     padding: 0,
     flexGrow: 0,
     flexShrink: 0,
+    overflow: 'hidden',
   },
   greetingBlock: {
     flexDirection: 'column',

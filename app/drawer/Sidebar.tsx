@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import SvgLoader from '@/utils/SvgLoader';
-import { useLeftSidebarLayout } from '@/hooks/Responsive/useLeftSidebarLayout';
+import { useLeftSidebarLayout } from '../../hooks/Responsive/useLeftSidebarLayout';
 
 const menuItems = [
   { icon: 'sidebarHome', activeIcon: 'sidebarHomeActive', label: 'Home', route: 'Home' },
@@ -70,11 +70,7 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
               { width: layout.logoSize, height: layout.logoSize },
             ]}
           >
-            <SvgLoader
-              svgFilePath="sidebarLogo"
-              width={32}
-              height={32}
-            />
+            <SvgLoader svgFilePath="sidebarLogo" width={32} height={32} />
           </View>
           <View style={styles.brandBox}>
             <Text style={styles.brand}>Super Slate</Text>

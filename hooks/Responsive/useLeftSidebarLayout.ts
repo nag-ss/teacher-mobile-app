@@ -22,12 +22,11 @@ const FIGMA = {
   logoutBoxSize: 24,
 } as const;
 
-/** Left nav (216) + main column (~636) + right sidebar (300). */
 const MAIN_COLUMN_WIDTH = 636;
 const RIGHT_SIDEBAR_WIDTH = 300;
 const FIGMA_DASHBOARD_WIDTH = FIGMA.sidebarWidth + MAIN_COLUMN_WIDTH + RIGHT_SIDEBAR_WIDTH;
 const FIGMA_DASHBOARD_HEIGHT = 700;
-const SIDEBAR_MIN_WIDTH = 168;
+const SIDEBAR_MIN_WIDTH = 184;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -63,33 +62,22 @@ export const useLeftSidebarLayout = (): LeftSidebarLayout => {
       return { ...FIGMA };
     }
 
-    const paddingHorizontal = widthFits ? FIGMA.paddingHorizontal : 10;
-    /** Narrower left nav so center (live + timeline) gets more width. */
+    const paddingHorizontal = widthFits ? FIGMA.paddingHorizontal : 12;
     const sidebarWidth = clamp(
-      widthFits ? FIGMA.sidebarWidth : 176,
+      widthFits ? FIGMA.sidebarWidth : 200,
       SIDEBAR_MIN_WIDTH,
       FIGMA.sidebarWidth,
     );
     const contentWidth = Math.max(0, sidebarWidth - paddingHorizontal * 2);
 
     return {
+      ...FIGMA,
       sidebarWidth,
-      paddingTop: heightFits ? FIGMA.paddingTop : 16,
       paddingHorizontal,
-      paddingBottom: heightFits ? FIGMA.paddingBottom : 16,
       contentWidth,
-      navGap: heightFits ? FIGMA.navGap : 16,
-      headerHeight: heightFits ? FIGMA.headerHeight : 48,
-      headerGap: FIGMA.headerGap,
-      logoSize: FIGMA.logoSize,
+      paddingBottom: heightFits ? FIGMA.paddingBottom : 16,
       menuGap: heightFits ? FIGMA.menuGap : 6,
-      menuItemHeight: FIGMA.menuItemHeight,
-      menuItemPaddingH: widthFits ? FIGMA.menuItemPaddingH : 12,
-      menuItemGap: widthFits ? FIGMA.menuItemGap : 10,
-      menuItemRadius: FIGMA.menuItemRadius,
       footerGap: widthFits ? FIGMA.footerGap : 8,
-      avatarSize: FIGMA.avatarSize,
-      logoutBoxSize: FIGMA.logoutBoxSize,
     };
   }, [width, height]);
 };

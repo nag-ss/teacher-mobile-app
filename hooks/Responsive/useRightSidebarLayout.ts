@@ -25,7 +25,7 @@ const FIGMA = {
  * Left nav (216) + main column (~636) + right sidebar (300).
  */
 const LEFT_SIDEBAR_WIDTH = 216;
-const LEFT_SIDEBAR_COMPACT = 176;
+const LEFT_SIDEBAR_COMPACT = 200;
 const MAIN_COLUMN_WIDTH = 636;
 const FIGMA_DASHBOARD_WIDTH = LEFT_SIDEBAR_WIDTH + MAIN_COLUMN_WIDTH + FIGMA.sidebarWidth;
 const FIGMA_DASHBOARD_HEIGHT = 700;
@@ -77,11 +77,12 @@ export const useRightSidebarLayout = (): RightSidebarLayout => {
 
     return {
       sidebarWidth,
-      paddingTop: heightFits ? FIGMA.paddingTop : 16,
+      /** Keep top band same as center so live card + events card stay aligned. */
+      paddingTop: FIGMA.paddingTop,
       paddingHorizontal: widthFits ? FIGMA.paddingHorizontal : 12,
       paddingBottom: heightFits ? FIGMA.paddingBottom : 20,
-      gap: heightFits ? FIGMA.gap : 12,
-      headerHeight: heightFits ? FIGMA.headerHeight : 48,
+      gap: FIGMA.gap,
+      headerHeight: FIGMA.headerHeight,
       dayPillPaddingV: heightFits ? FIGMA.dayPillPaddingV : 8,
       dayPillPaddingH: widthFits ? FIGMA.dayPillPaddingH : 10,
       dayPillGap: widthFits ? FIGMA.dayPillGap : 8,
