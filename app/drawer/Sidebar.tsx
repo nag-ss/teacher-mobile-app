@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import SvgLoader from '@/utils/SvgLoader';
+import { useLeftSidebarLayout } from '@/hooks/Responsive/useLeftSidebarLayout';
 
 const menuItems = [
   { icon: 'sidebarHome', activeIcon: 'sidebarHomeActive', label: 'Home', route: 'Home' },
@@ -35,6 +36,7 @@ type SidebarProps = {
 
 const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarProps) => {
   const { user } = useSelector((state: any) => state.user);
+  const layout = useLeftSidebarLayout();
 
   const isActive = (route: string) =>
     currentRoute === route || (currentRoute === 'live-monitoring' && route === 'Home');
@@ -44,18 +46,42 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
   const subjectLabel = formatSubjects(user?.subjects);
 
   return (
-    <View style={styles.sidebar}>
-      <View style={styles.navBox}>
-        <View style={styles.header}>
-          <View style={styles.logoBox}>
-            <SvgLoader svgFilePath="sidebarLogo" width={32} height={32} />
+    <View
+      style={[
+        styles.sidebar,
+        {
+          width: layout.sidebarWidth,
+          paddingTop: layout.paddingTop,
+          paddingHorizontal: layout.paddingHorizontal,
+          paddingBottom: layout.paddingBottom,
+        },
+      ]}
+    >
+      <View style={[styles.navBox, { width: layout.contentWidth, gap: layout.navGap }]}>
+        <View
+          style={[
+            styles.header,
+            { height: layout.headerHeight, gap: layout.headerGap },
+          ]}
+        >
+          <View
+            style={[
+              styles.logoBox,
+              { width: layout.logoSize, height: layout.logoSize },
+            ]}
+          >
+            <SvgLoader
+              svgFilePath="sidebarLogo"
+              width={32}
+              height={32}
+            />
           </View>
           <View style={styles.brandBox}>
             <Text style={styles.brand}>Super Slate</Text>
           </View>
         </View>
 
-        <View style={styles.menu}>
+        <View style={[styles.menu, { width: layout.contentWidth, gap: layout.menuGap }]}>
           {menuItems.map((item) => {
             const active = isActive(item.route);
             const iconKey = active ? item.activeIcon : item.icon;
@@ -63,7 +89,17 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
             return (
               <TouchableOpacity
                 key={item.label}
-                style={[styles.menuItem, active && styles.selectedMenu]}
+                style={[
+                  styles.menuItem,
+                  {
+                    width: layout.contentWidth,
+                    height: layout.menuItemHeight,
+                    paddingHorizontal: layout.menuItemPaddingH,
+                    gap: layout.menuItemGap,
+                    borderRadius: layout.menuItemRadius,
+                  },
+                  active && styles.selectedMenu,
+                ]}
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate(item.route)}
               >
@@ -81,8 +117,22 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
         </View>
       </View>
 
-      <View style={styles.footer}>
-        <View style={styles.avatar}>
+      <View
+        style={[
+          styles.footer,
+          { width: layout.contentWidth, gap: layout.footerGap },
+        ]}
+      >
+        <View
+          style={[
+            styles.avatar,
+            {
+              width: layout.avatarSize,
+              height: layout.avatarSize,
+              borderRadius: layout.avatarSize / 2,
+            },
+          ]}
+        >
           <View style={styles.initialsBox}>
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
@@ -104,7 +154,12 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
           onPress={() => onLogoutPress?.()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <View style={styles.logoutBox}>
+          <View
+            style={[
+              styles.logoutBox,
+              { width: layout.logoutBoxSize, height: layout.logoutBoxSize },
+            ]}
+          >
             <SvgLoader svgFilePath="sidebarLogout" width={18} height={18} />
           </View>
         </TouchableOpacity>
@@ -117,31 +172,20 @@ export default Sidebar;
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 216,
     alignSelf: 'stretch',
     backgroundColor: '#FAFAF8',
     borderRightWidth: 1,
     borderRightColor: '#D9D6CF',
-    paddingTop: 24,
-    paddingHorizontal: 16,
-    paddingBottom: 20,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  navBox: {
-    width: 184,
-    gap: 24,
-  },
+  navBox: {},
   header: {
-    height: 61,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     alignSelf: 'flex-start',
   },
   logoBox: {
-    width: 32,
-    height: 32,
     borderRadius: 2.66667,
     flexGrow: 0,
     flexShrink: 0,
@@ -162,20 +206,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_700Bold',
     includeFontPadding: false,
   },
-  menu: {
-    width: 184,
-    gap: 8,
-  },
+  menu: {},
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
-    width: 184,
-    height: 48,
-    paddingHorizontal: 16,
     paddingVertical: 0,
-    gap: 14,
-    borderRadius: 12,
     flexGrow: 0,
     flexShrink: 0,
     borderWidth: 1,
@@ -218,16 +254,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
-    width: 184,
     padding: 0,
-    gap: 12,
     flexGrow: 0,
     flexShrink: 0,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     backgroundColor: '#B7E7CE',
     padding: 0,
     flexDirection: 'column',
@@ -292,8 +323,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   logoutBox: {
-    width: 24,
-    height: 24,
     flexGrow: 0,
     flexShrink: 0,
     alignItems: 'center',
