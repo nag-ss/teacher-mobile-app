@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import type { RightSidebarLayout } from '@/hooks/Responsive/useRightSidebarLayout';
 
 const TODAY_EVENTS = [
   { time: '4:00 PM', title: 'Parent-teacher meeting' },
@@ -22,9 +23,10 @@ const ATTENTION_ITEMS = [
 type Props = {
   dayLabel?: string;
   selectedDate?: string;
+  layout: RightSidebarLayout;
 };
 
-const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
+const HomeSidePanels = ({ dayLabel = 'Today', selectedDate, layout }: Props) => {
   const isToday = dayLabel === 'Today';
   const eventsTitle =
     dayLabel === 'Yesterday'
@@ -36,11 +38,17 @@ const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
   // Mock events only for today until a day-based events API is wired.
   const events = isToday ? TODAY_EVENTS : [];
 
+  const cardStyle = {
+    padding: layout.cardPadding,
+    gap: layout.cardGap,
+    borderRadius: layout.cardRadius,
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.eventsCard}>
+    <View style={[styles.container, { gap: layout.gap }]}>
+      <View style={[styles.eventsCard, cardStyle]}>
         <Text style={styles.eventsTitle}>{eventsTitle}</Text>
-        <View style={styles.eventsList}>
+        <View style={[styles.eventsList, { gap: layout.cardGap }]}>
           {events.length ? (
             events.map((event) => (
               <View key={event.time + event.title} style={styles.eventItem}>
@@ -54,7 +62,7 @@ const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
         </View>
       </View>
 
-      <View style={styles.attentionCard}>
+      <View style={[styles.attentionCard, cardStyle]}>
         <Text style={styles.attentionTitle}>Needs your attention</Text>
         <View style={styles.attentionList}>
           {isToday ? (
@@ -62,7 +70,7 @@ const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
               <React.Fragment key={item.highlight}>
                 {index > 0 ? <View style={styles.divider} /> : null}
                 <View style={styles.attentionWrapper}>
-                  <View style={styles.attentionItem}>
+                  <View style={[styles.attentionItem, { gap: layout.attentionGap }]}>
                     <View style={styles.dotAligner}>
                       <View style={[styles.dot, { backgroundColor: item.dotColor }]} />
                     </View>
@@ -90,7 +98,6 @@ const HomeSidePanels = ({ dayLabel = 'Today', selectedDate }: Props) => {
 const styles = StyleSheet.create({
   container: {
     alignSelf: 'stretch',
-    gap: 20,
   },
   eventsCard: {
     alignSelf: 'stretch',
@@ -98,9 +105,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 16,
-    padding: 24,
-    gap: 16,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.0156863,
@@ -113,9 +117,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 16,
-    padding: 24,
-    gap: 16,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.0156863,
@@ -139,8 +140,6 @@ const styles = StyleSheet.create({
   eventsList: {
     alignSelf: 'stretch',
     alignItems: 'flex-start',
-    padding: 0,
-    gap: 16,
   },
   eventItem: {
     gap: 4,
@@ -163,18 +162,15 @@ const styles = StyleSheet.create({
   attentionList: {
     alignSelf: 'stretch',
     alignItems: 'flex-start',
-    padding: 0,
   },
   attentionWrapper: {
     alignSelf: 'stretch',
     alignItems: 'flex-start',
-    padding: 0,
   },
   attentionItem: {
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
     paddingVertical: 12,
   },
   dotAligner: {

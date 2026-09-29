@@ -4,6 +4,7 @@ import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
 import NotificationPanel from '@/components/dashboard/NotificationPanel';
+import { useRightSidebarLayout } from '@/hooks/Responsive/useRightSidebarLayout';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { getScheduleClasses } from '@/store/classSlice';
@@ -22,6 +23,7 @@ const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 const DashboardScreen = () => {
   const dispatch = useDispatch<any>();
   const { user } = useSelector((state: any) => state.user);
+  const layout = useRightSidebarLayout();
   const [dayIndex, setDayIndex] = useState(1); // Today
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const hasNotifications = false;
@@ -61,10 +63,31 @@ const DashboardScreen = () => {
             </View>
           </View>
 
-          <View style={styles.rightSidebar}>
-            <View style={styles.rightHeader}>
+          <View
+            style={[
+              styles.rightSidebar,
+              {
+                width: layout.sidebarWidth,
+                paddingTop: layout.paddingTop,
+                paddingHorizontal: layout.paddingHorizontal,
+                paddingBottom: layout.paddingBottom,
+                gap: layout.gap,
+              },
+            ]}
+          >
+            <View style={[styles.rightHeader, { height: layout.headerHeight }]}>
               <View style={styles.headerActions}>
-                <View style={styles.dayPill}>
+                <View
+                  style={[
+                    styles.dayPill,
+                    {
+                      paddingVertical: layout.dayPillPaddingV,
+                      paddingHorizontal: layout.dayPillPaddingH,
+                      gap: layout.dayPillGap,
+                      borderRadius: layout.dayPillRadius,
+                    },
+                  ]}
+                >
                   <TouchableOpacity
                     style={styles.dayArrow}
                     onPress={() => setDayIndex((prev) => Math.max(0, prev - 1))}
@@ -85,7 +108,14 @@ const DashboardScreen = () => {
                 </View>
 
                 <TouchableOpacity
-                  style={styles.notificationButton}
+                  style={[
+                    styles.notificationButton,
+                    {
+                      width: layout.notificationSize,
+                      height: layout.notificationSize,
+                      borderRadius: layout.dayPillRadius,
+                    },
+                  ]}
                   activeOpacity={0.7}
                   onPress={() => setNotificationsOpen(true)}
                 >
@@ -100,7 +130,11 @@ const DashboardScreen = () => {
               </View>
             </View>
 
-            <HomeSidePanels dayLabel={dayLabel} selectedDate={selectedDate} />
+            <HomeSidePanels
+              dayLabel={dayLabel}
+              selectedDate={selectedDate}
+              layout={layout}
+            />
           </View>
         </View>
 
@@ -130,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'stretch',
-    width: 252,
+    width: '100%',
     padding: 0,
     gap: 8,
     flexGrow: 0,
@@ -140,16 +174,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 200,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 14,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 12,
     flexGrow: 1,
-    flexShrink: 0,
+    flexShrink: 1,
     shadowColor: '#000',
     shadowOpacity: 0.0196078,
     shadowRadius: 12,
@@ -182,8 +211,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   notificationButton: {
-    width: 44,
-    height: 44,
     padding: 0,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -191,7 +218,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 12,
     flexGrow: 0,
     flexShrink: 0,
     shadowColor: '#000',
@@ -209,8 +235,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   mainContent: {
-    width: 636,
+    flex: 1,
     flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 0,
     alignSelf: 'stretch',
     flexDirection: 'column',
     alignItems: 'flex-start',
@@ -221,13 +249,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAF8',
   },
   rightSidebar: {
-    width: 300,
     alignSelf: 'stretch',
     alignItems: 'flex-start',
-    paddingTop: 24,
-    paddingHorizontal: 24,
-    paddingBottom: 32,
-    gap: 20,
     flexGrow: 0,
     flexShrink: 0,
     borderLeftWidth: 1,
@@ -235,7 +258,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAF8',
   },
   rightHeader: {
-    height: 61,
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -255,12 +277,12 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   pageHeader: {
-    width: 572,
     minHeight: 61,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'stretch',
+    width: '100%',
     padding: 0,
     flexGrow: 0,
     flexShrink: 0,
