@@ -8,6 +8,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
+import { useLiveClassLayout, type LiveClassLayout } from '@/hooks/Responsive/useLiveClassLayout';
 import ClassPrep from './ClassPrep';
 
 const REFRESH_MS = 300000;
@@ -95,9 +96,10 @@ type FooterProps = {
   label: string;
   onPress: () => void;
   outlined?: boolean;
+  layout: LiveClassLayout;
 };
 
-const ClassFooter = memo(({ grade, label, onPress, outlined }: FooterProps) => (
+const ClassFooter = memo(({ grade, label, onPress, outlined, layout }: FooterProps) => (
   <View style={styles.heroFooterRow}>
     <View style={styles.gradeBoxLive}>
       <Text style={styles.meta} numberOfLines={1}>
@@ -106,7 +108,15 @@ const ClassFooter = memo(({ grade, label, onPress, outlined }: FooterProps) => (
     </View>
 
     <TouchableOpacity
-      style={[styles.joinButton, outlined && styles.reviewPlanButton]}
+      style={[
+        styles.joinButton,
+        {
+          height: layout.joinButtonHeight,
+          paddingHorizontal: layout.joinButtonPaddingH,
+          gap: layout.joinButtonGap,
+        },
+        outlined && styles.reviewPlanButton,
+      ]}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -122,15 +132,29 @@ const ClassFooter = memo(({ grade, label, onPress, outlined }: FooterProps) => (
   </View>
 ));
 
+type EmptyLayoutProps = { layout: LiveClassLayout };
+
 const EmptyState = memo(
-  ({ isYesterday, isTomorrow }: { isYesterday?: boolean; isTomorrow?: boolean }) => (
-  <View style={styles.emptyContent}>
-    <View style={styles.emptyIconBox}>
+  ({
+    isYesterday,
+    isTomorrow,
+    layout,
+  }: {
+    isYesterday?: boolean;
+    isTomorrow?: boolean;
+  } & EmptyLayoutProps) => (
+  <View style={[styles.emptyContent, { gap: layout.emptyContentGap }]}>
+    <View
+      style={[
+        styles.emptyIconBox,
+        { width: layout.emptyIconSize, height: layout.emptyIconSize },
+      ]}
+    >
       <View style={styles.clockIcon}>
         <SvgLoader svgFilePath="liveCalendar" width={24} height={24} />
       </View>
     </View>
-    <View style={styles.emptyTextBlock}>
+    <View style={[styles.emptyTextBlock, { gap: layout.emptyTextGap }]}>
       <View style={styles.emptyTitleBox}>
         <Text style={styles.emptyTitle}>
           {isYesterday
@@ -154,18 +178,24 @@ const AllDoneState = memo(
     count,
     isPastDay,
     dayName,
+    layout,
   }: {
     count: number;
     isPastDay?: boolean;
     dayName?: string;
-  }) => (
-  <View style={styles.emptyContent}>
-    <View style={styles.doneIconBox}>
+  } & EmptyLayoutProps) => (
+  <View style={[styles.emptyContent, { gap: layout.emptyContentGap }]}>
+    <View
+      style={[
+        styles.doneIconBox,
+        { width: layout.emptyIconSize, height: layout.emptyIconSize },
+      ]}
+    >
       <View style={styles.clockIcon}>
         <SvgLoader svgFilePath="liveCorrect" width={18} height={14} />
       </View>
     </View>
-    <View style={styles.emptyTextBlock}>
+    <View style={[styles.emptyTextBlock, { gap: layout.emptyTextGap }]}>
       <View style={styles.emptyTitleBox}>
         <Text style={styles.emptyTitle}>
           {isPastDay && dayName
@@ -184,14 +214,27 @@ const AllDoneState = memo(
   </View>
 ));
 
-const AheadState = memo(({ count, dayName }: { count: number; dayName: string }) => (
-  <View style={styles.emptyContent}>
-    <View style={styles.emptyIconBox}>
+const AheadState = memo(
+  ({
+    count,
+    dayName,
+    layout,
+  }: {
+    count: number;
+    dayName: string;
+  } & EmptyLayoutProps) => (
+  <View style={[styles.emptyContent, { gap: layout.emptyContentGap }]}>
+    <View
+      style={[
+        styles.emptyIconBox,
+        { width: layout.emptyIconSize, height: layout.emptyIconSize },
+      ]}
+    >
       <View style={styles.clockIcon}>
         <SvgLoader svgFilePath="tomorrowLive" width={24} height={24} />
       </View>
     </View>
-    <View style={styles.emptyTextBlock}>
+    <View style={[styles.emptyTextBlock, { gap: layout.emptyTextGap }]}>
       <View style={styles.emptyTitleBox}>
         <Text style={styles.emptyTitle}>Get a head start on {dayName}</Text>
       </View>
@@ -210,6 +253,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>();
   const classPrepRef = useRef<any>(null);
+  const layout = useLiveClassLayout();
 
   const liveClass = useSelector((state: any) => state.classes.liveClass);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
@@ -294,26 +338,42 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   }, []);
 
   const showPrep = hasClass && !isPastDay && (isNextClass || !isPrepped);
+  const isCompactCard = !hasClass || allClassesDone || isAhead;
 
   return (
     <View style={styles.wrap}>
       <View
         style={[
           styles.card,
-          (!hasClass || allClassesDone || isAhead) && styles.cardEmpty,
+          {
+            height: isCompactCard ? layout.cardEmptyHeight : layout.cardHeight,
+            padding: isCompactCard ? layout.cardEmptyPadding : layout.cardPadding,
+            borderRadius: layout.cardRadius,
+          },
+          isCompactCard && styles.cardEmpty,
           allClassesDone && styles.cardAllDone,
           isNextClass && styles.cardNext,
           (isLive || isNextClass || allClassesDone || isAhead) && styles.cardWithAccent,
         ]}
       >
         {isLive && (
-          <View style={[styles.accentBar, !isPrepped && styles.accentBarLiveNotPrepped]} />
+          <View
+            style={[
+              styles.accentBar,
+              { width: layout.accentBarWidth },
+              !isPrepped && styles.accentBarLiveNotPrepped,
+            ]}
+          />
         )}
-        {(isNextClass || isAhead) && <View style={styles.accentBarNext} />}
-        {allClassesDone && <View style={styles.accentBar} />}
+        {(isNextClass || isAhead) && (
+          <View style={[styles.accentBarNext, { width: layout.accentBarWidth }]} />
+        )}
+        {allClassesDone && (
+          <View style={[styles.accentBar, { width: layout.accentBarWidth }]} />
+        )}
 
         {isLive ? (
-          <View style={styles.content}>
+          <View style={[styles.content, { gap: layout.contentGap }]}>
             <View style={styles.statusRow}>
               <View style={[styles.statusDot, !isPrepped && styles.statusDotLiveNotPrepped]} />
               <View style={styles.liveLabelBox}>
@@ -328,8 +388,8 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
               </View>
             </View>
 
-            <View style={styles.heroInfoRow}>
-              <View style={styles.heroTextBlock}>
+            <View style={[styles.heroInfoRow, { gap: layout.heroInfoGap }]}>
+              <View style={[styles.heroTextBlock, { gap: layout.heroTextGap }]}>
                 <View style={styles.timeBox}>
                   <Text style={styles.time}>
                     {formatTimeRange(activeClass.start_time, activeClass.end_time)}
@@ -346,11 +406,12 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
                 grade={gradeLabel}
                 label={isPrepped ? 'Join Class' : 'Prep & Start'}
                 onPress={isPrepped ? navigateToMonitor : openClassPrep}
+                layout={layout}
               />
             </View>
           </View>
         ) : isNextClass ? (
-          <View style={styles.heroMainContentTypeA}>
+          <View style={[styles.heroMainContentTypeA, { gap: layout.contentGap }]}>
             <View style={styles.statusRow}>
               <View style={styles.statusDotNext} />
               <View style={styles.liveLabelBox}>
@@ -363,8 +424,8 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
               </View>
             </View>
 
-            <View style={styles.heroInfoRow}>
-              <View style={styles.heroTextBlockNext}>
+            <View style={[styles.heroInfoRow, { gap: layout.heroInfoGap }]}>
+              <View style={[styles.heroTextBlockNext, { gap: layout.heroTextGap }]}>
                 <View style={styles.heroTimeBox}>
                   <Text style={styles.time}>
                     {formatTimeRange(activeClass.start_time, activeClass.end_time)}
@@ -382,6 +443,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
                 label={isPrepped ? 'Review Plan' : 'Prep Class'}
                 onPress={openClassPrep}
                 outlined={isPrepped}
+                layout={layout}
               />
             </View>
           </View>
@@ -389,15 +451,21 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
           <AheadState
             count={3}
             dayName={moment(date).format('dddd')}
+            layout={layout}
           />
         ) : allClassesDone ? (
           <AllDoneState
             count={3}
             isPastDay={isPastDay}
             dayName={moment(date).format('dddd')}
+            layout={layout}
           />
         ) : (
-          <EmptyState isYesterday={isPastDay} isTomorrow={isFutureDay} />
+          <EmptyState
+            isYesterday={isPastDay}
+            isTomorrow={isFutureDay}
+            layout={layout}
+          />
         )}
       </View>
 
@@ -434,14 +502,11 @@ const styles = StyleSheet.create({
   card: {
     alignSelf: 'stretch',
     width: '100%',
-    height: 217,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    padding: 32,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 20,
     flexGrow: 0,
     flexShrink: 0,
     shadowColor: '#000',
@@ -452,11 +517,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardEmpty: {
-    height: 120,
     minHeight: 0,
-    padding: 24,
     justifyContent: 'center',
-    borderRadius: 20,
     shadowOpacity: 0.0156863,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
@@ -467,7 +529,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardNext: {
-    height: 217,
     overflow: 'hidden',
   },
   // Drop left border so accent sits on the outer edge (no white gap inside the border).
@@ -480,7 +541,6 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    width: 8,
     backgroundColor: '#21C17C',
   },
   accentBarLiveNotPrepped: {
@@ -491,7 +551,6 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    width: 8,
     backgroundColor: '#EDEBE6',
   },
   content: {
@@ -501,7 +560,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     padding: 0,
-    gap: 20,
     flexGrow: 0,
     flexShrink: 0,
     zIndex: 1,
@@ -512,7 +570,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: '100%',
     padding: 0,
-    gap: 20,
     flexGrow: 0,
     flexShrink: 0,
     zIndex: 1,
@@ -581,7 +638,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     padding: 0,
-    gap: 8,
     flexGrow: 0,
     flexShrink: 0,
   },
@@ -589,14 +645,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     padding: 0,
-    gap: 8,
   },
   heroTextBlockNext: {
     flexDirection: 'column',
     alignItems: 'flex-start',
     alignSelf: 'stretch',
     padding: 0,
-    gap: 8,
     flexGrow: 0,
     flexShrink: 0,
   },
@@ -657,10 +711,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
     paddingVertical: 0,
-    gap: 8,
-    height: 48,
     backgroundColor: '#21C17C',
     borderRadius: 8,
     flexGrow: 0,
@@ -701,14 +752,11 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: '100%',
     padding: 0,
-    gap: 20,
     flexGrow: 0,
     flexShrink: 0,
     zIndex: 1,
   },
   emptyIconBox: {
-    width: 56,
-    height: 56,
     padding: 0,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -719,8 +767,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   doneIconBox: {
-    width: 56,
-    height: 56,
     padding: 0,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -742,7 +788,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     padding: 0,
-    gap: 8,
     width: '100%',
     flexGrow: 1,
     flexShrink: 1,
