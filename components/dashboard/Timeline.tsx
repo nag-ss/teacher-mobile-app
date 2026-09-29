@@ -6,6 +6,7 @@ import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
 import ClassPrep from './ClassPrep';
 import SvgLoader from '@/utils/SvgLoader';
+import { useTimelineLayout, type TimelineLayout } from '@/hooks/Responsive/useTimelineLayout';
 
 const toRoman = (value: string | number) => {
   const num = typeof value === 'number' ? value : parseInt(String(value).replace(/\D/g, ''), 10);
@@ -46,10 +47,12 @@ const ClassTimelineRow = ({
   item,
   currentDate,
   isPastDay,
+  layout,
 }: {
   item: any;
   currentDate: string;
   isPastDay?: boolean;
+  layout: TimelineLayout;
 }) => {
   const classPrepRef = useRef<any>();
   const showPastSummary = Boolean(isPastDay);
@@ -62,16 +65,32 @@ const ClassTimelineRow = ({
   return (
     <>
       <TouchableOpacity
-        style={[styles.row, styles.rowCard]}
+        style={[
+          styles.row,
+          styles.rowCard,
+          {
+            height: layout.rowHeight,
+            paddingHorizontal: layout.rowPaddingH,
+            borderRadius: layout.rowRadius,
+          },
+        ]}
         activeOpacity={0.7}
         onPress={onPress}
       >
-        <View style={styles.timeBox}>
+        <View style={[styles.timeBox, { minWidth: layout.timeBoxMinWidth }]}>
           <Text style={styles.time}>{item.timeLabel}</Text>
           <Text style={styles.timePeriod}>{item.timePeriod}</Text>
         </View>
 
-        <View style={styles.classMeta}>
+        <View
+          style={[
+            styles.classMeta,
+            {
+              gap: layout.classMetaGap,
+              marginLeft: layout.classMetaMarginLeft,
+            },
+          ]}
+        >
           <View style={styles.subjectBox}>
             <Text style={styles.title} numberOfLines={1}>
               {item.title}
@@ -85,20 +104,46 @@ const ClassTimelineRow = ({
         </View>
 
         {showPastSummary ? (
-          <View style={styles.summaryBlock}>
+          <View
+            style={[
+              styles.summaryBlock,
+              {
+                gap: layout.summaryGap,
+                marginLeft: layout.statusMarginLeft,
+              },
+            ]}
+          >
             <Text style={styles.summaryText}>View summary</Text>
-            <View style={styles.arrowBox}>
+            <View
+              style={[
+                styles.arrowBox,
+                { width: layout.arrowBoxSize, height: layout.arrowBoxSize },
+              ]}
+            >
               <View style={styles.arrowVector}>
                 <SvgLoader svgFilePath="timelineArrow" width={8} height={14} />
               </View>
             </View>
           </View>
         ) : (
-          <View style={styles.statusBlock}>
+          <View
+            style={[
+              styles.statusBlock,
+              {
+                gap: layout.statusGap,
+                marginLeft: layout.statusMarginLeft,
+              },
+            ]}
+          >
             <View style={styles.statusBox}>
               <Text style={[styles.status, styles.statusReady]}>Prep ready</Text>
             </View>
-            <View style={styles.arrowBox}>
+            <View
+              style={[
+                styles.arrowBox,
+                { width: layout.arrowBoxSize, height: layout.arrowBoxSize },
+              ]}
+            >
               <View style={styles.arrowVector}>
                 <SvgLoader svgFilePath="timelineArrow" width={8} height={14} />
               </View>
@@ -119,36 +164,38 @@ const ClassTimelineRow = ({
   );
 };
 
-const ROW_HEIGHT = 85;
-const ROW_GAP = 16;
-const VISIBLE_ROWS = 3;
-const LIST_HEIGHT = ROW_HEIGHT * VISIBLE_ROWS + ROW_GAP * (VISIBLE_ROWS - 1) + 32;
-const THUMB_HEIGHT = 24;
-
 const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
+  const layout = useTimelineLayout();
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const date = selectedDate || moment().format('YYYY-MM-DD');
   const thumbRef = useRef<View>(null);
   const scrollYRef = useRef(0);
-  const metricsRef = useRef({ contentHeight: 1, layoutHeight: LIST_HEIGHT });
+  const metricsRef = useRef({ contentHeight: 1, layoutHeight: layout.listHeight });
 
-  const updateThumb = useCallback((scrollY = scrollYRef.current) => {
-    const { contentHeight, layoutHeight } = metricsRef.current;
-    const canScroll = contentHeight > layoutHeight + 1;
-    const maxScroll = Math.max(1, contentHeight - layoutHeight);
-    const offset = canScroll
-      ? (scrollY / maxScroll) * (layoutHeight - THUMB_HEIGHT)
-      : 0;
+  useEffect(() => {
+    metricsRef.current.layoutHeight = layout.listHeight;
+  }, [layout.listHeight]);
 
-    thumbRef.current?.setNativeProps({
-      style: {
-        height: THUMB_HEIGHT,
-        opacity: canScroll ? 1 : 0.35,
-        transform: [{ translateY: offset }],
-      },
-    });
-  }, []);
+  const updateThumb = useCallback(
+    (scrollY = scrollYRef.current) => {
+      const { contentHeight, layoutHeight } = metricsRef.current;
+      const canScroll = contentHeight > layoutHeight + 1;
+      const maxScroll = Math.max(1, contentHeight - layoutHeight);
+      const offset = canScroll
+        ? (scrollY / maxScroll) * (layoutHeight - layout.thumbHeight)
+        : 0;
+
+      thumbRef.current?.setNativeProps({
+        style: {
+          height: layout.thumbHeight,
+          opacity: canScroll ? 1 : 0.35,
+          transform: [{ translateY: offset }],
+        },
+      });
+    },
+    [layout.thumbHeight]
+  );
 
   const getDetails = useCallback(
     async (currentDate: string) => {
@@ -199,15 +246,29 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
     : `${moment(date).format('dddd').toUpperCase()}'S CLASSES`;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.sectionLabelBox}>
+    <View style={[styles.container, { gap: layout.sectionGap }]}>
+      <View style={[styles.sectionLabelBox, { height: layout.sectionLabelHeight }]}>
         <Text style={styles.header}>{headerLabel}</Text>
       </View>
 
-      <View style={styles.listRow}>
+      <View
+        style={[
+          styles.listRow,
+          {
+            height: layout.listHeight,
+            gap: layout.listRowGap,
+          },
+        ]}
+      >
         <ScrollView
           style={styles.list}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            {
+              gap: layout.rowGap,
+              paddingBottom: layout.listContentBottomPad,
+            },
+          ]}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           onScroll={(e) => {
@@ -230,6 +291,7 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
                 item={item}
                 currentDate={date}
                 isPastDay={isPastDay}
+                layout={layout}
               />
             ))
           ) : (
@@ -237,10 +299,17 @@ const TimelineWithClassDetails = ({ selectedDate }: { selectedDate?: string }) =
           )}
         </ScrollView>
 
-        <View style={styles.scrollTrack}>
+        <View style={[styles.scrollTrack, { width: layout.scrollTrackWidth }]}>
           <View
             ref={thumbRef}
-            style={[styles.scrollThumb, { height: THUMB_HEIGHT, opacity: 0.35 }]}
+            style={[
+              styles.scrollThumb,
+              {
+                width: layout.scrollTrackWidth,
+                height: layout.thumbHeight,
+                opacity: 0.35,
+              },
+            ]}
           />
         </View>
       </View>
@@ -255,12 +324,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     padding: 0,
-    gap: 16,
     flexGrow: 0,
     flexShrink: 0,
   },
   sectionLabelBox: {
-    height: 15,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
@@ -276,10 +343,8 @@ const styles = StyleSheet.create({
   listRow: {
     width: '100%',
     alignSelf: 'stretch',
-    height: LIST_HEIGHT,
     flexDirection: 'row',
     alignItems: 'stretch',
-    gap: 8,
   },
   list: {
     flex: 1,
@@ -287,7 +352,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   scrollTrack: {
-    width: 4,
     alignSelf: 'stretch',
     height: '100%',
     backgroundColor: '#EDEBE6',
@@ -295,21 +359,15 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   scrollThumb: {
-    width: 4,
     backgroundColor: '#8A8880',
     borderRadius: 2,
   },
-  listContent: {
-    gap: ROW_GAP,
-    paddingBottom: 8,
-  },
+  listContent: {},
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
     width: '100%',
-    height: ROW_HEIGHT,
-    paddingHorizontal: 20,
     paddingVertical: 0,
     flexGrow: 0,
     flexShrink: 0,
@@ -318,7 +376,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 12,
     shadowColor: '#000',
     shadowOpacity: 0.0156863,
     shadowRadius: 12,
@@ -326,7 +383,6 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   timeBox: {
-    minWidth: 70,
     height: 18,
     flexDirection: 'row',
     alignItems: 'center',
@@ -354,9 +410,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     padding: 0,
-    gap: 8,
     minWidth: 0,
-    marginLeft: 28,
   },
   subjectBox: {
     height: 20,
@@ -390,17 +444,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
     flexShrink: 0,
-    marginLeft: 16,
   },
   summaryBlock: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
     flexShrink: 0,
-    marginLeft: 16,
   },
   summaryText: {
     fontSize: 14,
@@ -425,8 +475,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
   },
   arrowBox: {
-    width: 20,
-    height: 20,
     padding: 0,
     position: 'relative',
     flexGrow: 0,
