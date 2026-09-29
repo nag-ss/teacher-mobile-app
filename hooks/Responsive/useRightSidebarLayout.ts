@@ -25,11 +25,14 @@ const FIGMA = {
  * Left nav (216) + main column (~636) + right sidebar (300).
  */
 const LEFT_SIDEBAR_WIDTH = 216;
+const LEFT_SIDEBAR_COMPACT = 176;
 const MAIN_COLUMN_WIDTH = 636;
 const FIGMA_DASHBOARD_WIDTH = LEFT_SIDEBAR_WIDTH + MAIN_COLUMN_WIDTH + FIGMA.sidebarWidth;
 const FIGMA_DASHBOARD_HEIGHT = 700;
-const MAIN_MIN_WIDTH = 360;
-const SIDEBAR_MIN_WIDTH = 220;
+/** Prefer a wider center column when the window shrinks. */
+const MAIN_MIN_WIDTH = 480;
+const SIDEBAR_MIN_WIDTH = 200;
+const SIDEBAR_COMPACT_MAX = 240;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -58,11 +61,14 @@ export const useRightSidebarLayout = (): RightSidebarLayout => {
   return useMemo(() => {
     const widthFits = width >= FIGMA_DASHBOARD_WIDTH;
     const heightFits = height >= FIGMA_DASHBOARD_HEIGHT;
-    const homeWidth = Math.max(0, width - LEFT_SIDEBAR_WIDTH);
+    const leftWidth = widthFits ? LEFT_SIDEBAR_WIDTH : LEFT_SIDEBAR_COMPACT;
+    const homeWidth = Math.max(0, width - leftWidth);
+    /** Shrink right sidebar sooner so live card + timeline keep more width. */
+    const sidebarMax = widthFits && heightFits ? FIGMA.sidebarWidth : SIDEBAR_COMPACT_MAX;
     const sidebarWidth = clamp(
       homeWidth - MAIN_MIN_WIDTH,
       SIDEBAR_MIN_WIDTH,
-      FIGMA.sidebarWidth,
+      sidebarMax,
     );
 
     if (widthFits && heightFits) {
@@ -72,16 +78,16 @@ export const useRightSidebarLayout = (): RightSidebarLayout => {
     return {
       sidebarWidth,
       paddingTop: heightFits ? FIGMA.paddingTop : 16,
-      paddingHorizontal: widthFits ? FIGMA.paddingHorizontal : 16,
+      paddingHorizontal: widthFits ? FIGMA.paddingHorizontal : 12,
       paddingBottom: heightFits ? FIGMA.paddingBottom : 20,
       gap: heightFits ? FIGMA.gap : 12,
       headerHeight: heightFits ? FIGMA.headerHeight : 48,
       dayPillPaddingV: heightFits ? FIGMA.dayPillPaddingV : 8,
-      dayPillPaddingH: widthFits ? FIGMA.dayPillPaddingH : 12,
-      dayPillGap: widthFits ? FIGMA.dayPillGap : 10,
+      dayPillPaddingH: widthFits ? FIGMA.dayPillPaddingH : 10,
+      dayPillGap: widthFits ? FIGMA.dayPillGap : 8,
       dayPillRadius: FIGMA.dayPillRadius,
       notificationSize: FIGMA.notificationSize,
-      cardPadding: widthFits && heightFits ? FIGMA.cardPadding : 16,
+      cardPadding: widthFits && heightFits ? FIGMA.cardPadding : 14,
       cardGap: heightFits ? FIGMA.cardGap : 12,
       cardRadius: FIGMA.cardRadius,
       attentionGap: FIGMA.attentionGap,

@@ -27,7 +27,7 @@ const MAIN_COLUMN_WIDTH = 636;
 const RIGHT_SIDEBAR_WIDTH = 300;
 const FIGMA_DASHBOARD_WIDTH = FIGMA.sidebarWidth + MAIN_COLUMN_WIDTH + RIGHT_SIDEBAR_WIDTH;
 const FIGMA_DASHBOARD_HEIGHT = 700;
-const SIDEBAR_MIN_WIDTH = 184;
+const SIDEBAR_MIN_WIDTH = 168;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -63,9 +63,10 @@ export const useLeftSidebarLayout = (): LeftSidebarLayout => {
       return { ...FIGMA };
     }
 
-    const paddingHorizontal = widthFits ? FIGMA.paddingHorizontal : 12;
+    const paddingHorizontal = widthFits ? FIGMA.paddingHorizontal : 10;
+    /** Narrower left nav so center (live + timeline) gets more width. */
     const sidebarWidth = clamp(
-      widthFits ? FIGMA.sidebarWidth : 200,
+      widthFits ? FIGMA.sidebarWidth : 176,
       SIDEBAR_MIN_WIDTH,
       FIGMA.sidebarWidth,
     );

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import Timeline from '@/components/dashboard/Timeline';
 import HomeSidePanels from '@/components/dashboard/HomeSidePanels';
@@ -10,6 +10,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { getScheduleClasses } from '@/store/classSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import moment from 'moment';
+
+const FIGMA_DASHBOARD_WIDTH = 1152;
+const FIGMA_DASHBOARD_HEIGHT = 700;
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -24,6 +27,11 @@ const DashboardScreen = () => {
   const dispatch = useDispatch<any>();
   const { user } = useSelector((state: any) => state.user);
   const layout = useRightSidebarLayout();
+  const { width, height } = useWindowDimensions();
+  const widthFits = width >= FIGMA_DASHBOARD_WIDTH;
+  const heightFits = height >= FIGMA_DASHBOARD_HEIGHT;
+  const mainPaddingH = widthFits ? 32 : 20;
+  const mainGap = heightFits ? 24 : 16;
   const [dayIndex, setDayIndex] = useState(1); // Today
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const hasNotifications = false;
@@ -43,7 +51,15 @@ const DashboardScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FAFAF8' }}>
       <View style={styles.mainContainer}>
         <View style={styles.container}>
-          <View style={styles.mainContent}>
+          <View
+            style={[
+              styles.mainContent,
+              {
+                paddingHorizontal: mainPaddingH,
+                gap: mainGap,
+              },
+            ]}
+          >
             <View style={styles.pageHeader}>
               <View style={styles.greetingBlock}>
                 <View style={styles.greetingBox}>
@@ -243,9 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     paddingTop: 24,
-    paddingHorizontal: 32,
     paddingBottom: 32,
-    gap: 24,
     backgroundColor: '#FAFAF8',
   },
   rightSidebar: {
