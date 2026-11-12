@@ -51,6 +51,8 @@ const svgAssets = {
   liveCalendar: require('../assets/beta_images/live_calendar.svg'),
   liveCorrect: require('../assets/beta_images/live_correct.svg'),
   tomorrowLive: require('../assets/beta_images/tomorrow_live.svg'),
+  calendarEmpty: require('../assets/beta_images_1/calender.svg'),
+  refreshIcon: require('../assets/beta_images_1/refresh.svg'),
 };
 
 interface SvgLoaderProps {
