@@ -243,6 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4E2DC',
   },
   timelineCard: {
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
     /** Align "Your day" with live card time row. */
@@ -251,15 +252,16 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingLeft: 16,
     width: '100%',
-    height: 650,
+    minHeight: 0,
+    maxHeight: 650,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
     borderRadius: 16,
-    flexGrow: 0,
     overflow: 'hidden',
   },
   timelineMargin: {
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
     paddingTop: 0,
@@ -267,9 +269,8 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingLeft: 0,
     width: '100%',
-    height: 570,
+    minHeight: 0,
     alignSelf: 'stretch',
-    flexGrow: 0,
   },
 });
 
