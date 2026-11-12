@@ -140,7 +140,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     paddingTop: 24,
-    paddingHorizontal: 32,
+    /** Match timelinePanel paddingRight so left/right outer margins are even. */
+    paddingHorizontal: 24,
     /** Bottom pad is set to align ActionRequiredPanel with timeline card bottom. */
     gap: 12,
     backgroundColor: '#E4E2DC',
