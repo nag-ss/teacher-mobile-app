@@ -2,30 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import SvgLoader from '@/utils/SvgLoader';
-import { useLeftSidebarLayout } from '../../hooks/Responsive/useLeftSidebarLayout';
 
 const menuItems = [
-  { icon: 'sidebarHome', activeIcon: 'sidebarHomeActive', label: 'Home', route: 'Home' },
-  { icon: 'sidebarClasses', activeIcon: 'sidebarClassesActive', label: 'Classes', route: 'Classes' },
-  { icon: 'sidebarCalendar', activeIcon: 'sidebarCalendarActive', label: 'Calendar', route: 'Calendar' },
-  { icon: 'sidebarAnalytics', activeIcon: 'sidebarAnalyticsActive', label: 'Analytics', route: 'Analytics' },
-  { icon: 'sidebarProfile', activeIcon: 'sidebarProfileActive', label: 'Profile', route: 'Profile' },
+  { icon: 'sidebarHome', label: 'Home', route: 'Home' },
+  { icon: 'sidebarClasses', label: 'Classes', route: 'Classes' },
+  { icon: 'sidebarStudent360', label: 'Student360', route: 'Analytics' },
+  { icon: 'sidebarCalendar', label: 'Calender', route: 'Calendar' },
 ] as const;
 
 const getInitials = (firstName?: string, lastName?: string) => {
   const first = firstName?.trim()?.[0] ?? '';
   const last = lastName?.trim()?.[0] ?? '';
   return `${first}${last}`.toUpperCase() || 'U';
-};
-
-const formatSubjects = (subjects: unknown) => {
-  if (Array.isArray(subjects)) {
-    return subjects.filter(Boolean).join(', ') || '—';
-  }
-  if (typeof subjects === 'string' && subjects.trim()) {
-    return subjects;
-  }
-  return '—';
 };
 
 type SidebarProps = {
@@ -36,130 +24,62 @@ type SidebarProps = {
 
 const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarProps) => {
   const { user } = useSelector((state: any) => state.user);
-  const layout = useLeftSidebarLayout();
 
   const isActive = (route: string) =>
     currentRoute === route || (currentRoute === 'live-monitoring' && route === 'Home');
 
-  const fullName = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Teacher';
   const initials = getInitials(user?.first_name, user?.last_name);
-  const subjectLabel = formatSubjects(user?.subjects);
 
   return (
-    <View
-      style={[
-        styles.sidebar,
-        {
-          width: layout.sidebarWidth,
-          paddingTop: layout.paddingTop,
-          paddingHorizontal: layout.paddingHorizontal,
-          paddingBottom: layout.paddingBottom,
-        },
-      ]}
-    >
-      <View style={[styles.navBox, { width: layout.contentWidth, gap: layout.navGap }]}>
-        <View
-          style={[
-            styles.header,
-            { height: layout.headerHeight, gap: layout.headerGap },
-          ]}
-        >
-          <View
-            style={[
-              styles.logoBox,
-              { width: layout.logoSize, height: layout.logoSize },
-            ]}
-          >
-            <SvgLoader svgFilePath="sidebarLogo" width={32} height={32} />
-          </View>
-          <View style={styles.brandBox}>
-            <Text style={styles.brand}>Super Slate</Text>
-          </View>
+    <View style={styles.sidebar}>
+      <View style={styles.topSection}>
+        <View style={styles.logoBox}>
+          <SvgLoader svgFilePath="sidebarLogo" width={40} height={40} />
         </View>
 
-        <View style={[styles.menu, { width: layout.contentWidth, gap: layout.menuGap }]}>
+        <View style={styles.menu}>
           {menuItems.map((item) => {
             const active = isActive(item.route);
-            const iconKey = active ? item.activeIcon : item.icon;
 
             return (
               <TouchableOpacity
                 key={item.label}
-                style={[
-                  styles.menuItem,
-                  {
-                    width: layout.contentWidth,
-                    height: layout.menuItemHeight,
-                    paddingHorizontal: layout.menuItemPaddingH,
-                    gap: layout.menuItemGap,
-                    borderRadius: layout.menuItemRadius,
-                  },
-                  active && styles.selectedMenu,
-                ]}
+                style={[styles.menuItem, active && styles.selectedMenu]}
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate(item.route)}
               >
                 <View style={styles.menuIconBox}>
-                  <SvgLoader svgFilePath={iconKey} width={20} height={20} />
+                  <SvgLoader
+                    svgFilePath={item.icon}
+                    width={20}
+                    height={20}
+                    color={active ? '#FFFFFF' : '#8A8880'}
+                  />
                 </View>
-                <View style={styles.menuLabelBox}>
-                  <Text style={[styles.menuLabel, active && styles.selectedLabel]}>
-                    {item.label}
-                  </Text>
-                </View>
+                <Text style={[styles.menuLabel, active && styles.selectedLabel]}>
+                  {item.label}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
+
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>{initials}</Text>
+        </View>
       </View>
 
-      <View
-        style={[
-          styles.footer,
-          { width: layout.contentWidth, gap: layout.footerGap },
-        ]}
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => onLogoutPress?.()}
+        activeOpacity={0.7}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
-        <View
-          style={[
-            styles.avatar,
-            {
-              width: layout.avatarSize,
-              height: layout.avatarSize,
-              borderRadius: layout.avatarSize / 2,
-            },
-          ]}
-        >
-          <View style={styles.initialsBox}>
-            <Text style={styles.avatarText}>{initials}</Text>
-          </View>
+        <View style={styles.logoutIconBox}>
+          <SvgLoader svgFilePath="sidebarLogout" width={20} height={20} />
         </View>
-        <View style={styles.userInfo}>
-          <View style={styles.userNameBox}>
-            <Text style={styles.userName} numberOfLines={1}>
-              {fullName}
-            </Text>
-          </View>
-          <View style={styles.userRoleBox}>
-            <Text style={styles.userSubject} numberOfLines={1}>
-              {subjectLabel}
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={() => onLogoutPress?.()}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <View
-            style={[
-              styles.logoutBox,
-              { width: layout.logoutBoxSize, height: layout.logoutBoxSize },
-            ]}
-          >
-            <SvgLoader svgFilePath="sidebarLogout" width={18} height={18} />
-          </View>
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.logoutLabel}>Log Out</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -168,54 +88,51 @@ export default Sidebar;
 
 const styles = StyleSheet.create({
   sidebar: {
-    alignSelf: 'stretch',
-    backgroundColor: '#FAFAF8',
-    borderRightWidth: 1,
-    borderRightColor: '#D9D6CF',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 24,
+    paddingBottom: 24,
+    paddingHorizontal: 0,
+    gap: 24,
+    width: 88,
+    alignSelf: 'stretch',
+    backgroundColor: '#FFFFFF',
+    flexGrow: 0,
   },
-  navBox: {},
-  header: {
-    flexDirection: 'row',
+  topSection: {
+    flexDirection: 'column',
     alignItems: 'center',
-    alignSelf: 'flex-start',
+    gap: 16,
+    width: '100%',
   },
   logoBox: {
-    borderRadius: 2.66667,
-    flexGrow: 0,
-    flexShrink: 0,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  brandBox: {
-    height: 28,
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
-  },
-  brand: {
-    fontSize: 20,
-    lineHeight: 28,
-    color: '#1F1E1C',
-    fontFamily: 'Montserrat_700Bold',
-    includeFontPadding: false,
-  },
-  menu: {},
-  menuItem: {
-    flexDirection: 'row',
+  menu: {
+    flexDirection: 'column',
     alignItems: 'center',
-    alignSelf: 'stretch',
-    paddingVertical: 0,
+    gap: 8,
+    width: '100%',
+  },
+  menuItem: {
+    boxSizing: 'border-box',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 8,
+    gap: 4,
+    width: 72,
+    height: 56,
     flexGrow: 0,
-    flexShrink: 0,
-    borderWidth: 1,
-    borderColor: 'transparent',
   },
   selectedMenu: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#EDEBE6',
+    backgroundColor: '#1F1E1C',
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOpacity: 0.0313726,
     shadowRadius: 12,
@@ -225,103 +142,58 @@ const styles = StyleSheet.create({
   menuIconBox: {
     width: 20,
     height: 20,
-    flexGrow: 0,
-    flexShrink: 0,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuLabelBox: {
-    height: 17,
-    flexGrow: 0,
-    flexShrink: 0,
     justifyContent: 'center',
   },
   menuLabel: {
-    fontSize: 14,
-    lineHeight: 17,
+    height: 16,
+    fontSize: 12,
+    lineHeight: 16,
     color: '#8A8880',
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'Inter_400Regular',
+    fontStyle: 'normal',
+    textAlign: 'center',
     includeFontPadding: false,
+    flexGrow: 0,
   },
   selectedLabel: {
-    color: '#1F1E1C',
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
+    color: '#F6F5F1',
   },
   avatar: {
-    backgroundColor: '#B7E7CE',
-    padding: 0,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
-  },
-  initialsBox: {
-    height: 17,
-    flexGrow: 0,
-    flexShrink: 0,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E8E4DC',
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
     fontSize: 14,
     lineHeight: 17,
-    color: '#0D8A57',
+    color: '#8A8880',
     fontFamily: 'Inter_700Bold',
     includeFontPadding: false,
   },
-  userInfo: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: 0,
-    gap: 4,
-    flexGrow: 1,
-    flexShrink: 1,
-    minWidth: 0,
-  },
-  userNameBox: {
-    height: 17,
-    maxWidth: '100%',
-    flexGrow: 0,
-    flexShrink: 1,
-    justifyContent: 'center',
-  },
-  userName: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#1F1E1C',
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
-  },
-  userRoleBox: {
-    height: 15,
-    maxWidth: '100%',
-    flexGrow: 0,
-    flexShrink: 1,
-    justifyContent: 'center',
-  },
-  userSubject: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
-  },
   logoutButton: {
-    flexGrow: 0,
-    flexShrink: 0,
-  },
-  logoutBox: {
-    flexGrow: 0,
-    flexShrink: 0,
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    width: 72,
+    paddingVertical: 8,
+  },
+  logoutIconBox: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoutLabel: {
+    fontSize: 11,
+    lineHeight: 13,
+    color: '#8A8880',
+    fontFamily: 'Inter_600SemiBold',
+    textAlign: 'center',
+    includeFontPadding: false,
   },
 });

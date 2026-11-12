@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SvgUri } from 'react-native-svg'; // Import SvgUri for displaying SVGs
+import { SvgUri, SvgXml } from 'react-native-svg';
 import { Asset } from 'expo-asset';
 
 // Mapping of static asset paths
@@ -26,13 +26,11 @@ const svgAssets = {
   loginLeftArrow: require('../assets/beta_images/left_arrow.svg'),
   loginEmail: require('../assets/beta_images/Email.svg'),
   loginLogout: require('../assets/beta_images/logout.svg'),
-  sidebarLogo: require('../assets/beta_images/sidebar_logo.svg'),
-  sidebarHome: require('../assets/beta_images/home.svg'),
-  sidebarHomeActive: require('../assets/beta_images/home_active.svg'),
-  sidebarClasses: require('../assets/beta_images/classes.svg'),
-  sidebarClassesActive: require('../assets/beta_images/classes_active.svg'),
-  sidebarCalendar: require('../assets/beta_images/calendar.svg'),
-  sidebarCalendarActive: require('../assets/beta_images/calendar_active.svg'),
+  sidebarLogo: require('../assets/beta_images_1/logo.svg'),
+  sidebarHome: require('../assets/beta_images_1/home.svg'),
+  sidebarClasses: require('../assets/beta_images_1/classes.svg'),
+  sidebarStudent360: require('../assets/beta_images_1/student360.svg'),
+  sidebarCalendar: require('../assets/beta_images_1/calender.svg'),
   sidebarAnalytics: require('../assets/beta_images/analytics.svg'),
   sidebarAnalyticsActive: require('../assets/beta_images/analytics_active.svg'),
   sidebarProfile: require('../assets/beta_images/profile.svg'),
@@ -56,27 +54,65 @@ const svgAssets = {
 };
 
 interface SvgLoaderProps {
-  svgFilePath: keyof typeof svgAssets; // Only allow keys defined in svgAssets
+  svgFilePath: keyof typeof svgAssets;
   width?: number;
   height?: number;
   style?: any;
-  resizeMode? : string
+  resizeMode?: string;
+  /** When set, recolors SVG stroke/fill hex values (UI active states). */
+  color?: string;
 }
 
-const SvgLoader: React.FC<SvgLoaderProps> = ({ svgFilePath, width = 100, height = 100, style, resizeMode, ...rest}) => {
+const applySvgColor = (xml: string, color: string) =>
+  xml
+    .replace(/stroke="#[0-9A-Fa-f]{3,8}"/g, `stroke="${color}"`)
+    .replace(/fill="#[0-9A-Fa-f]{3,8}"/g, `fill="${color}"`)
+    .replace(/stroke='#[0-9A-Fa-f]{3,8}'/g, `stroke='${color}'`)
+    .replace(/fill='#[0-9A-Fa-f]{3,8}'/g, `fill='${color}'`);
+
+const SvgLoader: React.FC<SvgLoaderProps> = ({
+  svgFilePath,
+  width = 100,
+  height = 100,
+  style,
+  resizeMode,
+  color,
+  ...rest
+}) => {
   const [uri, setUri] = useState<string | null>(null);
+  const [xml, setXml] = useState<string | null>(null);
 
   useEffect(() => {
-    // Get the asset corresponding to the svgFilePath
+    let cancelled = false;
     const asset = svgAssets[svgFilePath];
-    const assetInstance = Asset.fromModule(asset); // Load the asset using expo-asset
-    assetInstance.downloadAsync().then(() => {
-      setUri(assetInstance.localUri); // Get the local URI of the asset
+    const assetInstance = Asset.fromModule(asset);
+
+    assetInstance.downloadAsync().then(async () => {
+      if (cancelled) return;
+      const localUri = assetInstance.localUri;
+      setUri(localUri);
+
+      if (color && localUri) {
+        const response = await fetch(localUri);
+        const rawXml = await response.text();
+        if (!cancelled) setXml(applySvgColor(rawXml, color));
+      } else {
+        setXml(null);
+      }
     });
-  }, [svgFilePath]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [svgFilePath, color]);
+
+  if (color) {
+    if (!xml) return null;
+    return <SvgXml width={width} height={height} xml={xml} style={[style]} {...rest} />;
+  }
 
   if (!uri) {
-    return null; // Or show a loading spinner, placeholder, etc.
+    return null;
   }
 
   return <SvgUri width={width} height={height} uri={uri} style={[style]} {...rest} />;
