@@ -3,20 +3,16 @@ import { useWindowDimensions } from 'react-native';
 
 /** Figma sizes for the live class card at full dashboard size. */
 const FIGMA = {
-  cardHeight: 217,
-  cardEmptyHeight: 120,
+  cardHeight: 176,
   cardPadding: 32,
-  cardEmptyPadding: 24,
   cardRadius: 20,
   contentGap: 20,
   heroInfoGap: 8,
-  heroTextGap: 8,
-  joinButtonHeight: 48,
-  joinButtonPaddingH: 24,
-  joinButtonGap: 8,
-  emptyContentGap: 20,
-  emptyIconSize: 56,
-  emptyTextGap: 8,
+  heroTextGap: 6,
+  joinButtonWidth: 124,
+  joinButtonHeight: 40,
+  joinButtonPaddingH: 16,
+  joinButtonGap: 6,
   accentBarWidth: 8,
 } as const;
 
@@ -29,19 +25,15 @@ const FIGMA_DASHBOARD_HEIGHT = 700;
 
 export type LiveClassLayout = {
   cardHeight: number;
-  cardEmptyHeight: number;
   cardPadding: number;
-  cardEmptyPadding: number;
   cardRadius: number;
   contentGap: number;
   heroInfoGap: number;
   heroTextGap: number;
+  joinButtonWidth: number;
   joinButtonHeight: number;
   joinButtonPaddingH: number;
   joinButtonGap: number;
-  emptyContentGap: number;
-  emptyIconSize: number;
-  emptyTextGap: number;
   accentBarWidth: number;
 };
 
@@ -57,20 +49,16 @@ export const useLiveClassLayout = (): LiveClassLayout => {
     }
 
     return {
-      cardHeight: heightFits ? FIGMA.cardHeight : 180,
-      cardEmptyHeight: heightFits ? FIGMA.cardEmptyHeight : 104,
+      cardHeight: FIGMA.cardHeight,
       cardPadding: widthFits && heightFits ? FIGMA.cardPadding : 20,
-      cardEmptyPadding: widthFits && heightFits ? FIGMA.cardEmptyPadding : 16,
       cardRadius: FIGMA.cardRadius,
       contentGap: heightFits ? FIGMA.contentGap : 12,
       heroInfoGap: heightFits ? FIGMA.heroInfoGap : 6,
       heroTextGap: heightFits ? FIGMA.heroTextGap : 6,
+      joinButtonWidth: FIGMA.joinButtonWidth,
       joinButtonHeight: FIGMA.joinButtonHeight,
-      joinButtonPaddingH: widthFits ? FIGMA.joinButtonPaddingH : 16,
+      joinButtonPaddingH: FIGMA.joinButtonPaddingH,
       joinButtonGap: FIGMA.joinButtonGap,
-      emptyContentGap: widthFits ? FIGMA.emptyContentGap : 14,
-      emptyIconSize: FIGMA.emptyIconSize,
-      emptyTextGap: heightFits ? FIGMA.emptyTextGap : 6,
       accentBarWidth: FIGMA.accentBarWidth,
     };
   }, [width, height]);

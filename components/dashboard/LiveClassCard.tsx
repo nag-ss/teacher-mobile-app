@@ -7,14 +7,11 @@ import moment from 'moment';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
-import SvgLoader from '@/utils/SvgLoader';
 import { useLiveClassLayout, type LiveClassLayout } from '@/hooks/Responsive/useLiveClassLayout';
 import ClassPrep from './ClassPrep';
 
 const REFRESH_MS = 300000;
 const TIME_FMT = 'HH:mm:ss';
-
-/* ----------------------------- hooks ----------------------------- */
 
 function useIntervalApi(callback: () => void, delay: number) {
   const savedCallback = useRef(callback);
@@ -30,9 +27,6 @@ function useIntervalApi(callback: () => void, delay: number) {
   }, [delay]);
 }
 
-/* ----------------------------- helpers (pure, module-level) ----------------------------- */
-
-/** Normalize API times like "14:16:00.054000" → "14:16:00" */
 const normalizeTime = (time?: string) => (time ? String(time).split('.')[0] : '');
 
 const formatTimeRange = (start?: string, end?: string) => {
@@ -85,169 +79,39 @@ const getClassDetails = (c: any) => {
   const topic = details ? details.topic || details.Topic || '' : '';
   return {
     title: topic || c?.subject_name || 'Class',
+    topic,
     isPrepped: Boolean(topic),
   };
 };
 
-/* ----------------------------- presentational pieces ----------------------------- */
-
 type FooterProps = {
-  grade: string;
   label: string;
   onPress: () => void;
-  outlined?: boolean;
   layout: LiveClassLayout;
 };
 
-const ClassFooter = memo(({ grade, label, onPress, outlined, layout }: FooterProps) => (
-  <View style={styles.heroFooterRow}>
-    <View style={styles.gradeBoxLive}>
-      <Text style={styles.meta} numberOfLines={1}>
-        {grade}
-      </Text>
+const JoinButton = memo(({ label, onPress, layout }: FooterProps) => (
+  <TouchableOpacity
+    style={[
+      styles.joinButton,
+      {
+        width: layout.joinButtonWidth,
+        height: layout.joinButtonHeight,
+        paddingHorizontal: layout.joinButtonPaddingH,
+        gap: layout.joinButtonGap,
+      },
+    ]}
+    onPress={onPress}
+    activeOpacity={0.8}
+  >
+    <View style={styles.joinButtonTextBox}>
+      <Text style={styles.joinButtonText}>{label}</Text>
     </View>
-
-    <TouchableOpacity
-      style={[
-        styles.joinButton,
-        {
-          height: layout.joinButtonHeight,
-          paddingHorizontal: layout.joinButtonPaddingH,
-          gap: layout.joinButtonGap,
-        },
-        outlined && styles.reviewPlanButton,
-      ]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <View style={styles.joinButtonTextBox}>
-        <Text style={[styles.joinButtonText, outlined && styles.reviewPlanButtonText]}>
-          {label}
-        </Text>
-      </View>
-      <View style={styles.joinArrowBox}>
-        <MaterialIcons name="arrow-forward" size={24} color={outlined ? '#1F1E1C' : '#FFFFFF'} />
-      </View>
-    </TouchableOpacity>
-  </View>
+    <View style={styles.joinArrowBox}>
+      <MaterialIcons name="arrow-forward" size={16} color="#FFFFFF" />
+    </View>
+  </TouchableOpacity>
 ));
-
-type EmptyLayoutProps = { layout: LiveClassLayout };
-
-const EmptyState = memo(
-  ({
-    isYesterday,
-    isTomorrow,
-    layout,
-  }: {
-    isYesterday?: boolean;
-    isTomorrow?: boolean;
-  } & EmptyLayoutProps) => (
-  <View style={[styles.emptyContent, { gap: layout.emptyContentGap }]}>
-    <View
-      style={[
-        styles.emptyIconBox,
-        { width: layout.emptyIconSize, height: layout.emptyIconSize },
-      ]}
-    >
-      <View style={styles.clockIcon}>
-        <SvgLoader svgFilePath="liveCalendar" width={24} height={24} />
-      </View>
-    </View>
-    <View style={[styles.emptyTextBlock, { gap: layout.emptyTextGap }]}>
-      <View style={styles.emptyTitleBox}>
-        <Text style={styles.emptyTitle}>
-          {isYesterday
-            ? 'No classes scheduled yesterday'
-            : isTomorrow
-              ? 'No classes scheduled tomorrow'
-              : 'No classes scheduled today'}
-        </Text>
-      </View>
-      <View style={styles.emptySubtitleBox}>
-        <Text style={styles.emptySubtitle} numberOfLines={2}>
-          Enjoy the break — or prep an upcoming class from Calendar
-        </Text>
-      </View>
-    </View>
-  </View>
-));
-
-const AllDoneState = memo(
-  ({
-    count,
-    isPastDay,
-    dayName,
-    layout,
-  }: {
-    count: number;
-    isPastDay?: boolean;
-    dayName?: string;
-  } & EmptyLayoutProps) => (
-  <View style={[styles.emptyContent, { gap: layout.emptyContentGap }]}>
-    <View
-      style={[
-        styles.doneIconBox,
-        { width: layout.emptyIconSize, height: layout.emptyIconSize },
-      ]}
-    >
-      <View style={styles.clockIcon}>
-        <SvgLoader svgFilePath="liveCorrect" width={18} height={14} />
-      </View>
-    </View>
-    <View style={[styles.emptyTextBlock, { gap: layout.emptyTextGap }]}>
-      <View style={styles.emptyTitleBox}>
-        <Text style={styles.emptyTitle}>
-          {isPastDay && dayName
-            ? `${dayName}, all wrapped up`
-            : "That's a wrap for today"}
-        </Text>
-      </View>
-      <View style={styles.emptySubtitleBox}>
-        <Text style={styles.emptySubtitle} numberOfLines={2}>
-          {isPastDay
-            ? `${count} ${count === 1 ? 'class' : 'classes'} taught · tap any class below to review how it went`
-            : `${count} ${count === 1 ? 'class' : 'classes'} done · review how they went in Analytics`}
-        </Text>
-      </View>
-    </View>
-  </View>
-));
-
-const AheadState = memo(
-  ({
-    count,
-    dayName,
-    layout,
-  }: {
-    count: number;
-    dayName: string;
-  } & EmptyLayoutProps) => (
-  <View style={[styles.emptyContent, { gap: layout.emptyContentGap }]}>
-    <View
-      style={[
-        styles.emptyIconBox,
-        { width: layout.emptyIconSize, height: layout.emptyIconSize },
-      ]}
-    >
-      <View style={styles.clockIcon}>
-        <SvgLoader svgFilePath="tomorrowLive" width={24} height={24} />
-      </View>
-    </View>
-    <View style={[styles.emptyTextBlock, { gap: layout.emptyTextGap }]}>
-      <View style={styles.emptyTitleBox}>
-        <Text style={styles.emptyTitle}>Get a head start on {dayName}</Text>
-      </View>
-      <View style={styles.emptySubtitleBox}>
-        <Text style={styles.emptySubtitle} numberOfLines={2}>
-          {count} {count === 1 ? 'class' : 'classes'} on the roster · check prep status and plan ahead
-        </Text>
-      </View>
-    </View>
-  </View>
-));
-
-/* ----------------------------- main component ----------------------------- */
 
 const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
@@ -261,13 +125,10 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
 
   const date = selectedDate || moment().format('YYYY-MM-DD');
   const isToday = moment(date).isSame(moment(), 'day');
-  const isPastDay = moment(date).isBefore(moment(), 'day');
-  const isFutureDay = moment(date).isAfter(moment(), 'day');
   const schedule = useMemo(
     () => (classTimeline || []).filter((item: any) => !item?.date || item.date === date),
     [classTimeline, date]
   );
-  const classCount = schedule.length;
 
   const loadSchedule = useCallback(async () => {
     await dispatch(getScheduleClasses({ date } as any));
@@ -301,12 +162,10 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
     }
   }, [unAuthorised, dispatch]);
 
-  // No clock math — live only if API says so; otherwise first scheduled class as next.
   const hasLiveFromApi = Boolean(isToday && liveClass?.class_schedule_id);
-  const allClassesDone = isPastDay && classCount > 0;
-  const isAhead = isFutureDay && classCount > 0;
-  const isLive = hasLiveFromApi;
-  const isNextClass = isToday && !hasLiveFromApi && classCount > 0;
+
+  /** Force LIVE NOW card visible for layout/dev even when API has no live class. */
+  const FORCE_LIVE_CARD = true;
 
   const activeClass = useMemo(() => {
     if (hasLiveFromApi) {
@@ -315,19 +174,40 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
       );
       return match ? { ...match, ...liveClass } : liveClass;
     }
-    return schedule[0] || {};
+
+    if (!FORCE_LIVE_CARD) return null;
+
+    if (schedule[0]) return schedule[0];
+
+    return {
+      class_schedule_id: 'force-live',
+      subject_name: 'Mathematics',
+      start_time: moment().format(TIME_FMT),
+      end_time: moment().add(45, 'minutes').format(TIME_FMT),
+      division_name: '10',
+      section_name: 'A',
+      class_details: [{ topic: 'Angle Identities' }],
+    };
   }, [hasLiveFromApi, schedule, liveClass]);
 
   const classScheduleId = activeClass?.class_schedule_id;
-  const hasClass = Boolean(classScheduleId);
-
-  const classDetails = useMemo(() => getClassDetails(activeClass), [activeClass]);
-  const gradeLabel = useMemo(() => getGradeLabel(activeClass), [activeClass]);
-  const { isPrepped } = classDetails;
-  const subjectLabel = activeClass.subject_name || classDetails.title || 'Class';
+  const classDetails = useMemo(
+    () =>
+      activeClass
+        ? getClassDetails(activeClass)
+        : { title: '', topic: '', isPrepped: false },
+    [activeClass]
+  );
+  const gradeLabel = useMemo(
+    () => (activeClass ? getGradeLabel(activeClass) : '—'),
+    [activeClass]
+  );
+  const { isPrepped, topic } = classDetails;
+  const subjectLabel = activeClass?.subject_name || classDetails.title || 'Class';
+  const topicLabel = topic || 'Angle Identities';
 
   const navigateToMonitor = useCallback(() => {
-    if (!classScheduleId || !isToday) return;
+    if (!classScheduleId || classScheduleId === 'force-live' || !isToday) return;
     dispatch(setSelectedTask('Attendance'));
     dispatch(setClassId(classScheduleId));
     navigation.navigate('live-monitoring');
@@ -337,8 +217,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
     classPrepRef.current?.setSelectedClass();
   }, []);
 
-  const showPrep = hasClass && !isPastDay && (isNextClass || !isPrepped);
-  const isCompactCard = !hasClass || allClassesDone || isAhead;
+  if (!activeClass) return null;
 
   return (
     <View style={styles.wrap}>
@@ -346,130 +225,60 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
         style={[
           styles.card,
           {
-            height: isCompactCard ? layout.cardEmptyHeight : layout.cardHeight,
-            padding: isCompactCard ? layout.cardEmptyPadding : layout.cardPadding,
+            height: layout.cardHeight,
+            paddingTop: layout.cardPadding - 8,
+            paddingHorizontal: layout.cardPadding,
+            paddingBottom: layout.cardPadding,
             borderRadius: layout.cardRadius,
           },
-          isCompactCard && styles.cardEmpty,
-          allClassesDone && styles.cardAllDone,
-          isNextClass && styles.cardNext,
-          (isLive || isNextClass || allClassesDone || isAhead) && styles.cardWithAccent,
         ]}
       >
-        {isLive && (
-          <View
-            style={[
-              styles.accentBar,
-              { width: layout.accentBarWidth },
-              !isPrepped && styles.accentBarLiveNotPrepped,
-            ]}
-          />
-        )}
-        {(isNextClass || isAhead) && (
-          <View style={[styles.accentBarNext, { width: layout.accentBarWidth }]} />
-        )}
-        {allClassesDone && (
-          <View style={[styles.accentBar, { width: layout.accentBarWidth }]} />
-        )}
-
-        {isLive ? (
-          <View style={[styles.content, { gap: layout.contentGap }]}>
-            <View style={styles.statusRow}>
-              <View style={[styles.statusDot, !isPrepped && styles.statusDotLiveNotPrepped]} />
+        <View style={[styles.content, { gap: layout.contentGap }]}>
+          <View style={styles.statusRow}>
+            <View style={styles.statusLeft}>
+              <View style={styles.statusDot} />
               <View style={styles.liveLabelBox}>
-                {isPrepped ? (
-                  <Text style={styles.statusText}>LIVE NOW</Text>
-                ) : (
-                  <Text>
-                    <Text style={styles.statusTextLiveNotPrepped}>LIVE NOW</Text>
-                    <Text style={styles.notPreppedText}> · NOT PREPPED</Text>
-                  </Text>
-                )}
+                <Text style={styles.statusText}>LIVE</Text>
+                {!isPrepped ? (
+                  <Text style={styles.notPreppedText}> · NOT PREPPED</Text>
+                ) : null}
               </View>
             </View>
+            <View style={styles.timeBox}>
+              <Text style={styles.time}>
+                {formatTimeRange(activeClass.start_time, activeClass.end_time)}
+              </Text>
+            </View>
+          </View>
 
-            <View style={[styles.heroInfoRow, { gap: layout.heroInfoGap }]}>
-              <View style={[styles.heroTextBlock, { gap: layout.heroTextGap }]}>
-                <View style={styles.timeBox}>
-                  <Text style={styles.time}>
-                    {formatTimeRange(activeClass.start_time, activeClass.end_time)}
-                  </Text>
-                </View>
-                <View style={styles.subjectBox}>
-                  <Text style={styles.subject} numberOfLines={1}>
-                    {subjectLabel}
-                  </Text>
-                </View>
+          <View style={[styles.heroTextBlock, { gap: layout.heroTextGap }]}>
+            <View style={styles.gradeBoxLive}>
+              <Text style={styles.meta} numberOfLines={1}>
+                {gradeLabel}
+              </Text>
+            </View>
+            <View style={styles.subjectBox}>
+              <Text style={styles.subject} numberOfLines={1}>
+                {subjectLabel}
+              </Text>
+            </View>
+            <View style={styles.topicRow}>
+              <View style={styles.topicBox}>
+                <Text style={styles.topic} numberOfLines={1}>
+                  {topicLabel}
+                </Text>
               </View>
-
-              <ClassFooter
-                grade={gradeLabel}
+              <JoinButton
                 label={isPrepped ? 'Join Class' : 'Prep & Start'}
                 onPress={isPrepped ? navigateToMonitor : openClassPrep}
                 layout={layout}
               />
             </View>
           </View>
-        ) : isNextClass ? (
-          <View style={[styles.heroMainContentTypeA, { gap: layout.contentGap }]}>
-            <View style={styles.statusRow}>
-              <View style={styles.statusDotNext} />
-              <View style={styles.liveLabelBox}>
-                <Text>
-                  <Text style={styles.statusTextNext}>
-                    NEXT · IN 5H
-                  </Text>
-                  {!isPrepped && <Text style={styles.notPreppedText}> - NOT PREPPED</Text>}
-                </Text>
-              </View>
-            </View>
-
-            <View style={[styles.heroInfoRow, { gap: layout.heroInfoGap }]}>
-              <View style={[styles.heroTextBlockNext, { gap: layout.heroTextGap }]}>
-                <View style={styles.heroTimeBox}>
-                  <Text style={styles.time}>
-                    {formatTimeRange(activeClass.start_time, activeClass.end_time)}
-                  </Text>
-                </View>
-                <View style={styles.subjectBox}>
-                  <Text style={styles.subject} numberOfLines={1}>
-                    {subjectLabel}
-                  </Text>
-                </View>
-              </View>
-
-              <ClassFooter
-                grade={gradeLabel}
-                label={isPrepped ? 'Review Plan' : 'Prep Class'}
-                onPress={openClassPrep}
-                outlined={isPrepped}
-                layout={layout}
-              />
-            </View>
-          </View>
-        ) : isAhead ? (
-          <AheadState
-            count={3}
-            dayName={moment(date).format('dddd')}
-            layout={layout}
-          />
-        ) : allClassesDone ? (
-          <AllDoneState
-            count={3}
-            isPastDay={isPastDay}
-            dayName={moment(date).format('dddd')}
-            layout={layout}
-          />
-        ) : (
-          <EmptyState
-            isYesterday={isPastDay}
-            isTomorrow={isFutureDay}
-            layout={layout}
-          />
-        )}
+        </View>
       </View>
 
-      {showPrep ? (
+      {!isPrepped ? (
         <View style={styles.prepHost} pointerEvents="box-none">
           <ClassPrep
             item={activeClass}
@@ -485,14 +294,11 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
 
 const noop = () => {};
 
-/* ----------------------------- styles (visually unchanged; duplicates merged, unused removed) ----------------------------- */
-
 const styles = StyleSheet.create({
   wrap: {
     alignSelf: 'stretch',
     width: '100%',
   },
-  // Keep ClassPrep/modals mounted without adding layout gap under the card.
   prepHost: {
     position: 'absolute',
     width: 0,
@@ -516,158 +322,83 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: 'hidden',
   },
-  cardEmpty: {
-    minHeight: 0,
-    justifyContent: 'center',
-    shadowOpacity: 0.0156863,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 1,
-    overflow: 'visible',
-  },
-  cardAllDone: {
-    overflow: 'hidden',
-  },
-  cardNext: {
-    overflow: 'hidden',
-  },
-  // Drop left border so accent sits on the outer edge (no white gap inside the border).
-  cardWithAccent: {
-    borderLeftWidth: 0,
-    overflow: 'hidden',
-  },
-  accentBar: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: '#21C17C',
-  },
-  accentBarLiveNotPrepped: {
-    backgroundColor: '#E8A33D',
-  },
-  accentBarNext: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: '#EDEBE6',
-  },
   content: {
     alignSelf: 'stretch',
     width: '100%',
-    height: '100%',
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
+    justifyContent: 'space-between',
     padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
-    zIndex: 1,
-  },
-  heroMainContentTypeA: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
-    width: '100%',
-    padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
     zIndex: 1,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    alignSelf: 'stretch',
+    width: '100%',
     gap: 8,
+  },
+  statusLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 1,
+    minWidth: 0,
   },
   statusDot: {
     width: 8,
     height: 8,
-    backgroundColor: '#21C17C',
-    borderRadius: 4,
-    flexGrow: 0,
-    flexShrink: 0,
-  },
-  statusDotLiveNotPrepped: {
-    backgroundColor: '#E8A33D',
-  },
-  statusDotNext: {
-    width: 8,
-    height: 8,
-    backgroundColor: '#8A8880',
+    backgroundColor: '#1F1E1C',
     borderRadius: 4,
     flexGrow: 0,
     flexShrink: 0,
   },
   liveLabelBox: {
-    height: 17,
+    height: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
   },
   statusText: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#0D8A57',
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: '#1F1E1C',
     fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
-  },
-  statusTextLiveNotPrepped: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#E8A33D',
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
-  },
-  statusTextNext: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#8A8880',
-    fontFamily: 'Inter_600SemiBold',
+    fontStyle: 'normal',
     includeFontPadding: false,
   },
   notPreppedText: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#E8A33D',
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: '#1F1E1C',
     fontFamily: 'Inter_600SemiBold',
+    fontStyle: 'normal',
     includeFontPadding: false,
   },
-  heroInfoRow: {
+  heroTextBlock: {
     alignSelf: 'stretch',
     width: '100%',
     flexDirection: 'column',
     alignItems: 'stretch',
     padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
   },
-  heroTextBlock: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: 0,
-  },
-  heroTextBlockNext: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
-    padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
-  },
-  heroFooterRow: {
+  topicRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignSelf: 'stretch',
     width: '100%',
+    gap: 12,
   },
   timeBox: {
-    height: 17,
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
-  },
-  heroTimeBox: {
-    width: 111,
     height: 17,
     flexGrow: 0,
     flexShrink: 0,
@@ -690,134 +421,75 @@ const styles = StyleSheet.create({
   subject: {
     fontSize: 32,
     lineHeight: 39,
-    color: '#1F1E1C',
+    color: '#1A1A1A',
     fontFamily: 'Montserrat_700Bold',
+    fontStyle: 'normal',
+    includeFontPadding: false,
+  },
+  topicBox: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 19,
+    justifyContent: 'center',
+    overflow: 'visible',
+  },
+  topic: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#4A4844',
+    fontFamily: 'Inter_500Medium',
+    fontStyle: 'normal',
     includeFontPadding: false,
   },
   gradeBoxLive: {
-    flex: 1,
-    minWidth: 0,
-    marginRight: 12,
+    width: 230,
+    height: 17,
+    alignSelf: 'stretch',
+    flexGrow: 0,
+    flexShrink: 0,
     justifyContent: 'center',
   },
   meta: {
     fontSize: 14,
     lineHeight: 17,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
+    color: '#1A1A1A',
+    fontFamily: 'Inter_500Medium',
+    fontStyle: 'normal',
     includeFontPadding: false,
   },
   joinButton: {
+    boxSizing: 'border-box',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 0,
-    backgroundColor: '#21C17C',
-    borderRadius: 8,
+    marginTop: -16,
+    backgroundColor: '#1F1E1C',
+    borderWidth: 1,
+    borderColor: '#ECEAE4',
+    borderRadius: 10,
     flexGrow: 0,
     flexShrink: 0,
   },
-  reviewPlanButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
-  },
   joinButtonTextBox: {
-    height: 24,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
   },
   joinButtonText: {
-    fontSize: 16,
-    lineHeight: 24,
+    fontSize: 14,
+    lineHeight: 17,
     color: '#FFFFFF',
-    fontFamily: 'Montserrat_600SemiBold',
+    fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
-  },
-  reviewPlanButtonText: {
-    color: '#1F1E1C',
   },
   joinArrowBox: {
-    width: 24,
-    height: 24,
+    width: 16,
+    height: 16,
     flexGrow: 0,
     flexShrink: 0,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  emptyContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    width: '100%',
-    padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
-    zIndex: 1,
-  },
-  emptyIconBox: {
-    padding: 0,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F2F1EC',
-    borderRadius: 12,
-    flexGrow: 0,
-    flexShrink: 0,
-  },
-  doneIconBox: {
-    padding: 0,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E8F8F0',
-    borderRadius: 12,
-    flexGrow: 0,
-    flexShrink: 0,
-  },
-  clockIcon: {
-    width: 24,
-    height: 24,
-    flexGrow: 0,
-    flexShrink: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyTextBlock: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    padding: 0,
-    width: '100%',
-    flexGrow: 1,
-    flexShrink: 1,
-    minWidth: 0,
-  },
-  emptyTitleBox: {
-    alignSelf: 'stretch',
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
-  },
-  emptyTitle: {
-    fontSize: 22,
-    lineHeight: 27,
-    color: '#1F1E1C',
-    fontFamily: 'Montserrat_600SemiBold',
-    includeFontPadding: false,
-  },
-  emptySubtitleBox: {
-    alignSelf: 'stretch',
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    lineHeight: 19,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
   },
 });
 
