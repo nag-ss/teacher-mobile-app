@@ -42,7 +42,7 @@ function useIntervalApi(callback: () => void, delay: number) {
 const normalizeTime = (time?: string) => (time ? String(time).split('.')[0] : '');
 
 const formatTimeRange = (start?: string, end?: string) => {
-  const startLabel = (start ? moment(normalizeTime(start), TIME_FMT) : moment()).format('h:mm');
+  const startLabel = (start ? moment(normalizeTime(start), TIME_FMT) : moment()).format('h:mm A');
   const endLabel = (
     end ? moment(normalizeTime(end), TIME_FMT) : moment().add(30, 'minutes')
   ).format('h:mm A');
@@ -405,7 +405,7 @@ const noop = () => {};
 const styles = StyleSheet.create({
   wrap: {
     alignSelf: 'flex-start',
-    width: 676,
+    width: 664,
   },
   prepHost: {
     position: 'absolute',
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   },
   card: {
     alignSelf: 'flex-start',
-    width: 676,
+    width: 664,
     flexDirection: 'column',
     alignItems: 'flex-start',
     backgroundColor: '#FFFFFF',
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   },
   doneCard: {
     alignSelf: 'flex-start',
-    width: 676,
+    width: 664,
     height: 92,
     flexDirection: 'row',
     alignItems: 'center',
@@ -585,17 +585,23 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   timeBox: {
+    width: 151,
     height: 17,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   time: {
+    width: 151,
+    height: 17,
     fontSize: 14,
     lineHeight: 17,
-    color: '#8A8880',
-    fontFamily: 'Inter_500Medium',
+    color: '#4A4844',
+    fontFamily: 'Inter_700Bold',
+    fontStyle: 'normal',
     includeFontPadding: false,
+    textAlign: 'right',
   },
   subjectBox: {
     height: 39,

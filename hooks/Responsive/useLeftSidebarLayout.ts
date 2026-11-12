@@ -3,7 +3,7 @@ import { useWindowDimensions } from 'react-native';
 
 /** Figma sizes for the left nav at full dashboard size. */
 const FIGMA = {
-  sidebarWidth: 88,
+  sidebarWidth: 104,
   paddingTop: 24,
   paddingHorizontal: 0,
   paddingBottom: 24,
@@ -26,7 +26,7 @@ const MAIN_COLUMN_WIDTH = 636;
 const RIGHT_SIDEBAR_WIDTH = 300;
 const FIGMA_DASHBOARD_WIDTH = FIGMA.sidebarWidth + MAIN_COLUMN_WIDTH + RIGHT_SIDEBAR_WIDTH;
 const FIGMA_DASHBOARD_HEIGHT = 700;
-const SIDEBAR_MIN_WIDTH = 88;
+const SIDEBAR_MIN_WIDTH = 104;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));

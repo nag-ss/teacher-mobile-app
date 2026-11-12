@@ -203,8 +203,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignSelf: 'stretch',
     gap: 16,
-    marginTop: -14,
-    marginBottom: 26,
+    marginTop: -4,
+    marginBottom: 16,
   },
   actionButton: {
     width: 44,
