@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 2,
     gap: 4,
-    width: 96,
+    width: 88,
     minHeight: 56,
     flexGrow: 0,
     overflow: 'visible',

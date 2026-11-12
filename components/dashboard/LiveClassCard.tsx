@@ -372,8 +372,8 @@ const noop = () => {};
 
 const styles = StyleSheet.create({
   wrap: {
-    alignSelf: 'flex-start',
-    width: 664,
+    alignSelf: 'stretch',
+    width: '100%',
   },
   prepHost: {
     position: 'absolute',
@@ -382,8 +382,8 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   card: {
-    alignSelf: 'flex-start',
-    width: 664,
+    alignSelf: 'stretch',
+    width: '100%',
     height: 176,
     paddingTop: 24,
     paddingHorizontal: 32,
@@ -399,8 +399,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   doneCard: {
-    alignSelf: 'flex-start',
-    width: 664,
+    alignSelf: 'stretch',
+    width: '100%',
     height: 92,
     flexDirection: 'row',
     alignItems: 'center',
