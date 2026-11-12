@@ -245,7 +245,8 @@ const styles = StyleSheet.create({
   timelineCard: {
     flexDirection: 'column',
     alignItems: 'stretch',
-    paddingTop: 20,
+    /** Align "Your day" with live card time row. */
+    paddingTop: 14,
     paddingRight: 20,
     paddingBottom: 20,
     paddingLeft: 16,

@@ -386,7 +386,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 176,
     paddingTop: 24,
-    paddingHorizontal: 32,
+    /** Match ActionRequiredPanel so left text lines up with "Needs you". */
+    paddingHorizontal: 24,
     paddingBottom: 32,
     borderRadius: 20,
     flexDirection: 'column',
@@ -404,7 +405,7 @@ const styles = StyleSheet.create({
     height: 92,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     gap: 16,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
