@@ -232,15 +232,20 @@ export const useTimeline = () => {
       const start = parseTime(timeline.start_time);
       const end = parseTime(timeline.end_time);
       if (!start) return;
+      /** Only show items that start within 8am–5pm. */
+      const startMinutes = minutesFromDayStart(start);
+      if (startMinutes < 0 || startMinutes >= HOUR_SPAN * 60) return;
 
       const isBreak = isBreakItem(timeline);
       const status = isBreak ? null : getClassStatus(timeline, date, now);
       if (!isBreak && !status) return;
 
-      const rangeStart = Math.max(0, (minutesFromDayStart(start) / 60) * pxPerHour);
-      const rangeEnd = end
-        ? Math.max(rangeStart, (minutesFromDayStart(end) / 60) * pxPerHour)
-        : rangeStart + pxPerHour;
+      const rangeStart = Math.max(0, (startMinutes / 60) * pxPerHour);
+      const rawEndMinutes = end ? minutesFromDayStart(end) : startMinutes + 60;
+      const rangeEnd = Math.max(
+        rangeStart,
+        (Math.min(rawEndMinutes, HOUR_SPAN * 60) / 60) * pxPerHour
+      );
       const durationMinutes = end ? Math.max(1, end.diff(start, 'minutes')) : 60;
       const isHalfHour = durationMinutes >= 25 && durationMinutes <= 35;
       const isOneHour = durationMinutes >= 55 && durationMinutes <= 65;
@@ -291,10 +296,15 @@ export const useTimeline = () => {
     return built;
   }, [classTimeline, date, now, pxPerHour]);
 
-  const showNow = moment(date).isSame(now, 'day');
+  /** Timeline window is 8am–5pm only; hide the now-line outside that window. */
+  const nowMinutes = minutesFromDayStart(now);
+  const dayEndMinutes = HOUR_SPAN * 60;
+  const showNow =
+    moment(date).isSame(now, 'day') &&
+    nowMinutes >= 0 &&
+    nowMinutes < dayEndMinutes;
   const nowTop = showNow
-    ? LABEL_PAD_TOP +
-      Math.max(0, Math.min(dayHeight, (minutesFromDayStart(now) / 60) * pxPerHour))
+    ? LABEL_PAD_TOP + (nowMinutes / 60) * pxPerHour
     : null;
 
   return {
