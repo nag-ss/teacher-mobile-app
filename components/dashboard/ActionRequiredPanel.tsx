@@ -14,14 +14,12 @@ const styles = StyleSheet.create({
     width: 676,
     height: 460,
     backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EDEBE6',
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
-    alignSelf: 'stretch',
+    alignSelf: 'flex-start',
     flexGrow: 0,
+    marginTop: 'auto',
   },
 });
 

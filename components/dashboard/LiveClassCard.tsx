@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLiveClass, getScheduleClasses, setUnAuth } from '@/store/classSlice';
 import moment from 'moment';
@@ -8,10 +7,23 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
 import { useLiveClassLayout, type LiveClassLayout } from '@/hooks/Responsive/useLiveClassLayout';
+import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
 
 const REFRESH_MS = 300000;
 const TIME_FMT = 'HH:mm:ss';
+
+/** Dev preview: force one card state. Set true + FORCE_PREVIEW_STATE to preview. */
+const FORCE_LIVE_CARD = true;
+type LivePreviewState =
+  | 'live'
+  | 'unprepped'
+  | 'prepped'
+  | 'next_prepped'
+  | 'next_unprepped'
+  | 'all_done'
+  | 'no_class';
+const FORCE_PREVIEW_STATE: LivePreviewState = 'live';
 
 function useIntervalApi(callback: () => void, delay: number) {
   const savedCallback = useRef(callback);
@@ -88,30 +100,181 @@ type FooterProps = {
   label: string;
   onPress: () => void;
   layout: LiveClassLayout;
+  light?: boolean;
 };
 
-const JoinButton = memo(({ label, onPress, layout }: FooterProps) => (
-  <TouchableOpacity
-    style={[
-      styles.joinButton,
-      {
-        width: layout.joinButtonWidth,
-        height: layout.joinButtonHeight,
-        paddingHorizontal: layout.joinButtonPaddingH,
-        gap: layout.joinButtonGap,
-      },
-    ]}
-    onPress={onPress}
-    activeOpacity={0.8}
-  >
-    <View style={styles.joinButtonTextBox}>
-      <Text style={styles.joinButtonText}>{label}</Text>
+const JoinButton = memo(({ label, onPress, layout, light }: FooterProps) => {
+  const sizeStyle = {
+    width: layout.joinButtonWidth,
+    height: layout.joinButtonHeight,
+    paddingHorizontal: layout.joinButtonPaddingH,
+  };
+
+  const content = (pressed: boolean) => (
+    <View style={[styles.joinButtonInner, { gap: layout.joinButtonGap }]}>
+      <Text style={[styles.joinButtonText, light && styles.joinButtonTextDark]} numberOfLines={1}>
+        {label}
+      </Text>
+      <SvgLoader
+        svgFilePath="betaRightArrow"
+        width={12}
+        height={12}
+        color={light ? '#1F1E1C' : '#FFFFFF'}
+      />
     </View>
-    <View style={styles.joinArrowBox}>
-      <MaterialIcons name="arrow-forward" size={16} color="#FFFFFF" />
+  );
+
+  if (light) {
+    return (
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          styles.joinButton,
+          styles.joinButtonLight,
+          pressed && styles.joinButtonLightPressed,
+          sizeStyle,
+        ]}
+      >
+        {({ pressed }) => content(pressed)}
+      </Pressable>
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      style={[styles.joinButton, sizeStyle]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      {content(false)}
+    </TouchableOpacity>
+  );
+});
+
+type CardBodyProps = {
+  activeClass: any;
+  previewState: LivePreviewState;
+  layout: LiveClassLayout;
+  onJoin: () => void;
+};
+
+const LiveCardBody = memo(({ activeClass, previewState, layout, onJoin }: CardBodyProps) => {
+  const gradeLabel = getGradeLabel(activeClass);
+  const details = getClassDetails(activeClass);
+  const subjectLabel = activeClass?.subject_name || details.title || 'Class';
+  const topicLabel = details.topic || 'Angle Identities';
+  const isNext = previewState === 'next_prepped' || previewState === 'next_unprepped';
+  const buttonLabel = isNext
+    ? previewState === 'next_prepped'
+      ? 'Open Plan'
+      : 'Prep Class'
+    : 'Join Class';
+
+  if (previewState === 'all_done') {
+    return (
+      <View style={styles.doneCard}>
+        <View style={styles.doneIconBox}>
+          <SvgLoader svgFilePath="liveCorrect" width={14} height={11} color="#2F6FED" />
+        </View>
+        <View style={styles.doneTextBlock}>
+          <Text style={styles.doneTitle}>All wrapped up</Text>
+          <Text style={styles.doneSubtitle}>4 classes taught</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (previewState === 'no_class') {
+    return (
+      <View style={styles.doneCard}>
+        <View style={styles.emptyIconBox}>
+          <SvgLoader svgFilePath="liveCalendar" width={18} height={18} />
+        </View>
+        <View style={styles.doneTextBlock}>
+          <Text style={styles.doneTitle}>No classes scheduled today</Text>
+          <Text style={styles.doneSubtitle}>
+            Enjoy the break — or prep an upcoming class from Calendar
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View
+      style={[
+        styles.card,
+        {
+          height: layout.cardHeight,
+          paddingTop: layout.cardPadding - 8,
+          paddingHorizontal: layout.cardPadding,
+          paddingBottom: layout.cardPadding,
+          borderRadius: layout.cardRadius,
+        },
+      ]}
+    >
+      <View style={[styles.content, { gap: layout.contentGap }]}>
+        <View style={styles.statusRow}>
+          <View style={styles.statusLeft}>
+            <View style={styles.statusDot} />
+            <View style={styles.liveLabelBox}>
+              {isNext ? (
+                <>
+                  <Text style={styles.statusText}>NEXT</Text>
+                  {previewState === 'next_prepped' ? (
+                    <Text style={styles.preppedText}> · PREPPED</Text>
+                  ) : (
+                    <Text style={styles.unpreppedText}> · UNPREPPED</Text>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Text style={styles.statusText}>LIVE NOW</Text>
+                  {previewState === 'prepped' ? (
+                    <Text style={styles.preppedText}> · PREPPED</Text>
+                  ) : previewState === 'unprepped' ? (
+                    <Text style={styles.unpreppedText}> · UNPREPPED</Text>
+                  ) : null}
+                </>
+              )}
+            </View>
+          </View>
+          <View style={styles.timeBox}>
+            <Text style={styles.time}>
+              {formatTimeRange(activeClass.start_time, activeClass.end_time)}
+            </Text>
+          </View>
+        </View>
+
+        <View style={[styles.heroTextBlock, { gap: layout.heroTextGap }]}>
+          <View style={styles.gradeBoxLive}>
+            <Text style={styles.meta} numberOfLines={1}>
+              {gradeLabel}
+            </Text>
+          </View>
+          <View style={styles.subjectBox}>
+            <Text style={styles.subject} numberOfLines={1}>
+              {subjectLabel}
+            </Text>
+          </View>
+          <View style={styles.topicRow}>
+            <View style={styles.topicBox}>
+              <Text style={styles.topic} numberOfLines={1}>
+                {topicLabel}
+              </Text>
+            </View>
+            <JoinButton
+              label={buttonLabel}
+              onPress={onJoin}
+              layout={layout}
+              light={isNext}
+            />
+          </View>
+        </View>
+      </View>
     </View>
-  </TouchableOpacity>
-));
+  );
+});
 
 const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
@@ -164,9 +327,6 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
 
   const hasLiveFromApi = Boolean(isToday && liveClass?.class_schedule_id);
 
-  /** Force LIVE NOW card visible for layout/dev even when API has no live class. */
-  const FORCE_LIVE_CARD = true;
-
   const activeClass = useMemo(() => {
     if (hasLiveFromApi) {
       const match = schedule.find(
@@ -177,34 +337,21 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
 
     if (!FORCE_LIVE_CARD) return null;
 
-    if (schedule[0]) return schedule[0];
-
-    return {
-      class_schedule_id: 'force-live',
-      subject_name: 'Mathematics',
-      start_time: moment().format(TIME_FMT),
-      end_time: moment().add(45, 'minutes').format(TIME_FMT),
-      division_name: '10',
-      section_name: 'A',
-      class_details: [{ topic: 'Angle Identities' }],
-    };
+    return (
+      schedule[0] || {
+        class_schedule_id: 'force-live',
+        subject_name: 'Mathematics',
+        start_time: moment().format(TIME_FMT),
+        end_time: moment().add(45, 'minutes').format(TIME_FMT),
+        division_name: '10',
+        section_name: 'A',
+        class_details: [{ topic: 'Angle Identities' }],
+      }
+    );
   }, [hasLiveFromApi, schedule, liveClass]);
 
   const classScheduleId = activeClass?.class_schedule_id;
-  const classDetails = useMemo(
-    () =>
-      activeClass
-        ? getClassDetails(activeClass)
-        : { title: '', topic: '', isPrepped: false },
-    [activeClass]
-  );
-  const gradeLabel = useMemo(
-    () => (activeClass ? getGradeLabel(activeClass) : '—'),
-    [activeClass]
-  );
-  const { isPrepped, topic } = classDetails;
-  const subjectLabel = activeClass?.subject_name || classDetails.title || 'Class';
-  const topicLabel = topic || 'Angle Identities';
+  const isPrepped = Boolean(getClassDetails(activeClass || {}).isPrepped);
 
   const navigateToMonitor = useCallback(() => {
     if (!classScheduleId || classScheduleId === 'force-live' || !isToday) return;
@@ -217,66 +364,27 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
     classPrepRef.current?.setSelectedClass();
   }, []);
 
+  const onJoin = useCallback(() => {
+    if (isPrepped) navigateToMonitor();
+    else openClassPrep();
+  }, [isPrepped, navigateToMonitor, openClassPrep]);
+
   if (!activeClass) return null;
+
+  const livePreviewState: LivePreviewState = FORCE_LIVE_CARD
+    ? FORCE_PREVIEW_STATE
+    : isPrepped
+      ? 'prepped'
+      : 'unprepped';
 
   return (
     <View style={styles.wrap}>
-      <View
-        style={[
-          styles.card,
-          {
-            height: layout.cardHeight,
-            paddingTop: layout.cardPadding - 8,
-            paddingHorizontal: layout.cardPadding,
-            paddingBottom: layout.cardPadding,
-            borderRadius: layout.cardRadius,
-          },
-        ]}
-      >
-        <View style={[styles.content, { gap: layout.contentGap }]}>
-          <View style={styles.statusRow}>
-            <View style={styles.statusLeft}>
-              <View style={styles.statusDot} />
-              <View style={styles.liveLabelBox}>
-                <Text style={styles.statusText}>LIVE</Text>
-                {!isPrepped ? (
-                  <Text style={styles.notPreppedText}> · NOT PREPPED</Text>
-                ) : null}
-              </View>
-            </View>
-            <View style={styles.timeBox}>
-              <Text style={styles.time}>
-                {formatTimeRange(activeClass.start_time, activeClass.end_time)}
-              </Text>
-            </View>
-          </View>
-
-          <View style={[styles.heroTextBlock, { gap: layout.heroTextGap }]}>
-            <View style={styles.gradeBoxLive}>
-              <Text style={styles.meta} numberOfLines={1}>
-                {gradeLabel}
-              </Text>
-            </View>
-            <View style={styles.subjectBox}>
-              <Text style={styles.subject} numberOfLines={1}>
-                {subjectLabel}
-              </Text>
-            </View>
-            <View style={styles.topicRow}>
-              <View style={styles.topicBox}>
-                <Text style={styles.topic} numberOfLines={1}>
-                  {topicLabel}
-                </Text>
-              </View>
-              <JoinButton
-                label={isPrepped ? 'Join Class' : 'Prep & Start'}
-                onPress={isPrepped ? navigateToMonitor : openClassPrep}
-                layout={layout}
-              />
-            </View>
-          </View>
-        </View>
-      </View>
+      <LiveCardBody
+        activeClass={activeClass}
+        previewState={livePreviewState}
+        layout={layout}
+        onJoin={onJoin}
+      />
 
       {!isPrepped ? (
         <View style={styles.prepHost} pointerEvents="box-none">
@@ -296,8 +404,8 @@ const noop = () => {};
 
 const styles = StyleSheet.create({
   wrap: {
-    alignSelf: 'stretch',
-    width: '100%',
+    alignSelf: 'flex-start',
+    width: 676,
   },
   prepHost: {
     position: 'absolute',
@@ -306,8 +414,8 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   card: {
-    alignSelf: 'stretch',
-    width: '100%',
+    alignSelf: 'flex-start',
+    width: 676,
     flexDirection: 'column',
     alignItems: 'flex-start',
     backgroundColor: '#FFFFFF',
@@ -315,12 +423,80 @@ const styles = StyleSheet.create({
     borderColor: '#EDEBE6',
     flexGrow: 0,
     flexShrink: 0,
-    shadowColor: '#000',
-    shadowOpacity: 0.0235294,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 2,
     overflow: 'hidden',
+  },
+  doneCard: {
+    alignSelf: 'flex-start',
+    width: 676,
+    height: 92,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    gap: 16,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EDEBE6',
+    borderRadius: 18,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  doneIconBox: {
+    width: 48,
+    height: 48,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    backgroundColor: '#E8F0FC',
+    borderRadius: 12,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  emptyIconBox: {
+    width: 48,
+    height: 48,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    backgroundColor: '#F2F1EC',
+    borderRadius: 12,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  doneTextBlock: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: 4,
+    flexGrow: 1,
+    flexShrink: 1,
+    minWidth: 0,
+    overflow: 'visible',
+  },
+  doneTitle: {
+    minHeight: 24,
+    alignSelf: 'stretch',
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#1F1E1C',
+    fontFamily: 'Montserrat_700Bold',
+    fontStyle: 'normal',
+    includeFontPadding: false,
+    flexGrow: 0,
+    overflow: 'visible',
+  },
+  doneSubtitle: {
+    minHeight: 16,
+    alignSelf: 'stretch',
+    fontSize: 12,
+    lineHeight: 17,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    fontStyle: 'normal',
+    includeFontPadding: false,
+    flexGrow: 0,
+    overflow: 'visible',
   },
   content: {
     alignSelf: 'stretch',
@@ -373,7 +549,17 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     includeFontPadding: false,
   },
-  notPreppedText: {
+  unpreppedText: {
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    color: '#87590A',
+    fontFamily: 'Inter_600SemiBold',
+    fontStyle: 'normal',
+    includeFontPadding: false,
+  },
+  preppedText: {
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
@@ -458,7 +644,6 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   joinButton: {
-    boxSizing: 'border-box',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -470,26 +655,35 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     flexGrow: 0,
     flexShrink: 0,
+    overflow: 'hidden',
   },
-  joinButtonTextBox: {
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
+  joinButtonLight: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#EDEBE6',
   },
-  joinButtonText: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#FFFFFF',
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
+  joinButtonLightPressed: {
+    backgroundColor: '#B5B2AA',
+    borderColor: '#ECEAE4',
   },
-  joinArrowBox: {
-    width: 16,
-    height: 16,
-    flexGrow: 0,
-    flexShrink: 0,
+  joinButtonInner: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  joinButtonText: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#FFFFFF',
+    fontFamily: 'Inter_600SemiBold',
+    fontStyle: 'normal',
+    includeFontPadding: false,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  joinButtonTextDark: {
+    color: '#1F1E1C',
   },
 });
 

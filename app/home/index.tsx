@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
+import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
 import Timeline from '@/components/dashboard/Timeline';
 import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import SvgLoader from '@/utils/SvgLoader';
@@ -20,11 +21,16 @@ const parseTime = (value?: string) => {
   return parsed.isValid() ? parsed : null;
 };
 
+/** timelinePanel paddingTop + topActions (-14 + 44 + 26) + timelineCard height */
+const TIMELINE_CARD_BOTTOM = 24 + 56 + 652;
+
 const DashboardScreen = () => {
   const { user } = useSelector((state: any) => state.user);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [columnHeight, setColumnHeight] = useState(0);
   const hasNotifications = false;
+  const mainBottomPad = Math.max(0, columnHeight - TIMELINE_CARD_BOTTOM);
   const greetingName = user?.first_name || 'Teacher';
   const selectedDate = moment().format('YYYY-MM-DD');
   const dateLabel = moment(selectedDate).format('dddd, D MMMM');
@@ -51,8 +57,11 @@ const DashboardScreen = () => {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.container}>
-        <View style={styles.mainContent}>
+      <View
+        style={styles.container}
+        onLayout={(e) => setColumnHeight(e.nativeEvent.layout.height)}
+      >
+        <View style={[styles.mainContent, { paddingBottom: mainBottomPad }]}>
           <View style={styles.pageHeader}>
             <View style={styles.greetingBlock}>
               <View style={styles.greetingBox}>
@@ -67,6 +76,7 @@ const DashboardScreen = () => {
           </View>
 
           <LiveClassCard selectedDate={selectedDate} />
+          <ActionRequiredPanel />
         </View>
 
         <View style={styles.timelinePanel}>
@@ -115,14 +125,14 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#E4E2DC',
     position: 'relative',
     overflow: 'hidden',
   },
   container: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#E4E2DC',
   },
   mainContent: {
     flex: 1,
@@ -131,10 +141,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingTop: 24,
     paddingHorizontal: 32,
-    paddingBottom: 32,
-    /** Match timeline: topActions (44) + marginBottom (12) = 56 before card. */
+    /** Bottom pad is set to align ActionRequiredPanel with timeline card bottom. */
     gap: 12,
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#E4E2DC',
   },
   pageHeader: {
     flexDirection: 'row',
@@ -228,7 +237,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingTop: 24,
     paddingRight: 24,
-    backgroundColor: '#FAFAF8',
+    backgroundColor: '#E4E2DC',
   },
   timelineCard: {
     flexDirection: 'column',
@@ -240,12 +249,9 @@ const styles = StyleSheet.create({
     width: 476,
     height: 652,
     backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EDEBE6',
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
     flexGrow: 0,
     overflow: 'hidden',
   },
