@@ -1,4 +1,3 @@
-import { useLoginLayout } from '@/hooks/Responsive/useLoginLayout';
 import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -10,12 +9,10 @@ type LogoutConfirmModalProps = {
 };
 
 const LogoutConfirmModal = ({ visible, onCancel, onConfirm }: LogoutConfirmModalProps) => {
-  const { dialogWidth, dialogHeight, dialogPadding } = useLoginLayout();
-  
   return (
     <Modal animationType="fade" transparent visible={visible} onRequestClose={onCancel}>
       <View style={styles.overlay}>
-        <View style={[styles.dialog, { width: dialogWidth, maxWidth: 440, minHeight: dialogHeight, padding: dialogPadding }]}>
+        <View style={styles.dialog}>
           <View style={styles.iconBox}>
             <View style={styles.icon}>
               <SvgLoader svgFilePath="loginLogout" width={24} height={24} />
@@ -54,6 +51,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(26, 26, 26, 0.45)',
   },
   dialog: {
+    width: 440,
+    minHeight: 316,
+    padding: 32,
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     flexDirection: 'column',

@@ -6,7 +6,6 @@ import moment from 'moment';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
-import { useLiveClassLayout, type LiveClassLayout } from '@/hooks/Responsive/useLiveClassLayout';
 import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
 
@@ -99,19 +98,12 @@ const getClassDetails = (c: any) => {
 type FooterProps = {
   label: string;
   onPress: () => void;
-  layout: LiveClassLayout;
   light?: boolean;
 };
 
-const JoinButton = memo(({ label, onPress, layout, light }: FooterProps) => {
-  const sizeStyle = {
-    width: layout.joinButtonWidth,
-    height: layout.joinButtonHeight,
-    paddingHorizontal: layout.joinButtonPaddingH,
-  };
-
-  const content = (pressed: boolean) => (
-    <View style={[styles.joinButtonInner, { gap: layout.joinButtonGap }]}>
+const JoinButton = memo(({ label, onPress, light }: FooterProps) => {
+  const content = (
+    <View style={styles.joinButtonInner}>
       <Text style={[styles.joinButtonText, light && styles.joinButtonTextDark]} numberOfLines={1}>
         {label}
       </Text>
@@ -132,21 +124,16 @@ const JoinButton = memo(({ label, onPress, layout, light }: FooterProps) => {
           styles.joinButton,
           styles.joinButtonLight,
           pressed && styles.joinButtonLightPressed,
-          sizeStyle,
         ]}
       >
-        {({ pressed }) => content(pressed)}
+        {content}
       </Pressable>
     );
   }
 
   return (
-    <TouchableOpacity
-      style={[styles.joinButton, sizeStyle]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      {content(false)}
+    <TouchableOpacity style={styles.joinButton} onPress={onPress} activeOpacity={0.8}>
+      {content}
     </TouchableOpacity>
   );
 });
@@ -154,11 +141,10 @@ const JoinButton = memo(({ label, onPress, layout, light }: FooterProps) => {
 type CardBodyProps = {
   activeClass: any;
   previewState: LivePreviewState;
-  layout: LiveClassLayout;
   onJoin: () => void;
 };
 
-const LiveCardBody = memo(({ activeClass, previewState, layout, onJoin }: CardBodyProps) => {
+const LiveCardBody = memo(({ activeClass, previewState, onJoin }: CardBodyProps) => {
   const gradeLabel = getGradeLabel(activeClass);
   const details = getClassDetails(activeClass);
   const subjectLabel = activeClass?.subject_name || details.title || 'Class';
@@ -201,19 +187,8 @@ const LiveCardBody = memo(({ activeClass, previewState, layout, onJoin }: CardBo
   }
 
   return (
-    <View
-      style={[
-        styles.card,
-        {
-          height: layout.cardHeight,
-          paddingTop: layout.cardPadding - 8,
-          paddingHorizontal: layout.cardPadding,
-          paddingBottom: layout.cardPadding,
-          borderRadius: layout.cardRadius,
-        },
-      ]}
-    >
-      <View style={[styles.content, { gap: layout.contentGap }]}>
+    <View style={styles.card}>
+      <View style={styles.content}>
         <View style={styles.statusRow}>
           <View style={styles.statusLeft}>
             <View style={styles.statusDot} />
@@ -246,7 +221,7 @@ const LiveCardBody = memo(({ activeClass, previewState, layout, onJoin }: CardBo
           </View>
         </View>
 
-        <View style={[styles.heroTextBlock, { gap: layout.heroTextGap }]}>
+        <View style={styles.heroTextBlock}>
           <View style={styles.gradeBoxLive}>
             <Text style={styles.meta} numberOfLines={1}>
               {gradeLabel}
@@ -263,12 +238,7 @@ const LiveCardBody = memo(({ activeClass, previewState, layout, onJoin }: CardBo
                 {topicLabel}
               </Text>
             </View>
-            <JoinButton
-              label={buttonLabel}
-              onPress={onJoin}
-              layout={layout}
-              light={isNext}
-            />
+            <JoinButton label={buttonLabel} onPress={onJoin} light={isNext} />
           </View>
         </View>
       </View>
@@ -280,7 +250,6 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>();
   const classPrepRef = useRef<any>(null);
-  const layout = useLiveClassLayout();
 
   const liveClass = useSelector((state: any) => state.classes.liveClass);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
@@ -382,7 +351,6 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
       <LiveCardBody
         activeClass={activeClass}
         previewState={livePreviewState}
-        layout={layout}
         onJoin={onJoin}
       />
 
@@ -416,6 +384,11 @@ const styles = StyleSheet.create({
   card: {
     alignSelf: 'flex-start',
     width: 664,
+    height: 176,
+    paddingTop: 24,
+    paddingHorizontal: 32,
+    paddingBottom: 32,
+    borderRadius: 20,
     flexDirection: 'column',
     alignItems: 'flex-start',
     backgroundColor: '#FFFFFF',
@@ -505,6 +478,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     justifyContent: 'space-between',
+    gap: 20,
     padding: 0,
     zIndex: 1,
   },
@@ -574,6 +548,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'column',
     alignItems: 'stretch',
+    gap: 6,
     padding: 0,
   },
   topicRow: {
@@ -650,10 +625,13 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   joinButton: {
+    width: 124,
+    height: 40,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 0,
+    paddingHorizontal: 16,
     marginTop: -16,
     backgroundColor: '#1F1E1C',
     borderWidth: 1,
@@ -675,6 +653,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
     flexGrow: 0,
     flexShrink: 0,
   },

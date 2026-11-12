@@ -1,7 +1,6 @@
 import BrandPanel from '@/components/login/BrandPanel';
 import LoginForm from '@/components/login/LoginForm';
 import ResetPassword from '@/components/login/ResetPassword';
-import { useLoginLayout } from '@/hooks/Responsive/useLoginLayout';
 import { clearError, userDetails, userLogin } from '@/store/authSlice';
 import React, { useEffect, useState } from 'react';
 import {
@@ -27,7 +26,6 @@ const Login = () => {
   const [showResetEmailError, setShowResetEmailError] = useState(false);
   const [showResetSent, setShowResetSent] = useState(false);
   const { userToken, error, loading } = useSelector((state: any) => state.user);
-  const layout = useLoginLayout();
 
   const canSendReset = resetEmail.trim().length > 0;
   const canSubmit = username.trim().length > 0 && password.length > 0 && !loading;
@@ -100,14 +98,9 @@ const Login = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.shell}>
-        <BrandPanel
-          panelWidth={layout.panelWidth}
-          artHeight={layout.artHeight}
-          padding={layout.panePadding}
-          sectionGap={layout.sectionGap}
-        />
+        <BrandPanel />
 
-        <View style={[styles.formPane, { padding: layout.panePadding }]}>
+        <View style={styles.formPane}>
           <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.scrollContent}
@@ -177,6 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 64,
     backgroundColor: '#FFFFFF',
   },
   scroll: {
