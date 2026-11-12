@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     paddingHorizontal: 24,
     width: '100%',
-    height: 460,
+    height: 458,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',

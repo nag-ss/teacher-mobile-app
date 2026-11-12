@@ -15,7 +15,9 @@ const HOUR_SPAN = DAY_END_HOUR - DAY_START_HOUR;
 const DEFAULT_PX_PER_HOUR = 52;
 const TIME_GUTTER = 52;
 const CLASS_CARD_HEIGHT = 36;
-const CHIP_HEIGHT = 28;
+const HALF_CARD_HEIGHT = 26;
+/** Extra space between two items sharing the same hour. */
+const HALF_PAIR_GAP = 10;
 
 const HOURS = Array.from(
   { length: DAY_END_HOUR - DAY_START_HOUR + 1 },
@@ -73,106 +75,164 @@ const formatHourLabel = (hour: number) => {
   return String(hour);
 };
 
+type ClassStatus = 'live' | 'reflect' | 'unprepped' | 'prepped' | 'done';
+
+const hasTopic = (item: any) =>
+  Boolean(
+    item?.class_details?.[0]?.Topic ||
+      item?.class_details?.[0]?.topic ||
+      item?.topic
+  );
+
+const isBreakItem = (item: any) => {
+  const subject = String(item?.subject_name || item?.title || '').toLowerCase();
+  return (
+    item?.is_break === true ||
+    item?.period?.is_break === true ||
+    item?.type === 'break' ||
+    item?.event_type === 'break' ||
+    item?.schedule_type === 'break' ||
+    subject === 'break' ||
+    subject.includes('lunch') ||
+    subject.includes('break')
+  );
+};
+
+const isReflected = (item: any) =>
+  item?.is_reflected === true ||
+  item?.reflection_completed === true ||
+  item?.reflection_status === 'completed' ||
+  item?.reflection_status === 'done';
+
+const needsReflection = (item: any) =>
+  item?.needs_reflection === true ||
+  item?.reflection_pending === true ||
+  item?.reflection_status === 'pending' ||
+  item?.is_reflected === false;
+
+/** Map API class → UI state: live | reflect | done | unprepped | prepped */
 const getClassStatus = (
   item: any,
   date: string,
-  isNext: boolean
-): { kind: 'reflect' | 'unprepped' | 'prepped' | 'attention' | 'done'; label: string } => {
-  const topic =
-    item?.class_details?.[0]?.Topic ||
-    item?.class_details?.[0]?.topic ||
-    item?.topic ||
-    '';
-  const isPrepped = Boolean(topic);
-  const isPastDay = moment(date).isBefore(moment(), 'day');
-  const end = parseTime(item?.end_time);
+  now: moment.Moment
+): ClassStatus | null => {
   const start = parseTime(item?.start_time);
-  const now = moment();
-  const isToday = moment(date).isSame(now, 'day');
-  const ended =
-    isPastDay ||
-    (isToday && end && moment(date + ' ' + end.format('HH:mm:ss'), 'YYYY-MM-DD HH:mm:ss').isBefore(now));
-  const started =
-    isToday &&
-    start &&
-    moment(date + ' ' + start.format('HH:mm:ss'), 'YYYY-MM-DD HH:mm:ss').isBefore(now);
+  const end = parseTime(item?.end_time);
+  if (!start || !end) return null;
 
-  if (ended && isPrepped) return { kind: 'done', label: '' };
-  if (ended) return { kind: 'reflect', label: 'Reflect' };
-  if (isNext && isPrepped) return { kind: 'prepped', label: 'Prepped' };
-  if (isNext && !isPrepped) return { kind: 'unprepped', label: 'Unprepped' };
-  if (started && !ended && !isPrepped) return { kind: 'attention', label: 'Needs attention' };
-  if (!isPrepped) return { kind: 'unprepped', label: 'Unprepped' };
-  return { kind: 'prepped', label: 'Prepped' };
+  const startAt = moment(`${date} ${start.format('HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss');
+  const endAt = moment(`${date} ${end.format('HH:mm:ss')}`, 'YYYY-MM-DD HH:mm:ss');
+  const isToday = moment(date).isSame(now, 'day');
+  const isPastDay = moment(date).isBefore(now, 'day');
+  const isFutureDay = moment(date).isAfter(now, 'day');
+  const isUpcoming = isFutureDay || (isToday && startAt.isAfter(now));
+  const ended = isPastDay || (isToday && endAt.isSameOrBefore(now));
+  const prepped = hasTopic(item);
+
+  if (isToday && startAt.isSameOrBefore(now) && endAt.isAfter(now)) return 'live';
+
+  if (ended) {
+    if (isReflected(item)) return 'done';
+    if (needsReflection(item)) return 'reflect';
+    /** Past class with a plan/topic is treated as done; otherwise needs Reflect. */
+    return prepped ? 'done' : 'reflect';
+  }
+
+  if (isUpcoming) return prepped ? 'prepped' : 'unprepped';
+  return null;
 };
 
-type TimelineEvent =
-  | {
-      type: 'class';
-      id: string;
-      top: number;
-      height: number;
-      title: string;
-      grade: string;
-      timeLabel: string;
-      isNext: boolean;
-      status: ReturnType<typeof getClassStatus>;
-      raw: any;
-    }
-  | {
-      type: 'break';
-      id: string;
-      top: number;
-      height: number;
-      label: string;
-    }
-  | {
-      type: 'meeting';
-      id: string;
-      top: number;
-      height: number;
-      title: string;
-      timeLabel: string;
-      icon: 'flag' | 'people';
-    };
+type TimelineEvent = {
+  type: 'class' | 'break';
+  id: string;
+  top: number;
+  height: number;
+  title: string;
+  grade: string;
+  timeLabel: string;
+  durationLabel: string;
+  status: ClassStatus | null;
+  isNext: boolean;
+  isCompact: boolean;
+  raw: any;
+};
 
-const HatchBlock = ({ children, style }: { children: React.ReactNode; style?: any }) => (
-  <View style={[styles.hatchWrap, style]}>
-    <View style={styles.hatchLayer} pointerEvents="none">
-      {Array.from({ length: 28 }).map((_, i) => (
-        <View key={i} style={[styles.hatchLine, { left: i * 14 - 40 }]} />
-      ))}
-    </View>
-    {children}
+const formatDurationLabel = (minutes: number) => {
+  if (minutes >= 55 && minutes <= 65) return '1 hr';
+  if (minutes % 60 === 0) {
+    const hours = minutes / 60;
+    return hours === 1 ? '1 hr' : `${hours} hr`;
+  }
+  return `${minutes} min`;
+};
+
+const STATUS_LABEL: Record<Exclude<ClassStatus, 'done'>, string> = {
+  live: 'Live',
+  reflect: 'Reflect',
+  unprepped: 'Unprepped',
+  prepped: 'Prepped',
+};
+
+const STATUS_DOT: Record<Exclude<ClassStatus, 'done'>, any> = {
+  live: { backgroundColor: '#1F1E1C' },
+  reflect: { backgroundColor: '#D69A1E' },
+  unprepped: { backgroundColor: '#D69A1E' },
+  prepped: { backgroundColor: '#2F6FED' },
+};
+
+const STATUS_TEXT: Record<Exclude<ClassStatus, 'done'>, any> = {
+  live: { color: '#1F1E1C' },
+  reflect: { color: '#D69A1E' },
+  unprepped: { color: '#D69A1E' },
+  prepped: { color: '#2F6FED' },
+};
+
+const StatusBadge = ({ status }: { status: Exclude<ClassStatus, 'done'> }) => (
+  <View style={styles.statusRow}>
+    <View style={[styles.statusDot, STATUS_DOT[status]]} />
+    <Text style={[styles.statusText, STATUS_TEXT[status]]}>{STATUS_LABEL[status]}</Text>
   </View>
 );
 
-const StatusBadge = ({
-  status,
-}: {
-  status: ReturnType<typeof getClassStatus>;
-}) => {
-  if (status.kind === 'done') {
-    return (
-      <View style={styles.checkBadge}>
-        <Text style={styles.checkMark}>✓</Text>
-      </View>
-    );
-  }
-
-  const color =
-    status.kind === 'reflect'
-      ? '#D97706'
-      : status.kind === 'unprepped'
-        ? '#B45309'
-        : status.kind === 'attention'
-          ? '#DC2626'
-          : '#2563EB';
+const BreakCard = ({ event }: { event: TimelineEvent }) => {
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const stripeCount =
+    size.width > 0
+      ? Math.ceil((size.width + size.height * 2) / 7) + 4
+      : 0;
 
   return (
-    <View style={styles.statusRow}>
-      <View style={[styles.statusDot, { backgroundColor: color }]} />
-      <Text style={[styles.statusText, { color }]}>{status.label}</Text>
+    <View
+      style={[
+        styles.breakCard,
+        event.isCompact && styles.cardCompact,
+        { top: event.top, height: event.height },
+      ]}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout;
+        if (width !== size.width || height !== size.height) {
+          setSize({ width, height });
+        }
+      }}
+    >
+      <View style={styles.breakStripes} pointerEvents="none">
+        {Array.from({ length: stripeCount }).map((_, i) => (
+          <View
+            key={i}
+            style={[
+              styles.breakStripe,
+              {
+                left: i * 7 - size.height,
+                height: size.height * 3,
+                top: -size.height,
+              },
+            ]}
+          />
+        ))}
+      </View>
+      <Text style={styles.breakText}>
+        {`Break · ${event.durationLabel}`}
+      </Text>
     </View>
   );
 };
@@ -181,38 +241,62 @@ const ClassCard = ({
   event,
   date,
 }: {
-  event: Extract<TimelineEvent, { type: 'class' }>;
+  event: TimelineEvent;
   date: string;
 }) => {
   const classPrepRef = useRef<any>();
   const canPrep = !moment(date).isBefore(moment(), 'day');
+  const isLive = event.status === 'live';
+  const isDone = event.status === 'done';
+  const isNextPrepped = event.status === 'prepped' && event.isNext;
+  const showMeta = event.title.trim().length <= 16;
+
+  if (event.type === 'break') {
+    return <BreakCard event={event} />;
+  }
 
   return (
     <>
       <TouchableOpacity
         style={[
           styles.classCard,
+          event.isCompact && styles.cardCompact,
           { top: event.top, height: event.height },
-          event.isNext && styles.classCardNext,
+          isDone
+            ? styles.classCardDone
+            : isLive
+              ? styles.classCardLive
+              : styles.classCardDefault,
+          isNextPrepped && styles.classCardNext,
         ]}
         activeOpacity={0.75}
         onPress={() => {
-          if (canPrep) classPrepRef.current?.setSelectedClass();
+          if (canPrep && !isDone) classPrepRef.current?.setSelectedClass();
         }}
       >
+        {isNextPrepped ? <View style={styles.nextStrip} /> : null}
         <View style={styles.classLeft}>
-          <Text style={styles.classTitle} numberOfLines={1}>
+          <Text
+            style={[styles.classTitle, isDone && styles.classTitleDone]}
+            numberOfLines={1}
+          >
             {event.title}
           </Text>
-          {event.isNext ? <Text style={styles.nextTag}>Next</Text> : null}
-          {event.grade ? (
-            <Text style={styles.classMeta} numberOfLines={1}>
-              {event.grade}
+          {showMeta ? (
+            <Text
+              style={[styles.classMeta, isDone && styles.classMetaDone]}
+              numberOfLines={1}
+            >
+              {[event.grade, event.timeLabel].filter(Boolean).join(' · ')}
             </Text>
           ) : null}
-          <Text style={styles.classMeta}>{event.timeLabel}</Text>
+          {isNextPrepped ? <Text style={styles.nextTag}>Next</Text> : null}
         </View>
-        <StatusBadge status={event.status} />
+        {isDone ? (
+          <SvgLoader svgFilePath="liveCorrect" width={14} height={11} color="#8A8880" />
+        ) : event.status && event.status !== 'done' ? (
+          <StatusBadge status={event.status} />
+        ) : null}
       </TouchableOpacity>
 
       {canPrep ? (
@@ -267,70 +351,77 @@ const TimelineWithClassDetails = (_props: { selectedDate?: string } = {}) => {
   const dayHeight = HOUR_SPAN * pxPerHour;
 
   const events = useMemo(() => {
-    const list = (classTimeline || [])
+    const source = (classTimeline || [])
       .filter((t: any) => !t.date || t.date === date)
       .slice()
       .sort((a: any, b: any) =>
         String(a.start_time || '').localeCompare(String(b.start_time || ''))
       );
 
-    const nextId = (() => {
-      if (!moment(date).isSame(moment(), 'day')) return null;
-      const upcoming = list.find((t: any) => {
-        const start = parseTime(t.start_time);
-        if (!start) return false;
-        const startAt = moment(date + ' ' + start.format('HH:mm:ss'), 'YYYY-MM-DD HH:mm:ss');
-        return startAt.isAfter(now);
-      });
-      return upcoming?.class_schedule_id ?? null;
-    })();
-
     const built: TimelineEvent[] = [];
-    const cardHeight = Math.min(CLASS_CARD_HEIGHT, Math.max(28, pxPerHour * 0.7));
+    const hourCardHeight = Math.min(CLASS_CARD_HEIGHT, Math.max(28, pxPerHour * 0.7));
 
-    list.forEach((timeline: any, index: number) => {
+    /** Hours that contain 2+ short items get the half-pair gap. */
+    const itemsPerHour = new Map<number, number>();
+    source.forEach((timeline: any) => {
+      const start = parseTime(timeline.start_time);
+      if (!start) return;
+      const hour = start.hours();
+      itemsPerHour.set(hour, (itemsPerHour.get(hour) || 0) + 1);
+    });
+
+    source.forEach((timeline: any, index: number) => {
       const start = parseTime(timeline.start_time);
       const end = parseTime(timeline.end_time);
       if (!start) return;
 
-      const top = Math.max(0, (minutesFromDayStart(start) / 60) * pxPerHour);
-      const isNext = timeline.class_schedule_id === nextId;
-      const status = getClassStatus(timeline, date, isNext);
+      const isBreak = isBreakItem(timeline);
+      const status = isBreak ? null : getClassStatus(timeline, date, now);
+      if (!isBreak && !status) return;
+
+      const startTop = Math.max(0, (minutesFromDayStart(start) / 60) * pxPerHour);
+      const endTop = end
+        ? Math.max(startTop, (minutesFromDayStart(end) / 60) * pxPerHour)
+        : startTop + pxPerHour;
+      const durationMinutes = end ? Math.max(1, end.diff(start, 'minutes')) : 60;
+      const isOneHour = durationMinutes >= 55 && durationMinutes <= 65;
+      const isHalfHour = durationMinutes >= 25 && durationMinutes <= 35;
+      const shareHour = (itemsPerHour.get(start.hours()) || 0) >= 2;
+      /** 1-hour events center between hour labels; half-hour / others center in their range. */
+      let slotStart = isOneHour
+        ? Math.max(0, (minutesFromDayStart(start.clone().startOf('hour')) / 60) * pxPerHour)
+        : startTop;
+      let slotEnd = isOneHour ? slotStart + pxPerHour : endTop;
+      if (isHalfHour && shareHour) {
+        const inSecondHalf = start.minutes() >= 30;
+        if (inSecondHalf) slotStart += HALF_PAIR_GAP / 2;
+        else slotEnd -= HALF_PAIR_GAP / 2;
+      }
+      const slotHeight = Math.max(0, slotEnd - slotStart);
+      const cardHeight = isHalfHour
+        ? Math.min(HALF_CARD_HEIGHT, Math.max(20, slotHeight))
+        : hourCardHeight;
+      const top = slotStart + Math.max(0, (Math.max(cardHeight, slotHeight) - cardHeight) / 2);
 
       built.push({
-        type: 'class',
+        type: isBreak ? 'break' : 'class',
         id: String(timeline.class_schedule_id ?? `class-${index}`),
         top,
         height: cardHeight,
-        title: timeline.subject_name || 'Class',
-        grade: getGradeChip(timeline),
+        title: timeline.subject_name || (isBreak ? 'Break' : 'Class'),
+        grade: isBreak ? '' : getGradeChip(timeline),
         timeLabel: start.format('h:mm'),
-        isNext,
+        durationLabel: formatDurationLabel(durationMinutes),
         status,
+        isNext: false,
+        isCompact: isHalfHour,
         raw: timeline,
       });
-
-      const next = list[index + 1];
-      if (!end || !next) return;
-      const nextStart = parseTime(next.start_time);
-      if (!nextStart) return;
-
-      const gapMinutes = nextStart.diff(end, 'minutes');
-      if (gapMinutes < 10) return;
-
-      const gapTop = Math.max(0, (minutesFromDayStart(end) / 60) * pxPerHour);
-      const gapHeight = Math.max(20, (gapMinutes / 60) * pxPerHour - 4);
-      const hour = end.hours();
-      const isLunch = gapMinutes >= 30 && hour >= 11 && hour <= 13;
-
-      built.push({
-        type: 'break',
-        id: `break-${timeline.class_schedule_id}-${index}`,
-        top: gapTop + 2,
-        height: Math.min(gapHeight, isLunch ? Math.max(28, pxPerHour * 0.75) : Math.max(22, pxPerHour * 0.5)),
-        label: isLunch ? `Lunch · ${gapMinutes} min` : `Break · ${gapMinutes} min`,
-      });
     });
+
+    /** Next tag: earliest upcoming prepped class. */
+    const nextPrepped = built.find((e) => e.type === 'class' && e.status === 'prepped');
+    if (nextPrepped) nextPrepped.isNext = true;
 
     return built;
   }, [classTimeline, date, now, pxPerHour]);
@@ -403,40 +494,14 @@ const TimelineWithClassDetails = (_props: { selectedDate?: string } = {}) => {
               return (
                 <View key={hour} style={[styles.hourRow, { top, height: pxPerHour }]}>
                   <Text style={styles.hourLabel}>{formatHourLabel(hour)}</Text>
-                  <View style={styles.hourLine} />
                 </View>
               );
             })}
 
             <View style={styles.eventsLayer}>
-              {events.map((event) => {
-                if (event.type === 'break') {
-                  return (
-                    <HatchBlock
-                      key={event.id}
-                      style={[styles.breakBlock, { top: event.top, height: event.height }]}
-                    >
-                      <Text style={styles.breakText}>{event.label}</Text>
-                    </HatchBlock>
-                  );
-                }
-
-                if (event.type === 'meeting') {
-                  return (
-                    <View
-                      key={event.id}
-                      style={[styles.meetingChip, { top: event.top, height: event.height }]}
-                    >
-                      <Text style={styles.meetingIcon}>{event.icon === 'flag' ? '⚑' : '👥'}</Text>
-                      <Text style={styles.meetingText} numberOfLines={1}>
-                        {event.title} {event.timeLabel}
-                      </Text>
-                    </View>
-                  );
-                }
-
-                return <ClassCard key={event.id} event={event} date={date} />;
-              })}
+              {events.map((event) => (
+                <ClassCard key={event.id} event={event} date={date} />
+              ))}
             </View>
 
             {nowTop != null ? (
@@ -563,18 +628,44 @@ const styles = StyleSheet.create({
     marginTop: -7,
     paddingRight: 8,
   },
-  hourLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: '#EDEBE6',
-    marginTop: 0,
-  },
   eventsLayer: {
     position: 'absolute',
     left: TIME_GUTTER,
     right: 0,
     top: 0,
     bottom: 0,
+  },
+  breakCard: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    gap: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ECEAE4',
+    overflow: 'hidden',
+  },
+  breakStripes: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  breakStripe: {
+    position: 'absolute',
+    width: 3.5,
+    backgroundColor: '#E8E6E0',
+    transform: [{ rotate: '28deg' }],
+  },
+  breakText: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: '#8A8880',
+    fontFamily: 'Inter_500Medium',
+    includeFontPadding: false,
+    zIndex: 1,
   },
   classCard: {
     position: 'absolute',
@@ -584,14 +675,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
+    gap: 8,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
     borderRadius: 10,
+    overflow: 'hidden',
+  },
+  cardCompact: {
+    borderRadius: 8,
+  },
+  classCardLive: {
+    borderWidth: 1.5,
+    borderColor: '#1F1E1C',
+  },
+  classCardDefault: {
+    borderWidth: 1,
+    borderColor: '#ECEAE4',
+  },
+  classCardDone: {
+    borderWidth: 1,
+    borderColor: '#ECEAE4',
   },
   classCardNext: {
-    borderLeftWidth: 3,
-    borderLeftColor: '#1F1E1C',
+    paddingLeft: 16,
+  },
+  classTitleDone: {
+    color: '#8A8880',
+  },
+  classMetaDone: {
+    color: '#B0AEA6',
+  },
+  nextStrip: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    backgroundColor: '#1F1E1C',
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   classLeft: {
     flex: 1,
@@ -609,19 +730,20 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     flexShrink: 1,
   },
-  nextTag: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
-  },
   classMeta: {
     fontSize: 12,
     lineHeight: 15,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
+  },
+  nextTag: {
+    fontSize: 12,
+    lineHeight: 15,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+    marginLeft: 'auto',
   },
   statusRow: {
     flexDirection: 'row',
@@ -637,73 +759,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     lineHeight: 15,
-    fontFamily: 'Inter_500Medium',
-    includeFontPadding: false,
-  },
-  checkBadge: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F3F2EE',
-  },
-  checkMark: {
-    fontSize: 12,
-    color: '#8A8880',
     fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
-  },
-  hatchWrap: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    borderRadius: 8,
-    backgroundColor: '#F3F2EE',
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hatchLayer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  hatchLine: {
-    position: 'absolute',
-    top: -20,
-    bottom: -20,
-    width: 6,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    transform: [{ rotate: '25deg' }],
-  },
-  breakBlock: {},
-  breakText: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#8A8880',
-    fontFamily: 'Inter_500Medium',
-    includeFontPadding: false,
-    zIndex: 1,
-  },
-  meetingChip: {
-    position: 'absolute',
-    left: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 10,
-    backgroundColor: '#EDEBE6',
-    borderRadius: 8,
-    height: CHIP_HEIGHT,
-    maxWidth: '85%',
-  },
-  meetingIcon: {
-    fontSize: 11,
-  },
-  meetingText: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#5C5A54',
-    fontFamily: 'Inter_500Medium',
     includeFontPadding: false,
   },
   nowLineWrap: {

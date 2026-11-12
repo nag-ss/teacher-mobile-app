@@ -22,7 +22,7 @@ const parseTime = (value?: string) => {
 };
 
 /** timelinePanel paddingTop + topActions (-14 + 44 + 26) + timelineCard height */
-const TIMELINE_CARD_BOTTOM = 24 + 56 + 652;
+const TIMELINE_CARD_BOTTOM = 24 + 56 + 650;
 
 const DashboardScreen = () => {
   const { user } = useSelector((state: any) => state.user);
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingLeft: 16,
     width: '100%',
-    height: 652,
+    height: 650,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     paddingLeft: 0,
     width: '100%',
-    height: 572,
+    height: 570,
     alignSelf: 'stretch',
     flexGrow: 0,
   },
