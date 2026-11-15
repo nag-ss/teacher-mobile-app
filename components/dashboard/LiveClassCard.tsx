@@ -8,6 +8,7 @@ import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
+import { getGradeLabel } from '@/utils/grade';
 
 const REFRESH_MS = 300000;
 const TIME_FMT = 'HH:mm:ss';
@@ -37,43 +38,6 @@ const formatTimeRange = (start?: string, end?: string) => {
     end ? moment(normalizeTime(end), TIME_FMT) : moment().add(30, 'minutes')
   ).format('h:mm A');
   return `${startLabel} – ${endLabel}`;
-};
-
-const ROMAN_MAP: [number, string][] = [
-  [10, 'X'],
-  [9, 'IX'],
-  [5, 'V'],
-  [4, 'IV'],
-  [1, 'I'],
-];
-
-const toRoman = (value: string | number) => {
-  const num = typeof value === 'number' ? value : parseInt(String(value).replace(/\D/g, ''), 10);
-  if (!num || Number.isNaN(num) || num < 1 || num > 20) return String(value);
-
-  let remaining = num;
-  let result = '';
-  for (const [n, symbol] of ROMAN_MAP) {
-    while (remaining >= n) {
-      result += symbol;
-      remaining -= n;
-    }
-  }
-  return result;
-};
-
-const str = (v: any) => (v == null ? '' : v.toString().trim());
-
-const getGradeLabel = (c: any) => {
-  const rawDivision = str(c?.division_name) || str(c?.division) || str(c?.grade_name);
-  const section = str(c?.section_name) || str(c?.section);
-  const cleaned = rawDivision.replace(/^class\s+/i, '');
-  const division = /\d/.test(cleaned) ? toRoman(cleaned) : cleaned;
-
-  if (division && section) return `Grade ${division} · Section ${section}`;
-  if (division) return `Grade ${division}`;
-  if (section) return `Section ${section}`;
-  return '—';
 };
 
 const getClassDetails = (c: any) => {

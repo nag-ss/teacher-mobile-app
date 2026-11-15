@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import { getScheduleClasses } from '@/store/classSlice';
+import { getGradeChip } from '@/utils/grade';
 
 export const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 
@@ -130,40 +131,6 @@ export type TimelineEvent = {
   durationLabel: string;
   status: ClassStatus | null;
   raw: any;
-};
-
-const toRoman = (value: string | number) => {
-  const num = typeof value === 'number' ? value : parseInt(String(value).replace(/\D/g, ''), 10);
-  if (!num || Number.isNaN(num) || num < 1 || num > 20) return String(value);
-
-  const map: [number, string][] = [
-    [10, 'X'],
-    [9, 'IX'],
-    [5, 'V'],
-    [4, 'IV'],
-    [1, 'I'],
-  ];
-
-  let remaining = num;
-  let result = '';
-  for (const [n, symbol] of map) {
-    while (remaining >= n) {
-      result += symbol;
-      remaining -= n;
-    }
-  }
-  return result;
-};
-
-const getGradeChip = (item: any) => {
-  const rawDivision = item?.division_name?.toString().trim() || '';
-  const section = item?.section_name?.toString().trim();
-  const cleaned = rawDivision.replace(/^class\s+/i, '');
-  const division = /\d/.test(cleaned) ? toRoman(cleaned) : cleaned;
-  if (division && section) return `${division}-${section}`;
-  if (division) return division;
-  if (section) return section;
-  return '';
 };
 
 const parseTime = (raw?: string) => {
@@ -344,7 +311,8 @@ export const useTimeline = () => {
         title: timeline.subject_name || (isBreak ? 'Break' : 'Class'),
         grade: isBreak ? '' : getGradeChip(timeline),
         timeLabel: start.format('h:mm'),
-        durationLabel: formatDurationLabel(durationMinutes),
+        /** Only breaks show duration in the UI. */
+        durationLabel: isBreak ? formatDurationLabel(durationMinutes) : '',
         status,
         raw: timeline,
       });
