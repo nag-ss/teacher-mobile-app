@@ -11,7 +11,8 @@ export const DAY_LABELS = ['Yesterday', 'Today', 'Tomorrow'] as const;
 export const DAY_START_HOUR = 8;
 export const DAY_END_HOUR = 17;
 export const HOUR_SPAN = DAY_END_HOUR - DAY_START_HOUR;
-export const DEFAULT_PX_PER_HOUR = 52;
+/** Matches ~measured grid when timeline card is at maxHeight 650. */
+export const DEFAULT_PX_PER_HOUR = 60;
 export const LABEL_PAD_TOP = 10;
 export const LABEL_PAD_BOTTOM = 14;
 export const TIME_GUTTER = 52;
@@ -46,7 +47,7 @@ const buildForceTimelineItems = (date: string) => [
     start_time: '11:00:00',
     end_time: '12:00:00',
     subject_name: 'Break',
-    is_break: true,
+    type: 'break',
   },
   {
     class_schedule_id: 'force-1pm',
@@ -64,7 +65,7 @@ const buildForceTimelineItems = (date: string) => [
     start_time: '13:30:00',
     end_time: '14:00:00',
     subject_name: 'Break',
-    is_break: true,
+    type: 'break',
   },
   {
     class_schedule_id: 'force-hour',
@@ -110,10 +111,8 @@ const buildForceTimelineItems = (date: string) => [
 
 /** Visual gap between abutting cards (not part of the time scale). */
 const CARD_INSET = 4;
-/** Slightly taller half-hour cards (less inset). */
-const HALF_HOUR_INSET = 2;
-/** Extra shrink for ~1hr cards only. */
-const ONE_HOUR_EXTRA_INSET = 3;
+/** Tighter inset → taller cards for non-1hr slots. */
+const SHORT_CARD_INSET = 2;
 const MIN_CARD_HEIGHT = 20;
 
 /** Flat minutes-from-8am → Y. Hour lines are ticks only. */
@@ -138,7 +137,8 @@ export type TimelineEvent = {
   title: string;
   grade: string;
   timeLabel: string;
-  durationLabel: string;
+  /** Only set for breaks (shown as `Break · 30 min`). */
+  durationLabel?: string;
   status: ClassStatus | null;
   raw: any;
 };
@@ -167,31 +167,7 @@ const hasTopic = (item: any) =>
       item?.topic
   );
 
-const isBreakItem = (item: any) => {
-  const subject = String(item?.subject_name || item?.title || '').toLowerCase();
-  return (
-    item?.is_break === true ||
-    item?.period?.is_break === true ||
-    item?.type === 'break' ||
-    item?.event_type === 'break' ||
-    item?.schedule_type === 'break' ||
-    subject === 'break' ||
-    subject.includes('lunch') ||
-    subject.includes('break')
-  );
-};
-
-const isReflected = (item: any) =>
-  item?.is_reflected === true ||
-  item?.reflection_completed === true ||
-  item?.reflection_status === 'completed' ||
-  item?.reflection_status === 'done';
-
-const needsReflection = (item: any) =>
-  item?.needs_reflection === true ||
-  item?.reflection_pending === true ||
-  item?.reflection_status === 'pending' ||
-  item?.is_reflected === false;
+const isBreakItem = (item: any) => item?.type === 'break';
 
 /** Map API class → UI state: live | reflect | done | unprepped | prepped */
 export const getClassStatus = (
@@ -215,9 +191,8 @@ export const getClassStatus = (
   if (isToday && startAt.isSameOrBefore(now) && endAt.isAfter(now)) return 'live';
 
   if (ended) {
-    if (isReflected(item)) return 'done';
-    if (needsReflection(item)) return 'reflect';
-    return prepped ? 'done' : 'reflect';
+    if (item?.is_reflected === true) return 'done';
+    return 'reflect';
   }
 
   if (isUpcoming) return prepped ? 'prepped' : 'unprepped';
@@ -304,14 +279,11 @@ export const useTimeline = () => {
       const rangeEnd = minutesToY(endMinutes, pxPerHour);
       const slotHeight = Math.max(0, rangeEnd - rangeStart);
       const durationMinutes = end ? Math.max(1, end.diff(start, 'minutes')) : 60;
-      const isHalfHour = durationMinutes >= 25 && durationMinutes <= 35;
       const isOneHour = durationMinutes >= 55 && durationMinutes <= 65;
-      const baseInset = isOneHour
-        ? CARD_INSET + ONE_HOUR_EXTRA_INSET
-        : isHalfHour
-          ? HALF_HOUR_INSET
-          : CARD_INSET;
-      const inset = Math.min(baseInset, slotHeight / 4);
+      const inset = Math.min(
+        isOneHour ? CARD_INSET : SHORT_CARD_INSET,
+        slotHeight / 4
+      );
 
       built.push({
         type: isBreak ? 'break' : 'class',
@@ -321,8 +293,9 @@ export const useTimeline = () => {
         title: timeline.subject_name || (isBreak ? 'Break' : 'Class'),
         grade: isBreak ? '' : getGradeChip(timeline),
         timeLabel: start.format('h:mm'),
-        /** Only breaks show duration in the UI. */
-        durationLabel: isBreak ? formatDurationLabel(durationMinutes) : '',
+        ...(isBreak
+          ? { durationLabel: formatDurationLabel(durationMinutes) }
+          : {}),
         status,
         raw: timeline,
       });

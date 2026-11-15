@@ -15,81 +15,75 @@ import {
   type TimelineEvent,
 } from '@/hooks/useTimeline';
 
-/** Same corner radius as 1hr cards; capped on short cards so they stay boxy, not pill-shaped. */
-const CARD_RADIUS = 10;
-const boxRadius = (height: number) => Math.min(CARD_RADIUS, Math.max(6, height * 0.22));
+/** Tall cards keep 10; short (half-hour) cards use a tighter corner. */
+const cardRadius = (height: number) => (height < 40 ? 6 : 10);
 
-const STATUS_LABEL: Record<Exclude<ClassStatus, 'done'>, string> = {
-  live: 'Live',
-  reflect: 'Reflect',
-  unprepped: 'Unprepped',
-  prepped: 'Prepped',
+const COLOR = {
+  ink: '#1F1E1C',
+  muted: '#8A8880',
+  mutedSoft: '#B0AEA6',
+  border: '#ECEAE4',
+  borderSoft: '#EDEBE6',
+} as const;
+
+/** Shared text tokens — compose with layout-only styles. */
+const text = StyleSheet.create({
+  title: {
+    includeFontPadding: false,
+    fontSize: 14,
+    lineHeight: 17,
+    color: COLOR.ink,
+    fontFamily: 'Inter_600SemiBold',
+  },
+  meta: {
+    includeFontPadding: false,
+    fontSize: 12,
+    lineHeight: 15,
+    color: COLOR.muted,
+    fontFamily: 'Inter_400Regular',
+  },
+  section: {
+    includeFontPadding: false,
+    fontSize: 16,
+    lineHeight: 24,
+    color: COLOR.ink,
+    fontFamily: 'Montserrat_600SemiBold',
+  },
+  emptyTitle: {
+    includeFontPadding: false,
+    fontSize: 16,
+    lineHeight: 20,
+    color: COLOR.ink,
+    fontFamily: 'Inter_600SemiBold',
+    textAlign: 'center',
+  },
+});
+
+const STATUS_META: Record<
+  Exclude<ClassStatus, 'done'>,
+  { label: string; color: string }
+> = {
+  live: { label: 'Live', color: COLOR.ink },
+  reflect: { label: 'Reflect', color: '#D69A1E' },
+  unprepped: { label: 'Unprepped', color: '#D69A1E' },
+  prepped: { label: 'Prepped', color: '#2F6FED' },
 };
 
-const STATUS_DOT: Record<Exclude<ClassStatus, 'done'>, any> = {
-  live: { backgroundColor: '#1F1E1C' },
-  reflect: { backgroundColor: '#D69A1E' },
-  unprepped: { backgroundColor: '#D69A1E' },
-  prepped: { backgroundColor: '#2F6FED' },
-};
-
-const STATUS_TEXT: Record<Exclude<ClassStatus, 'done'>, any> = {
-  live: { color: '#1F1E1C' },
-  reflect: { color: '#D69A1E' },
-  unprepped: { color: '#D69A1E' },
-  prepped: { color: '#2F6FED' },
-};
-
-const StatusBadge = ({ status }: { status: Exclude<ClassStatus, 'done'> }) => (
-  <View style={styles.statusRow}>
-    <View style={[styles.statusDot, STATUS_DOT[status]]} />
-    <Text style={[styles.statusText, STATUS_TEXT[status]]}>{STATUS_LABEL[status]}</Text>
-  </View>
-);
-
-const BreakCard = ({ event }: { event: TimelineEvent }) => {
-  const [size, setSize] = useState({ width: 0, height: 0 });
-  const stripeCount =
-    size.width > 0 ? Math.ceil((size.width + size.height * 2) / 7) + 4 : 0;
-
+const StatusBadge = ({ status }: { status: Exclude<ClassStatus, 'done'> }) => {
+  const meta = STATUS_META[status];
   return (
-    <View
-      style={[
-        styles.breakCard,
-        {
-          top: event.top,
-          height: event.height,
-          borderRadius: boxRadius(event.height),
-        },
-      ]}
-      onLayout={(e) => {
-        const { width, height } = e.nativeEvent.layout;
-        if (width !== size.width || height !== size.height) {
-          setSize({ width, height });
-        }
-      }}
-    >
-      <View style={styles.breakStripes} pointerEvents="none">
-        {Array.from({ length: stripeCount }).map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.breakStripe,
-              {
-                left: i * 7 - size.height,
-                height: size.height * 3,
-                top: -size.height,
-              },
-            ]}
-          />
-        ))}
-      </View>
-      <Text style={styles.breakText}>{`Break · ${event.durationLabel}`}</Text>
+    <View style={styles.statusRow}>
+      <View style={[styles.statusDot, { backgroundColor: meta.color }]} />
+      <Text style={[text.title, styles.statusText, { color: meta.color }]}>
+        {meta.label}
+      </Text>
     </View>
   );
 };
 
-const ClassCard = ({
+const STRIPE_GAP = 7;
+
+const EventCard = ({
   event,
   date,
 }: {
@@ -97,50 +91,87 @@ const ClassCard = ({
   date: string;
 }) => {
   const classPrepRef = useRef<any>();
-  const canPrep = !moment(date).isBefore(moment(), 'day');
+  const [width, setWidth] = useState(0);
+  const isBreak = event.type === 'break';
+  const canPrep = !isBreak && !moment(date).isBefore(moment(), 'day');
   const isLive = event.status === 'live';
   const isDone = event.status === 'done';
   const showMeta = event.title.trim().length <= 16;
+  const stripeCount = isBreak && width > 0 ? Math.ceil(width / STRIPE_GAP) + 6 : 0;
+
+  const shellStyle = [
+    styles.eventCard,
+    {
+      top: event.top,
+      height: event.height,
+      borderRadius: cardRadius(event.height),
+    },
+    isBreak || !isLive ? styles.cardBorder : styles.classCardLive,
+    isBreak && styles.eventCardBreak,
+  ];
+
+  const breakBody = (
+    <>
+      <View style={styles.breakStripes} pointerEvents="none">
+        {Array.from({ length: stripeCount }, (_, i) => (
+          <View
+            key={i}
+            style={[styles.breakStripe, { left: i * STRIPE_GAP - 24 }]}
+          />
+        ))}
+      </View>
+      <Text style={[text.meta, styles.breakText]}>
+        {`Break · ${event.durationLabel ?? ''}`}
+      </Text>
+    </>
+  );
+
+  const classBody = (
+    <>
+      <View style={styles.classLeft}>
+        <Text
+          style={[text.title, styles.classTitle, isDone && styles.textDone]}
+          numberOfLines={1}
+        >
+          {event.title}
+        </Text>
+        {showMeta ? (
+          <Text
+            style={[text.meta, isDone && styles.textMetaDone]}
+            numberOfLines={1}
+          >
+            {[event.grade, event.timeLabel].filter(Boolean).join(' · ')}
+          </Text>
+        ) : null}
+      </View>
+      {isDone ? (
+        <SvgLoader svgFilePath="liveCorrect" width={14} height={11} color="#8A8880" />
+      ) : event.status && event.status !== 'done' ? (
+        <StatusBadge status={event.status} />
+      ) : null}
+    </>
+  );
 
   return (
     <>
-      <TouchableOpacity
-        style={[
-          styles.classCard,
-          {
-            top: event.top,
-            height: event.height,
-            borderRadius: boxRadius(event.height),
-          },
-          isLive ? styles.classCardLive : styles.classCardDefault,
-        ]}
-        activeOpacity={0.75}
-        onPress={() => {
-          if (canPrep && !isDone) classPrepRef.current?.setSelectedClass();
-        }}
-      >
-        <View style={styles.classLeft}>
-          <Text
-            style={[styles.classTitle, isDone && styles.classTitleDone]}
-            numberOfLines={1}
-          >
-            {event.title}
-          </Text>
-          {showMeta ? (
-            <Text
-              style={[styles.classMeta, isDone && styles.classMetaDone]}
-              numberOfLines={1}
-            >
-              {[event.grade, event.timeLabel].filter(Boolean).join(' · ')}
-            </Text>
-          ) : null}
+      {isBreak ? (
+        <View
+          style={shellStyle}
+          onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+        >
+          {breakBody}
         </View>
-        {isDone ? (
-          <SvgLoader svgFilePath="liveCorrect" width={14} height={11} color="#8A8880" />
-        ) : event.status && event.status !== 'done' ? (
-          <StatusBadge status={event.status} />
-        ) : null}
-      </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={shellStyle}
+          activeOpacity={0.75}
+          onPress={() => {
+            if (canPrep && !isDone) classPrepRef.current?.setSelectedClass();
+          }}
+        >
+          {classBody}
+        </TouchableOpacity>
+      )}
 
       {canPrep ? (
         <ClassPrep
@@ -172,11 +203,9 @@ const TimelineWithClassDetails = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <View style={styles.headerBox}>
-          <Text style={styles.header} numberOfLines={1}>
-            Your day
-          </Text>
-        </View>
+        <Text style={[text.section, styles.header]} numberOfLines={1}>
+          Your day
+        </Text>
 
         <View style={styles.dayPill}>
           <TouchableOpacity
@@ -189,7 +218,7 @@ const TimelineWithClassDetails = () => {
           </TouchableOpacity>
           <View style={styles.dayDivider} />
           <View style={styles.dayLabelSegment}>
-            <Text style={styles.dayLabel}>{dayLabel}</Text>
+            <Text style={[text.title, styles.dayLabel]}>{dayLabel}</Text>
           </View>
           <View style={styles.dayDivider} />
           <TouchableOpacity
@@ -211,7 +240,9 @@ const TimelineWithClassDetails = () => {
               minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
             return (
               <View key={hour} style={[styles.hourRow, { top }]}>
-                <Text style={styles.hourLabel}>{formatHourLabel(hour)}</Text>
+                <Text style={[text.meta, styles.hourLabel]}>
+                  {formatHourLabel(hour)}
+                </Text>
               </View>
             );
           })}
@@ -222,19 +253,17 @@ const TimelineWithClassDetails = () => {
               { top: LABEL_PAD_TOP, height: dayHeight },
             ]}
           >
-            {events.map((event) =>
-              event.type === 'break' ? (
-                <BreakCard key={event.id} event={event} />
-              ) : (
-                <ClassCard key={event.id} event={event} date={date} />
-              )
-            )}
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} date={date} />
+            ))}
           </View>
 
           {nowTop != null ? (
             <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
               <View style={styles.nowPill}>
-                <Text style={styles.nowPillText}>{now.format('H:mm')}</Text>
+                <Text style={[text.title, styles.nowPillText]}>
+                  {now.format('H:mm')}
+                </Text>
               </View>
               <View style={styles.nowLine} />
             </View>
@@ -248,14 +277,14 @@ const TimelineWithClassDetails = () => {
                 height={32}
                 color="#C4C2BA"
               />
-              <Text style={styles.emptyTitle} numberOfLines={1}>
+              <Text style={[text.emptyTitle, styles.emptyTitle]} numberOfLines={1}>
                 {dayIndex === 0
                   ? 'No classes yesterday'
                   : dayIndex === 2
                     ? 'No classes tomorrow'
                     : 'No classes today'}
               </Text>
-              <Text style={styles.emptySubtitle}>
+              <Text style={[text.meta, styles.emptySubtitle]}>
                 {moment(date).format('dddd')} · enjoy the day off
               </Text>
             </View>
@@ -284,23 +313,9 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     marginBottom: 12,
   },
-  headerBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 36,
-    flexGrow: 0,
-    flexShrink: 0,
-  },
   header: {
     height: 24,
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#1F1E1C',
-    fontFamily: 'Montserrat_600SemiBold',
-    fontStyle: 'normal',
-    includeFontPadding: false,
     textAlignVertical: 'center',
-    flexGrow: 0,
     flexShrink: 0,
   },
   dayPill: {
@@ -309,7 +324,7 @@ const styles = StyleSheet.create({
     height: 36,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EDEBE6',
+    borderColor: COLOR.borderSoft,
     borderRadius: 10,
     overflow: 'hidden',
     flexGrow: 0,
@@ -325,7 +340,7 @@ const styles = StyleSheet.create({
   dayDivider: {
     width: StyleSheet.hairlineWidth,
     alignSelf: 'stretch',
-    backgroundColor: '#EDEBE6',
+    backgroundColor: COLOR.borderSoft,
   },
   dayLabelSegment: {
     minWidth: 72,
@@ -335,11 +350,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dayLabel: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#1F1E1C',
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
     textAlign: 'center',
   },
   gridHost: {
@@ -347,7 +357,8 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: '100%',
     minHeight: 0,
-    overflow: 'hidden',
+    /** Allow now-pill to draw fully (wrap uses translateY). */
+    overflow: 'visible',
   },
   dayGrid: {
     position: 'relative',
@@ -364,11 +375,7 @@ const styles = StyleSheet.create({
   },
   hourLabel: {
     width: TIME_GUTTER - 8,
-    fontSize: 12,
     lineHeight: 16,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
     textAlign: 'right',
     paddingRight: 8,
   },
@@ -377,39 +384,11 @@ const styles = StyleSheet.create({
     left: TIME_GUTTER,
     right: 0,
   },
-  breakCard: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    gap: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
+  cardBorder: {
     borderWidth: 1,
-    borderColor: '#ECEAE4',
-    overflow: 'hidden',
+    borderColor: COLOR.border,
   },
-  breakStripes: {
-    ...StyleSheet.absoluteFillObject,
-    overflow: 'hidden',
-  },
-  breakStripe: {
-    position: 'absolute',
-    width: 3.5,
-    backgroundColor: '#E8E6E0',
-    transform: [{ rotate: '28deg' }],
-  },
-  breakText: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#8A8880',
-    fontFamily: 'Inter_500Medium',
-    includeFontPadding: false,
-    zIndex: 1,
-  },
-  classCard: {
+  eventCard: {
     position: 'absolute',
     left: 0,
     right: 0,
@@ -422,19 +401,34 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
+  eventCardBreak: {
+    justifyContent: 'center',
+  },
+  breakStripes: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  breakStripe: {
+    position: 'absolute',
+    top: -48,
+    width: 3.5,
+    height: 220,
+    backgroundColor: '#E8E6E0',
+    transform: [{ rotate: '28deg' }],
+  },
+  breakText: {
+    fontFamily: 'Inter_500Medium',
+    zIndex: 1,
+  },
   classCardLive: {
     borderWidth: 1.5,
-    borderColor: '#1F1E1C',
+    borderColor: COLOR.ink,
   },
-  classCardDefault: {
-    borderWidth: 1,
-    borderColor: '#ECEAE4',
+  textDone: {
+    color: COLOR.muted,
   },
-  classTitleDone: {
-    color: '#8A8880',
-  },
-  classMetaDone: {
-    color: '#B0AEA6',
+  textMetaDone: {
+    color: COLOR.mutedSoft,
   },
   classLeft: {
     flex: 1,
@@ -445,19 +439,7 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   classTitle: {
-    fontSize: 14,
-    lineHeight: 17,
-    color: '#1F1E1C',
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
     flexShrink: 1,
-  },
-  classMeta: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
   },
   statusRow: {
     flexDirection: 'row',
@@ -473,8 +455,6 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     lineHeight: 15,
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
   },
   nowLineWrap: {
     position: 'absolute',
@@ -486,11 +466,10 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -10 }],
   },
   nowPill: {
-    backgroundColor: '#1F1E1C',
+    backgroundColor: COLOR.ink,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 3,
-    marginRight: 0,
     minWidth: 44,
     alignItems: 'center',
   },
@@ -498,13 +477,11 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 11,
     lineHeight: 14,
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
   },
   nowLine: {
     flex: 1,
     height: 2,
-    backgroundColor: '#1F1E1C',
+    backgroundColor: COLOR.ink,
   },
   emptyState: {
     ...StyleSheet.absoluteFillObject,
@@ -515,19 +492,10 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     marginTop: 4,
-    fontSize: 16,
-    lineHeight: 20,
-    color: '#1F1E1C',
-    fontFamily: 'Inter_600SemiBold',
-    includeFontPadding: false,
-    textAlign: 'center',
   },
   emptySubtitle: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
     textAlign: 'center',
   },
 });
