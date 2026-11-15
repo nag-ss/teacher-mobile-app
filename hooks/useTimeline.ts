@@ -15,10 +15,102 @@ export const LABEL_PAD_TOP = 10;
 export const LABEL_PAD_BOTTOM = 14;
 export const TIME_GUTTER = 52;
 
-const CLASS_CARD_HEIGHT = 36;
-const HALF_CARD_HEIGHT = 26;
-const HALF_PAIR_GAP = 8;
-const HOUR_BLOCK_INSET = 4;
+/** Temporary: always show a full day of sample timeline cards (ignore API). */
+const FORCE_TIMELINE_UI = true;
+
+const buildForceTimelineItems = (date: string) => [
+  {
+    class_schedule_id: 'force-half-a',
+    date,
+    start_time: '08:00:00',
+    end_time: '08:30:00',
+    subject_name: 'Mensuration',
+    division_name: '7',
+    section_name: 'C',
+    class_details: [{ Topic: 'Surface area' }],
+  },
+  {
+    class_schedule_id: 'force-half-b',
+    date,
+    start_time: '08:30:00',
+    end_time: '09:00:00',
+    subject_name: 'Arithmetic',
+    division_name: '7',
+    section_name: 'A',
+    class_details: [],
+  },
+  {
+    class_schedule_id: 'force-break',
+    date,
+    start_time: '11:00:00',
+    end_time: '12:00:00',
+    subject_name: 'Break',
+    is_break: true,
+  },
+  {
+    class_schedule_id: 'force-1pm',
+    date,
+    start_time: '13:00:00',
+    end_time: '13:30:00',
+    subject_name: 'Geometry',
+    division_name: '7',
+    section_name: 'B',
+    class_details: [{ Topic: 'Triangles' }],
+  },
+  {
+    class_schedule_id: 'force-break-half',
+    date,
+    start_time: '13:30:00',
+    end_time: '14:00:00',
+    subject_name: 'Break',
+    is_break: true,
+  },
+  {
+    class_schedule_id: 'force-hour',
+    date,
+    start_time: '14:00:00',
+    end_time: '15:00:00',
+    subject_name: 'Algebra',
+    division_name: '8',
+    section_name: 'B',
+    class_details: [{ Topic: 'Quadratic equations' }],
+  },
+  {
+    class_schedule_id: 'force-cross-a',
+    date,
+    start_time: '15:45:00',
+    end_time: '16:15:00',
+    subject_name: 'Statistics',
+    division_name: '9',
+    section_name: 'A',
+    class_details: [{ Topic: 'Mean median' }],
+  },
+  {
+    class_schedule_id: 'force-cross-b',
+    date,
+    start_time: '16:15:00',
+    end_time: '16:45:00',
+    subject_name: 'Probability',
+    division_name: '9',
+    section_name: 'B',
+    class_details: [],
+  },
+];
+
+/** Visual gap between abutting cards (not part of the time scale). */
+const CARD_INSET = 4;
+/** Slightly taller half-hour cards (less inset). */
+const HALF_HOUR_INSET = 2;
+/** Extra shrink for ~1hr cards only. */
+const ONE_HOUR_EXTRA_INSET = 3;
+const MIN_CARD_HEIGHT = 20;
+
+/** Flat minutes-from-8am → Y. Hour lines are ticks only. */
+export const minutesToY = (minutes: number, pxPerHour: number) => {
+  const dayEnd = HOUR_SPAN * 60;
+  const clamped = Math.max(0, Math.min(minutes, dayEnd));
+  return (clamped / 60) * pxPerHour;
+};
 
 export const HOURS = Array.from(
   { length: DAY_END_HOUR - DAY_START_HOUR + 1 },
@@ -37,7 +129,6 @@ export type TimelineEvent = {
   timeLabel: string;
   durationLabel: string;
   status: ClassStatus | null;
-  isCompact: boolean;
   raw: any;
 };
 
@@ -195,37 +286,28 @@ export const useTimeline = () => {
     }, [date, getDetails])
   );
 
-  useEffect(() => {
-    getDetails(date);
-  }, [date, getDetails]);
-
   const onGridLayout = useCallback((e: LayoutChangeEvent) => {
     const height = e.nativeEvent.layout.height;
     if (height <= 0) return;
     const usable = Math.max(0, height - LABEL_PAD_TOP - LABEL_PAD_BOTTOM);
-    setPxPerHour(usable / HOUR_SPAN);
+    setPxPerHour(Math.max(1, usable / HOUR_SPAN));
   }, []);
 
   const dayHeight = HOUR_SPAN * pxPerHour;
   const gridContentHeight = LABEL_PAD_TOP + dayHeight + LABEL_PAD_BOTTOM;
 
   const events = useMemo(() => {
-    const source = (classTimeline || [])
+    const apiSource = (classTimeline || [])
       .filter((t: any) => !t.date || t.date === date)
       .slice()
       .sort((a: any, b: any) =>
         String(a.start_time || '').localeCompare(String(b.start_time || ''))
       );
+    const source = FORCE_TIMELINE_UI
+      ? buildForceTimelineItems(date)
+      : apiSource;
 
     const built: TimelineEvent[] = [];
-    const hourCardHeight = Math.min(CLASS_CARD_HEIGHT, Math.max(28, pxPerHour * 0.45));
-
-    const itemsPerHour = new Map<number, number>();
-    source.forEach((timeline: any) => {
-      const start = parseTime(timeline.start_time);
-      if (!start) return;
-      itemsPerHour.set(start.hours(), (itemsPerHour.get(start.hours()) || 0) + 1);
-    });
 
     source.forEach((timeline: any, index: number) => {
       const start = parseTime(timeline.start_time);
@@ -239,51 +321,31 @@ export const useTimeline = () => {
       const status = isBreak ? null : getClassStatus(timeline, date, now);
       if (!isBreak && !status) return;
 
-      const rangeStart = Math.max(0, (startMinutes / 60) * pxPerHour);
       const rawEndMinutes = end ? minutesFromDayStart(end) : startMinutes + 60;
-      const rangeEnd = Math.max(
-        rangeStart,
-        (Math.min(rawEndMinutes, HOUR_SPAN * 60) / 60) * pxPerHour
-      );
+      const endMinutes = Math.min(rawEndMinutes, HOUR_SPAN * 60);
+      const rangeStart = minutesToY(startMinutes, pxPerHour);
+      const rangeEnd = minutesToY(endMinutes, pxPerHour);
+      const slotHeight = Math.max(0, rangeEnd - rangeStart);
       const durationMinutes = end ? Math.max(1, end.diff(start, 'minutes')) : 60;
       const isHalfHour = durationMinutes >= 25 && durationMinutes <= 35;
       const isOneHour = durationMinutes >= 55 && durationMinutes <= 65;
-      const isLive = status === 'live';
-      const shareHour = (itemsPerHour.get(start.hours()) || 0) >= 2;
-      const rangeHeight = Math.max(0, rangeEnd - rangeStart);
-
-      let top: number;
-      let cardHeight: number;
-      let isCompact = false;
-
-      if (isLive || isOneHour) {
-        const inset = Math.min(HOUR_BLOCK_INSET, rangeHeight / 4);
-        top = rangeStart + inset;
-        cardHeight = Math.max(hourCardHeight, rangeHeight - inset * 2);
-      } else {
-        let slotStart = rangeStart;
-        let slotEnd = rangeEnd;
-        if (isHalfHour && shareHour) {
-          if (start.minutes() >= 30) slotStart += HALF_PAIR_GAP / 2;
-          else slotEnd -= HALF_PAIR_GAP / 2;
-        }
-        const slotHeight = Math.max(0, slotEnd - slotStart);
-        isCompact = isHalfHour;
-        cardHeight = Math.min(HALF_CARD_HEIGHT, Math.max(20, slotHeight));
-        top = slotStart + Math.max(0, (slotHeight - cardHeight) / 2);
-      }
+      const baseInset = isOneHour
+        ? CARD_INSET + ONE_HOUR_EXTRA_INSET
+        : isHalfHour
+          ? HALF_HOUR_INSET
+          : CARD_INSET;
+      const inset = Math.min(baseInset, slotHeight / 4);
 
       built.push({
         type: isBreak ? 'break' : 'class',
         id: String(timeline.class_schedule_id ?? `class-${index}`),
-        top,
-        height: cardHeight,
+        top: rangeStart + inset,
+        height: Math.max(MIN_CARD_HEIGHT, slotHeight - inset * 2),
         title: timeline.subject_name || (isBreak ? 'Break' : 'Class'),
         grade: isBreak ? '' : getGradeChip(timeline),
         timeLabel: start.format('h:mm'),
         durationLabel: formatDurationLabel(durationMinutes),
         status,
-        isCompact,
         raw: timeline,
       });
     });
@@ -298,9 +360,54 @@ export const useTimeline = () => {
     moment(date).isSame(now, 'day') &&
     nowMinutes >= 0 &&
     nowMinutes < dayEndMinutes;
-  const nowTop = showNow
-    ? LABEL_PAD_TOP + (nowMinutes / 60) * pxPerHour
-    : null;
+
+  const eventWindow = (event: TimelineEvent) => {
+    const start = parseTime(event.raw?.start_time);
+    const end = parseTime(event.raw?.end_time);
+    if (!start || !end) return null;
+    const startAt = moment(
+      `${date} ${start.format('HH:mm:ss')}`,
+      'YYYY-MM-DD HH:mm:ss'
+    );
+    const endAt = moment(
+      `${date} ${end.format('HH:mm:ss')}`,
+      'YYYY-MM-DD HH:mm:ss'
+    );
+    return { startAt, endAt };
+  };
+
+  const nowTop = (() => {
+    if (!showNow) return null;
+
+    /** Pin the now-line inside the active class or break card. */
+    const activeEvent = events.find((e) => {
+      if (e.type === 'class' && e.status === 'live') return true;
+      if (e.type !== 'break') return false;
+      const window = eventWindow(e);
+      return (
+        !!window &&
+        window.startAt.isSameOrBefore(now) &&
+        window.endAt.isAfter(now)
+      );
+    });
+
+    if (activeEvent) {
+      const window = eventWindow(activeEvent);
+      if (window) {
+        const durationMs = Math.max(1, window.endAt.diff(window.startAt));
+        const progress = Math.min(
+          1,
+          Math.max(0, now.diff(window.startAt) / durationMs)
+        );
+        const edgePad = Math.min(3, activeEvent.height * 0.06);
+        const travelTop = activeEvent.top + edgePad;
+        const travelHeight = Math.max(1, activeEvent.height - edgePad * 2);
+        return LABEL_PAD_TOP + travelTop + progress * travelHeight;
+      }
+    }
+
+    return LABEL_PAD_TOP + minutesToY(nowMinutes, pxPerHour);
+  })();
 
   return {
     dayIndex,

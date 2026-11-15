@@ -10,9 +10,14 @@ import {
   LABEL_PAD_TOP,
   TIME_GUTTER,
   formatHourLabel,
+  minutesToY,
   type ClassStatus,
   type TimelineEvent,
 } from '@/hooks/useTimeline';
+
+/** Same corner radius as 1hr cards; capped on short cards so they stay boxy, not pill-shaped. */
+const CARD_RADIUS = 10;
+const boxRadius = (height: number) => Math.min(CARD_RADIUS, Math.max(6, height * 0.22));
 
 const STATUS_LABEL: Record<Exclude<ClassStatus, 'done'>, string> = {
   live: 'Live',
@@ -51,8 +56,11 @@ const BreakCard = ({ event }: { event: TimelineEvent }) => {
     <View
       style={[
         styles.breakCard,
-        event.isCompact && styles.cardCompact,
-        { top: event.top, height: event.height },
+        {
+          top: event.top,
+          height: event.height,
+          borderRadius: boxRadius(event.height),
+        },
       ]}
       onLayout={(e) => {
         const { width, height } = e.nativeEvent.layout;
@@ -94,22 +102,17 @@ const ClassCard = ({
   const isDone = event.status === 'done';
   const showMeta = event.title.trim().length <= 16;
 
-  if (event.type === 'break') {
-    return <BreakCard event={event} />;
-  }
-
   return (
     <>
       <TouchableOpacity
         style={[
           styles.classCard,
-          event.isCompact && styles.cardCompact,
-          { top: event.top, height: event.height },
-          isDone
-            ? styles.classCardDone
-            : isLive
-              ? styles.classCardLive
-              : styles.classCardDefault,
+          {
+            top: event.top,
+            height: event.height,
+            borderRadius: boxRadius(event.height),
+          },
+          isLive ? styles.classCardLive : styles.classCardDefault,
         ]}
         activeOpacity={0.75}
         onPress={() => {
@@ -151,7 +154,7 @@ const ClassCard = ({
   );
 };
 
-const TimelineWithClassDetails = (_props: { selectedDate?: string } = {}) => {
+const TimelineWithClassDetails = () => {
   const {
     dayIndex,
     setDayIndex,
@@ -201,15 +204,50 @@ const TimelineWithClassDetails = (_props: { selectedDate?: string } = {}) => {
       </View>
 
       <View style={styles.gridHost} onLayout={onGridLayout}>
-        {!events.length ? (
-          <View style={styles.emptyState}>
-            <SvgLoader
-              svgFilePath="calendarEmpty"
-              width={32}
-              height={32}
-              color="#C4C2BA"
-            />
-            <View style={styles.emptyTitleBox}>
+        <View style={[styles.dayGrid, { height: gridContentHeight }]}>
+          {HOURS.map((hour) => {
+            const top =
+              LABEL_PAD_TOP +
+              minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
+            return (
+              <View key={hour} style={[styles.hourRow, { top }]}>
+                <Text style={styles.hourLabel}>{formatHourLabel(hour)}</Text>
+              </View>
+            );
+          })}
+
+          <View
+            style={[
+              styles.eventsLayer,
+              { top: LABEL_PAD_TOP, height: dayHeight },
+            ]}
+          >
+            {events.map((event) =>
+              event.type === 'break' ? (
+                <BreakCard key={event.id} event={event} />
+              ) : (
+                <ClassCard key={event.id} event={event} date={date} />
+              )
+            )}
+          </View>
+
+          {nowTop != null ? (
+            <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
+              <View style={styles.nowPill}>
+                <Text style={styles.nowPillText}>{now.format('H:mm')}</Text>
+              </View>
+              <View style={styles.nowLine} />
+            </View>
+          ) : null}
+
+          {!events.length ? (
+            <View style={styles.emptyState} pointerEvents="none">
+              <SvgLoader
+                svgFilePath="calendarEmpty"
+                width={32}
+                height={32}
+                color="#C4C2BA"
+              />
               <Text style={styles.emptyTitle} numberOfLines={1}>
                 {dayIndex === 0
                   ? 'No classes yesterday'
@@ -217,43 +255,12 @@ const TimelineWithClassDetails = (_props: { selectedDate?: string } = {}) => {
                     ? 'No classes tomorrow'
                     : 'No classes today'}
               </Text>
+              <Text style={styles.emptySubtitle}>
+                {moment(date).format('dddd')} · enjoy the day off
+              </Text>
             </View>
-            <Text style={styles.emptySubtitle}>
-              {moment(date).format('dddd')} · enjoy the day off
-            </Text>
-          </View>
-        ) : (
-          <View style={[styles.dayGrid, { height: gridContentHeight }]}>
-            {HOURS.map((hour) => {
-              const top = LABEL_PAD_TOP + (hour - DAY_START_HOUR) * pxPerHour;
-              return (
-                <View key={hour} style={[styles.hourRow, { top }]}>
-                  <Text style={styles.hourLabel}>{formatHourLabel(hour)}</Text>
-                </View>
-              );
-            })}
-
-            <View
-              style={[
-                styles.eventsLayer,
-                { top: LABEL_PAD_TOP, height: dayHeight },
-              ]}
-            >
-              {events.map((event) => (
-                <ClassCard key={event.id} event={event} date={date} />
-              ))}
-            </View>
-
-            {nowTop != null ? (
-              <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
-                <View style={styles.nowPill}>
-                  <Text style={styles.nowPillText}>{now.format('H:mm')}</Text>
-                </View>
-                <View style={styles.nowLine} />
-              </View>
-            ) : null}
-          </View>
-        )}
+          ) : null}
+        </View>
       </View>
     </View>
   );
@@ -270,21 +277,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
     paddingLeft: 4,
     width: '100%',
     height: 36,
     alignSelf: 'stretch',
     flexGrow: 0,
-    marginBottom: 28,
+    marginBottom: 12,
   },
   headerBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    padding: 0,
     height: 36,
     flexGrow: 0,
     flexShrink: 0,
@@ -420,18 +422,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
-  cardCompact: {
-    borderRadius: 8,
-  },
   classCardLive: {
     borderWidth: 1.5,
     borderColor: '#1F1E1C',
   },
   classCardDefault: {
-    borderWidth: 1,
-    borderColor: '#ECEAE4',
-  },
-  classCardDone: {
     borderWidth: 1,
     borderColor: '#ECEAE4',
   },
@@ -513,45 +508,28 @@ const styles = StyleSheet.create({
     borderRadius: 1,
   },
   emptyState: {
-    flex: 1,
-    alignSelf: 'stretch',
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
     paddingBottom: 40,
   },
-  emptyTitleBox: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: 0,
-    minWidth: 132,
-    minHeight: 24,
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
-    marginTop: 4,
-  },
   emptyTitle: {
+    marginTop: 4,
     fontSize: 16,
     lineHeight: 20,
     color: '#1F1E1C',
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
     textAlign: 'center',
-    flexShrink: 0,
   },
   emptySubtitle: {
-    minWidth: 183,
-    minHeight: 20,
     fontSize: 14,
     lineHeight: 20,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
     includeFontPadding: false,
     textAlign: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
   },
 });
 
