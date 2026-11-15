@@ -77,6 +77,16 @@ const buildForceTimelineItems = (date: string) => [
     class_details: [{ Topic: 'Quadratic equations' }],
   },
   {
+    class_schedule_id: 'force-3pm',
+    date,
+    start_time: '15:00:00',
+    end_time: '15:40:00',
+    subject_name: 'Chemistry',
+    division_name: '8',
+    section_name: 'A',
+    class_details: [{ Topic: 'Acids and bases' }],
+  },
+  {
     class_schedule_id: 'force-cross-a',
     date,
     start_time: '15:45:00',
@@ -321,61 +331,16 @@ export const useTimeline = () => {
     return built;
   }, [classTimeline, date, now, pxPerHour]);
 
-  /** Timeline window is 8am–5pm only; hide the now-line outside that window. */
+  /** Clock-only now-line: same Y for every slot type (no card-height pinning). */
   const nowMinutes = minutesFromDayStart(now);
   const dayEndMinutes = HOUR_SPAN * 60;
   const showNow =
     moment(date).isSame(now, 'day') &&
     nowMinutes >= 0 &&
     nowMinutes < dayEndMinutes;
-
-  const eventWindow = (event: TimelineEvent) => {
-    const start = parseTime(event.raw?.start_time);
-    const end = parseTime(event.raw?.end_time);
-    if (!start || !end) return null;
-    const startAt = moment(
-      `${date} ${start.format('HH:mm:ss')}`,
-      'YYYY-MM-DD HH:mm:ss'
-    );
-    const endAt = moment(
-      `${date} ${end.format('HH:mm:ss')}`,
-      'YYYY-MM-DD HH:mm:ss'
-    );
-    return { startAt, endAt };
-  };
-
-  const nowTop = (() => {
-    if (!showNow) return null;
-
-    /** Pin the now-line inside the active class or break card. */
-    const activeEvent = events.find((e) => {
-      if (e.type === 'class' && e.status === 'live') return true;
-      if (e.type !== 'break') return false;
-      const window = eventWindow(e);
-      return (
-        !!window &&
-        window.startAt.isSameOrBefore(now) &&
-        window.endAt.isAfter(now)
-      );
-    });
-
-    if (activeEvent) {
-      const window = eventWindow(activeEvent);
-      if (window) {
-        const durationMs = Math.max(1, window.endAt.diff(window.startAt));
-        const progress = Math.min(
-          1,
-          Math.max(0, now.diff(window.startAt) / durationMs)
-        );
-        const edgePad = Math.min(3, activeEvent.height * 0.06);
-        const travelTop = activeEvent.top + edgePad;
-        const travelHeight = Math.max(1, activeEvent.height - edgePad * 2);
-        return LABEL_PAD_TOP + travelTop + progress * travelHeight;
-      }
-    }
-
-    return LABEL_PAD_TOP + minutesToY(nowMinutes, pxPerHour);
-  })();
+  const nowTop = showNow
+    ? LABEL_PAD_TOP + minutesToY(nowMinutes, pxPerHour)
+    : null;
 
   return {
     dayIndex,

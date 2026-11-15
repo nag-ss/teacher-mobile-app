@@ -505,7 +505,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 2,
     backgroundColor: '#1F1E1C',
-    borderRadius: 1,
   },
   emptyState: {
     ...StyleSheet.absoluteFillObject,
