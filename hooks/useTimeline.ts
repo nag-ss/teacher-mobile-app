@@ -17,95 +17,82 @@ export const LABEL_PAD_TOP = 10;
 export const LABEL_PAD_BOTTOM = 14;
 export const TIME_GUTTER = 52;
 
-/** Temporary: always show a full day of sample timeline cards (ignore API). */
+/** Temporary: force sample schedule for UI. */
 const FORCE_TIMELINE_UI = true;
 
+/** Demo schedule — `force_status` locks badge so every state is visible. */
 const buildForceTimelineItems = (date: string) => [
   {
-    class_schedule_id: 'force-half-a',
+    class_schedule_id: 'force-9to10',
     date,
-    start_time: '08:00:00',
-    end_time: '08:30:00',
-    subject_name: 'Mensuration',
-    division_name: '7',
-    section_name: 'C',
-    class_details: [{ Topic: 'Surface area' }],
-  },
-  {
-    class_schedule_id: 'force-half-b',
-    date,
-    start_time: '08:30:00',
-    end_time: '09:00:00',
-    subject_name: 'Arithmetic',
-    division_name: '7',
+    start_time: '09:00:00',
+    end_time: '10:00:00',
+    subject_name: 'Algebra',
+    division_name: '8',
     section_name: 'A',
-    class_details: [],
+    class_details: [{ Topic: 'Linear equations' }],
+    is_reflected: true,
+    force_status: 'done',
   },
   {
-    class_schedule_id: 'force-break',
+    class_schedule_id: 'force-11-class',
     date,
     start_time: '11:00:00',
+    end_time: '11:30:00',
+    subject_name: 'Geometry',
+    division_name: '7',
+    section_name: 'B',
+    class_details: [{ Topic: 'Triangles' }],
+    force_status: 'reflect',
+  },
+  {
+    class_schedule_id: 'force-11-break',
+    date,
+    start_time: '11:30:00',
     end_time: '12:00:00',
     subject_name: 'Break',
     type: 'break',
   },
   {
-    class_schedule_id: 'force-1pm',
+    class_schedule_id: 'force-1-half-a',
     date,
     start_time: '13:00:00',
     end_time: '13:30:00',
-    subject_name: 'Geometry',
-    division_name: '7',
+    subject_name: 'Statistics',
+    division_name: '8',
     section_name: 'B',
-    class_details: [{ Topic: 'Triangles' }],
+    class_details: [{ Topic: 'Mean median' }],
+    force_status: 'live',
   },
   {
-    class_schedule_id: 'force-break-half',
+    class_schedule_id: 'force-1-half-b',
     date,
     start_time: '13:30:00',
     end_time: '14:00:00',
+    subject_name: 'Probability',
+    division_name: '8',
+    section_name: 'C',
+    class_details: [],
+    force_status: 'unprepped',
+  },
+  {
+    class_schedule_id: 'force-2to3-break',
+    date,
+    start_time: '14:00:00',
+    end_time: '15:00:00',
     subject_name: 'Break',
     type: 'break',
   },
   {
-    class_schedule_id: 'force-hour',
+    class_schedule_id: 'force-4to5',
     date,
-    start_time: '14:00:00',
-    end_time: '15:00:00',
-    subject_name: 'Algebra',
-    division_name: '8',
-    section_name: 'B',
-    class_details: [{ Topic: 'Quadratic equations' }],
-  },
-  {
-    class_schedule_id: 'force-3pm',
-    date,
-    start_time: '15:00:00',
-    end_time: '15:40:00',
+    start_time: '16:00:00',
+    end_time: '17:00:00',
     subject_name: 'Chemistry',
-    division_name: '8',
+    division_name: '9',
     section_name: 'A',
     class_details: [{ Topic: 'Acids and bases' }],
-  },
-  {
-    class_schedule_id: 'force-cross-a',
-    date,
-    start_time: '15:45:00',
-    end_time: '16:15:00',
-    subject_name: 'Statistics',
-    division_name: '9',
-    section_name: 'A',
-    class_details: [{ Topic: 'Mean median' }],
-  },
-  {
-    class_schedule_id: 'force-cross-b',
-    date,
-    start_time: '16:15:00',
-    end_time: '16:45:00',
-    subject_name: 'Probability',
-    division_name: '9',
-    section_name: 'B',
-    class_details: [],
+    force_status: 'prepped',
   },
 ];
 
@@ -175,6 +162,17 @@ export const getClassStatus = (
   date: string,
   now: moment.Moment
 ): ClassStatus | null => {
+  /** Preview-only override so every badge can be shown at once. */
+  if (
+    item?.force_status === 'live' ||
+    item?.force_status === 'reflect' ||
+    item?.force_status === 'done' ||
+    item?.force_status === 'unprepped' ||
+    item?.force_status === 'prepped'
+  ) {
+    return item.force_status;
+  }
+
   const start = parseTime(item?.start_time);
   const end = parseTime(item?.end_time);
   if (!start || !end) return null;

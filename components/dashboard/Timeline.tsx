@@ -233,63 +233,63 @@ const TimelineWithClassDetails = () => {
       </View>
 
       <View style={styles.gridHost} onLayout={onGridLayout}>
-        <View style={[styles.dayGrid, { height: gridContentHeight }]}>
-          {HOURS.map((hour) => {
-            const top =
-              LABEL_PAD_TOP +
-              minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
-            return (
-              <View key={hour} style={[styles.hourRow, { top }]}>
-                <Text style={[text.meta, styles.hourLabel]}>
-                  {formatHourLabel(hour)}
-                </Text>
-              </View>
-            );
-          })}
-
-          <View
-            style={[
-              styles.eventsLayer,
-              { top: LABEL_PAD_TOP, height: dayHeight },
-            ]}
-          >
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} date={date} />
-            ))}
+        {!events.length ? (
+          <View style={styles.emptyState}>
+            <SvgLoader
+              svgFilePath="calendarEmpty"
+              width={32}
+              height={32}
+              color="#C4C2BA"
+            />
+            <Text style={[text.emptyTitle, styles.emptyTitle]} numberOfLines={1}>
+              {dayIndex === 0
+                ? 'No classes yesterday'
+                : dayIndex === 2
+                  ? 'No classes tomorrow'
+                  : 'No classes today'}
+            </Text>
+            <Text style={[text.meta, styles.emptySubtitle]}>
+              {moment(date).format('dddd')} · enjoy the day off
+            </Text>
           </View>
+        ) : (
+          <View style={[styles.dayGrid, { height: gridContentHeight }]}>
+            {HOURS.map((hour) => {
+              const top =
+                LABEL_PAD_TOP +
+                minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
+              return (
+                <View key={hour} style={[styles.hourRow, { top }]}>
+                  <Text style={[text.meta, styles.hourLabel]}>
+                    {formatHourLabel(hour)}
+                  </Text>
+                </View>
+              );
+            })}
 
-          {nowTop != null ? (
-            <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
-              <View style={styles.nowPill}>
-                <Text style={[text.title, styles.nowPillText]}>
-                  {now.format('H:mm')}
-                </Text>
+            <View
+              style={[
+                styles.eventsLayer,
+                { top: LABEL_PAD_TOP, height: dayHeight },
+              ]}
+            >
+              {events.map((event) => (
+                <EventCard key={event.id} event={event} date={date} />
+              ))}
+            </View>
+
+            {nowTop != null ? (
+              <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
+                <View style={styles.nowPill}>
+                  <Text style={[text.title, styles.nowPillText]}>
+                    {now.format('H:mm')}
+                  </Text>
+                </View>
+                <View style={styles.nowLine} />
               </View>
-              <View style={styles.nowLine} />
-            </View>
-          ) : null}
-
-          {!events.length ? (
-            <View style={styles.emptyState} pointerEvents="none">
-              <SvgLoader
-                svgFilePath="calendarEmpty"
-                width={32}
-                height={32}
-                color="#C4C2BA"
-              />
-              <Text style={[text.emptyTitle, styles.emptyTitle]} numberOfLines={1}>
-                {dayIndex === 0
-                  ? 'No classes yesterday'
-                  : dayIndex === 2
-                    ? 'No classes tomorrow'
-                    : 'No classes today'}
-              </Text>
-              <Text style={[text.meta, styles.emptySubtitle]}>
-                {moment(date).format('dddd')} · enjoy the day off
-              </Text>
-            </View>
-          ) : null}
-        </View>
+            ) : null}
+          </View>
+        )}
       </View>
     </View>
   );
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.ink,
   },
   emptyState: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
