@@ -37,7 +37,6 @@ export type TimelineEvent = {
   timeLabel: string;
   durationLabel: string;
   status: ClassStatus | null;
-  isNext: boolean;
   isCompact: boolean;
   raw: any;
 };
@@ -284,14 +283,10 @@ export const useTimeline = () => {
         timeLabel: start.format('h:mm'),
         durationLabel: formatDurationLabel(durationMinutes),
         status,
-        isNext: false,
         isCompact,
         raw: timeline,
       });
     });
-
-    const nextPrepped = built.find((e) => e.type === 'class' && e.status === 'prepped');
-    if (nextPrepped) nextPrepped.isNext = true;
 
     return built;
   }, [classTimeline, date, now, pxPerHour]);

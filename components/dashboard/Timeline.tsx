@@ -92,7 +92,6 @@ const ClassCard = ({
   const canPrep = !moment(date).isBefore(moment(), 'day');
   const isLive = event.status === 'live';
   const isDone = event.status === 'done';
-  const isNextPrepped = event.status === 'prepped' && event.isNext;
   const showMeta = event.title.trim().length <= 16;
 
   if (event.type === 'break') {
@@ -111,14 +110,12 @@ const ClassCard = ({
             : isLive
               ? styles.classCardLive
               : styles.classCardDefault,
-          isNextPrepped && styles.classCardNext,
         ]}
         activeOpacity={0.75}
         onPress={() => {
           if (canPrep && !isDone) classPrepRef.current?.setSelectedClass();
         }}
       >
-        {isNextPrepped ? <View style={styles.nextStrip} /> : null}
         <View style={styles.classLeft}>
           <Text
             style={[styles.classTitle, isDone && styles.classTitleDone]}
@@ -134,7 +131,6 @@ const ClassCard = ({
               {[event.grade, event.timeLabel].filter(Boolean).join(' · ')}
             </Text>
           ) : null}
-          {isNextPrepped ? <Text style={styles.nextTag}>Next</Text> : null}
         </View>
         {isDone ? (
           <SvgLoader svgFilePath="liveCorrect" width={14} height={11} color="#8A8880" />
@@ -439,24 +435,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ECEAE4',
   },
-  classCardNext: {
-    paddingLeft: 16,
-  },
   classTitleDone: {
     color: '#8A8880',
   },
   classMetaDone: {
     color: '#B0AEA6',
-  },
-  nextStrip: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    width: 4,
-    backgroundColor: '#1F1E1C',
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
   },
   classLeft: {
     flex: 1,
@@ -480,14 +463,6 @@ const styles = StyleSheet.create({
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
-  },
-  nextTag: {
-    fontSize: 12,
-    lineHeight: 15,
-    color: '#1F1E1C',
-    fontFamily: 'Inter_400Regular',
-    includeFontPadding: false,
-    marginLeft: 'auto',
   },
   statusRow: {
     flexDirection: 'row',
