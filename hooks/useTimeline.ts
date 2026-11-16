@@ -209,17 +209,36 @@ const formatDurationLabel = (minutes: number) => {
   return `${minutes} min`;
 };
 
+const formatDayLabel = (dateStr: string) => {
+  const d = moment(dateStr, 'YYYY-MM-DD');
+  if (d.isSame(moment(), 'day')) return 'Today';
+  if (d.isSame(moment().subtract(1, 'day'), 'day')) return 'Yesterday';
+  if (d.isSame(moment().add(1, 'day'), 'day')) return 'Tomorrow';
+  return d.format('D MMM');
+};
+
 /**
  * Timeline data + layout math: fetch schedule, clock, statuses, and event positions.
  */
 export const useTimeline = () => {
   const dispatch = useDispatch<any>();
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
-  const [dayIndex, setDayIndex] = useState(1); // Today
-  const date = moment().add(dayIndex - 1, 'days').format('YYYY-MM-DD');
-  const dayLabel = DAY_LABELS[dayIndex];
+  const [date, setDate] = useState(() => moment().format('YYYY-MM-DD'));
+  const dayLabel = formatDayLabel(date);
   const [now, setNow] = useState(moment());
   const [pxPerHour, setPxPerHour] = useState(DEFAULT_PX_PER_HOUR);
+
+  const goPrevDay = useCallback(() => {
+    setDate((prev) => moment(prev).subtract(1, 'day').format('YYYY-MM-DD'));
+  }, []);
+
+  const goNextDay = useCallback(() => {
+    setDate((prev) => moment(prev).add(1, 'day').format('YYYY-MM-DD'));
+  }, []);
+
+  const goToToday = useCallback(() => {
+    setDate(moment().format('YYYY-MM-DD'));
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setNow(moment()), 1000);
@@ -317,10 +336,12 @@ export const useTimeline = () => {
     : null;
 
   return {
-    dayIndex,
-    setDayIndex,
     date,
+    setDate,
     dayLabel,
+    goPrevDay,
+    goNextDay,
+    goToToday,
     now,
     events,
     nowTop,

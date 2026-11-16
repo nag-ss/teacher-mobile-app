@@ -5,6 +5,9 @@ import ClassPrep from './ClassPrep';
 import TimelineEventDetailModal, {
   type PopupAnchor,
 } from './TimelineEventDetailModal';
+import TimelineCalendarPopover, {
+  type CalendarAnchor,
+} from './TimelineCalendarPopover';
 import SvgLoader from '@/utils/SvgLoader';
 import {
   useTimeline,
@@ -186,15 +189,22 @@ const EventCard = ({
 
 const TimelineWithClassDetails = () => {
   const classPrepRef = useRef<any>();
+  const dayLabelRef = useRef<View>(null);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
   const [popupAnchor, setPopupAnchor] = useState<PopupAnchor | null>(null);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarAnchor, setCalendarAnchor] = useState<CalendarAnchor | null>(
+    null
+  );
   /** Kept after the detail modal closes so ClassPrep (and its modals) stay mounted. */
   const [prepEvent, setPrepEvent] = useState<TimelineEvent | null>(null);
   const {
-    dayIndex,
-    setDayIndex,
     date,
+    setDate,
     dayLabel,
+    goPrevDay,
+    goNextDay,
+    goToToday,
     now,
     events,
     nowTop,
@@ -225,6 +235,13 @@ const TimelineWithClassDetails = () => {
     closeDetail();
   };
 
+  const openCalendar = () => {
+    dayLabelRef.current?.measureInWindow((x, y, width, height) => {
+      setCalendarAnchor({ x, y, width, height });
+      setCalendarOpen(true);
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
@@ -235,22 +252,26 @@ const TimelineWithClassDetails = () => {
         <View style={styles.dayPill}>
           <TouchableOpacity
             style={styles.daySegment}
-            onPress={() => setDayIndex((prev) => Math.max(0, prev - 1))}
+            onPress={goPrevDay}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            disabled={dayIndex === 0}
           >
             <SvgLoader svgFilePath="notificationLeftArrow" width={7} height={10} />
           </TouchableOpacity>
           <View style={styles.dayDivider} />
-          <View style={styles.dayLabelSegment}>
-            <Text style={[text.title, styles.dayLabel]}>{dayLabel}</Text>
+          <View ref={dayLabelRef} collapsable={false}>
+            <TouchableOpacity
+              style={styles.dayLabelSegment}
+              onPress={openCalendar}
+              activeOpacity={0.7}
+            >
+              <Text style={[text.title, styles.dayLabel]}>{dayLabel}</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.dayDivider} />
           <TouchableOpacity
             style={styles.daySegment}
-            onPress={() => setDayIndex((prev) => Math.min(2, prev + 1))}
+            onPress={goNextDay}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            disabled={dayIndex === 2}
           >
             <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />
           </TouchableOpacity>
@@ -267,11 +288,7 @@ const TimelineWithClassDetails = () => {
               color="#C4C2BA"
             />
             <Text style={[text.emptyTitle, styles.emptyTitle]} numberOfLines={1}>
-              {dayIndex === 0
-                ? 'No classes yesterday'
-                : dayIndex === 2
-                  ? 'No classes tomorrow'
-                  : 'No classes today'}
+              {`No classes ${dayLabel.toLowerCase()}`}
             </Text>
             <Text style={[text.meta, styles.emptySubtitle]}>
               {moment(date).format('dddd')} · enjoy the day off
@@ -327,6 +344,15 @@ const TimelineWithClassDetails = () => {
         anchor={popupAnchor}
         onClose={closeDetail}
         onAction={handleDetailAction}
+      />
+
+      <TimelineCalendarPopover
+        visible={calendarOpen}
+        selectedDate={date}
+        anchor={calendarAnchor}
+        onSelectDate={setDate}
+        onClose={() => setCalendarOpen(false)}
+        onPressToday={goToToday}
       />
 
       {prepEvent ? (
