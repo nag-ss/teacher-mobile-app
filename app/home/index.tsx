@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
   },
   timelineMargin: {

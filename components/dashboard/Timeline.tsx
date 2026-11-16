@@ -22,7 +22,7 @@ import {
 } from '@/hooks/useTimeline';
 
 /** Tall cards keep 10; short (half-hour) cards use a tighter corner. */
-const cardRadius = (height: number) => (height < 40 ? 6 : 10);
+const cardRadius = (height: number) => (height < 40 ? 8 : 10);
 
 const COLOR = {
   ink: '#1F1E1C',
@@ -75,12 +75,25 @@ const STATUS_META: Record<
   prepped: { label: 'Prepped', color: '#2F6FED' },
 };
 
-const StatusBadge = ({ status }: { status: Exclude<ClassStatus, 'done'> }) => {
+const StatusBadge = ({
+  status,
+  compact,
+}: {
+  status: Exclude<ClassStatus, 'done'>;
+  compact?: boolean;
+}) => {
   const meta = STATUS_META[status];
   return (
     <View style={styles.statusRow}>
       <View style={[styles.statusDot, { backgroundColor: meta.color }]} />
-      <Text style={[text.title, styles.statusText, { color: meta.color }]}>
+      <Text
+        style={[
+          text.title,
+          styles.statusText,
+          compact && styles.statusTextShort,
+          { color: meta.color },
+        ]}
+      >
         {meta.label}
       </Text>
     </View>
@@ -101,6 +114,7 @@ const EventCard = ({
   const isBreak = event.type === 'break';
   const isLive = event.status === 'live';
   const isDone = event.status === 'done';
+  const isShortCard = event.height < 40;
   const showMeta = event.title.trim().length <= 16;
   const stripeCount = isBreak && width > 0 ? Math.ceil(width / STRIPE_GAP) + 6 : 0;
 
@@ -141,14 +155,23 @@ const EventCard = ({
     <>
       <View style={styles.classLeft}>
         <Text
-          style={[text.title, styles.classTitle, isDone && styles.textDone]}
+          style={[
+            text.title,
+            styles.classTitle,
+            isShortCard && styles.classTitleShort,
+            isDone && styles.textDone,
+          ]}
           numberOfLines={1}
         >
           {event.title}
         </Text>
         {showMeta ? (
           <Text
-            style={[text.meta, isDone && styles.textMetaDone]}
+            style={[
+              text.meta,
+              isShortCard && styles.classMetaShort,
+              isDone && styles.textMetaDone,
+            ]}
             numberOfLines={1}
           >
             {[event.grade, event.timeLabel].filter(Boolean).join(' · ')}
@@ -158,7 +181,7 @@ const EventCard = ({
       {isDone ? (
         <SvgLoader svgFilePath="liveCorrect" width={14} height={11} color="#8A8880" />
       ) : event.status && event.status !== 'done' ? (
-        <StatusBadge status={event.status} />
+        <StatusBadge status={event.status} compact={isShortCard} />
       ) : null}
     </>
   );
@@ -273,7 +296,9 @@ const TimelineWithClassDetails = () => {
               ]}
               onPress={openCalendar}
             >
-              <Text style={[text.title, styles.dayLabel]}>{dayLabel}</Text>
+              <Text style={[text.title, styles.dayLabel]} numberOfLines={1}>
+                {dayLabel}
+              </Text>
             </Pressable>
           </View>
           <View style={styles.dayDivider} />
@@ -395,7 +420,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 4,
     width: '100%',
-    height: 36,
+    height: 42,
     alignSelf: 'stretch',
     flexGrow: 0,
     marginBottom: 12,
@@ -408,11 +433,11 @@ const styles = StyleSheet.create({
   dayPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 36,
+    height: 42,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: COLOR.borderSoft,
-    borderRadius: 10,
+    borderRadius: 12,
     overflow: 'hidden',
     flexGrow: 0,
     flexShrink: 0,
@@ -436,13 +461,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.borderSoft,
   },
   dayLabelSegment: {
-    minWidth: 72,
+    width: 104,
     height: '100%',
-    paddingHorizontal: 14,
+    paddingHorizontal: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
   dayLabel: {
+    width: '100%',
     textAlign: 'center',
   },
   gridHost: {
@@ -540,6 +566,15 @@ const styles = StyleSheet.create({
   },
   classTitle: {
     flexShrink: 1,
+    fontFamily: 'Inter_700Bold',
+  },
+  classTitleShort: {
+    fontSize: 12,
+    lineHeight: 15,
+  },
+  classMetaShort: {
+    fontSize: 10,
+    lineHeight: 13,
   },
   statusRow: {
     flexDirection: 'row',
@@ -555,6 +590,10 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     lineHeight: 15,
+  },
+  statusTextShort: {
+    fontSize: 10,
+    lineHeight: 13,
   },
   nowLineWrap: {
     position: 'absolute',
