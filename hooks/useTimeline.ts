@@ -218,11 +218,6 @@ const formatDayLabel = (dateStr: string) => {
   return d.format('ddd D');
 };
 
-/** Nav arrows only move among Yesterday / Today / Tomorrow. */
-const navYesterday = () => moment().subtract(1, 'day').format('YYYY-MM-DD');
-const navToday = () => moment().format('YYYY-MM-DD');
-const navTomorrow = () => moment().add(1, 'day').format('YYYY-MM-DD');
-
 /**
  * Timeline data + layout math: fetch schedule, clock, statuses, and event positions.
  */
@@ -234,31 +229,19 @@ export const useTimeline = () => {
   const [now, setNow] = useState(moment());
   const [pxPerHour, setPxPerHour] = useState(DEFAULT_PX_PER_HOUR);
 
-  const canGoPrevDay = !moment(date).isSameOrBefore(navYesterday(), 'day');
-  const canGoNextDay = !moment(date).isSameOrAfter(navTomorrow(), 'day');
+  const canGoPrevDay = true;
+  const canGoNextDay = true;
 
   const goPrevDay = useCallback(() => {
-    setDate((prev) => {
-      const d = moment(prev);
-      const today = moment().startOf('day');
-      if (d.isAfter(today, 'day')) return navToday();
-      if (d.isSame(today, 'day')) return navYesterday();
-      return navYesterday();
-    });
+    setDate((prev) => moment(prev).subtract(1, 'day').format('YYYY-MM-DD'));
   }, []);
 
   const goNextDay = useCallback(() => {
-    setDate((prev) => {
-      const d = moment(prev);
-      const today = moment().startOf('day');
-      if (d.isBefore(today, 'day')) return navToday();
-      if (d.isSame(today, 'day')) return navTomorrow();
-      return navTomorrow();
-    });
+    setDate((prev) => moment(prev).add(1, 'day').format('YYYY-MM-DD'));
   }, []);
 
   const goToToday = useCallback(() => {
-    setDate(navToday());
+    setDate(moment().format('YYYY-MM-DD'));
   }, []);
 
   useEffect(() => {

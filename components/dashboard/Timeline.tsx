@@ -285,7 +285,12 @@ const TimelineWithClassDetails = () => {
             disabled={!canGoPrevDay}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <SvgLoader svgFilePath="notificationLeftArrow" width={7} height={10} />
+            <SvgLoader
+              svgFilePath="notificationLeftArrow"
+              width={7}
+              height={10}
+              color="#1F1E1C"
+            />
           </Pressable>
           <View style={styles.dayDivider} />
           <View ref={dayLabelRef} collapsable={false}>
@@ -312,7 +317,12 @@ const TimelineWithClassDetails = () => {
             disabled={!canGoNextDay}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />
+            <SvgLoader
+              svgFilePath="notificationRightArrow"
+              width={7}
+              height={10}
+              color="#1F1E1C"
+            />
           </Pressable>
         </View>
       </View>
