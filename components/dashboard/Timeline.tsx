@@ -2,6 +2,9 @@ import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import ClassPrep from './ClassPrep';
+import TimelineEventDetailModal, {
+  type PopupAnchor,
+} from './TimelineEventDetailModal';
 import SvgLoader from '@/utils/SvgLoader';
 import {
   useTimeline,
@@ -85,19 +88,24 @@ const STRIPE_GAP = 7;
 
 const EventCard = ({
   event,
-  date,
+  onPress,
 }: {
   event: TimelineEvent;
-  date: string;
+  onPress: (event: TimelineEvent, anchor: PopupAnchor) => void;
 }) => {
-  const classPrepRef = useRef<any>();
+  const cardRef = useRef<View>(null);
   const [width, setWidth] = useState(0);
   const isBreak = event.type === 'break';
-  const canPrep = !isBreak && !moment(date).isBefore(moment(), 'day');
   const isLive = event.status === 'live';
   const isDone = event.status === 'done';
   const showMeta = event.title.trim().length <= 16;
   const stripeCount = isBreak && width > 0 ? Math.ceil(width / STRIPE_GAP) + 6 : 0;
+
+  const handlePress = () => {
+    cardRef.current?.measureInWindow((x, y, _w, h) => {
+      onPress(event, { x, y, height: h });
+    });
+  };
 
   const shellStyle = [
     styles.eventCard,
@@ -152,40 +160,36 @@ const EventCard = ({
     </>
   );
 
-  return (
-    <>
-      {isBreak ? (
-        <View
-          style={shellStyle}
-          onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-        >
-          {breakBody}
-        </View>
-      ) : (
-        <TouchableOpacity
-          style={shellStyle}
-          activeOpacity={0.75}
-          onPress={() => {
-            if (canPrep && !isDone) classPrepRef.current?.setSelectedClass();
-          }}
-        >
-          {classBody}
-        </TouchableOpacity>
-      )}
+  if (isBreak) {
+    return (
+      <View
+        style={shellStyle}
+        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      >
+        {breakBody}
+      </View>
+    );
+  }
 
-      {canPrep ? (
-        <ClassPrep
-          item={event.raw}
-          selectedClass={event.raw}
-          updateTopicSubTopic={() => {}}
-          ref={classPrepRef}
-        />
-      ) : null}
-    </>
+  return (
+    <View ref={cardRef} style={shellStyle} collapsable={false}>
+      <TouchableOpacity
+        style={styles.eventPressable}
+        activeOpacity={0.75}
+        onPress={handlePress}
+      >
+        {classBody}
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const TimelineWithClassDetails = () => {
+  const classPrepRef = useRef<any>();
+  const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
+  const [popupAnchor, setPopupAnchor] = useState<PopupAnchor | null>(null);
+  /** Kept after the detail modal closes so ClassPrep (and its modals) stay mounted. */
+  const [prepEvent, setPrepEvent] = useState<TimelineEvent | null>(null);
   const {
     dayIndex,
     setDayIndex,
@@ -199,6 +203,27 @@ const TimelineWithClassDetails = () => {
     pxPerHour,
     onGridLayout,
   } = useTimeline();
+
+  const openDetail = (event: TimelineEvent, anchor: PopupAnchor) => {
+    setSelectedEvent(event);
+    setPopupAnchor(anchor);
+    if (event.status !== 'done') setPrepEvent(event);
+  };
+
+  const closeDetail = () => {
+    setSelectedEvent(null);
+    setPopupAnchor(null);
+  };
+
+  const handleDetailAction = (event: TimelineEvent) => {
+    if (event.status === 'done') {
+      closeDetail();
+      return;
+    }
+    setPrepEvent(event);
+    classPrepRef.current?.setSelectedClass();
+    closeDetail();
+  };
 
   return (
     <View style={styles.container}>
@@ -274,7 +299,11 @@ const TimelineWithClassDetails = () => {
               ]}
             >
               {events.map((event) => (
-                <EventCard key={event.id} event={event} date={date} />
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  onPress={openDetail}
+                />
               ))}
             </View>
 
@@ -291,6 +320,24 @@ const TimelineWithClassDetails = () => {
           </View>
         )}
       </View>
+
+      <TimelineEventDetailModal
+        event={selectedEvent}
+        dayLabel={dayLabel}
+        anchor={popupAnchor}
+        onClose={closeDetail}
+        onAction={handleDetailAction}
+      />
+
+      {prepEvent ? (
+        <ClassPrep
+          key={prepEvent.id}
+          item={prepEvent.raw}
+          selectedClass={prepEvent.raw}
+          updateTopicSubTopic={() => {}}
+          ref={classPrepRef}
+        />
+      ) : null}
     </View>
   );
 };
@@ -392,17 +439,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  eventPressable: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     gap: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    overflow: 'hidden',
   },
   eventCardBreak: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 12,
   },
   breakStripes: {
     ...StyleSheet.absoluteFillObject,
@@ -418,6 +471,7 @@ const styles = StyleSheet.create({
   },
   breakText: {
     fontFamily: 'Inter_500Medium',
+    textAlign: 'center',
     zIndex: 1,
   },
   classCardLive: {

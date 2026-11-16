@@ -54,6 +54,8 @@ const svgAssets = {
   calendarEmpty: require('../assets/beta_images_1/calender.svg'),
   refreshIcon: require('../assets/beta_images_1/refresh.svg'),
   betaRightArrow: require('../assets/beta_images_1/right_arrow.svg'),
+  timelinePopup: require('../assets/beta_images_1/timeline_popup.svg'),
+  timelinePopupClose: require('../assets/beta_images_1/close.svg'),
 };
 
 interface SvgLoaderProps {

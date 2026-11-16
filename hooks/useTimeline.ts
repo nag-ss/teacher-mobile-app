@@ -43,6 +43,8 @@ const buildForceTimelineItems = (date: string) => [
     division_name: '7',
     section_name: 'B',
     class_details: [{ Topic: 'Triangles' }],
+    quiz_sent: true,
+    quiz_average: 64,
     force_status: 'reflect',
   },
   {
