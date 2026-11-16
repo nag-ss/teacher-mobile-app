@@ -24,7 +24,7 @@ const COLOR = {
   mute: '#8A8880',
   hair: '#ECEAE4',
   soft: '#F1EFEA',
-  dot: '#C8C6BE',
+  dot: '#B5B2AA',
 } as const;
 
 const CARD_WIDTH = 320;
@@ -51,24 +51,11 @@ type Props = {
   visible: boolean;
   selectedDate: string;
   anchor: CalendarAnchor | null;
-  /** Dates with classes (YYYY-MM-DD). Falls back to weekday demo dots. */
+  /** Dates with classes (YYYY-MM-DD). No dots when omitted/empty. */
   classDates?: string[];
   onSelectDate: (date: string) => void;
   onClose: () => void;
   onPressToday: () => void;
-};
-
-/** Demo: weekdays in the visible month get class dots. */
-const buildDemoClassDates = (month: string) => {
-  const start = moment(month, 'YYYY-MM-DD').startOf('month');
-  const end = start.clone().endOf('month');
-  const dates: string[] = [];
-  const cursor = start.clone();
-  while (cursor.isSameOrBefore(end, 'day')) {
-    if (cursor.isoWeekday() <= 5) dates.push(cursor.format('YYYY-MM-DD'));
-    cursor.add(1, 'day');
-  }
-  return dates;
 };
 
 const TimelineCalendarPopover = ({
@@ -91,7 +78,7 @@ const TimelineCalendarPopover = ({
   }, [visible, selectedDate]);
 
   const today = moment().format('YYYY-MM-DD');
-  const markedClassDates = classDates ?? buildDemoClassDates(visibleMonth);
+  const markedClassDates = classDates ?? [];
   const classDateSet = new Set(markedClassDates);
 
   const markedDates: Record<string, any> = {};

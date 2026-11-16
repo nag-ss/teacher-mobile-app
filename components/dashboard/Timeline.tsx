@@ -17,6 +17,7 @@ import {
   TIME_GUTTER,
   formatHourLabel,
   minutesToY,
+  getForceClassDates,
   type ClassStatus,
   type TimelineEvent,
 } from '@/hooks/useTimeline';
@@ -399,6 +400,7 @@ const TimelineWithClassDetails = () => {
         visible={calendarOpen}
         selectedDate={date}
         anchor={calendarAnchor}
+        classDates={getForceClassDates()}
         onSelectDate={setDate}
         onClose={() => setCalendarOpen(false)}
         onPressToday={goToToday}
