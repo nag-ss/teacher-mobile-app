@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 type ActionItem = {
   id: string;
@@ -67,11 +67,16 @@ const ActionRequiredPanel = () => {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.ctaButton} activeOpacity={0.7}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.ctaButton,
+                  pressed && styles.ctaButtonPressed,
+                ]}
+              >
                 <Text style={styles.ctaText} numberOfLines={1}>
                   {item.cta}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           ))}
         </ScrollView>
@@ -231,6 +236,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
+  },
+  ctaButtonPressed: {
+    backgroundColor: '#F1EFEA',
   },
   ctaText: {
     fontSize: 12,

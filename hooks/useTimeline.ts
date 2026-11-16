@@ -214,8 +214,14 @@ const formatDayLabel = (dateStr: string) => {
   if (d.isSame(moment(), 'day')) return 'Today';
   if (d.isSame(moment().subtract(1, 'day'), 'day')) return 'Yesterday';
   if (d.isSame(moment().add(1, 'day'), 'day')) return 'Tomorrow';
-  return d.format('D MMM');
+  /** Calendar-picked dates: e.g. Wed 17 */
+  return d.format('ddd D');
 };
+
+/** Nav arrows only move among Yesterday / Today / Tomorrow. */
+const navYesterday = () => moment().subtract(1, 'day').format('YYYY-MM-DD');
+const navToday = () => moment().format('YYYY-MM-DD');
+const navTomorrow = () => moment().add(1, 'day').format('YYYY-MM-DD');
 
 /**
  * Timeline data + layout math: fetch schedule, clock, statuses, and event positions.
@@ -228,16 +234,31 @@ export const useTimeline = () => {
   const [now, setNow] = useState(moment());
   const [pxPerHour, setPxPerHour] = useState(DEFAULT_PX_PER_HOUR);
 
+  const canGoPrevDay = !moment(date).isSameOrBefore(navYesterday(), 'day');
+  const canGoNextDay = !moment(date).isSameOrAfter(navTomorrow(), 'day');
+
   const goPrevDay = useCallback(() => {
-    setDate((prev) => moment(prev).subtract(1, 'day').format('YYYY-MM-DD'));
+    setDate((prev) => {
+      const d = moment(prev);
+      const today = moment().startOf('day');
+      if (d.isAfter(today, 'day')) return navToday();
+      if (d.isSame(today, 'day')) return navYesterday();
+      return navYesterday();
+    });
   }, []);
 
   const goNextDay = useCallback(() => {
-    setDate((prev) => moment(prev).add(1, 'day').format('YYYY-MM-DD'));
+    setDate((prev) => {
+      const d = moment(prev);
+      const today = moment().startOf('day');
+      if (d.isBefore(today, 'day')) return navToday();
+      if (d.isSame(today, 'day')) return navTomorrow();
+      return navTomorrow();
+    });
   }, []);
 
   const goToToday = useCallback(() => {
-    setDate(moment().format('YYYY-MM-DD'));
+    setDate(navToday());
   }, []);
 
   useEffect(() => {
@@ -342,6 +363,8 @@ export const useTimeline = () => {
     goPrevDay,
     goNextDay,
     goToToday,
+    canGoPrevDay,
+    canGoNextDay,
     now,
     events,
     nowTop,

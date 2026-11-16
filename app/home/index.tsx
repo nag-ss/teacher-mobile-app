@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
@@ -81,19 +81,23 @@ const DashboardScreen = () => {
 
         <View style={styles.timelinePanel}>
           <View style={styles.topActions}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              activeOpacity={0.7}
+            <Pressable
+              style={({ pressed }) => [
+                styles.actionButton,
+                pressed && styles.actionButtonPressed,
+              ]}
               onPress={() => {}}
             >
               <View style={styles.actionIconBox}>
                 <SvgLoader svgFilePath="refreshIcon" width={20} height={20} />
               </View>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
-              style={styles.actionButton}
-              activeOpacity={0.7}
+            <Pressable
+              style={({ pressed }) => [
+                styles.actionButton,
+                pressed && styles.actionButtonPressed,
+              ]}
               onPress={() => setNotificationsOpen(true)}
             >
               <View style={styles.actionIconBox}>
@@ -103,7 +107,7 @@ const DashboardScreen = () => {
                   height={20}
                 />
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           <View style={styles.timelineCard}>
@@ -225,6 +229,9 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 1,
+  },
+  actionButtonPressed: {
+    backgroundColor: '#F1EFEA',
   },
   actionIconBox: {
     width: 20,

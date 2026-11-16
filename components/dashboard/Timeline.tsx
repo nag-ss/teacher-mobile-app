@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import moment from 'moment';
 import ClassPrep from './ClassPrep';
 import TimelineEventDetailModal, {
@@ -205,6 +205,8 @@ const TimelineWithClassDetails = () => {
     goPrevDay,
     goNextDay,
     goToToday,
+    canGoPrevDay,
+    canGoNextDay,
     now,
     events,
     nowTop,
@@ -250,31 +252,43 @@ const TimelineWithClassDetails = () => {
         </Text>
 
         <View style={styles.dayPill}>
-          <TouchableOpacity
-            style={styles.daySegment}
+          <Pressable
+            style={({ pressed }) => [
+              styles.daySegment,
+              canGoPrevDay && pressed && styles.daySegmentPressed,
+              !canGoPrevDay && styles.daySegmentDisabled,
+            ]}
             onPress={goPrevDay}
+            disabled={!canGoPrevDay}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <SvgLoader svgFilePath="notificationLeftArrow" width={7} height={10} />
-          </TouchableOpacity>
+          </Pressable>
           <View style={styles.dayDivider} />
           <View ref={dayLabelRef} collapsable={false}>
-            <TouchableOpacity
-              style={styles.dayLabelSegment}
+            <Pressable
+              style={({ pressed }) => [
+                styles.dayLabelSegment,
+                pressed && styles.daySegmentPressed,
+              ]}
               onPress={openCalendar}
-              activeOpacity={0.7}
             >
               <Text style={[text.title, styles.dayLabel]}>{dayLabel}</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           <View style={styles.dayDivider} />
-          <TouchableOpacity
-            style={styles.daySegment}
+          <Pressable
+            style={({ pressed }) => [
+              styles.daySegment,
+              canGoNextDay && pressed && styles.daySegmentPressed,
+              !canGoNextDay && styles.daySegmentDisabled,
+            ]}
             onPress={goNextDay}
+            disabled={!canGoNextDay}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <SvgLoader svgFilePath="notificationRightArrow" width={7} height={10} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
@@ -409,6 +423,12 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  daySegmentPressed: {
+    backgroundColor: '#F1EFEA',
+  },
+  daySegmentDisabled: {
+    opacity: 0.35,
   },
   dayDivider: {
     width: StyleSheet.hairlineWidth,
