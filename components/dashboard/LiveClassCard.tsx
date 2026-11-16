@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getLiveClass, getScheduleClasses, setUnAuth } from '@/store/classSlice';
 import moment from 'moment';
@@ -48,16 +48,50 @@ const getClassDetails = (c: any) => {
   };
 };
 
-const JoinButton = memo(({ onPress }: { onPress: () => void }) => (
-  <TouchableOpacity style={styles.joinButton} onPress={onPress} activeOpacity={0.8}>
-    <View style={styles.joinButtonInner}>
-      <Text style={styles.joinButtonText} numberOfLines={1}>
-        Join Class
-      </Text>
-      <SvgLoader svgFilePath="betaRightArrow" width={12} height={12} color="#FFFFFF" />
-    </View>
-  </TouchableOpacity>
-));
+const LIGHT_CTAS = new Set(['Open plan', 'Prep class']);
+
+const JoinButton = memo(
+  ({ onPress, label }: { onPress: () => void; label: string }) => {
+    const isLight = LIGHT_CTAS.has(label);
+    const inner = (
+      <View style={styles.joinButtonInner}>
+        <Text
+          style={[styles.joinButtonText, isLight && styles.joinButtonTextLight]}
+          numberOfLines={1}
+        >
+          {label}
+        </Text>
+        <SvgLoader
+          svgFilePath="betaRightArrow"
+          width={12}
+          height={12}
+          color={isLight ? '#1F1E1C' : '#FFFFFF'}
+        />
+      </View>
+    );
+
+    if (isLight) {
+      return (
+        <Pressable
+          onPress={onPress}
+          style={({ pressed }) => [
+            styles.joinButton,
+            styles.joinButtonLight,
+            pressed && styles.joinButtonPressed,
+          ]}
+        >
+          {inner}
+        </Pressable>
+      );
+    }
+
+    return (
+      <TouchableOpacity style={styles.joinButton} onPress={onPress} activeOpacity={1}>
+        {inner}
+      </TouchableOpacity>
+    );
+  }
+);
 
 type CardBodyProps = {
   activeClass: any;
@@ -69,6 +103,12 @@ const LiveCardBody = memo(({ activeClass, isPrepped, onJoin }: CardBodyProps) =>
   const gradeLabel = getGradeLabel(activeClass);
   const details = getClassDetails(activeClass);
   const subjectLabel = activeClass?.subject_name || details.title || 'Class';
+  const startsLater = moment(normalizeTime(activeClass.start_time), TIME_FMT).isAfter(moment());
+  const ctaLabel = startsLater
+    ? isPrepped
+      ? 'Open plan'
+      : 'Prep class'
+    : 'Join Class';
 
   return (
     <View style={styles.card}>
@@ -101,7 +141,7 @@ const LiveCardBody = memo(({ activeClass, isPrepped, onJoin }: CardBodyProps) =>
             <Text style={styles.topic} numberOfLines={1}>
               {details.topic}
             </Text>
-            <JoinButton onPress={onJoin} />
+            <JoinButton onPress={onJoin} label={ctaLabel} />
           </View>
         </View>
       </View>
@@ -179,9 +219,12 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   }, []);
 
   const onJoin = useCallback(() => {
-    if (isPrepped) navigateToMonitor();
-    else openClassPrep();
-  }, [isPrepped, navigateToMonitor, openClassPrep]);
+    const startsLater = moment(normalizeTime(activeClass?.start_time), TIME_FMT).isAfter(
+      moment()
+    );
+    if (!isPrepped || startsLater) openClassPrep();
+    else navigateToMonitor();
+  }, [activeClass?.start_time, isPrepped, navigateToMonitor, openClassPrep]);
 
   if (!activeClass) return null;
 
@@ -337,6 +380,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
+  joinButtonLight: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#EDEBE6',
+  },
+  joinButtonPressed: {
+    backgroundColor: '#F1EFEA',
+  },
   joinButtonInner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -349,6 +399,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
+  },
+  joinButtonTextLight: {
+    color: '#1F1E1C',
   },
 });
 
