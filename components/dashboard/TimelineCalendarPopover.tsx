@@ -72,8 +72,8 @@ const TimelineCalendarPopover = ({
     () => moment(selectedDate).format('YYYY-MM-DD')
   );
 
+  /** Reset on open and close so reopen always mounts on selected/running month. */
   useEffect(() => {
-    if (!visible) return;
     setVisibleMonth(moment(selectedDate).format('YYYY-MM-DD'));
   }, [visible, selectedDate]);
 
@@ -106,7 +106,7 @@ const TimelineCalendarPopover = ({
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={[styles.card, { top, left }]}>
           <Calendar
-            key={visible ? `open-${selectedDate}` : 'closed'}
+            key={`open-${selectedDate}`}
             current={visibleMonth}
             firstDay={1}
             markedDates={markedDates}

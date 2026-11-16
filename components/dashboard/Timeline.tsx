@@ -295,13 +295,7 @@ const TimelineWithClassDetails = () => {
           </Pressable>
           <View style={styles.dayDivider} />
           <View ref={dayLabelRef} collapsable={false}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.dayLabelSegment,
-                pressed && styles.daySegmentPressed,
-              ]}
-              onPress={openCalendar}
-            >
+            <Pressable style={styles.dayLabelSegment} onPress={openCalendar}>
               <Text style={[text.title, styles.dayLabel]} numberOfLines={1}>
                 {dayLabel}
               </Text>
