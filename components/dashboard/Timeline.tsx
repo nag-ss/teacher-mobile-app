@@ -261,11 +261,16 @@ const TimelineWithClassDetails = () => {
     closeDetail();
   };
 
-  const openCalendar = () => {
+  const refreshCalendarAnchor = () => {
     dayLabelRef.current?.measureInWindow((x, y, width, height) => {
       setCalendarAnchor({ x, y, width, height });
-      setCalendarOpen(true);
     });
+  };
+
+  /** Open immediately; anchor is kept warm via onLayout so there’s no measure wait. */
+  const openCalendar = () => {
+    setCalendarOpen(true);
+    refreshCalendarAnchor();
   };
 
   return (
@@ -294,7 +299,11 @@ const TimelineWithClassDetails = () => {
             />
           </Pressable>
           <View style={styles.dayDivider} />
-          <View ref={dayLabelRef} collapsable={false}>
+          <View
+            ref={dayLabelRef}
+            collapsable={false}
+            onLayout={refreshCalendarAnchor}
+          >
             <Pressable style={styles.dayLabelSegment} onPress={openCalendar}>
               <Text style={[text.title, styles.dayLabel]} numberOfLines={1}>
                 {dayLabel}

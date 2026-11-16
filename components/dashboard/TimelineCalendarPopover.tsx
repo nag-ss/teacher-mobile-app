@@ -86,7 +86,8 @@ const TimelineCalendarPopover = ({
     markedDates[d] = { marked: true };
   });
 
-  if (!visible || !anchor) return null;
+  // Keep Modal mounted (visible prop only) so reopen has no mount cost.
+  if (!anchor) return null;
 
   const preferredTop = anchor.y + anchor.height + POPUP_GAP;
   const top =
@@ -101,7 +102,12 @@ const TimelineCalendarPopover = ({
   }
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="none"
+      onRequestClose={onClose}
+    >
       <View style={styles.overlay}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={[styles.card, { top, left }]}>
