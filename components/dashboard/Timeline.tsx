@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import moment from 'moment';
 import ClassPrep from './ClassPrep';
 import TimelineEventDetailModal, {
@@ -200,13 +200,15 @@ const EventCard = ({
 
   return (
     <View ref={cardRef} style={shellStyle} collapsable={false}>
-      <TouchableOpacity
-        style={styles.eventPressable}
-        activeOpacity={0.75}
+      <Pressable
+        style={({ pressed }) => [
+          styles.eventPressable,
+          pressed && styles.eventCardPressed,
+        ]}
         onPress={handlePress}
       >
         {classBody}
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
@@ -529,11 +531,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 8,
   },
+  eventCardPressed: {
+    backgroundColor: '#F1EFEA',
+  },
   eventCardBreak: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 12,
+    backgroundColor: '#F5F4F0',
   },
   breakStripes: {
     ...StyleSheet.absoluteFillObject,
