@@ -27,7 +27,7 @@ const COLOR = {
   dot: '#B5B2AA',
 } as const;
 
-const CARD_WIDTH = 320;
+const CARD_WIDTH = 340;
 const CARD_HEIGHT_EST = 330;
 const SCREEN_PAD = 12;
 const POPUP_GAP = 8;
@@ -86,8 +86,7 @@ const TimelineCalendarPopover = ({
     markedDates[d] = { marked: true };
   });
 
-  // Keep Modal mounted (visible prop only) so reopen has no mount cost.
-  if (!anchor) return null;
+  if (!visible || !anchor) return null;
 
   const preferredTop = anchor.y + anchor.height + POPUP_GAP;
   const top =
@@ -102,12 +101,7 @@ const TimelineCalendarPopover = ({
   }
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-    >
+    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={[styles.card, { top, left }]}>
