@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     zIndex: 5,
-    transform: [{ translateY: -10 }],
+    transform: [{ translateY: -10 }, { translateX: -4 }],
   },
   nowPill: {
     backgroundColor: COLOR.ink,
