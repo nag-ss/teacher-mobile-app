@@ -9,12 +9,10 @@ import { logout } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
 import { getGradeLabel } from '@/utils/grade';
+import { FORCE_LIVE_CARD, buildDemoLiveClass } from '@/demoData/demoData';
 
 const REFRESH_MS = 300000;
 const TIME_FMT = 'HH:mm:ss';
-
-/** Temporary: always show the live card. */
-const FORCE_LIVE_CARD = true;
 
 function useIntervalApi(callback: () => void, delay: number) {
   const savedCallback = useRef(callback);
@@ -163,17 +161,7 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
 
     if (!FORCE_LIVE_CARD) return null;
 
-    return (
-      schedule[0] || {
-        class_schedule_id: 'force-live',
-        subject_name: 'Mathematics',
-        start_time: moment().format(TIME_FMT),
-        end_time: moment().add(45, 'minutes').format(TIME_FMT),
-        division_name: '10',
-        section_name: 'A',
-        class_details: [{ topic: 'Angle Identities' }],
-      }
-    );
+    return schedule[0] || buildDemoLiveClass();
   }, [isToday, schedule, liveClass]);
 
   const classScheduleId = activeClass?.class_schedule_id;

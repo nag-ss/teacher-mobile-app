@@ -1,34 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-
-type ActionItem = {
-  id: string;
-  subject: string;
-  body: string;
-  meta: string;
-  cta: string;
-};
-
-/** Preview items — replace with API data when wired. */
-const PREVIEW_ACTIONS: ActionItem[] = [
-  {
-    id: '1',
-    subject: 'Geometry VII-B',
-    body: ' reflection from yesterday',
-    meta: 'Mon 1:30 · 3 taps',
-    cta: 'Reflect',
-  },
-  {
-    id: '2',
-    subject: 'Trigonometry VII-A',
-    body: ' tomorrow 9:10 is unprepped',
-    meta: 'Plan written · starts on its own',
-    cta: 'Prep class',
-  },
-];
+import {
+  DEMO_ACTION_REQUIRED_ITEMS,
+  FORCE_ACTION_REQUIRED_UI,
+} from '@/demoData/demoData';
 
 const ActionRequiredPanel = () => {
-  const actions = PREVIEW_ACTIONS;
+  const actions = FORCE_ACTION_REQUIRED_UI ? DEMO_ACTION_REQUIRED_ITEMS : [];
   const hasActions = actions.length > 0;
 
   return (

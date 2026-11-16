@@ -17,10 +17,10 @@ import {
   TIME_GUTTER,
   formatHourLabel,
   minutesToY,
-  getForceClassDates,
   type ClassStatus,
   type TimelineEvent,
 } from '@/hooks/useTimeline';
+import { getForceClassDates } from '@/demoData/demoData';
 
 /** Tall cards keep 10; short (half-hour) cards use a tighter corner. */
 const cardRadius = (height: number) => (height < 40 ? 8 : 10);
