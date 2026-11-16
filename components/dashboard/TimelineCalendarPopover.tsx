@@ -32,7 +32,7 @@ const CARD_HEIGHT_EST = 330;
 const SCREEN_PAD = 12;
 const POPUP_GAP = 8;
 const POPUP_RIGHT_NUDGE = 40;
-const DAY_SIZE = 36;
+const DAY_SIZE = 40;
 
 export type CalendarAnchor = {
   x: number;
@@ -51,30 +51,31 @@ type Props = {
   visible: boolean;
   selectedDate: string;
   anchor: CalendarAnchor | null;
+  /** Dates with classes (YYYY-MM-DD). Falls back to weekday demo dots. */
+  classDates?: string[];
   onSelectDate: (date: string) => void;
   onClose: () => void;
   onPressToday: () => void;
 };
 
-const circleStyle = (filled: boolean) => ({
-  width: DAY_SIZE,
-  height: DAY_SIZE,
-  borderRadius: DAY_SIZE / 2,
-  alignItems: 'center' as const,
-  justifyContent: 'center' as const,
-  ...(filled
-    ? { backgroundColor: COLOR.ink }
-    : {
-        backgroundColor: 'transparent',
-        borderWidth: 1.5,
-        borderColor: COLOR.ink,
-      }),
-});
+/** Demo: weekdays in the visible month get class dots. */
+const buildDemoClassDates = (month: string) => {
+  const start = moment(month, 'YYYY-MM-DD').startOf('month');
+  const end = start.clone().endOf('month');
+  const dates: string[] = [];
+  const cursor = start.clone();
+  while (cursor.isSameOrBefore(end, 'day')) {
+    if (cursor.isoWeekday() <= 5) dates.push(cursor.format('YYYY-MM-DD'));
+    cursor.add(1, 'day');
+  }
+  return dates;
+};
 
 const TimelineCalendarPopover = ({
   visible,
   selectedDate,
   anchor,
+  classDates,
   onSelectDate,
   onClose,
   onPressToday,
@@ -90,23 +91,13 @@ const TimelineCalendarPopover = ({
   }, [visible, selectedDate]);
 
   const today = moment().format('YYYY-MM-DD');
+  const markedClassDates = classDates ?? buildDemoClassDates(visibleMonth);
+  const classDateSet = new Set(markedClassDates);
+
   const markedDates: Record<string, any> = {};
-
-  if (today !== selectedDate) {
-    markedDates[today] = {
-      customStyles: {
-        container: circleStyle(false),
-        text: { color: COLOR.ink, fontFamily: 'Inter_600SemiBold' },
-      },
-    };
-  }
-
-  markedDates[selectedDate] = {
-    customStyles: {
-      container: circleStyle(true),
-      text: { color: '#FFFFFF', fontFamily: 'Inter_600SemiBold' },
-    },
-  };
+  markedClassDates.forEach((d) => {
+    markedDates[d] = { marked: true };
+  });
 
   if (!visible || !anchor) return null;
 
@@ -131,7 +122,6 @@ const TimelineCalendarPopover = ({
             key={visible ? `open-${selectedDate}` : 'closed'}
             current={visibleMonth}
             firstDay={1}
-            markingType="custom"
             markedDates={markedDates}
             onDayPress={(day: CalendarDay) => {
               onSelectDate(day.dateString);
@@ -142,8 +132,59 @@ const TimelineCalendarPopover = ({
                 `${month.year}-${String(month.month).padStart(2, '0')}-01`
               );
             }}
+            dayComponent={({ date, state }: any) => {
+              const dateString = date?.dateString as string | undefined;
+              const isSelected = dateString === selectedDate;
+              const isToday = dateString === today;
+              const isDisabled = state === 'disabled';
+              const hasDot = !!dateString && classDateSet.has(dateString);
+
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.75}
+                  disabled={isDisabled || !dateString}
+                  onPress={() => {
+                    if (!dateString) return;
+                    onSelectDate(dateString);
+                    onClose();
+                  }}
+                  style={styles.dayHit}
+                >
+                  <View
+                    style={[
+                      styles.dayCircle,
+                      isToday && !isSelected && styles.dayToday,
+                      isSelected && styles.daySelected,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.dayNumber,
+                        isDisabled && styles.dayNumberDisabled,
+                        isSelected && styles.dayNumberSelected,
+                        (isToday || isSelected) && styles.dayNumberEmphasis,
+                      ]}
+                    >
+                      {date?.day}
+                    </Text>
+                    <View
+                      style={[
+                        styles.dayDot,
+                        !hasDot && styles.dayDotHidden,
+                        isSelected && hasDot && styles.dayDotOnSelected,
+                      ]}
+                    />
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
             renderArrow={(direction: 'left' | 'right') => (
-              <View style={styles.arrowBtn}>
+              <View
+                style={[
+                  styles.arrowBtn,
+                  direction === 'left' ? styles.arrowLeft : styles.arrowRight,
+                ]}
+              >
                 <SvgLoader
                   svgFilePath={
                     direction === 'left'
@@ -152,6 +193,7 @@ const TimelineCalendarPopover = ({
                   }
                   width={7}
                   height={10}
+                  color={COLOR.ink}
                 />
               </View>
             )}
@@ -165,8 +207,8 @@ const TimelineCalendarPopover = ({
               textDayFontFamily: 'Inter_500Medium',
               textMonthFontFamily: 'Inter_600SemiBold',
               textDayHeaderFontFamily: 'Inter_500Medium',
-              textDayFontSize: 14,
-              textMonthFontSize: 16,
+              textDayFontSize: 12,
+              textMonthFontSize: 14,
               textDayHeaderFontSize: 12,
               textDayStyle: { marginTop: 0, textAlign: 'center' },
               'stylesheet.calendar.header': {
@@ -174,8 +216,8 @@ const TimelineCalendarPopover = ({
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  paddingLeft: 4,
-                  paddingRight: 4,
+                  paddingLeft: 0,
+                  paddingRight: 0,
                   marginTop: 2,
                   marginBottom: 2,
                 },
@@ -192,14 +234,6 @@ const TimelineCalendarPopover = ({
                   fontSize: 12,
                   fontFamily: 'Inter_500Medium',
                   color: COLOR.mute,
-                },
-              },
-              'stylesheet.day.basic': {
-                base: {
-                  width: DAY_SIZE,
-                  height: DAY_SIZE,
-                  alignItems: 'center',
-                  justifyContent: 'center',
                 },
               },
               'stylesheet.calendar.main': {
@@ -253,7 +287,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLOR.hair,
     paddingTop: 4,
-    paddingBottom: 10,
+    paddingBottom: 16,
     paddingHorizontal: 12,
     shadowColor: '#1F1E1C',
     shadowOffset: { width: 0, height: 16 },
@@ -262,8 +296,8 @@ const styles = StyleSheet.create({
     elevation: 16,
   },
   arrowBtn: {
-    width: 28,
-    height: 28,
+    width: 32,
+    height: 32,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: COLOR.hair,
@@ -271,12 +305,72 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
+  arrowLeft: {
+    marginLeft: -6,
+  },
+  arrowRight: {
+    marginRight: -6,
+  },
+  dayHit: {
+    width: DAY_SIZE,
+    height: DAY_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayCircle: {
+    width: DAY_SIZE,
+    height: DAY_SIZE,
+    borderRadius: DAY_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 4,
+    paddingBottom: 5,
+    overflow: 'hidden',
+  },
+  dayToday: {
+    borderWidth: 1.5,
+    borderColor: COLOR.ink,
+    backgroundColor: 'transparent',
+  },
+  daySelected: {
+    backgroundColor: COLOR.ink,
+  },
+  dayNumber: {
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: 'Inter_500Medium',
+    color: COLOR.ink,
+    includeFontPadding: false,
+    textAlign: 'center',
+  },
+  dayNumberEmphasis: {
+    fontFamily: 'Inter_600SemiBold',
+  },
+  dayNumberSelected: {
+    color: '#FFFFFF',
+  },
+  dayNumberDisabled: {
+    color: '#C8C6BE',
+  },
+  dayDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
+    marginTop: 1,
+    backgroundColor: COLOR.dot,
+  },
+  dayDotHidden: {
+    backgroundColor: 'transparent',
+  },
+  dayDotOnSelected: {
+    backgroundColor: '#FFFFFF',
+  },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 12,
-    paddingTop: 10,
+    marginTop: 16,
+    paddingTop: 14,
     paddingHorizontal: 6,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: COLOR.hair,
