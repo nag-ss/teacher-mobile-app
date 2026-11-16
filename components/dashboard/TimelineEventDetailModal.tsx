@@ -17,10 +17,13 @@ const COLOR = {
   muted: '#8A8880',
   border: '#ECEAE4',
   reflect: '#9B7625',
+  done: '#1E4FA6',
 } as const;
 
 const CARD_WIDTH = 376;
 const CARD_HEIGHT = 300;
+/** No CTA button when reflection is already done. */
+const CARD_HEIGHT_DONE = 236;
 const POPUP_GAP = 8;
 const SCREEN_PAD = 12;
 /** Shift popup left over the time gutter + timeline card inset. */
@@ -88,8 +91,8 @@ const STATUS_FOOTER: Record<
     color: COLOR.ink,
   },
   done: {
-    text: () => 'Reflection complete',
-    color: COLOR.muted,
+    text: () => 'Reflected',
+    color: COLOR.done,
   },
 };
 
@@ -131,12 +134,24 @@ const TimelineEventDetailModal = ({
   const footer = event.status ? STATUS_FOOTER[event.status] : null;
   const actionLabel = event.status ? ACTION_LABEL[event.status] : undefined;
   const title = [event.title, event.grade].filter(Boolean).join(' · ');
-  const footerText = footer ? footer.text(event.grade) : null;
-  const footerColor = footer?.color ?? COLOR.muted;
+  const isDone = event.status === 'done';
+  const reflectedAt =
+    parseTime(event.raw?.reflected_at) ||
+    parseTime(event.raw?.reflection_time) ||
+    end;
+  const footerText = isDone
+    ? reflectedAt
+      ? `Reflected at ${reflectedAt.format('H:mm')}`
+      : 'Reflected'
+    : footer
+      ? footer.text(event.grade)
+      : null;
+  const footerColor = isDone ? COLOR.done : footer?.color ?? COLOR.muted;
+  const cardHeight = isDone ? CARD_HEIGHT_DONE : CARD_HEIGHT;
 
   const belowTop = anchor.y + anchor.height + POPUP_GAP;
-  const aboveTop = anchor.y - CARD_HEIGHT - POPUP_GAP;
-  const fitsBelow = belowTop + CARD_HEIGHT <= windowHeight - SCREEN_PAD;
+  const aboveTop = anchor.y - cardHeight - POPUP_GAP;
+  const fitsBelow = belowTop + cardHeight <= windowHeight - SCREEN_PAD;
   const top = fitsBelow ? belowTop : Math.max(SCREEN_PAD, aboveTop);
 
   let left = anchor.x - POPUP_LEFT_OFFSET;
@@ -154,7 +169,7 @@ const TimelineEventDetailModal = ({
     >
       <View style={styles.overlay}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
-        <View style={[styles.card, { top, left }]}>
+        <View style={[styles.card, { top, left, height: cardHeight }]}>
           <View style={styles.header}>
             <View style={styles.titleRow}>
               <SvgLoader svgFilePath="timelinePopup" width={16} height={16} />
@@ -183,7 +198,18 @@ const TimelineEventDetailModal = ({
 
           {footerText ? (
             <View style={styles.statusRow}>
-              <View style={[styles.statusDot, { backgroundColor: footerColor }]} />
+              {isDone ? (
+                <View style={styles.statusIcon}>
+                  <SvgLoader
+                    svgFilePath="liveCorrect"
+                    width={12}
+                    height={10}
+                    color={COLOR.done}
+                  />
+                </View>
+              ) : (
+                <View style={[styles.statusDot, { backgroundColor: footerColor }]} />
+              )}
               <Text
                 style={[styles.statusText, { color: footerColor }]}
                 numberOfLines={2}
@@ -220,7 +246,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     width: CARD_WIDTH,
-    height: CARD_HEIGHT,
     padding: 20,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
@@ -299,18 +324,25 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     flexDirection: 'row',
     alignItems: 'center',
-    height: 28,
-    paddingTop: 12,
+    marginTop: 12,
     gap: 6,
+  },
+  statusIcon: {
+    width: 12,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
   },
   statusDot: {
     width: 7,
     height: 7,
     borderRadius: 4,
+    flexShrink: 0,
   },
   statusText: {
+    flex: 1,
     flexShrink: 1,
-    height: 16,
     fontFamily: 'Inter_600SemiBold',
     fontSize: 12,
     lineHeight: 16,

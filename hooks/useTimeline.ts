@@ -32,6 +32,7 @@ const buildForceTimelineItems = (date: string) => [
     section_name: 'A',
     class_details: [{ Topic: 'Linear equations' }],
     is_reflected: true,
+    reflected_at: '09:05:00',
     force_status: 'done',
   },
   {
