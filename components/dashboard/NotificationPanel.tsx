@@ -6,6 +6,7 @@ import {
   Modal,
   Pressable,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -17,16 +18,129 @@ import Animated, {
 } from 'react-native-reanimated';
 import SvgLoader from '@/utils/SvgLoader';
 
-const PANEL_WIDTH = 476;
+const PANEL_WIDTH = 520;
 const DISMISS_DISTANCE = PANEL_WIDTH * 0.28;
 const DISMISS_VELOCITY = 800;
 const OPEN_MS = 280;
 const CLOSE_MS = 240;
 
+type NotificationIcon =
+  | 'notificationIconClock'
+  | 'notificationIconSparkle'
+  | 'notificationIconPeople'
+  | 'notificationIconCalendar';
+
+type TextPart = { text: string; bold?: boolean };
+
+type NotificationItem = {
+  id: string;
+  icon: NotificationIcon;
+  parts: TextPart[];
+  meta: string;
+  unread?: boolean;
+};
+
+const TODAY_ITEMS: NotificationItem[] = [
+  {
+    id: '1',
+    icon: 'notificationIconClock',
+    unread: true,
+    parts: [
+      { text: 'Reminder', bold: true },
+      { text: " · Trigonometry VII-A at 9:10 isn't prepped" },
+    ],
+    meta: '8:40 · 30 min before',
+  },
+  {
+    id: '2',
+    icon: 'notificationIconSparkle',
+    unread: true,
+    parts: [
+      { text: 'Quadratic Equations VIII-A', bold: true },
+      { text: ' plan is ready' },
+    ],
+    meta: '9:58',
+  },
+  {
+    id: '3',
+    icon: 'notificationIconPeople',
+    parts: [
+      { text: 'Dev Patel', bold: true },
+      { text: ' missed his third Notebook Check' },
+    ],
+    meta: '9:40 · VIII-B',
+  },
+  {
+    id: '4',
+    icon: 'notificationIconCalendar',
+    parts: [
+      { text: 'Dept meeting', bold: true },
+      { text: ' moved to 2:30' },
+    ],
+    meta: '8:30',
+  },
+];
+
+const YESTERDAY_ITEMS: NotificationItem[] = [
+  {
+    id: '5',
+    icon: 'notificationIconClock',
+    parts: [
+      { text: 'Reminder', bold: true },
+      { text: " · tomorrow's Trigonometry VII-A isn't prepped" },
+    ],
+    meta: 'Mon 6:00 pm · the evening before',
+  },
+];
+
 type NotificationPanelProps = {
   visible: boolean;
   onClose: () => void;
 };
+
+const NotificationRow = ({ item }: { item: NotificationItem }) => (
+  <View style={styles.item}>
+    <View style={styles.iconBox}>
+      {item.unread ? <View style={styles.unreadDot} /> : null}
+      <SvgLoader svgFilePath={item.icon} width={16} height={16} />
+    </View>
+
+    <View style={styles.itemContent}>
+      <Text style={styles.itemText}>
+        {item.parts.map((part, index) => (
+          <Text
+            key={`${item.id}-${index}`}
+            style={part.bold ? styles.itemTextBold : undefined}
+          >
+            {part.text}
+          </Text>
+        ))}
+      </Text>
+      <Text style={styles.itemMeta}>{item.meta}</Text>
+    </View>
+  </View>
+);
+
+const NotificationSection = ({
+  title,
+  items,
+  spaced,
+}: {
+  title: string;
+  items: NotificationItem[];
+  spaced?: boolean;
+}) => (
+  <View style={spaced ? styles.sectionSpaced : undefined}>
+    <Text style={styles.groupLabel}>{title}</Text>
+    <View style={styles.divider} />
+    {items.map((item, index) => (
+      <View key={item.id}>
+        {index > 0 ? <View style={styles.divider} /> : null}
+        <NotificationRow item={item} />
+      </View>
+    ))}
+  </View>
+);
 
 const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
   const [mounted, setMounted] = useState(false);
@@ -142,6 +256,16 @@ const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
                 />
               </TouchableOpacity>
             </View>
+
+            <ScrollView
+              style={styles.body}
+              contentContainerStyle={styles.bodyContent}
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+            >
+              <NotificationSection title="TODAY" items={TODAY_ITEMS} />
+              <NotificationSection title="YESTERDAY" items={YESTERDAY_ITEMS} spaced />
+            </ScrollView>
           </Animated.View>
         </GestureDetector>
       </GestureHandlerRootView>
@@ -198,6 +322,74 @@ const styles = StyleSheet.create({
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  body: {
+    flex: 1,
+  },
+  bodyContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+  },
+  groupLabel: {
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.6,
+    color: '#8A8880',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+    marginBottom: 8,
+  },
+  sectionSpaced: {
+    marginTop: 28,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    gap: 12,
+  },
+  unreadDot: {
+    position: 'absolute',
+    left: -16,
+    top: 18,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#1F1E1C',
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#EDEBE6',
+  },
+  iconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#F1EFEA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  itemContent: {
+    flex: 1,
+    minWidth: 0,
+    gap: 4,
+  },
+  itemText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  itemTextBold: {
+    fontFamily: 'Inter_700Bold',
+  },
+  itemMeta: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
   },
 });
 
