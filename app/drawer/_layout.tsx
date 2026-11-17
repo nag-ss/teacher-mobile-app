@@ -1,5 +1,6 @@
 import LogoutConfirmModal from '@/components/Modals/LogoutConfirmModal';
 import { logout } from '@/store/authSlice';
+import { closeNotifications } from '@/utils/notificationEvents';
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -31,7 +32,10 @@ export default function App() {
           <Sidebar
             navigation={navigation}
             currentRoute={currentRoute}
-            onLogoutPress={() => setShowLogoutModal(true)}
+            onLogoutPress={() => {
+              closeNotifications();
+              setShowLogoutModal(true);
+            }}
           />
           <View style={styles.content}>
             <Stack.Navigator

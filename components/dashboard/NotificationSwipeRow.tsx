@@ -1,4 +1,4 @@
-import React, { createContext, useContext, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { View, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -19,9 +19,6 @@ const COVER_MS = 280;
 const REVEAL_HOLD_MS = 40;
 const REVEAL_MS = 220;
 
-// The panel provides its own pan gesture here, so rows don't need a prop for it.
-export const PanelPanContext = createContext<ReturnType<typeof Gesture.Pan> | null>(null);
-
 type Props = {
   unread?: boolean;
   onMarkRead: () => void;
@@ -29,7 +26,6 @@ type Props = {
 };
 
 const NotificationSwipeRow = ({ unread, onMarkRead, children }: Props) => {
-  const panelPan = useContext(PanelPanContext);
   const x = useSharedValue(0); // row offset
   const fade = useSharedValue(0); // 1 = gray overlay fully covers the row
   const width = useSharedValue(500);
@@ -38,7 +34,6 @@ const NotificationSwipeRow = ({ unread, onMarkRead, children }: Props) => {
     .enabled(!!unread)
     .activeOffsetX(16)
     .failOffsetY([-20, 20])
-    .blocksExternalGesture(...(panelPan ? [panelPan] : []))
     .onUpdate((e) => {
       x.value = Math.max(0, Math.min(e.translationX, width.value));
     })

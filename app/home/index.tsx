@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, StyleSheet, Text, Pressable, DeviceEventEmitter } from 'react-native';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
 import Timeline from '@/components/dashboard/Timeline';
 import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import SvgLoader from '@/utils/SvgLoader';
+import { CLOSE_NOTIFICATIONS } from '@/utils/notificationEvents';
 import moment from 'moment';
 
 const getGreeting = () => {
@@ -30,6 +31,13 @@ const DashboardScreen = () => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [columnHeight, setColumnHeight] = useState(0);
   const hasNotifications = false;
+
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener(CLOSE_NOTIFICATIONS, () => {
+      setNotificationsOpen(false);
+    });
+    return () => sub.remove();
+  }, []);
   const mainBottomPad = Math.max(0, columnHeight - TIMELINE_CARD_BOTTOM);
   const greetingName = user?.first_name || 'Teacher';
   const selectedDate = moment().format('YYYY-MM-DD');

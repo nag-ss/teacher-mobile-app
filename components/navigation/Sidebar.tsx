@@ -6,6 +6,7 @@ import { DrawerNavigationProp } from '@react-navigation/drawer'; // Import navig
 import { RootDrawerParamList } from './types'; // Define your types for the drawer screens
 import LogoutConfirmModal from '@/components/Modals/LogoutConfirmModal';
 import { logout } from '@/store/authSlice';
+import { closeNotifications } from '@/utils/notificationEvents';
 import SvgLoader from '@/utils/SvgLoader';
 import { usePathname, useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
@@ -88,7 +89,10 @@ const CustomDrawerContent = () => {
 
       <TouchableOpacity 
         style={styles.iconItem} 
-        onPress={() => setShowLogoutModal(true)}>
+        onPress={() => {
+          closeNotifications();
+          setShowLogoutModal(true);
+        }}>
         <View style={[styles.submenuContent, pathname == '/Logout' ? styles.selectedMenu : {}]}>
             <Image  style={[styles.iconStyle, {width: 30, height: 30}]} source={require('../../assets/images/ss/logout-menu.png')} />
             <Text style={styles.menuText}>

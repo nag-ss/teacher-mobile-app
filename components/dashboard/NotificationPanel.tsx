@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -22,11 +22,9 @@ import {
   DEMO_NOTIFICATION_YESTERDAY,
   type NotificationDemoItem,
 } from '@/demoData/demoData';
-import NotificationSwipeRow, { PanelPanContext } from '@/components/dashboard/NotificationSwipeRow';
+import NotificationSwipeRow from '@/components/dashboard/NotificationSwipeRow';
 
 const PANEL_WIDTH = 500;
-const DISMISS_DISTANCE = PANEL_WIDTH * 0.28;
-const DISMISS_VELOCITY = 800;
 const OPEN_MS = 280;
 const CLOSE_MS = 240;
 
@@ -143,26 +141,13 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
       translateX.value = withTiming(0, ease(OPEN_MS));
       return;
     }
-    if (active) animateClose();
+    // Parent closed (e.g. logout) — unmount immediately so GH can't block the Modal.
+    if (active) {
+      translateX.value = PANEL_WIDTH;
+      setActive(false);
+      setExpandedId(null);
+    }
   }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const pan = useMemo(
-    () =>
-      Gesture.Pan()
-        .activeOffsetX(12)
-        .failOffsetY([-24, 24])
-        .onUpdate((e) => {
-          translateX.value = Math.max(0, e.translationX);
-        })
-        .onEnd((e) => {
-          if (e.translationX > DISMISS_DISTANCE || e.velocityX > DISMISS_VELOCITY) {
-            runOnJS(animateClose)();
-          } else {
-            translateX.value = withTiming(0, ease(200));
-          }
-        }),
-    [animateClose, translateX]
-  );
 
   const panelStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -172,8 +157,7 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
     opacity: 1 - Math.min(1, translateX.value / PANEL_WIDTH),
   }));
 
-  // Keep the host mounted for instant open, but unmount gesture/touch layers when
-  // closed so they can't steal taps from other modals (e.g. logout).
+  // Keep the host mounted for instant open, but unmount when fully closed.
   if (!active && !visible) {
     return null;
   }
@@ -185,54 +169,50 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
           <Pressable style={StyleSheet.absoluteFill} onPress={animateClose} />
         </Animated.View>
 
-        <PanelPanContext.Provider value={pan}>
-          <GestureDetector gesture={pan}>
-            <Animated.View style={[styles.panel, panelStyle]}>
-              <View style={styles.header}>
-                <View style={styles.headerText}>
-                  <Text style={styles.title}>Notifications</Text>
-                  <Text style={styles.subtitle}>Today and yesterday</Text>
-                </View>
+        <Animated.View style={[styles.panel, panelStyle]}>
+          <View style={styles.header}>
+            <View style={styles.headerText}>
+              <Text style={styles.title}>Notifications</Text>
+              <Text style={styles.subtitle}>Today and yesterday</Text>
+            </View>
 
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  activeOpacity={0.7}
-                  onPress={animateClose}
-                  hitSlop={8}
-                >
-                  <SvgLoader svgFilePath="timelinePopupClose" width={14} height={14} color={MUTED} />
-                </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.closeButton}
+              activeOpacity={0.7}
+              onPress={animateClose}
+              hitSlop={8}
+            >
+              <SvgLoader svgFilePath="timelinePopupClose" width={14} height={14} color={MUTED} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView
+            style={styles.body}
+            contentContainerStyle={styles.bodyContent}
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
+            {SECTIONS.map(({ title, items }, s) => (
+              <View key={title} style={s > 0 ? styles.sectionSpaced : undefined}>
+                <Text style={styles.groupLabel}>{title}</Text>
+                {(FORCE_NOTIFICATION_UI ? items : []).map((raw) => {
+                  const item = { ...raw, unread: raw.unread && !readIds.includes(raw.id) };
+                  return (
+                    <View key={item.id}>
+                      <View style={styles.divider} />
+                      <NotificationRow
+                        item={item}
+                        expanded={expandedId === item.id}
+                        onToggle={() => toggle(item.id)}
+                        onMarkRead={() => markRead(item.id)}
+                      />
+                    </View>
+                  );
+                })}
               </View>
-
-              <ScrollView
-                style={styles.body}
-                contentContainerStyle={styles.bodyContent}
-                showsVerticalScrollIndicator={false}
-                bounces={false}
-              >
-                {SECTIONS.map(({ title, items }, s) => (
-                  <View key={title} style={s > 0 ? styles.sectionSpaced : undefined}>
-                    <Text style={styles.groupLabel}>{title}</Text>
-                    {(FORCE_NOTIFICATION_UI ? items : []).map((raw) => {
-                      const item = { ...raw, unread: raw.unread && !readIds.includes(raw.id) };
-                      return (
-                        <View key={item.id}>
-                          <View style={styles.divider} />
-                          <NotificationRow
-                            item={item}
-                            expanded={expandedId === item.id}
-                            onToggle={() => toggle(item.id)}
-                            onMarkRead={() => markRead(item.id)}
-                          />
-                        </View>
-                      );
-                    })}
-                  </View>
-                ))}
-              </ScrollView>
-            </Animated.View>
-          </GestureDetector>
-        </PanelPanContext.Provider>
+            ))}
+          </ScrollView>
+        </Animated.View>
       </GestureHandlerRootView>
     </View>
   );
