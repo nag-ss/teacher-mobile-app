@@ -9,6 +9,7 @@ export const DEMO_UI = true;
 export const FORCE_LIVE_CARD = DEMO_UI;
 export const FORCE_ACTION_REQUIRED_UI = DEMO_UI;
 export const FORCE_TIMELINE_UI = DEMO_UI;
+export const FORCE_NOTIFICATION_UI = DEMO_UI;
 
 /* ─── Live class card ─────────────────────────────────────────────── */
 
@@ -49,6 +50,92 @@ export const DEMO_ACTION_REQUIRED_ITEMS: ActionRequiredDemoItem[] = [
     body: ' tomorrow 9:10 is unprepped',
     meta: 'Plan written · starts on its own',
     cta: 'Prep class',
+  },
+];
+
+/* ─── Notifications ───────────────────────────────────────────────── */
+
+export type NotificationType = 'reminder' | 'plan_ready' | 'student_alert' | 'meeting';
+
+export type NotificationTextPart = { text: string; bold?: boolean };
+
+export type NotificationStudentDetailStat = {
+  label: string;
+  value: string;
+};
+
+export type NotificationStudentDetail = {
+  summary: string;
+  lately: NotificationStudentDetailStat[];
+};
+
+export type NotificationDemoItem = {
+  id: string;
+  type: NotificationType;
+  parts: NotificationTextPart[];
+  meta: string;
+  unread?: boolean;
+  detail?: NotificationStudentDetail;
+};
+
+export const DEMO_NOTIFICATION_TODAY: NotificationDemoItem[] = [
+  {
+    id: '1',
+    type: 'reminder',
+    unread: true,
+    parts: [
+      { text: 'Reminder', bold: true },
+      { text: " · Trigonometry VII-A at 9:10 isn't prepped" },
+    ],
+    meta: '8:40 · 30 min before',
+  },
+  {
+    id: '2',
+    type: 'plan_ready',
+    unread: true,
+    parts: [
+      { text: 'Quadratic Equations VIII-A', bold: true },
+      { text: ' plan is ready' },
+    ],
+    meta: '9:58',
+  },
+  {
+    id: '3',
+    type: 'student_alert',
+    parts: [
+      { text: 'Dev Patel', bold: true },
+      { text: ' missed his third Notebook Check' },
+    ],
+    meta: '9:40 · VIII-B · Algebra',
+    detail: {
+      summary: 'Missed 3 Notebook Checks in a row · Algebra',
+      lately: [
+        { label: 'Last quiz', value: '2 / 6' },
+        { label: 'Understanding', value: '4.6 · down 0.8' },
+        { label: 'Notebook Checks', value: '1 of 4 met' },
+      ],
+    },
+  },
+  {
+    id: '4',
+    type: 'meeting',
+    parts: [
+      { text: 'Dept meeting', bold: true },
+      { text: ' moved to 2:30' },
+    ],
+    meta: '8:30',
+  },
+];
+
+export const DEMO_NOTIFICATION_YESTERDAY: NotificationDemoItem[] = [
+  {
+    id: '5',
+    type: 'reminder',
+    parts: [
+      { text: 'Reminder', bold: true },
+      { text: " · tomorrow's Trigonometry VII-A isn't prepped" },
+    ],
+    meta: 'Mon 6:00 pm · the evening before',
   },
 ];
 

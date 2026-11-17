@@ -17,8 +17,16 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import SvgLoader from '@/utils/SvgLoader';
+import {
+  FORCE_NOTIFICATION_UI,
+  DEMO_NOTIFICATION_TODAY,
+  DEMO_NOTIFICATION_YESTERDAY,
+  type NotificationType,
+  type NotificationDemoItem,
+  type NotificationStudentDetail,
+} from '@/demoData/demoData';
 
-const PANEL_WIDTH = 520;
+const PANEL_WIDTH = 500;
 const DISMISS_DISTANCE = PANEL_WIDTH * 0.28;
 const DISMISS_VELOCITY = 800;
 const OPEN_MS = 280;
@@ -30,94 +38,78 @@ type NotificationIcon =
   | 'notificationIconPeople'
   | 'notificationIconCalendar';
 
-type TextPart = { text: string; bold?: boolean };
-
-type NotificationItem = {
-  id: string;
-  icon: NotificationIcon;
-  parts: TextPart[];
-  meta: string;
-  unread?: boolean;
+const NOTIFICATION_ICON: Record<NotificationType, NotificationIcon> = {
+  reminder: 'notificationIconClock',
+  plan_ready: 'notificationIconSparkle',
+  student_alert: 'notificationIconPeople',
+  meeting: 'notificationIconCalendar',
 };
-
-const TODAY_ITEMS: NotificationItem[] = [
-  {
-    id: '1',
-    icon: 'notificationIconClock',
-    unread: true,
-    parts: [
-      { text: 'Reminder', bold: true },
-      { text: " · Trigonometry VII-A at 9:10 isn't prepped" },
-    ],
-    meta: '8:40 · 30 min before',
-  },
-  {
-    id: '2',
-    icon: 'notificationIconSparkle',
-    unread: true,
-    parts: [
-      { text: 'Quadratic Equations VIII-A', bold: true },
-      { text: ' plan is ready' },
-    ],
-    meta: '9:58',
-  },
-  {
-    id: '3',
-    icon: 'notificationIconPeople',
-    parts: [
-      { text: 'Dev Patel', bold: true },
-      { text: ' missed his third Notebook Check' },
-    ],
-    meta: '9:40 · VIII-B',
-  },
-  {
-    id: '4',
-    icon: 'notificationIconCalendar',
-    parts: [
-      { text: 'Dept meeting', bold: true },
-      { text: ' moved to 2:30' },
-    ],
-    meta: '8:30',
-  },
-];
-
-const YESTERDAY_ITEMS: NotificationItem[] = [
-  {
-    id: '5',
-    icon: 'notificationIconClock',
-    parts: [
-      { text: 'Reminder', bold: true },
-      { text: " · tomorrow's Trigonometry VII-A isn't prepped" },
-    ],
-    meta: 'Mon 6:00 pm · the evening before',
-  },
-];
 
 type NotificationPanelProps = {
   visible: boolean;
   onClose: () => void;
 };
 
-const NotificationRow = ({ item }: { item: NotificationItem }) => (
-  <View style={styles.item}>
-    <View style={styles.iconBox}>
-      {item.unread ? <View style={styles.unreadDot} /> : null}
-      <SvgLoader svgFilePath={item.icon} width={16} height={16} />
+const StudentAlertDetail = ({ detail }: { detail: NotificationStudentDetail }) => (
+  <View style={styles.detail}>
+    <Text style={styles.detailSummary}>{detail.summary}</Text>
+
+    <Text style={styles.detailLabel}>LATELY</Text>
+    {detail.lately.map((stat) => (
+      <View key={stat.label}>
+        <View style={styles.divider} />
+        <View style={styles.detailRow}>
+          <Text style={styles.detailRowLabel}>{stat.label}</Text>
+          <Text style={styles.detailRowValue}>{stat.value}</Text>
+        </View>
+      </View>
+    ))}
+  </View>
+);
+
+const NotificationRow = ({
+  item,
+  expanded,
+  onToggle,
+}: {
+  item: NotificationDemoItem;
+  expanded: boolean;
+  onToggle: () => void;
+}) => (
+  <View>
+    <View style={styles.item}>
+      <View style={styles.iconBox}>
+        {item.unread ? <View style={styles.unreadDot} /> : null}
+        <SvgLoader svgFilePath={NOTIFICATION_ICON[item.type]} width={16} height={16} />
+      </View>
+
+      <View style={styles.itemContent}>
+        <Text style={styles.itemText}>
+          {item.parts.map((part, index) => (
+            <Text
+              key={`${item.id}-${index}`}
+              style={part.bold ? styles.itemTextBold : undefined}
+            >
+              {part.text}
+            </Text>
+          ))}
+        </Text>
+        <Text style={styles.itemMeta}>{item.meta}</Text>
+      </View>
+
+      {item.detail ? (
+        <TouchableOpacity
+          style={[styles.downArrow, expanded && styles.downArrowOpen]}
+          activeOpacity={0.7}
+          onPress={onToggle}
+          hitSlop={8}
+        >
+          <SvgLoader svgFilePath="betaRightArrow" width={6} height={10} color="#1F1E1C" />
+        </TouchableOpacity>
+      ) : null}
     </View>
 
-    <View style={styles.itemContent}>
-      <Text style={styles.itemText}>
-        {item.parts.map((part, index) => (
-          <Text
-            key={`${item.id}-${index}`}
-            style={part.bold ? styles.itemTextBold : undefined}
-          >
-            {part.text}
-          </Text>
-        ))}
-      </Text>
-      <Text style={styles.itemMeta}>{item.meta}</Text>
-    </View>
+    {expanded && item.detail ? <StudentAlertDetail detail={item.detail} /> : null}
   </View>
 );
 
@@ -125,10 +117,14 @@ const NotificationSection = ({
   title,
   items,
   spaced,
+  expandedId,
+  onToggle,
 }: {
   title: string;
-  items: NotificationItem[];
+  items: NotificationDemoItem[];
   spaced?: boolean;
+  expandedId: string | null;
+  onToggle: (id: string) => void;
 }) => (
   <View style={spaced ? styles.sectionSpaced : undefined}>
     <Text style={styles.groupLabel}>{title}</Text>
@@ -136,7 +132,11 @@ const NotificationSection = ({
     {items.map((item, index) => (
       <View key={item.id}>
         {index > 0 ? <View style={styles.divider} /> : null}
-        <NotificationRow item={item} />
+        <NotificationRow
+          item={item}
+          expanded={expandedId === item.id}
+          onToggle={() => onToggle(item.id)}
+        />
       </View>
     ))}
   </View>
@@ -144,11 +144,17 @@ const NotificationSection = ({
 
 const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
   const [mounted, setMounted] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const translateX = useSharedValue(PANEL_WIDTH);
   const backdrop = useSharedValue(0);
 
+  const toggleExpanded = useCallback((id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  }, []);
+
   const handleClosed = useCallback(() => {
     setMounted(false);
+    setExpandedId(null);
     onClose();
   }, [onClose]);
 
@@ -263,8 +269,19 @@ const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
               showsVerticalScrollIndicator={false}
               bounces={false}
             >
-              <NotificationSection title="TODAY" items={TODAY_ITEMS} />
-              <NotificationSection title="YESTERDAY" items={YESTERDAY_ITEMS} spaced />
+              <NotificationSection
+                title="TODAY"
+                items={FORCE_NOTIFICATION_UI ? DEMO_NOTIFICATION_TODAY : []}
+                expandedId={expandedId}
+                onToggle={toggleExpanded}
+              />
+              <NotificationSection
+                title="YESTERDAY"
+                items={FORCE_NOTIFICATION_UI ? DEMO_NOTIFICATION_YESTERDAY : []}
+                spaced
+                expandedId={expandedId}
+                onToggle={toggleExpanded}
+              />
             </ScrollView>
           </Animated.View>
         </GestureDetector>
@@ -389,6 +406,56 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  downArrow: {
+    transform: [{ rotate: '90deg' }],
+  },
+  downArrowOpen: {
+    transform: [{ rotate: '270deg' }],
+  },
+  detail: {
+    paddingLeft: 56,
+    paddingBottom: 8,
+  },
+  detailLabel: {
+    marginTop: 20,
+    marginBottom: 8,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 0.6,
+    color: '#8A8880',
+    fontFamily: 'Inter_600SemiBold',
+    includeFontPadding: false,
+  },
+  detailSummary: {
+    marginTop: 14,
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    gap: 12,
+  },
+  detailRowLabel: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  detailRowValue: {
+    flexShrink: 0,
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#1F1E1C',
+    fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
   },
 });
