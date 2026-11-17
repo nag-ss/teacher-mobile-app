@@ -1,6 +1,14 @@
 import SvgLoader from '@/utils/SvgLoader';
 import React from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 type LogoutConfirmModalProps = {
   visible: boolean;
@@ -9,10 +17,25 @@ type LogoutConfirmModalProps = {
 };
 
 const LogoutConfirmModal = ({ visible, onCancel, onConfirm }: LogoutConfirmModalProps) => {
+  const { width, height } = useWindowDimensions();
+
   return (
-    <Modal animationType="fade" transparent visible={visible} onRequestClose={onCancel}>
-      <View style={styles.overlay}>
-        <View style={styles.dialog}>
+    <Modal
+      animationType="fade"
+      transparent
+      visible={visible}
+      statusBarTranslucent
+      presentationStyle="overFullScreen"
+      onRequestClose={onCancel}
+    >
+      <GestureHandlerRootView style={[styles.overlay, { width, height }]}>
+        <TouchableOpacity
+          style={StyleSheet.absoluteFill}
+          activeOpacity={1}
+          onPress={onCancel}
+        />
+
+        <View style={styles.dialog} pointerEvents="box-none">
           <View style={styles.iconBox}>
             <View style={styles.icon}>
               <SvgLoader svgFilePath="loginLogout" width={24} height={24} />
@@ -21,7 +44,8 @@ const LogoutConfirmModal = ({ visible, onCancel, onConfirm }: LogoutConfirmModal
 
           <Text style={styles.title}>Log out of Super Slate?</Text>
           <Text style={styles.body}>
-            You'll need your email and password to sign back in. Any unpublished class prep is saved automatically.
+            You'll need your email and password to sign back in. Any unpublished class prep is
+            saved automatically.
           </Text>
 
           <View style={styles.actions}>
@@ -37,27 +61,28 @@ const LogoutConfirmModal = ({ visible, onCancel, onConfirm }: LogoutConfirmModal
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 32,
     backgroundColor: 'rgba(26, 26, 26, 0.45)',
   },
   dialog: {
     width: 440,
+    maxWidth: '100%',
     minHeight: 316,
     padding: 32,
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     flexDirection: 'column',
     alignItems: 'flex-start',
+    zIndex: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.24,
@@ -69,9 +94,7 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 12,
     backgroundColor: '#FDF2F1',
-    padding: 0,
     marginBottom: 20,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -104,11 +127,9 @@ const styles = StyleSheet.create({
   cancelBtn: {
     width: 100,
     height: 48,
-    padding: 0,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#C8C6BE',
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -123,10 +144,8 @@ const styles = StyleSheet.create({
   logoutBtn: {
     width: 100,
     height: 48,
-    padding: 0,
     borderRadius: 12,
     backgroundColor: '#D65B44',
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },

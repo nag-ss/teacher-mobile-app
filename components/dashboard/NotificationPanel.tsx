@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  Modal,
   Pressable,
   TouchableOpacity,
   ScrollView,
@@ -21,10 +20,9 @@ import {
   FORCE_NOTIFICATION_UI,
   DEMO_NOTIFICATION_TODAY,
   DEMO_NOTIFICATION_YESTERDAY,
-  type NotificationType,
   type NotificationDemoItem,
-  type NotificationStudentDetail,
 } from '@/demoData/demoData';
+import NotificationSwipeRow, { PanelPanContext } from '@/components/dashboard/NotificationSwipeRow';
 
 const PANEL_WIDTH = 500;
 const DISMISS_DISTANCE = PANEL_WIDTH * 0.28;
@@ -32,128 +30,98 @@ const DISMISS_VELOCITY = 800;
 const OPEN_MS = 280;
 const CLOSE_MS = 240;
 
-type NotificationIcon =
-  | 'notificationIconClock'
-  | 'notificationIconSparkle'
-  | 'notificationIconPeople'
-  | 'notificationIconCalendar';
+const INK = '#1F1E1C';
+const MUTED = '#8A8880';
 
-const NOTIFICATION_ICON: Record<NotificationType, NotificationIcon> = {
+const ICONS = {
   reminder: 'notificationIconClock',
   plan_ready: 'notificationIconSparkle',
   student_alert: 'notificationIconPeople',
   meeting: 'notificationIconCalendar',
-};
+} as const;
 
-type NotificationPanelProps = {
-  visible: boolean;
-  onClose: () => void;
-};
+const SECTIONS = [
+  { title: 'TODAY', items: DEMO_NOTIFICATION_TODAY },
+  { title: 'YESTERDAY', items: DEMO_NOTIFICATION_YESTERDAY },
+];
 
-const StudentAlertDetail = ({ detail }: { detail: NotificationStudentDetail }) => (
-  <View style={styles.detail}>
-    <Text style={styles.detailSummary}>{detail.summary}</Text>
+const ease = (ms: number, easing = Easing.out(Easing.cubic)) => ({ duration: ms, easing });
 
-    <Text style={styles.detailLabel}>LATELY</Text>
-    {detail.lately.map((stat) => (
-      <View key={stat.label}>
-        <View style={styles.divider} />
-        <View style={styles.detailRow}>
-          <Text style={styles.detailRowLabel}>{stat.label}</Text>
-          <Text style={styles.detailRowValue}>{stat.value}</Text>
-        </View>
-      </View>
-    ))}
-  </View>
-);
-
-const NotificationRow = ({
-  item,
-  expanded,
-  onToggle,
-}: {
+type RowProps = {
   item: NotificationDemoItem;
   expanded: boolean;
   onToggle: () => void;
-}) => (
+  onMarkRead: () => void;
+};
+
+const NotificationRow = ({ item, expanded, onToggle, onMarkRead }: RowProps) => (
   <View>
-    <View style={styles.item}>
-      <View style={styles.iconBox}>
-        {item.unread ? <View style={styles.unreadDot} /> : null}
-        <SvgLoader svgFilePath={NOTIFICATION_ICON[item.type]} width={16} height={16} />
-      </View>
+    <NotificationSwipeRow unread={item.unread} onMarkRead={onMarkRead}>
+      {(dotStyle) => (
+        <View style={styles.item}>
+          <View style={styles.leading}>
+            {item.unread ? <Animated.View style={[styles.unreadDot, dotStyle]} /> : null}
+            <View style={styles.iconBox}>
+              <SvgLoader svgFilePath={ICONS[item.type]} width={16} height={16} />
+            </View>
+          </View>
 
-      <View style={styles.itemContent}>
-        <Text style={styles.itemText}>
-          {item.parts.map((part, index) => (
-            <Text
-              key={`${item.id}-${index}`}
-              style={part.bold ? styles.itemTextBold : undefined}
-            >
-              {part.text}
+          <View style={styles.itemContent}>
+            <Text style={styles.itemText}>
+              {item.parts.map((p, i) => (
+                <Text key={i} style={p.bold ? styles.itemTextBold : undefined}>
+                  {p.text}
+                </Text>
+              ))}
             </Text>
-          ))}
-        </Text>
-        <Text style={styles.itemMeta}>{item.meta}</Text>
+            <Text style={styles.itemMeta}>{item.meta}</Text>
+          </View>
+
+          {item.detail ? (
+            <TouchableOpacity
+              style={expanded ? styles.arrowOpen : styles.arrowClosed}
+              activeOpacity={0.7}
+              onPress={onToggle}
+              hitSlop={8}
+            >
+              <SvgLoader svgFilePath="betaRightArrow" width={6} height={10} color={INK} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      )}
+    </NotificationSwipeRow>
+
+    {expanded && item.detail ? (
+      <View style={styles.detail}>
+        <Text style={styles.detailSummary}>{item.detail.summary}</Text>
+        <Text style={styles.detailLabel}>LATELY</Text>
+        {item.detail.lately.map((s) => (
+          <View key={s.label}>
+            <View style={styles.divider} />
+            <View style={styles.detailRow}>
+              <Text style={styles.detailRowLabel}>{s.label}</Text>
+              <Text style={styles.detailRowValue}>{s.value}</Text>
+            </View>
+          </View>
+        ))}
       </View>
-
-      {item.detail ? (
-        <TouchableOpacity
-          style={[styles.downArrow, expanded && styles.downArrowOpen]}
-          activeOpacity={0.7}
-          onPress={onToggle}
-          hitSlop={8}
-        >
-          <SvgLoader svgFilePath="betaRightArrow" width={6} height={10} color="#1F1E1C" />
-        </TouchableOpacity>
-      ) : null}
-    </View>
-
-    {expanded && item.detail ? <StudentAlertDetail detail={item.detail} /> : null}
+    ) : null}
   </View>
 );
 
-const NotificationSection = ({
-  title,
-  items,
-  spaced,
-  expandedId,
-  onToggle,
-}: {
-  title: string;
-  items: NotificationDemoItem[];
-  spaced?: boolean;
-  expandedId: string | null;
-  onToggle: (id: string) => void;
-}) => (
-  <View style={spaced ? styles.sectionSpaced : undefined}>
-    <Text style={styles.groupLabel}>{title}</Text>
-    <View style={styles.divider} />
-    {items.map((item, index) => (
-      <View key={item.id}>
-        {index > 0 ? <View style={styles.divider} /> : null}
-        <NotificationRow
-          item={item}
-          expanded={expandedId === item.id}
-          onToggle={() => onToggle(item.id)}
-        />
-      </View>
-    ))}
-  </View>
-);
+type Props = { visible: boolean; onClose: () => void };
 
-const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
-  const [mounted, setMounted] = useState(false);
+const NotificationPanel = ({ visible, onClose }: Props) => {
+  const [active, setActive] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [readIds, setReadIds] = useState<string[]>([]);
   const translateX = useSharedValue(PANEL_WIDTH);
-  const backdrop = useSharedValue(0);
 
-  const toggleExpanded = useCallback((id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  }, []);
+  const toggle = (id: string) => setExpandedId((p) => (p === id ? null : id));
+  const markRead = (id: string) => setReadIds((p) => [...p, id]);
 
-  const handleClosed = useCallback(() => {
-    setMounted(false);
+  const finishClose = useCallback(() => {
+    setActive(false);
     setExpandedId(null);
     onClose();
   }, [onClose]);
@@ -161,136 +129,120 @@ const NotificationPanel = ({ visible, onClose }: NotificationPanelProps) => {
   const animateClose = useCallback(() => {
     translateX.value = withTiming(
       PANEL_WIDTH,
-      { duration: CLOSE_MS, easing: Easing.in(Easing.cubic) },
-      (finished) => {
-        if (finished) runOnJS(handleClosed)();
+      ease(CLOSE_MS, Easing.in(Easing.cubic)),
+      (done) => {
+        if (done) runOnJS(finishClose)();
       }
     );
-    backdrop.value = withTiming(0, {
-      duration: CLOSE_MS,
-      easing: Easing.in(Easing.cubic),
-    });
-  }, [backdrop, handleClosed, translateX]);
+  }, [finishClose, translateX]);
 
-  useEffect(() => {
+  // No Modal remount — overlay stays in the tree, so the slide starts on tap.
+  useLayoutEffect(() => {
     if (visible) {
-      setMounted(true);
-      translateX.value = PANEL_WIDTH;
-      backdrop.value = 0;
-      translateX.value = withTiming(0, {
-        duration: OPEN_MS,
-        easing: Easing.out(Easing.cubic),
-      });
-      backdrop.value = withTiming(1, {
-        duration: OPEN_MS,
-        easing: Easing.out(Easing.cubic),
-      });
+      setActive(true);
+      translateX.value = withTiming(0, ease(OPEN_MS));
       return;
     }
-
-    if (mounted) animateClose();
+    if (active) animateClose();
   }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pan = Gesture.Pan()
-    .activeOffsetX(12)
-    .failOffsetY([-24, 24])
-    .onUpdate((event) => {
-      const x = Math.max(0, event.translationX);
-      translateX.value = x;
-      backdrop.value = 1 - Math.min(1, x / PANEL_WIDTH);
-    })
-    .onEnd((event) => {
-      const shouldClose =
-        event.translationX > DISMISS_DISTANCE || event.velocityX > DISMISS_VELOCITY;
-
-      if (shouldClose) {
-        runOnJS(animateClose)();
-        return;
-      }
-
-      translateX.value = withTiming(0, {
-        duration: 200,
-        easing: Easing.out(Easing.cubic),
-      });
-      backdrop.value = withTiming(1, {
-        duration: 200,
-        easing: Easing.out(Easing.cubic),
-      });
-    });
+  const pan = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX(12)
+        .failOffsetY([-24, 24])
+        .onUpdate((e) => {
+          translateX.value = Math.max(0, e.translationX);
+        })
+        .onEnd((e) => {
+          if (e.translationX > DISMISS_DISTANCE || e.velocityX > DISMISS_VELOCITY) {
+            runOnJS(animateClose)();
+          } else {
+            translateX.value = withTiming(0, ease(200));
+          }
+        }),
+    [animateClose, translateX]
+  );
 
   const panelStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: backdrop.value,
+    opacity: 1 - Math.min(1, translateX.value / PANEL_WIDTH),
   }));
 
-  if (!mounted) return null;
+  // Keep the host mounted for instant open, but unmount gesture/touch layers when
+  // closed so they can't steal taps from other modals (e.g. logout).
+  if (!active && !visible) {
+    return null;
+  }
 
   return (
-    <Modal
-      visible={mounted}
-      transparent
-      animationType="none"
-      onRequestClose={animateClose}
-    >
+    <View style={styles.overlay} pointerEvents="auto">
       <GestureHandlerRootView style={styles.root}>
         <Animated.View style={[styles.backdrop, backdropStyle]}>
           <Pressable style={StyleSheet.absoluteFill} onPress={animateClose} />
         </Animated.View>
 
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[styles.panel, panelStyle]}>
-            <View style={styles.header}>
-              <View style={styles.headerText}>
-                <Text style={styles.title}>Notifications</Text>
-                <Text style={styles.subtitle}>Today and yesterday</Text>
+        <PanelPanContext.Provider value={pan}>
+          <GestureDetector gesture={pan}>
+            <Animated.View style={[styles.panel, panelStyle]}>
+              <View style={styles.header}>
+                <View style={styles.headerText}>
+                  <Text style={styles.title}>Notifications</Text>
+                  <Text style={styles.subtitle}>Today and yesterday</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  activeOpacity={0.7}
+                  onPress={animateClose}
+                  hitSlop={8}
+                >
+                  <SvgLoader svgFilePath="timelinePopupClose" width={14} height={14} color={MUTED} />
+                </TouchableOpacity>
               </View>
 
-              <TouchableOpacity
-                style={styles.closeButton}
-                activeOpacity={0.7}
-                onPress={animateClose}
-                hitSlop={8}
+              <ScrollView
+                style={styles.body}
+                contentContainerStyle={styles.bodyContent}
+                showsVerticalScrollIndicator={false}
+                bounces={false}
               >
-                <SvgLoader
-                  svgFilePath="timelinePopupClose"
-                  width={14}
-                  height={14}
-                  color="#8A8880"
-                />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView
-              style={styles.body}
-              contentContainerStyle={styles.bodyContent}
-              showsVerticalScrollIndicator={false}
-              bounces={false}
-            >
-              <NotificationSection
-                title="TODAY"
-                items={FORCE_NOTIFICATION_UI ? DEMO_NOTIFICATION_TODAY : []}
-                expandedId={expandedId}
-                onToggle={toggleExpanded}
-              />
-              <NotificationSection
-                title="YESTERDAY"
-                items={FORCE_NOTIFICATION_UI ? DEMO_NOTIFICATION_YESTERDAY : []}
-                spaced
-                expandedId={expandedId}
-                onToggle={toggleExpanded}
-              />
-            </ScrollView>
-          </Animated.View>
-        </GestureDetector>
+                {SECTIONS.map(({ title, items }, s) => (
+                  <View key={title} style={s > 0 ? styles.sectionSpaced : undefined}>
+                    <Text style={styles.groupLabel}>{title}</Text>
+                    {(FORCE_NOTIFICATION_UI ? items : []).map((raw) => {
+                      const item = { ...raw, unread: raw.unread && !readIds.includes(raw.id) };
+                      return (
+                        <View key={item.id}>
+                          <View style={styles.divider} />
+                          <NotificationRow
+                            item={item}
+                            expanded={expandedId === item.id}
+                            onToggle={() => toggle(item.id)}
+                            onMarkRead={() => markRead(item.id)}
+                          />
+                        </View>
+                      );
+                    })}
+                  </View>
+                ))}
+              </ScrollView>
+            </Animated.View>
+          </GestureDetector>
+        </PanelPanContext.Provider>
       </GestureHandlerRootView>
-    </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 100,
+  },
   root: {
     flex: 1,
   },
@@ -312,7 +264,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 28,
+    paddingTop: 18,
     paddingHorizontal: 24,
     paddingBottom: 20,
   },
@@ -323,14 +275,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     lineHeight: 28,
-    color: '#1F1E1C',
+    color: INK,
     fontFamily: 'Montserrat_700Bold',
     includeFontPadding: false,
   },
   subtitle: {
     fontSize: 12,
     lineHeight: 16,
-    color: '#8A8880',
+    color: MUTED,
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
   },
@@ -351,7 +303,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
-    color: '#8A8880',
+    color: MUTED,
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
     marginBottom: 8,
@@ -363,16 +315,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
+    paddingHorizontal: 24,
     gap: 12,
   },
+  leading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   unreadDot: {
-    position: 'absolute',
-    left: -16,
-    top: 18,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#1F1E1C',
+    marginLeft: -16,
+    marginRight: 8,
+    backgroundColor: INK,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
@@ -394,7 +350,7 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#1F1E1C',
+    color: INK,
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
   },
@@ -404,14 +360,14 @@ const styles = StyleSheet.create({
   itemMeta: {
     fontSize: 12,
     lineHeight: 16,
-    color: '#8A8880',
+    color: MUTED,
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
   },
-  downArrow: {
+  arrowClosed: {
     transform: [{ rotate: '90deg' }],
   },
-  downArrowOpen: {
+  arrowOpen: {
     transform: [{ rotate: '270deg' }],
   },
   detail: {
@@ -424,7 +380,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
     letterSpacing: 0.6,
-    color: '#8A8880',
+    color: MUTED,
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
   },
@@ -432,7 +388,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     fontSize: 14,
     lineHeight: 20,
-    color: '#1F1E1C',
+    color: INK,
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
   },
@@ -446,7 +402,7 @@ const styles = StyleSheet.create({
   detailRowLabel: {
     fontSize: 14,
     lineHeight: 20,
-    color: '#8A8880',
+    color: MUTED,
     fontFamily: 'Inter_400Regular',
     includeFontPadding: false,
   },
@@ -454,7 +410,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     fontSize: 14,
     lineHeight: 20,
-    color: '#1F1E1C',
+    color: INK,
     fontFamily: 'Inter_600SemiBold',
     includeFontPadding: false,
   },
