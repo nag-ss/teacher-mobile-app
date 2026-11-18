@@ -19,7 +19,8 @@ export const HOUR_SPAN = DAY_END_HOUR - DAY_START_HOUR;
 export const DEFAULT_PX_PER_HOUR = 60;
 export const LABEL_PAD_TOP = 10;
 export const LABEL_PAD_BOTTOM = 14;
-export const TIME_GUTTER = 52;
+/** Wide enough for zero-padded 24h labels (`08:00`). */
+export const TIME_GUTTER = 62;
 
 /** Visual gap between abutting cards (not part of the time scale). */
 const CARD_INSET = 4;
@@ -64,13 +65,9 @@ const parseTime = (raw?: string) => {
 const minutesFromDayStart = (m: moment.Moment) =>
   m.hours() * 60 + m.minutes() - DAY_START_HOUR * 60;
 
-export const formatHourLabel = (hour: number) => {
-  if (hour === 12) return '12';
-  if (hour === DAY_START_HOUR) return '8 am';
-  if (hour === 13) return '1 pm';
-  if (hour > 12) return String(hour - 12);
-  return String(hour);
-};
+/** 24-hour scale ticks, e.g. `08:00`, `13:00`. */
+export const formatHourLabel = (hour: number) =>
+  `${String(hour).padStart(2, '0')}:00`;
 
 const hasTopic = (item: any) =>
   Boolean(

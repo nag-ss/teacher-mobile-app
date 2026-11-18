@@ -374,7 +374,7 @@ const TimelineWithClassDetails = () => {
               <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
                 <View style={styles.nowPill}>
                   <Text style={[text.title, styles.nowPillText]}>
-                    {now.format('H:mm')}
+                    {now.format('HH:mm')}
                   </Text>
                 </View>
                 <View style={styles.nowLine} />
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
   },
   eventsLayer: {
     position: 'absolute',
-    left: TIME_GUTTER,
+    left: 56,
     right: 0,
   },
   cardBorder: {

@@ -315,9 +315,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   dayToday: {
-    borderWidth: 1.5,
-    borderColor: COLOR.ink,
-    backgroundColor: 'transparent',
+    backgroundColor: COLOR.soft,
   },
   daySelected: {
     backgroundColor: COLOR.ink,
