@@ -14,12 +14,12 @@ import {
   HOURS,
   DAY_START_HOUR,
   LABEL_PAD_TOP,
-  TIME_GUTTER,
   formatHourLabel,
   minutesToY,
   type ClassStatus,
   type TimelineEvent,
 } from '@/hooks/useTimeline';
+import { useTimelineResponsive } from '@/hooks/responsive/timelineResponsive';
 import { getForceClassDates } from '@/demoData/demoData';
 
 /** Tall cards keep 10; short (half-hour) cards use a tighter corner. */
@@ -214,6 +214,7 @@ const EventCard = ({
 };
 
 const TimelineWithClassDetails = () => {
+  const layout = useTimelineResponsive();
   const classPrepRef = useRef<any>();
   const dayLabelRef = useRef<View>(null);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
@@ -272,15 +273,23 @@ const TimelineWithClassDetails = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Text style={[text.section, styles.header]} numberOfLines={1}>
+      <View style={[styles.headerRow, { height: layout.headerHeight }]}>
+        <Text
+          style={[
+            text.section,
+            styles.header,
+            { fontSize: layout.sectionSize, lineHeight: layout.sectionSize + 8 },
+          ]}
+          numberOfLines={1}
+        >
           Your day
         </Text>
 
-        <View style={styles.dayPill}>
+        <View style={[styles.dayPill, { height: layout.headerHeight }]}>
           <Pressable
             style={({ pressed }) => [
               styles.daySegment,
+              { width: layout.daySegmentWidth },
               canGoPrevDay && pressed && styles.daySegmentPressed,
               !canGoPrevDay && styles.daySegmentDisabled,
             ]}
@@ -297,7 +306,10 @@ const TimelineWithClassDetails = () => {
           </Pressable>
           <View style={styles.dayDivider} />
           <View ref={dayLabelRef} collapsable={false}>
-            <Pressable style={styles.dayLabelSegment} onPress={openCalendar}>
+            <Pressable
+              style={[styles.dayLabelSegment, { width: layout.dayLabelWidth }]}
+              onPress={openCalendar}
+            >
               <Text style={[text.title, styles.dayLabel]} numberOfLines={1}>
                 {dayLabel}
               </Text>
@@ -307,6 +319,7 @@ const TimelineWithClassDetails = () => {
           <Pressable
             style={({ pressed }) => [
               styles.daySegment,
+              { width: layout.daySegmentWidth },
               canGoNextDay && pressed && styles.daySegmentPressed,
               !canGoNextDay && styles.daySegmentDisabled,
             ]}
@@ -348,7 +361,13 @@ const TimelineWithClassDetails = () => {
                 minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
               return (
                 <View key={hour} style={[styles.hourRow, { top }]}>
-                  <Text style={[text.meta, styles.hourLabel]}>
+                  <Text
+                    style={[
+                      text.meta,
+                      styles.hourLabel,
+                      { width: layout.timeGutter - 8 },
+                    ]}
+                  >
                     {formatHourLabel(hour)}
                   </Text>
                 </View>
@@ -358,7 +377,11 @@ const TimelineWithClassDetails = () => {
             <View
               style={[
                 styles.eventsLayer,
-                { top: LABEL_PAD_TOP, height: dayHeight },
+                {
+                  top: LABEL_PAD_TOP,
+                  height: dayHeight,
+                  left: layout.eventsLeft,
+                },
               ]}
             >
               {events.map((event) => (
@@ -452,7 +475,6 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   daySegment: {
-    width: 36,
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -469,7 +491,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.borderSoft,
   },
   dayLabelSegment: {
-    width: 104,
     height: '100%',
     paddingHorizontal: 8,
     justifyContent: 'center',
@@ -501,14 +522,12 @@ const styles = StyleSheet.create({
     marginTop: -8,
   },
   hourLabel: {
-    width: TIME_GUTTER - 8,
     lineHeight: 16,
     textAlign: 'right',
     paddingRight: 8,
   },
   eventsLayer: {
     position: 'absolute',
-    left: 56,
     right: 0,
   },
   cardBorder: {

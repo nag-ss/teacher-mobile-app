@@ -89,15 +89,35 @@ const DashboardScreen = () => {
           layout.isCompact && styles.mainContentCompact,
         ]}
       >
-        <View style={styles.pageHeader}>
+        <View style={[styles.pageHeader, { height: layout.headerHeight }]}>
           <View style={styles.greetingBlock}>
-            <View style={styles.greetingBox}>
-              <Text style={styles.title}>
+            <View style={[styles.greetingBox, { height: layout.titleLineHeight }]}>
+              <Text
+                style={[
+                  styles.title,
+                  {
+                    height: layout.titleLineHeight,
+                    fontSize: layout.titleSize,
+                    lineHeight: layout.titleLineHeight,
+                  },
+                ]}
+              >
                 {getGreeting()}, {greetingName}
               </Text>
             </View>
-            <View style={styles.dateBox}>
-              <Text style={styles.subTitle}>{dayProgressLabel}</Text>
+            <View style={[styles.dateBox, { height: layout.subtitleSize + 4 }]}>
+              <Text
+                style={[
+                  styles.subTitle,
+                  {
+                    height: layout.subtitleSize + 4,
+                    fontSize: layout.subtitleSize,
+                    lineHeight: layout.subtitleSize + 4,
+                  },
+                ]}
+              >
+                {dayProgressLabel}
+              </Text>
             </View>
           </View>
         </View>
@@ -122,33 +142,66 @@ const DashboardScreen = () => {
         <View
           style={[
             styles.topActions,
-            { marginBottom: layout.topActionsMarginBottom },
+            {
+              marginBottom: layout.topActionsMarginBottom,
+              gap: layout.actionButtonGap,
+            },
           ]}
         >
           <Pressable
             style={({ pressed }) => [
               styles.actionButton,
+              {
+                width: layout.actionButtonSize,
+                height: layout.actionButtonSize,
+                borderRadius: Math.round(layout.actionButtonSize * 0.27),
+              },
               pressed && styles.actionButtonPressed,
             ]}
             onPress={() => {}}
           >
-            <View style={styles.actionIconBox}>
-              <SvgLoader svgFilePath="refreshIcon" width={20} height={20} />
+            <View
+              style={[
+                styles.actionIconBox,
+                {
+                  width: layout.actionIconSize,
+                  height: layout.actionIconSize,
+                },
+              ]}
+            >
+              <SvgLoader
+                svgFilePath="refreshIcon"
+                width={layout.actionIconSize}
+                height={layout.actionIconSize}
+              />
             </View>
           </Pressable>
 
           <Pressable
             style={({ pressed }) => [
               styles.actionButton,
+              {
+                width: layout.actionButtonSize,
+                height: layout.actionButtonSize,
+                borderRadius: Math.round(layout.actionButtonSize * 0.27),
+              },
               pressed && styles.actionButtonPressed,
             ]}
             onPress={() => setNotificationsOpen(true)}
           >
-            <View style={styles.actionIconBox}>
+            <View
+              style={[
+                styles.actionIconBox,
+                {
+                  width: layout.actionIconSize,
+                  height: layout.actionIconSize,
+                },
+              ]}
+            >
               <SvgLoader
                 svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
-                width={20}
-                height={20}
+                width={layout.actionIconSize}
+                height={layout.actionIconSize}
               />
             </View>
           </Pressable>
@@ -226,7 +279,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     alignSelf: 'stretch',
     width: '100%',
-    height: 44,
     padding: 0,
     flexGrow: 0,
     flexShrink: 0,
@@ -239,23 +291,18 @@ const styles = StyleSheet.create({
     marginTop: -14,
   },
   greetingBox: {
-    height: 32,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
   dateBox: {
-    height: 16,
     flexGrow: 0,
     flexShrink: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
-    height: 32,
-    fontSize: 24,
-    lineHeight: 32,
     color: '#1F1E1C',
     fontFamily: 'Montserrat_700Bold',
     fontStyle: 'normal',
@@ -263,9 +310,6 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   },
   subTitle: {
-    height: 16,
-    fontSize: 12,
-    lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
     fontStyle: 'normal',
@@ -277,13 +321,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     alignSelf: 'stretch',
-    gap: 12,
     marginTop: -4,
   },
   actionButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
     padding: 0,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -296,8 +336,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1EFEA',
   },
   actionIconBox: {
-    width: 20,
-    height: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },

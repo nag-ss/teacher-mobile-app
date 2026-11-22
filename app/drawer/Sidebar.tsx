@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import SvgLoader from '@/utils/SvgLoader';
+import { useSidebarResponsive } from '@/hooks/responsive/sidebarResponsive';
 
 const menuItems = [
   { icon: 'sidebarHome', label: 'Home', route: 'Home' },
@@ -23,6 +24,7 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarProps) => {
+  const layout = useSidebarResponsive();
   const { user } = useSelector((state: any) => state.user);
 
   const isActive = (route: string) =>
@@ -31,10 +33,28 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
   const initials = getInitials(user?.first_name, user?.last_name);
 
   return (
-    <View style={styles.sidebar}>
+    <View
+      style={[
+        styles.sidebar,
+        {
+          width: layout.width,
+          paddingTop: layout.paddingTop,
+          paddingBottom: layout.paddingBottom,
+        },
+      ]}
+    >
       <View style={styles.topSection}>
-        <View style={styles.logoBox}>
-          <SvgLoader svgFilePath="sidebarLogo" width={48} height={48} />
+        <View
+          style={[
+            styles.logoBox,
+            { width: layout.logoSize, height: layout.logoSize, borderRadius: layout.logoSize / 2 },
+          ]}
+        >
+          <SvgLoader
+            svgFilePath="sidebarLogo"
+            width={layout.logoSize}
+            height={layout.logoSize}
+          />
         </View>
 
         <View style={styles.menu}>
@@ -44,7 +64,11 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
             return (
               <TouchableOpacity
                 key={item.label}
-                style={[styles.menuItem, active && styles.selectedMenu]}
+                style={[
+                  styles.menuItem,
+                  { width: layout.menuItemWidth, minHeight: layout.showLabels ? 56 : 44 },
+                  active && styles.selectedMenu,
+                ]}
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate(item.route)}
               >
@@ -56,18 +80,29 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
                     color={active ? '#FFFFFF' : '#8A8880'}
                   />
                 </View>
-                <Text
-                  style={[styles.menuLabel, active && styles.selectedLabel]}
-                  numberOfLines={1}
-                >
-                  {item.label}
-                </Text>
+                {layout.showLabels ? (
+                  <Text
+                    style={[styles.menuLabel, active && styles.selectedLabel]}
+                    numberOfLines={1}
+                  >
+                    {item.label}
+                  </Text>
+                ) : null}
               </TouchableOpacity>
             );
           })}
         </View>
 
-        <View style={styles.avatar}>
+        <View
+          style={[
+            styles.avatar,
+            {
+              width: layout.avatarSize,
+              height: layout.avatarSize,
+              borderRadius: layout.avatarSize / 2,
+            },
+          ]}
+        >
           <Text style={styles.avatarText} numberOfLines={1}>
             {initials}
           </Text>
@@ -75,7 +110,7 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
       </View>
 
       <TouchableOpacity
-        style={styles.logoutButton}
+        style={[styles.logoutButton, { width: layout.menuItemWidth }]}
         onPress={() => onLogoutPress?.()}
         activeOpacity={0.7}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -83,9 +118,11 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
         <View style={styles.logoutIconBox}>
           <SvgLoader svgFilePath="sidebarLogout" width={20} height={20} />
         </View>
-        <Text style={styles.logoutLabel} numberOfLines={1}>
-          Log Out
-        </Text>
+        {layout.showLabels ? (
+          <Text style={styles.logoutLabel} numberOfLines={1}>
+            Log Out
+          </Text>
+        ) : null}
       </TouchableOpacity>
     </View>
   );
@@ -98,11 +135,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 16,
-    paddingBottom: 24,
     paddingHorizontal: 0,
     gap: 24,
-    width: 104,
     alignSelf: 'stretch',
     backgroundColor: '#FFFFFF',
     flexGrow: 0,
@@ -114,9 +148,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   logoBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -134,8 +165,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 2,
     gap: 4,
-    width: 88,
-    minHeight: 56,
     flexGrow: 0,
     overflow: 'visible',
   },
@@ -166,9 +195,6 @@ const styles = StyleSheet.create({
     color: '#F6F5F1',
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
     backgroundColor: '#F1EFEA',
     alignItems: 'center',
     justifyContent: 'center',
@@ -192,7 +218,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    width: 96,
     paddingVertical: 8,
   },
   logoutIconBox: {

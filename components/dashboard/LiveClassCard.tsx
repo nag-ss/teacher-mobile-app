@@ -262,7 +262,6 @@ const styles = StyleSheet.create({
   card: {
     alignSelf: 'stretch',
     width: '100%',
-    /** Match ActionRequiredPanel so left text lines up with "Needs you". */
     paddingHorizontal: 24,
     paddingTop: 24,
     paddingBottom: 22,
