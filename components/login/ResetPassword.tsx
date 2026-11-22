@@ -136,18 +136,18 @@ const ResetPassword = ({
 
 const styles = StyleSheet.create({
   resetBox: {
-    width: 384,
-    maxWidth: '100%',
-    minWidth: 280,
+    width: '100%',
+    maxWidth: 384,
+    minWidth: 0,
     minHeight: 299,
     padding: 0,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
   confirmBox: {
-    width: 384,
-    maxWidth: '100%',
-    minWidth: 280,
+    width: '100%',
+    maxWidth: 384,
+    minWidth: 0,
     minHeight: 260,
     padding: 0,
     flexDirection: 'column',
