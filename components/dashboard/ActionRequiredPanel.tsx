@@ -5,12 +5,16 @@ import {
   FORCE_ACTION_REQUIRED_UI,
 } from '@/demoData/demoData';
 
-const ActionRequiredPanel = () => {
+type ActionRequiredPanelProps = {
+  minHeight?: number;
+};
+
+const ActionRequiredPanel = ({ minHeight = 360 }: ActionRequiredPanelProps) => {
   const actions = FORCE_ACTION_REQUIRED_UI ? DEMO_ACTION_REQUIRED_ITEMS : [];
   const hasActions = actions.length > 0;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { minHeight, width: '100%' }]}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>Needs you</Text>
@@ -69,20 +73,17 @@ const ActionRequiredPanel = () => {
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
     paddingTop: 20,
     paddingBottom: 8,
     paddingHorizontal: 24,
-    width: '100%',
-    height: 458,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
     borderRadius: 20,
     alignSelf: 'stretch',
-    flexGrow: 0,
-    marginTop: 'auto',
   },
   header: {
     flexDirection: 'column',

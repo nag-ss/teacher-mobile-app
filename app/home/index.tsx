@@ -1,5 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Text, Pressable, DeviceEventEmitter } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  DeviceEventEmitter,
+  ScrollView,
+} from 'react-native';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
@@ -7,6 +14,7 @@ import Timeline from '@/components/dashboard/Timeline';
 import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import SvgLoader from '@/utils/SvgLoader';
 import { CLOSE_NOTIFICATIONS } from '@/utils/notificationEvents';
+import { useHomeResponsive } from '@/hooks/responsive/homeResponsive';
 import moment from 'moment';
 
 const getGreeting = () => {
@@ -22,14 +30,11 @@ const parseTime = (value?: string) => {
   return parsed.isValid() ? parsed : null;
 };
 
-/** timelinePanel paddingTop + topActions (-14 + 44 + 26) + timelineCard height */
-const TIMELINE_CARD_BOTTOM = 24 + 56 + 650;
-
 const DashboardScreen = () => {
+  const layout = useHomeResponsive();
   const { user } = useSelector((state: any) => state.user);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [columnHeight, setColumnHeight] = useState(0);
   const hasNotifications = false;
 
   useEffect(() => {
@@ -38,7 +43,7 @@ const DashboardScreen = () => {
     });
     return () => sub.remove();
   }, []);
-  const mainBottomPad = Math.max(0, columnHeight - TIMELINE_CARD_BOTTOM);
+
   const greetingName = user?.first_name || 'Teacher';
   const selectedDate = moment().format('YYYY-MM-DD');
   const dateLabel = moment(selectedDate).format('dddd, D MMMM');
@@ -63,68 +68,119 @@ const DashboardScreen = () => {
     return `${dateLabel} · ${done} of ${total} classes done`;
   }, [classTimeline, dateLabel, selectedDate]);
 
-  return (
-    <View style={styles.screen}>
+  const body = (
+    <View
+      style={[
+        styles.container,
+        layout.isCompact && styles.containerCompact,
+      ]}
+    >
       <View
-        style={styles.container}
-        onLayout={(e) => setColumnHeight(e.nativeEvent.layout.height)}
+        style={[
+          styles.mainContent,
+          {
+            flex: layout.mainFlex,
+            gap: layout.gap,
+            paddingTop: layout.paddingTop,
+            paddingBottom: layout.paddingBottom,
+            paddingLeft: layout.paddingHorizontal,
+            paddingRight: layout.paddingHorizontal,
+          },
+          layout.isCompact && styles.mainContentCompact,
+        ]}
       >
-        <View style={[styles.mainContent, { paddingBottom: mainBottomPad }]}>
-          <View style={styles.pageHeader}>
-            <View style={styles.greetingBlock}>
-              <View style={styles.greetingBox}>
-                <Text style={styles.title}>
-                  {getGreeting()}, {greetingName}
-                </Text>
-              </View>
-              <View style={styles.dateBox}>
-                <Text style={styles.subTitle}>{dayProgressLabel}</Text>
-              </View>
+        <View style={styles.pageHeader}>
+          <View style={styles.greetingBlock}>
+            <View style={styles.greetingBox}>
+              <Text style={styles.title}>
+                {getGreeting()}, {greetingName}
+              </Text>
+            </View>
+            <View style={styles.dateBox}>
+              <Text style={styles.subTitle}>{dayProgressLabel}</Text>
             </View>
           </View>
-
-          <LiveClassCard selectedDate={selectedDate} />
-          <ActionRequiredPanel />
         </View>
 
-        <View style={styles.timelinePanel}>
-          <View style={styles.topActions}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed,
-              ]}
-              onPress={() => {}}
-            >
-              <View style={styles.actionIconBox}>
-                <SvgLoader svgFilePath="refreshIcon" width={20} height={20} />
-              </View>
-            </Pressable>
+        <LiveClassCard selectedDate={selectedDate} />
+        <ActionRequiredPanel minHeight={layout.actionMinHeight} />
+      </View>
 
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed,
-              ]}
-              onPress={() => setNotificationsOpen(true)}
-            >
-              <View style={styles.actionIconBox}>
-                <SvgLoader
-                  svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
-                  width={20}
-                  height={20}
-                />
-              </View>
-            </Pressable>
-          </View>
-
-          <View style={styles.timelineCard}>
-            <View style={styles.timelineMargin}>
-              <Timeline />
+      <View
+        style={[
+          styles.timelinePanel,
+          {
+            flex: layout.timelineFlex,
+            paddingTop: layout.paddingTop,
+            paddingBottom: layout.paddingBottom,
+            paddingRight: layout.paddingRight,
+            paddingLeft: layout.isCompact ? layout.paddingHorizontal : 0,
+          },
+          layout.isCompact && styles.timelinePanelCompact,
+        ]}
+      >
+        <View
+          style={[
+            styles.topActions,
+            { marginBottom: layout.topActionsMarginBottom },
+          ]}
+        >
+          <Pressable
+            style={({ pressed }) => [
+              styles.actionButton,
+              pressed && styles.actionButtonPressed,
+            ]}
+            onPress={() => {}}
+          >
+            <View style={styles.actionIconBox}>
+              <SvgLoader svgFilePath="refreshIcon" width={20} height={20} />
             </View>
+          </Pressable>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.actionButton,
+              pressed && styles.actionButtonPressed,
+            ]}
+            onPress={() => setNotificationsOpen(true)}
+          >
+            <View style={styles.actionIconBox}>
+              <SvgLoader
+                svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
+                width={20}
+                height={20}
+              />
+            </View>
+          </Pressable>
+        </View>
+
+        <View
+          style={[
+            styles.timelineCard,
+            layout.isCompact && { minHeight: layout.timelineMinHeight },
+          ]}
+        >
+          <View style={styles.timelineMargin}>
+            <Timeline />
           </View>
         </View>
       </View>
+    </View>
+  );
+
+  return (
+    <View style={styles.screen}>
+      {layout.isCompact ? (
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {body}
+        </ScrollView>
+      ) : (
+        body
+      )}
 
       <NotificationPanel
         visible={notificationsOpen}
@@ -141,24 +197,28 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     flexDirection: 'row',
     backgroundColor: '#E4E2DC',
   },
+  containerCompact: {
+    flexDirection: 'column',
+  },
   mainContent: {
-    /** Share row with timeline (~Figma 664:476) so both cards grow. */
-    flex: 664,
     minWidth: 0,
     flexDirection: 'column',
     alignItems: 'stretch',
-    paddingTop: 24,
-    /** Equal left / center / right gutters. */
-    paddingLeft: 16,
-    paddingRight: 16,
-    /** Bottom pad is set to align ActionRequiredPanel with timeline card bottom. */
-    gap: 12,
     backgroundColor: '#E4E2DC',
+  },
+  mainContentCompact: {
+    flexGrow: 0,
   },
   pageHeader: {
     flexDirection: 'row',
@@ -219,7 +279,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     gap: 12,
     marginTop: -4,
-    marginBottom: 16,
   },
   actionButton: {
     width: 44,
@@ -243,27 +302,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   timelinePanel: {
-    flex: 476,
     minWidth: 0,
     alignSelf: 'stretch',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    paddingTop: 24,
-    paddingRight: 16,
     backgroundColor: '#E4E2DC',
+  },
+  timelinePanelCompact: {
+    flexGrow: 0,
   },
   timelineCard: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    /** Align "Your day" with live card time row. */
     paddingTop: 14,
     paddingRight: 20,
     paddingBottom: 20,
     paddingLeft: 16,
     width: '100%',
     minHeight: 0,
-    maxHeight: 650,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#EDEBE6',
@@ -274,10 +331,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch',
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
     width: '100%',
     minHeight: 0,
     alignSelf: 'stretch',
