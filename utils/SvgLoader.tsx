@@ -46,6 +46,7 @@ const svgAssets = {
   betaRightArrow: require('../assets/beta_images/right_arrow.svg'),
   timelinePopup: require('../assets/beta_images/timeline_popup.svg'),
   timelinePopupClose: require('../assets/beta_images/close.svg'),
+  offline: require('../assets/beta_images/offline.svg'),
 };
 
 interface SvgLoaderProps {

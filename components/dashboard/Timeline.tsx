@@ -1,9 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { useDispatch } from 'react-redux';
 import moment from 'moment';
 import ClassPrep from './ClassPrep';
-import CouldNotLoadState from './CouldNotLoadState';
 import TimelineEventDetailModal, {
   type PopupAnchor,
 } from './TimelineEventDetailModal';
@@ -23,8 +21,6 @@ import {
   type TimelineEvent,
 } from '@/hooks/useTimeline';
 import { getForceClassDates } from '@/demoData/demoData';
-import { getScheduleClasses } from '@/store/classSlice';
-import { useIsOffline } from '@/hooks/useIsOffline';
 
 /** Tall cards keep 10; short (half-hour) cards use a tighter corner. */
 const cardRadius = (height: number) => (height < 40 ? 8 : 10);
@@ -218,8 +214,6 @@ const EventCard = ({
 };
 
 const TimelineWithClassDetails = () => {
-  const dispatch = useDispatch<any>();
-  const isOffline = useIsOffline();
   const classPrepRef = useRef<any>();
   const dayLabelRef = useRef<View>(null);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
@@ -248,10 +242,6 @@ const TimelineWithClassDetails = () => {
     onGridLayout,
   } = useTimeline();
 
-  const handleRetry = useCallback(() => {
-    dispatch(getScheduleClasses({ date } as any));
-  }, [dispatch, date]);
-
   const openDetail = (event: TimelineEvent, anchor: PopupAnchor) => {
     setSelectedEvent(event);
     setPopupAnchor(anchor);
@@ -279,14 +269,6 @@ const TimelineWithClassDetails = () => {
       setCalendarOpen(true);
     });
   };
-
-  if (isOffline) {
-    return (
-      <View style={styles.container}>
-        <CouldNotLoadState onRetry={handleRetry} />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>

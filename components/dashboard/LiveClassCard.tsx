@@ -8,10 +8,8 @@ import { setClassId, setSelectedTask } from '@/store/liveMonitoringSlice';
 import { logout } from '@/store/authSlice';
 import SvgLoader from '@/utils/SvgLoader';
 import ClassPrep from './ClassPrep';
-import CouldNotLoadState from './CouldNotLoadState';
 import { getGradeLabel } from '@/utils/grade';
 import { FORCE_LIVE_CARD, buildDemoLiveClass } from '@/demoData/demoData';
-import { useIsOffline } from '@/hooks/useIsOffline';
 
 const REFRESH_MS = 300000;
 const TIME_FMT = 'HH:mm:ss';
@@ -155,7 +153,6 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
   const dispatch = useDispatch<any>();
   const navigation = useNavigation<any>();
   const classPrepRef = useRef<any>(null);
-  const isOffline = useIsOffline();
 
   const liveClass = useSelector((state: any) => state.classes.liveClass);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
@@ -229,16 +226,6 @@ const LiveSessionCard = ({ selectedDate }: { selectedDate?: string }) => {
     else navigateToMonitor();
   }, [activeClass?.start_time, isPrepped, navigateToMonitor, openClassPrep]);
 
-  if (isOffline) {
-    return (
-      <View style={styles.wrap}>
-        <View style={[styles.card, styles.cardLiveHeight]}>
-          <CouldNotLoadState onRetry={refreshAll} compact />
-        </View>
-      </View>
-    );
-  }
-
   if (!activeClass) return null;
 
   return (
@@ -284,11 +271,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#EDEBE6',
     overflow: 'hidden',
-  },
-  /** Same footprint as LIVE NOW (join CTA has marginTop -16). */
-  cardLiveHeight: {
-    height: 24 + 17 + 16 + 17 + 6 + 39 + 6 + 24 + 22,
-    justifyContent: 'center',
   },
   content: {
     gap: 16,

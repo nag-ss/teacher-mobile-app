@@ -1,32 +1,13 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { useDispatch } from 'react-redux';
-import moment from 'moment';
 import {
   DEMO_ACTION_REQUIRED_ITEMS,
   FORCE_ACTION_REQUIRED_UI,
 } from '@/demoData/demoData';
-import { getScheduleClasses } from '@/store/classSlice';
-import { useIsOffline } from '@/hooks/useIsOffline';
-import CouldNotLoadState from './CouldNotLoadState';
 
 const ActionRequiredPanel = () => {
-  const dispatch = useDispatch<any>();
-  const isOffline = useIsOffline();
   const actions = FORCE_ACTION_REQUIRED_UI ? DEMO_ACTION_REQUIRED_ITEMS : [];
   const hasActions = actions.length > 0;
-
-  const handleRetry = useCallback(() => {
-    dispatch(getScheduleClasses({ date: moment().format('YYYY-MM-DD') } as any));
-  }, [dispatch]);
-
-  if (isOffline) {
-    return (
-      <View style={styles.card}>
-        <CouldNotLoadState onRetry={handleRetry} />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.card}>

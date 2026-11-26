@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, Text, Pressable, DeviceEventEmitter } from 'react-native';
+import { SvgXml } from 'react-native-svg';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
@@ -7,7 +8,15 @@ import Timeline from '@/components/dashboard/Timeline';
 import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import SvgLoader from '@/utils/SvgLoader';
 import { CLOSE_NOTIFICATIONS } from '@/utils/notificationEvents';
+import { useIsOffline } from '@/hooks/useIsOffline';
 import moment from 'moment';
+
+/** From assets/beta_images/offline.svg — SvgXml keeps stroke color reliable. */
+const OFFLINE_ICON_XML = `
+<svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0.583984 0.582031L12.2507 12.2487M4.37565 9.04036C4.92086 8.50595 5.65387 8.20661 6.41732 8.20661C7.18076 8.20661 7.91377 8.50595 8.45898 9.04036M2.33398 6.9987C3.12605 6.18137 4.13991 5.61361 5.25065 5.36536M10.5007 6.9987C10.1534 6.63886 9.76127 6.32518 9.33398 6.06536M6.41732 11.082H6.42315" stroke="#87590A" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -28,6 +37,7 @@ const TIMELINE_CARD_BOTTOM = 24 + 56 + 650;
 const DashboardScreen = () => {
   const { user } = useSelector((state: any) => state.user);
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
+  const isOffline = useIsOffline();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [columnHeight, setColumnHeight] = useState(0);
   const hasNotifications = false;
@@ -38,6 +48,7 @@ const DashboardScreen = () => {
     });
     return () => sub.remove();
   }, []);
+
   const mainBottomPad = Math.max(0, columnHeight - TIMELINE_CARD_BOTTOM);
   const greetingName = user?.first_name || 'Teacher';
   const selectedDate = moment().format('YYYY-MM-DD');
@@ -77,8 +88,20 @@ const DashboardScreen = () => {
                   {getGreeting()}, {greetingName}
                 </Text>
               </View>
-              <View style={styles.dateBox}>
-                <Text style={styles.subTitle}>{dayProgressLabel}</Text>
+              <View style={styles.metaRow}>
+                <Text style={styles.subTitle} numberOfLines={1}>
+                  {dayProgressLabel}
+                </Text>
+                {isOffline ? (
+                  <View style={styles.offlineBadge}>
+                    <View style={styles.offlineIcon}>
+                      <SvgXml xml={OFFLINE_ICON_XML} width={14} height={14} />
+                    </View>
+                    <Text style={styles.offlineText} numberOfLines={1}>
+                      Offline
+                    </Text>
+                  </View>
+                ) : null}
               </View>
             </View>
           </View>
@@ -185,12 +208,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  dateBox: {
-    height: 16,
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
+  metaRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 12,
+    minHeight: 16,
+    flexGrow: 0,
+    flexShrink: 1,
   },
   title: {
     height: 32,
@@ -208,6 +233,30 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
+    fontStyle: 'normal',
+    includeFontPadding: false,
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  offlineBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  offlineIcon: {
+    width: 14,
+    height: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  offlineText: {
+    height: 16,
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#87590A',
+    fontFamily: 'Inter_600SemiBold',
     fontStyle: 'normal',
     includeFontPadding: false,
     flexGrow: 0,
