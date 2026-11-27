@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Text, Pressable, DeviceEventEmitter } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, DeviceEventEmitter } from 'react-native';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
@@ -16,21 +16,13 @@ const getGreeting = () => {
   return 'Good evening';
 };
 
-const parseTime = (value?: string) => {
-  if (!value) return null;
-  const parsed = moment(value, ['HH:mm:ss', 'HH:mm', 'h:mm A', 'h:mm a'], true);
-  return parsed.isValid() ? parsed : null;
-};
-
-/** timelinePanel paddingTop + topActions (-14 + 44 + 26) + timelineCard height */
-const TIMELINE_CARD_BOTTOM = 24 + 56 + 650;
-
 const DashboardScreen = () => {
   const { user } = useSelector((state: any) => state.user);
-  const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [columnHeight, setColumnHeight] = useState(0);
   const hasNotifications = false;
+  const selectedDate = moment().format('YYYY-MM-DD');
+  const greetingName = user?.first_name || 'Teacher';
+  const dateLabel = moment(selectedDate).format('dddd, D MMMM');
 
   useEffect(() => {
     const sub = DeviceEventEmitter.addListener(CLOSE_NOTIFICATIONS, () => {
@@ -38,91 +30,61 @@ const DashboardScreen = () => {
     });
     return () => sub.remove();
   }, []);
-  const mainBottomPad = Math.max(0, columnHeight - TIMELINE_CARD_BOTTOM);
-  const greetingName = user?.first_name || 'Teacher';
-  const selectedDate = moment().format('YYYY-MM-DD');
-  const dateLabel = moment(selectedDate).format('dddd, D MMMM');
-
-  const dayProgressLabel = useMemo(() => {
-    const schedule = (classTimeline || []).filter(
-      (item: any) => !item?.date || item.date === selectedDate
-    );
-    const total = schedule.length;
-    if (total === 0) return dateLabel;
-
-    const now = moment();
-    const done = schedule.filter((item: any) => {
-      const end = parseTime(item?.end_time);
-      if (!end) return false;
-      return moment(
-        `${selectedDate} ${end.format('HH:mm:ss')}`,
-        'YYYY-MM-DD HH:mm:ss'
-      ).isBefore(now);
-    }).length;
-
-    return `${dateLabel} · ${done} of ${total} classes done`;
-  }, [classTimeline, dateLabel, selectedDate]);
 
   return (
     <View style={styles.screen}>
-      <View
-        style={styles.container}
-        onLayout={(e) => setColumnHeight(e.nativeEvent.layout.height)}
-      >
-        <View style={[styles.mainContent, { paddingBottom: mainBottomPad }]}>
-          <View style={styles.pageHeader}>
-            <View style={styles.greetingBlock}>
-              <View style={styles.greetingBox}>
-                <Text style={styles.title}>
-                  {getGreeting()}, {greetingName}
-                </Text>
-              </View>
-              <View style={styles.dateBox}>
-                <Text style={styles.subTitle}>{dayProgressLabel}</Text>
-              </View>
-            </View>
+      <View style={styles.header}>
+        <View style={styles.greetingWrap}>
+          <View style={styles.greetingBox}>
+            <Text style={styles.greetingText}>
+              {getGreeting()}, {greetingName}
+            </Text>
           </View>
+          <View style={styles.subGreetingBox}>
+            <Text style={styles.subGreetingText}>{dateLabel}</Text>
+          </View>
+        </View>
 
+        <View style={styles.headerRight}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.headerAction,
+              pressed && styles.headerActionPressed,
+            ]}
+            onPress={() => {}}
+          >
+            <View style={styles.headerActionIcon}>
+              <SvgLoader svgFilePath="refreshIcon" width={18} height={18} />
+            </View>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.headerAction,
+              pressed && styles.headerActionPressed,
+            ]}
+            onPress={() => setNotificationsOpen(true)}
+          >
+            <View style={styles.headerActionIcon}>
+              <SvgLoader
+                svgFilePath={
+                  hasNotifications ? 'notificationActive' : 'notificationInactive'
+                }
+                width={18}
+                height={18}
+              />
+            </View>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.contentBox}>
+        <View style={styles.mainContent}>
           <LiveClassCard selectedDate={selectedDate} />
           <ActionRequiredPanel />
         </View>
 
         <View style={styles.timelinePanel}>
-          <View style={styles.topActions}>
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed,
-              ]}
-              onPress={() => {}}
-            >
-              <View style={styles.actionIconBox}>
-                <SvgLoader svgFilePath="refreshIcon" width={20} height={20} />
-              </View>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed,
-              ]}
-              onPress={() => setNotificationsOpen(true)}
-            >
-              <View style={styles.actionIconBox}>
-                <SvgLoader
-                  svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
-                  width={20}
-                  height={20}
-                />
-              </View>
-            </Pressable>
-          </View>
-
-          <View style={styles.timelineCard}>
-            <View style={styles.timelineMargin}>
-              <Timeline />
-            </View>
-          </View>
+          <Timeline />
         </View>
       </View>
 
@@ -138,149 +100,83 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#E4E2DC',
-    position: 'relative',
-    overflow: 'hidden',
+    padding: 24,
   },
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#E4E2DC',
-  },
-  mainContent: {
-    /** Share row with timeline (~Figma 664:476) so both cards grow. */
-    flex: 664,
-    minWidth: 0,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    paddingTop: 24,
-    /** Equal left / center / right gutters. */
-    paddingLeft: 16,
-    paddingRight: 16,
-    /** Bottom pad is set to align ActionRequiredPanel with timeline card bottom. */
-    gap: 12,
-    backgroundColor: '#E4E2DC',
-  },
-  pageHeader: {
+  header: {
+    height: 56,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     alignSelf: 'stretch',
-    width: '100%',
-    height: 44,
-    padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
-    overflow: 'visible',
+    marginBottom: 16,
   },
-  greetingBlock: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 6,
-    marginTop: -14,
+  greetingWrap: {
+    flex: 1,
+    height: 52,
+    justifyContent: 'center',
   },
   greetingBox: {
     height: 32,
-    flexGrow: 0,
-    flexShrink: 0,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  dateBox: {
-    height: 16,
-    flexGrow: 0,
-    flexShrink: 0,
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerAction: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  title: {
-    height: 32,
+  headerActionPressed: {
+    backgroundColor: '#F1EFEA',
+  },
+  headerActionIcon: {
+    width: 22,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  greetingText: {
     fontSize: 24,
     lineHeight: 32,
     color: '#1F1E1C',
     fontFamily: 'Montserrat_700Bold',
-    fontStyle: 'normal',
     includeFontPadding: false,
-    flexGrow: 0,
   },
-  subTitle: {
+  subGreetingBox: {
     height: 16,
+    justifyContent: 'center',
+  },
+  subGreetingText: {
     fontSize: 12,
     lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
     includeFontPadding: false,
-    flexGrow: 0,
   },
-  topActions: {
+  contentBox: {
+    flex: 1,
+    minHeight: 0,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    gap: 16,
     alignSelf: 'stretch',
-    gap: 12,
-    marginTop: -4,
-    marginBottom: 16,
   },
-  actionButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    padding: 0,
+  mainContent: {
+    flex: 676,
+    minWidth: 0,
+    minHeight: 0,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
-  },
-  actionButtonPressed: {
-    backgroundColor: '#F1EFEA',
-  },
-  actionIconBox: {
-    width: 20,
-    height: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    gap: 16,
   },
   timelinePanel: {
     flex: 476,
     minWidth: 0,
-    alignSelf: 'stretch',
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
-    paddingTop: 24,
-    paddingRight: 16,
-    backgroundColor: '#E4E2DC',
-  },
-  timelineCard: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    /** Align "Your day" with live card time row. */
-    paddingTop: 14,
-    paddingRight: 20,
-    paddingBottom: 20,
-    paddingLeft: 16,
-    width: '100%',
     minHeight: 0,
-    maxHeight: 650,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  timelineMargin: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    width: '100%',
-    minHeight: 0,
-    alignSelf: 'stretch',
   },
 });
 

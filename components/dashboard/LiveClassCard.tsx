@@ -131,18 +131,18 @@ const LiveCardBody = memo(({ activeClass, isPrepped, onJoin }: CardBodyProps) =>
         </View>
 
         <View style={styles.heroTextBlock}>
-          <Text style={styles.meta} numberOfLines={1}>
-            {gradeLabel}
-          </Text>
-          <Text style={styles.subject} numberOfLines={1}>
-            {subjectLabel}
-          </Text>
-          <View style={styles.topicRow}>
+          <View style={styles.heroLeftBox}>
+            <Text style={styles.meta} numberOfLines={1}>
+              {gradeLabel}
+            </Text>
+            <Text style={styles.subject} numberOfLines={1}>
+              {subjectLabel}
+            </Text>
             <Text style={styles.topic} numberOfLines={1}>
               {details.topic}
             </Text>
-            <JoinButton onPress={onJoin} label={ctaLabel} />
           </View>
+          <JoinButton onPress={onJoin} label={ctaLabel} />
         </View>
       </View>
     </View>
@@ -250,8 +250,9 @@ const noop = () => {};
 
 const styles = StyleSheet.create({
   wrap: {
+    flex: 206,
     alignSelf: 'stretch',
-    width: '100%',
+    minHeight: 0,
   },
   prepHost: {
     position: 'absolute',
@@ -260,22 +261,21 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   card: {
+    flex: 1,
     alignSelf: 'stretch',
-    width: '100%',
-    /** Match ActionRequiredPanel so left text lines up with "Needs you". */
-    paddingHorizontal: 24,
-    paddingTop: 24,
-    paddingBottom: 22,
+    padding: 20,
     borderRadius: 16,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
     overflow: 'hidden',
+    justifyContent: 'center',
   },
   content: {
+    alignSelf: 'stretch',
     gap: 16,
   },
   statusRow: {
+    alignSelf: 'stretch',
+    height: 17,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -327,13 +327,19 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   heroTextBlock: {
-    gap: 6,
-  },
-  topicRow: {
+    alignSelf: 'stretch',
+    minHeight: 91,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
     gap: 12,
+  },
+  heroLeftBox: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 91,
+    gap: 6,
+    justifyContent: 'center',
   },
   time: {
     fontSize: 14,
@@ -351,8 +357,6 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   topic: {
-    flex: 1,
-    minWidth: 0,
     fontSize: 16,
     lineHeight: 20,
     color: '#4A4844',
