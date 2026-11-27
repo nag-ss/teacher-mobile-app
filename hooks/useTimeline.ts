@@ -5,7 +5,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 import { getScheduleClasses } from '@/store/classSlice';
 import { getGradeChip } from '@/utils/grade';
-import { useIsOffline } from '@/hooks/useIsOffline';
 import {
   FORCE_TIMELINE_UI,
   buildForceTimelineItems,
@@ -144,7 +143,6 @@ const formatDayLabel = (dateStr: string) => {
 export const useTimeline = () => {
   const dispatch = useDispatch<any>();
   const classTimeline = useSelector((state: any) => state.classes.classTimeline);
-  const isOffline = useIsOffline();
   const [date, setDate] = useState(() => moment().format('YYYY-MM-DD'));
   const dayLabel = formatDayLabel(date);
   const [now, setNow] = useState(moment());
@@ -165,13 +163,10 @@ export const useTimeline = () => {
     setDate(moment().format('YYYY-MM-DD'));
   }, []);
 
-  /** Pause the live now-line while offline so it stops traversing. */
   useEffect(() => {
-    if (isOffline) return;
-    setNow(moment());
     const id = setInterval(() => setNow(moment()), 1000);
     return () => clearInterval(id);
-  }, [isOffline]);
+  }, []);
 
   const getDetails = useCallback(
     async (currentDate: string) => {
