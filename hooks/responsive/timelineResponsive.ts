@@ -42,10 +42,10 @@ export const useTimelineResponsive = (): TimelineLayout => {
     return {
       isCompact: false,
       timeGutter: 62,
-      eventsLeft: 56,
+      eventsLeft: 44,
       dayLabelWidth: 104,
       daySegmentWidth: 36,
-      headerHeight: 42,
+      headerHeight: 40,
       sectionSize: 16,
     };
   }, [width]);

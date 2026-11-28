@@ -1,6 +1,7 @@
 import BrandPanel from '@/components/login/BrandPanel';
 import LoginForm from '@/components/login/LoginForm';
 import ResetPassword from '@/components/login/ResetPassword';
+import { useLoginResponsive } from '@/hooks/responsive/loginResponsive';
 import { clearError, userDetails, userLogin } from '@/store/authSlice';
 import React, { useEffect, useState } from 'react';
 import {
@@ -14,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
   const dispatch = useDispatch<any>();
+  const layout = useLoginResponsive();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -97,13 +99,22 @@ const Login = () => {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.shell}>
-        <BrandPanel />
+      <View style={[styles.shell, layout.isCompact && styles.shellCompact]}>
+        <BrandPanel {...layout.brand} />
 
-        <View style={styles.formPane}>
+        <View
+          style={[
+            styles.formPane,
+            layout.isCompact && styles.formPaneCompact,
+            { padding: layout.formPadding },
+          ]}
+        >
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[
+              styles.scrollContent,
+              layout.isCompact && styles.scrollContentCompact,
+            ]}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
@@ -164,14 +175,19 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
+  shellCompact: {
+    flexDirection: 'column',
+  },
   formPane: {
     flex: 1,
     minWidth: 0,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 64,
     backgroundColor: '#FFFFFF',
+  },
+  formPaneCompact: {
+    alignItems: 'stretch',
   },
   scroll: {
     width: '100%',
@@ -180,6 +196,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  scrollContentCompact: {
+    justifyContent: 'flex-start',
+    paddingTop: 24,
+    paddingBottom: 40,
   },
 });
 
