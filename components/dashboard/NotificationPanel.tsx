@@ -23,8 +23,8 @@ import {
   type NotificationDemoItem,
 } from '@/demoData/demoData';
 import NotificationSwipeRow from '@/components/dashboard/NotificationSwipeRow';
-import { useNotificationPanelResponsive } from '@/hooks/responsive/notificationPanelResponsive';
 
+const PANEL_WIDTH = 500;
 const OPEN_MS = 280;
 const CLOSE_MS = 240;
 
@@ -50,34 +50,16 @@ type RowProps = {
   expanded: boolean;
   onToggle: () => void;
   onMarkRead: () => void;
-  itemPaddingHorizontal: number;
-  iconBoxSize: number;
 };
 
-const NotificationRow = ({
-  item,
-  expanded,
-  onToggle,
-  onMarkRead,
-  itemPaddingHorizontal,
-  iconBoxSize,
-}: RowProps) => (
+const NotificationRow = ({ item, expanded, onToggle, onMarkRead }: RowProps) => (
   <View>
     <NotificationSwipeRow unread={item.unread} onMarkRead={onMarkRead}>
       {(dotStyle) => (
-        <View style={[styles.item, { paddingHorizontal: itemPaddingHorizontal }]}>
+        <View style={styles.item}>
           <View style={styles.leading}>
             {item.unread ? <Animated.View style={[styles.unreadDot, dotStyle]} /> : null}
-            <View
-              style={[
-                styles.iconBox,
-                {
-                  width: iconBoxSize,
-                  height: iconBoxSize,
-                  borderRadius: Math.round(iconBoxSize * 0.27),
-                },
-              ]}
-            >
+            <View style={styles.iconBox}>
               <SvgLoader svgFilePath={ICONS[item.type]} width={16} height={16} />
             </View>
           </View>
@@ -128,12 +110,10 @@ const NotificationRow = ({
 type Props = { visible: boolean; onClose: () => void };
 
 const NotificationPanel = ({ visible, onClose }: Props) => {
-  const layout = useNotificationPanelResponsive();
-  const panelWidth = layout.panelWidth;
   const [active, setActive] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [readIds, setReadIds] = useState<string[]>([]);
-  const translateX = useSharedValue(panelWidth);
+  const translateX = useSharedValue(PANEL_WIDTH);
 
   const toggle = (id: string) => setExpandedId((p) => (p === id ? null : id));
   const markRead = (id: string) => setReadIds((p) => [...p, id]);
@@ -146,36 +126,35 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
 
   const animateClose = useCallback(() => {
     translateX.value = withTiming(
-      panelWidth,
+      PANEL_WIDTH,
       ease(CLOSE_MS, Easing.in(Easing.cubic)),
       (done) => {
         if (done) runOnJS(finishClose)();
       }
     );
-  }, [finishClose, panelWidth, translateX]);
+  }, [finishClose, translateX]);
 
   // No Modal remount — overlay stays in the tree, so the slide starts on tap.
   useLayoutEffect(() => {
     if (visible) {
       setActive(true);
-      translateX.value = panelWidth;
       translateX.value = withTiming(0, ease(OPEN_MS));
       return;
     }
     // Parent closed (e.g. logout) — unmount immediately so GH can't block the Modal.
     if (active) {
-      translateX.value = panelWidth;
+      translateX.value = PANEL_WIDTH;
       setActive(false);
       setExpandedId(null);
     }
-  }, [visible, panelWidth]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const panelStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: 1 - Math.min(1, translateX.value / panelWidth),
+    opacity: 1 - Math.min(1, translateX.value / PANEL_WIDTH),
   }));
 
   // Keep the host mounted for instant open, but unmount when fully closed.
@@ -190,29 +169,10 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
           <Pressable style={StyleSheet.absoluteFill} onPress={animateClose} />
         </Animated.View>
 
-        <Animated.View style={[styles.panel, { width: panelWidth }, panelStyle]}>
-          <View
-            style={[
-              styles.header,
-              {
-                paddingTop: layout.headerPaddingTop,
-                paddingHorizontal: layout.paddingHorizontal,
-                paddingBottom: layout.headerPaddingBottom,
-              },
-            ]}
-          >
+        <Animated.View style={[styles.panel, panelStyle]}>
+          <View style={styles.header}>
             <View style={styles.headerText}>
-              <Text
-                style={[
-                  styles.title,
-                  {
-                    fontSize: layout.titleSize,
-                    lineHeight: layout.titleSize + 8,
-                  },
-                ]}
-              >
-                Notifications
-              </Text>
+              <Text style={styles.title}>Notifications</Text>
               <Text style={styles.subtitle}>Today and yesterday</Text>
             </View>
 
@@ -228,10 +188,7 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
 
           <ScrollView
             style={styles.body}
-            contentContainerStyle={[
-              styles.bodyContent,
-              { paddingHorizontal: layout.paddingHorizontal },
-            ]}
+            contentContainerStyle={styles.bodyContent}
             showsVerticalScrollIndicator={false}
             bounces={false}
           >
@@ -248,8 +205,6 @@ const NotificationPanel = ({ visible, onClose }: Props) => {
                         expanded={expandedId === item.id}
                         onToggle={() => toggle(item.id)}
                         onMarkRead={() => markRead(item.id)}
-                        itemPaddingHorizontal={layout.itemPaddingHorizontal}
-                        iconBoxSize={layout.iconBoxSize}
                       />
                     </View>
                   );
@@ -280,6 +235,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     bottom: 0,
+    width: PANEL_WIDTH,
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20,
     borderBottomLeftRadius: 20,
@@ -288,12 +244,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingTop: 18,
+    paddingHorizontal: 24,
+    paddingBottom: 20,
   },
   headerText: {
     flex: 1,
     gap: 4,
   },
   title: {
+    fontSize: 20,
+    lineHeight: 28,
     color: INK,
     fontFamily: 'Montserrat_700Bold',
     includeFontPadding: false,
@@ -315,6 +276,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bodyContent: {
+    paddingHorizontal: 24,
     paddingBottom: 24,
   },
   groupLabel: {
@@ -333,6 +295,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
+    paddingHorizontal: 24,
     gap: 12,
   },
   leading: {
@@ -352,6 +315,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#EDEBE6',
   },
   iconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
     backgroundColor: '#F1EFEA',
     alignItems: 'center',
     justifyContent: 'center',

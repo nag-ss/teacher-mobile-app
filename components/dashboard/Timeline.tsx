@@ -14,12 +14,12 @@ import {
   HOURS,
   DAY_START_HOUR,
   LABEL_PAD_TOP,
+  TIME_GUTTER,
   formatHourLabel,
   minutesToY,
   type ClassStatus,
   type TimelineEvent,
 } from '@/hooks/useTimeline';
-import { useTimelineResponsive } from '@/hooks/responsive/timelineResponsive';
 import { getForceClassDates } from '@/demoData/demoData';
 
 /** Tall cards keep 10; short (half-hour) cards use a tighter corner. */
@@ -157,10 +157,9 @@ const EventCard = ({
       <View style={styles.classLeft}>
         <Text
           style={[
-            text.title,
-            styles.classTitle,
-            isShortCard && styles.classTitleShort,
-            isDone && styles.textDone,
+            styles.subjectName,
+            isShortCard && styles.subjectNameShort,
+            isDone && styles.subjectNameDone,
           ]}
           numberOfLines={1}
         >
@@ -169,9 +168,9 @@ const EventCard = ({
         {showMeta ? (
           <Text
             style={[
-              text.meta,
-              isShortCard && styles.classMetaShort,
-              isDone && styles.textMetaDone,
+              styles.gradeTime,
+              isShortCard && styles.gradeTimeShort,
+              isDone && styles.gradeTimeDone,
             ]}
             numberOfLines={1}
           >
@@ -214,7 +213,6 @@ const EventCard = ({
 };
 
 const TimelineWithClassDetails = () => {
-  const layout = useTimelineResponsive();
   const classPrepRef = useRef<any>();
   const dayLabelRef = useRef<View>(null);
   const [selectedEvent, setSelectedEvent] = useState<TimelineEvent | null>(null);
@@ -272,24 +270,18 @@ const TimelineWithClassDetails = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.headerRow, { height: layout.headerHeight }]}>
-        <Text
-          style={[
-            text.section,
-            styles.header,
-            { fontSize: layout.sectionSize, lineHeight: layout.sectionSize + 8 },
-          ]}
-          numberOfLines={1}
-        >
-          Your day
-        </Text>
+    <View style={styles.card}>
+      <View style={styles.topBox}>
+        <View style={styles.titleBox}>
+          <Text style={styles.titleText} numberOfLines={1}>
+            Your Day
+          </Text>
+        </View>
 
-        <View style={[styles.dayPill, { height: layout.headerHeight }]}>
+        <View style={styles.dayPill}>
           <Pressable
             style={({ pressed }) => [
               styles.daySegment,
-              { width: layout.daySegmentWidth },
               canGoPrevDay && pressed && styles.daySegmentPressed,
               !canGoPrevDay && styles.daySegmentDisabled,
             ]}
@@ -306,10 +298,7 @@ const TimelineWithClassDetails = () => {
           </Pressable>
           <View style={styles.dayDivider} />
           <View ref={dayLabelRef} collapsable={false}>
-            <Pressable
-              style={[styles.dayLabelSegment, { width: layout.dayLabelWidth }]}
-              onPress={openCalendar}
-            >
+            <Pressable style={styles.dayLabelSegment} onPress={openCalendar}>
               <Text style={[text.title, styles.dayLabel]} numberOfLines={1}>
                 {dayLabel}
               </Text>
@@ -319,7 +308,6 @@ const TimelineWithClassDetails = () => {
           <Pressable
             style={({ pressed }) => [
               styles.daySegment,
-              { width: layout.daySegmentWidth },
               canGoNextDay && pressed && styles.daySegmentPressed,
               !canGoNextDay && styles.daySegmentDisabled,
             ]}
@@ -337,74 +325,66 @@ const TimelineWithClassDetails = () => {
         </View>
       </View>
 
-      <View style={styles.gridHost} onLayout={onGridLayout}>
-        {!events.length ? (
-          <View style={styles.emptyState}>
-            <SvgLoader
-              svgFilePath="calendarEmpty"
-              width={32}
-              height={32}
-              color="#C4C2BA"
-            />
-            <Text style={[text.emptyTitle, styles.emptyTitle]} numberOfLines={1}>
-              {`No classes ${dayLabel.toLowerCase()}`}
-            </Text>
-            <Text style={[text.meta, styles.emptySubtitle]}>
-              {moment(date).format('dddd')} · enjoy the day off
-            </Text>
-          </View>
-        ) : (
-          <View style={[styles.dayGrid, { height: gridContentHeight }]}>
-            {HOURS.map((hour) => {
-              const top =
-                LABEL_PAD_TOP +
-                minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
-              return (
-                <View key={hour} style={[styles.hourRow, { top }]}>
-                  <Text
-                    style={[
-                      text.meta,
-                      styles.hourLabel,
-                      { width: layout.timeGutter - 8 },
-                    ]}
-                  >
-                    {formatHourLabel(hour)}
-                  </Text>
-                </View>
-              );
-            })}
-
-            <View
-              style={[
-                styles.eventsLayer,
-                {
-                  top: LABEL_PAD_TOP,
-                  height: dayHeight,
-                  left: layout.eventsLeft,
-                },
-              ]}
-            >
-              {events.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  onPress={openDetail}
-                />
-              ))}
+      <View style={styles.bottomBox}>
+        <View style={styles.gridHost} onLayout={onGridLayout}>
+          {!events.length ? (
+            <View style={styles.emptyState}>
+              <SvgLoader
+                svgFilePath="calendarEmpty"
+                width={32}
+                height={32}
+                color="#C4C2BA"
+              />
+              <Text style={[text.emptyTitle, styles.emptyTitle]} numberOfLines={1}>
+                {`No classes ${dayLabel.toLowerCase()}`}
+              </Text>
+              <Text style={[text.meta, styles.emptySubtitle]}>
+                {moment(date).format('dddd')} · enjoy the day off
+              </Text>
             </View>
+          ) : (
+            <View style={[styles.dayGrid, { height: gridContentHeight }]}>
+              {HOURS.map((hour) => {
+                const top =
+                  LABEL_PAD_TOP +
+                  minutesToY((hour - DAY_START_HOUR) * 60, pxPerHour);
+                return (
+                  <View key={hour} style={[styles.hourRow, { top }]}>
+                    <Text style={[text.meta, styles.hourLabel]}>
+                      {formatHourLabel(hour)}
+                    </Text>
+                  </View>
+                );
+              })}
 
-            {nowTop != null ? (
-              <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
-                <View style={styles.nowPill}>
-                  <Text style={[text.title, styles.nowPillText]}>
-                    {now.format('HH:mm')}
-                  </Text>
-                </View>
-                <View style={styles.nowLine} />
+              <View
+                style={[
+                  styles.eventsLayer,
+                  { top: LABEL_PAD_TOP, height: dayHeight },
+                ]}
+              >
+                {events.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    onPress={openDetail}
+                  />
+                ))}
               </View>
-            ) : null}
-          </View>
-        )}
+
+              {nowTop != null ? (
+                <View style={[styles.nowLineWrap, { top: nowTop }]} pointerEvents="none">
+                  <View style={styles.nowPill}>
+                    <Text style={[text.title, styles.nowPillText]}>
+                      {now.format('HH:mm')}
+                    </Text>
+                  </View>
+                  <View style={styles.nowLine} />
+                </View>
+              ) : null}
+            </View>
+          )}
+        </View>
       </View>
 
       <TimelineEventDetailModal
@@ -439,32 +419,41 @@ const TimelineWithClassDetails = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  card: {
     flex: 1,
     alignSelf: 'stretch',
-    width: '100%',
-    height: '100%',
+    minHeight: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    gap: 8,
   },
-  headerRow: {
+  topBox: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 4,
-    width: '100%',
-    height: 42,
+    justifyContent: 'space-between',
     alignSelf: 'stretch',
-    flexGrow: 0,
-    marginBottom: 12,
   },
-  header: {
+  titleBox: {
     height: 24,
-    textAlignVertical: 'center',
-    flexShrink: 0,
+    justifyContent: 'center',
+  },
+  titleText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: COLOR.ink,
+    fontFamily: 'Montserrat_600SemiBold',
+    includeFontPadding: false,
+  },
+  bottomBox: {
+    flex: 1,
+    minHeight: 0,
+    alignSelf: 'stretch',
   },
   dayPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 42,
+    height: 40,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: COLOR.borderSoft,
@@ -472,9 +461,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     flexGrow: 0,
     flexShrink: 0,
-    marginLeft: 'auto',
   },
   daySegment: {
+    width: 36,
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -491,6 +480,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.borderSoft,
   },
   dayLabelSegment: {
+    width: 104,
     height: '100%',
     paddingHorizontal: 8,
     justifyContent: 'center',
@@ -522,12 +512,13 @@ const styles = StyleSheet.create({
     marginTop: -8,
   },
   hourLabel: {
+    width: TIME_GUTTER,
     lineHeight: 16,
-    textAlign: 'right',
-    paddingRight: 8,
+    textAlign: 'left',
   },
   eventsLayer: {
     position: 'absolute',
+    left: 44,
     right: 0,
   },
   cardBorder: {
@@ -581,12 +572,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: COLOR.ink,
   },
-  textDone: {
-    color: COLOR.muted,
-  },
-  textMetaDone: {
-    color: COLOR.mutedSoft,
-  },
   classLeft: {
     flex: 1,
     flexDirection: 'row',
@@ -595,17 +580,34 @@ const styles = StyleSheet.create({
     minWidth: 0,
     paddingRight: 8,
   },
-  classTitle: {
+  subjectName: {
+    includeFontPadding: false,
     flexShrink: 1,
+    fontSize: 14,
+    lineHeight: 17,
+    color: COLOR.ink,
     fontFamily: 'Inter_700Bold',
   },
-  classTitleShort: {
+  subjectNameShort: {
     fontSize: 12,
     lineHeight: 15,
   },
-  classMetaShort: {
+  subjectNameDone: {
+    color: COLOR.muted,
+  },
+  gradeTime: {
+    includeFontPadding: false,
+    fontSize: 12,
+    lineHeight: 15,
+    color: COLOR.muted,
+    fontFamily: 'Inter_400Regular',
+  },
+  gradeTimeShort: {
     fontSize: 10,
     lineHeight: 13,
+  },
+  gradeTimeDone: {
+    color: COLOR.mutedSoft,
   },
   statusRow: {
     flexDirection: 'row',

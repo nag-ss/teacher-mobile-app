@@ -1,12 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  DeviceEventEmitter,
-  ScrollView,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, DeviceEventEmitter } from 'react-native';
 import { useSelector } from 'react-redux';
 import LiveClassCard from '@/components/dashboard/LiveClassCard';
 import ActionRequiredPanel from '@/components/dashboard/ActionRequiredPanel';
@@ -14,7 +7,6 @@ import Timeline from '@/components/dashboard/Timeline';
 import NotificationPanel from '@/components/dashboard/NotificationPanel';
 import SvgLoader from '@/utils/SvgLoader';
 import { CLOSE_NOTIFICATIONS } from '@/utils/notificationEvents';
-import { useHomeResponsive } from '@/hooks/responsive/homeResponsive';
 import moment from 'moment';
 
 const getGreeting = () => {
@@ -24,18 +16,13 @@ const getGreeting = () => {
   return 'Good evening';
 };
 
-const parseTime = (value?: string) => {
-  if (!value) return null;
-  const parsed = moment(value, ['HH:mm:ss', 'HH:mm', 'h:mm A', 'h:mm a'], true);
-  return parsed.isValid() ? parsed : null;
-};
-
 const DashboardScreen = () => {
-  const layout = useHomeResponsive();
   const { user } = useSelector((state: any) => state.user);
-  const classTimeline = useSelector((state: any) => state.classes.classTimeline);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const hasNotifications = false;
+  const selectedDate = moment().format('YYYY-MM-DD');
+  const greetingName = user?.first_name || 'Teacher';
+  const dateLabel = moment(selectedDate).format('dddd, D MMMM');
 
   useEffect(() => {
     const sub = DeviceEventEmitter.addListener(CLOSE_NOTIFICATIONS, () => {
@@ -44,196 +31,62 @@ const DashboardScreen = () => {
     return () => sub.remove();
   }, []);
 
-  const greetingName = user?.first_name || 'Teacher';
-  const selectedDate = moment().format('YYYY-MM-DD');
-  const dateLabel = moment(selectedDate).format('dddd, D MMMM');
-
-  const dayProgressLabel = useMemo(() => {
-    const schedule = (classTimeline || []).filter(
-      (item: any) => !item?.date || item.date === selectedDate
-    );
-    const total = schedule.length;
-    if (total === 0) return dateLabel;
-
-    const now = moment();
-    const done = schedule.filter((item: any) => {
-      const end = parseTime(item?.end_time);
-      if (!end) return false;
-      return moment(
-        `${selectedDate} ${end.format('HH:mm:ss')}`,
-        'YYYY-MM-DD HH:mm:ss'
-      ).isBefore(now);
-    }).length;
-
-    return `${dateLabel} · ${done} of ${total} classes done`;
-  }, [classTimeline, dateLabel, selectedDate]);
-
-  const body = (
-    <View
-      style={[
-        styles.container,
-        layout.isCompact && styles.containerCompact,
-      ]}
-    >
-      <View
-        style={[
-          styles.mainContent,
-          {
-            flex: layout.mainFlex,
-            gap: layout.gap,
-            paddingTop: layout.paddingTop,
-            paddingBottom: layout.paddingBottom,
-            paddingLeft: layout.paddingHorizontal,
-            paddingRight: layout.paddingHorizontal,
-          },
-          layout.isCompact && styles.mainContentCompact,
-        ]}
-      >
-        <View style={[styles.pageHeader, { height: layout.headerHeight }]}>
-          <View style={styles.greetingBlock}>
-            <View style={[styles.greetingBox, { height: layout.titleLineHeight }]}>
-              <Text
-                style={[
-                  styles.title,
-                  {
-                    height: layout.titleLineHeight,
-                    fontSize: layout.titleSize,
-                    lineHeight: layout.titleLineHeight,
-                  },
-                ]}
-              >
-                {getGreeting()}, {greetingName}
-              </Text>
-            </View>
-            <View style={[styles.dateBox, { height: layout.subtitleSize + 4 }]}>
-              <Text
-                style={[
-                  styles.subTitle,
-                  {
-                    height: layout.subtitleSize + 4,
-                    fontSize: layout.subtitleSize,
-                    lineHeight: layout.subtitleSize + 4,
-                  },
-                ]}
-              >
-                {dayProgressLabel}
-              </Text>
-            </View>
+  return (
+    <View style={styles.screen}>
+      <View style={styles.header}>
+        <View style={styles.greetingWrap}>
+          <View style={styles.greetingBox}>
+            <Text style={styles.greetingText}>
+              {getGreeting()}, {greetingName}
+            </Text>
+          </View>
+          <View style={styles.subGreetingBox}>
+            <Text style={styles.subGreetingText}>{dateLabel}</Text>
           </View>
         </View>
 
-        <LiveClassCard selectedDate={selectedDate} />
-        <ActionRequiredPanel minHeight={layout.actionMinHeight} />
-      </View>
-
-      <View
-        style={[
-          styles.timelinePanel,
-          {
-            flex: layout.timelineFlex,
-            paddingTop: layout.paddingTop,
-            paddingBottom: layout.paddingBottom,
-            paddingRight: layout.paddingRight,
-            paddingLeft: layout.isCompact ? layout.paddingHorizontal : 0,
-          },
-          layout.isCompact && styles.timelinePanelCompact,
-        ]}
-      >
-        <View
-          style={[
-            styles.topActions,
-            {
-              marginBottom: layout.topActionsMarginBottom,
-              gap: layout.actionButtonGap,
-            },
-          ]}
-        >
+        <View style={styles.headerRight}>
           <Pressable
             style={({ pressed }) => [
-              styles.actionButton,
-              {
-                width: layout.actionButtonSize,
-                height: layout.actionButtonSize,
-                borderRadius: Math.round(layout.actionButtonSize * 0.27),
-              },
-              pressed && styles.actionButtonPressed,
+              styles.headerAction,
+              pressed && styles.headerActionPressed,
             ]}
             onPress={() => {}}
           >
-            <View
-              style={[
-                styles.actionIconBox,
-                {
-                  width: layout.actionIconSize,
-                  height: layout.actionIconSize,
-                },
-              ]}
-            >
-              <SvgLoader
-                svgFilePath="refreshIcon"
-                width={layout.actionIconSize}
-                height={layout.actionIconSize}
-              />
+            <View style={styles.headerActionIcon}>
+              <SvgLoader svgFilePath="refreshIcon" width={18} height={18} />
             </View>
           </Pressable>
-
           <Pressable
             style={({ pressed }) => [
-              styles.actionButton,
-              {
-                width: layout.actionButtonSize,
-                height: layout.actionButtonSize,
-                borderRadius: Math.round(layout.actionButtonSize * 0.27),
-              },
-              pressed && styles.actionButtonPressed,
+              styles.headerAction,
+              pressed && styles.headerActionPressed,
             ]}
             onPress={() => setNotificationsOpen(true)}
           >
-            <View
-              style={[
-                styles.actionIconBox,
-                {
-                  width: layout.actionIconSize,
-                  height: layout.actionIconSize,
-                },
-              ]}
-            >
+            <View style={styles.headerActionIcon}>
               <SvgLoader
-                svgFilePath={hasNotifications ? 'notificationActive' : 'notificationInactive'}
-                width={layout.actionIconSize}
-                height={layout.actionIconSize}
+                svgFilePath={
+                  hasNotifications ? 'notificationActive' : 'notificationInactive'
+                }
+                width={18}
+                height={18}
               />
             </View>
           </Pressable>
         </View>
+      </View>
 
-        <View
-          style={[
-            styles.timelineCard,
-            layout.isCompact && { minHeight: layout.timelineMinHeight },
-          ]}
-        >
-          <View style={styles.timelineMargin}>
-            <Timeline />
-          </View>
+      <View style={styles.contentBox}>
+        <View style={styles.mainContent}>
+          <LiveClassCard selectedDate={selectedDate} />
+          <ActionRequiredPanel />
+        </View>
+
+        <View style={styles.timelinePanel}>
+          <Timeline />
         </View>
       </View>
-    </View>
-  );
-
-  return (
-    <View style={styles.screen}>
-      {layout.isCompact ? (
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {body}
-        </ScrollView>
-      ) : (
-        body
-      )}
 
       <NotificationPanel
         visible={notificationsOpen}
@@ -247,131 +100,83 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#E4E2DC',
-    position: 'relative',
-    overflow: 'hidden',
+    padding: 24,
   },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: '#E4E2DC',
-  },
-  containerCompact: {
-    flexDirection: 'column',
-  },
-  mainContent: {
-    minWidth: 0,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    backgroundColor: '#E4E2DC',
-  },
-  mainContentCompact: {
-    flexGrow: 0,
-  },
-  pageHeader: {
+  header: {
+    height: 56,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     alignSelf: 'stretch',
-    width: '100%',
-    padding: 0,
-    flexGrow: 0,
-    flexShrink: 0,
-    overflow: 'visible',
+    marginBottom: 16,
   },
-  greetingBlock: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 6,
-    marginTop: -14,
+  greetingWrap: {
+    flex: 1,
+    height: 52,
+    justifyContent: 'center',
   },
   greetingBox: {
-    flexGrow: 0,
-    flexShrink: 0,
+    height: 32,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  dateBox: {
-    flexGrow: 0,
-    flexShrink: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    color: '#1F1E1C',
-    fontFamily: 'Montserrat_700Bold',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    flexGrow: 0,
-  },
-  subTitle: {
-    color: '#8A8880',
-    fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    flexGrow: 0,
-  },
-  topActions: {
+  headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    alignSelf: 'stretch',
-    marginTop: -4,
+    gap: 12,
   },
-  actionButton: {
-    padding: 0,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+  headerAction: {
+    width: 40,
+    height: 40,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  actionButtonPressed: {
+  headerActionPressed: {
     backgroundColor: '#F1EFEA',
   },
-  actionIconBox: {
+  headerActionIcon: {
+    width: 22,
+    height: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  timelinePanel: {
+  greetingText: {
+    fontSize: 24,
+    lineHeight: 32,
+    color: '#1F1E1C',
+    fontFamily: 'Montserrat_700Bold',
+    includeFontPadding: false,
+  },
+  subGreetingBox: {
+    height: 16,
+    justifyContent: 'center',
+  },
+  subGreetingText: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: '#8A8880',
+    fontFamily: 'Inter_400Regular',
+    includeFontPadding: false,
+  },
+  contentBox: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'row',
+    gap: 16,
+    alignSelf: 'stretch',
+  },
+  mainContent: {
+    flex: 676,
     minWidth: 0,
-    alignSelf: 'stretch',
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
-    backgroundColor: '#E4E2DC',
-  },
-  timelinePanelCompact: {
-    flexGrow: 0,
-  },
-  timelineCard: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    paddingTop: 14,
-    paddingRight: 20,
-    paddingBottom: 20,
-    paddingLeft: 16,
-    width: '100%',
     minHeight: 0,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  timelineMargin: {
-    flex: 1,
     flexDirection: 'column',
-    alignItems: 'stretch',
-    width: '100%',
+    gap: 16,
+  },
+  timelinePanel: {
+    flex: 476,
+    minWidth: 0,
     minHeight: 0,
-    alignSelf: 'stretch',
   },
 });
 

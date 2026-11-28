@@ -5,141 +5,125 @@ import {
   FORCE_ACTION_REQUIRED_UI,
 } from '@/demoData/demoData';
 
-type ActionRequiredPanelProps = {
-  minHeight?: number;
-};
-
-const ActionRequiredPanel = ({ minHeight = 360 }: ActionRequiredPanelProps) => {
+const ActionRequiredPanel = () => {
   const actions = FORCE_ACTION_REQUIRED_UI ? DEMO_ACTION_REQUIRED_ITEMS : [];
-  const hasActions = actions.length > 0;
+  const count = actions.length;
+  const hasActions = count > 0;
 
   return (
-    <View style={[styles.card, { minHeight, width: '100%' }]}>
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <Text style={styles.title}>Needs you</Text>
-          {hasActions ? (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{actions.length}</Text>
-            </View>
-          ) : null}
-        </View>
+    <View style={styles.card}>
+      <View style={styles.boxTop}>
+        <Text style={styles.title}>Needs you</Text>
+        {hasActions ? (
+          <View style={styles.countCircle}>
+            <Text style={styles.countText}>{count}</Text>
+          </View>
+        ) : null}
+      </View>
+
+      <View style={styles.boxMiddle}>
         <Text style={styles.subtitle}>
           Things only you can do. Each clears itself when done.
         </Text>
       </View>
 
-      {hasActions ? (
-        <ScrollView
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {actions.map((item) => (
-            <View key={item.id} style={styles.row}>
-              <View style={styles.rowLeft}>
-                <View style={styles.dot} />
-                <View style={styles.rowText}>
-                  <Text style={styles.rowTitle} numberOfLines={2}>
-                    <Text style={styles.rowSubject}>{item.subject}</Text>
-                    {item.body}
-                  </Text>
-                  <Text style={styles.rowMeta} numberOfLines={1}>
-                    {item.meta}
-                  </Text>
+      <View style={styles.boxBottom}>
+        {hasActions ? (
+          <ScrollView
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {actions.map((item) => (
+              <View key={item.id} style={styles.row}>
+                <View style={styles.rowLeft}>
+                  <View style={styles.dot} />
+                  <View style={styles.rowTextBox}>
+                    <Text style={styles.rowTitle} numberOfLines={2}>
+                      <Text style={styles.rowSubject}>{item.subject}</Text>
+                      {item.body}
+                    </Text>
+                    <Text style={styles.rowMeta} numberOfLines={1}>
+                      {item.meta}
+                    </Text>
+                  </View>
                 </View>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.ctaButton,
+                    pressed && styles.ctaButtonPressed,
+                  ]}
+                >
+                  <Text style={styles.ctaText} numberOfLines={1}>
+                    {item.cta}
+                  </Text>
+                </Pressable>
               </View>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.ctaButton,
-                  pressed && styles.ctaButtonPressed,
-                ]}
-              >
-                <Text style={styles.ctaText} numberOfLines={1}>
-                  {item.cta}
-                </Text>
-              </Pressable>
-            </View>
-          ))}
-        </ScrollView>
-      ) : (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>You're all caught up</Text>
-        </View>
-      )}
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>You're all caught up</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 };
 
+export default ActionRequiredPanel;
+
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    paddingTop: 20,
-    paddingBottom: 8,
-    paddingHorizontal: 24,
+    flex: 460,
+    alignSelf: 'stretch',
+    minHeight: 0,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#EDEBE6',
-    borderRadius: 20,
-    alignSelf: 'stretch',
+    borderRadius: 16,
+    padding: 20,
   },
-  header: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 4,
+  boxTop: {
     alignSelf: 'stretch',
-    marginBottom: 16,
-  },
-  titleRow: {
+    height: 24,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    alignSelf: 'stretch',
+    marginBottom: 8,
   },
   title: {
-    height: 24,
     fontSize: 16,
-    lineHeight: 24,
     color: '#1F1E1C',
     fontFamily: 'Montserrat_600SemiBold',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    flexGrow: 0,
   },
-  badge: {
+  countCircle: {
     minWidth: 28,
     height: 28,
-    paddingHorizontal: 8,
     borderRadius: 14,
     backgroundColor: '#F1EFEA',
     alignItems: 'center',
     justifyContent: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
+    paddingHorizontal: 8,
   },
-  badgeText: {
+  countText: {
     fontSize: 12,
-    lineHeight: 16,
     color: '#1F1E1C',
     fontFamily: 'Inter_600SemiBold',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    flexGrow: 0,
+  },
+  boxMiddle: {
+    alignSelf: 'stretch',
+    height: 20,
+    justifyContent: 'center',
+    marginBottom: 16,
   },
   subtitle: {
-    alignSelf: 'stretch',
-    minHeight: 16,
     fontSize: 12,
-    lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    flexGrow: 0,
+  },
+  boxBottom: {
+    alignSelf: 'stretch',
+    flex: 1,
+    minHeight: 0,
   },
   list: {
     flex: 1,
@@ -149,19 +133,19 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   row: {
+    alignSelf: 'stretch',
+    height: 64,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 16,
-    paddingVertical: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 1,
     borderTopColor: '#EDEBE6',
-    alignSelf: 'stretch',
   },
   rowLeft: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: 10,
     minWidth: 0,
   },
@@ -170,40 +154,29 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#D69A1E',
-    marginTop: 6,
     flexShrink: 0,
   },
-  rowText: {
+  rowTextBox: {
     flex: 1,
     minWidth: 0,
+    height: 38,
     flexDirection: 'column',
-    gap: 4,
+    gap: 2,
+    justifyContent: 'center',
   },
   rowTitle: {
-    alignSelf: 'stretch',
-    minHeight: 20,
     fontSize: 14,
-    lineHeight: 20,
     color: '#1F1E1C',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    flexGrow: 0,
   },
   rowSubject: {
     fontFamily: 'Inter_700Bold',
     color: '#1F1E1C',
   },
   rowMeta: {
-    alignSelf: 'stretch',
-    minHeight: 16,
     fontSize: 12,
-    lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    flexGrow: 0,
   },
   ctaButton: {
     height: 36,
@@ -221,29 +194,17 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontSize: 12,
-    lineHeight: 16,
     color: '#1F1E1C',
     fontFamily: 'Inter_600SemiBold',
-    fontStyle: 'normal',
-    includeFontPadding: false,
   },
   emptyState: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'stretch',
   },
   emptyText: {
-    minHeight: 20,
     fontSize: 14,
-    lineHeight: 20,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
-    includeFontPadding: false,
-    textAlign: 'center',
-    flexGrow: 0,
   },
 });
-
-export default ActionRequiredPanel;

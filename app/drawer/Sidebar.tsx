@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import SvgLoader from '@/utils/SvgLoader';
-import { useSidebarResponsive } from '@/hooks/responsive/sidebarResponsive';
 
 const menuItems = [
   { icon: 'sidebarHome', label: 'Home', route: 'Home' },
@@ -23,94 +22,64 @@ type SidebarProps = {
   onLogoutPress?: () => void;
 };
 
-const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarProps) => {
-  const layout = useSidebarResponsive();
+const Sidebar = ({
+  navigation,
+  currentRoute = 'Home',
+  onLogoutPress,
+}: SidebarProps) => {
   const { user } = useSelector((state: any) => state.user);
+  const initials = getInitials(user?.first_name, user?.last_name);
 
   const isActive = (route: string) =>
     currentRoute === route || (currentRoute === 'live-monitoring' && route === 'Home');
 
-  const initials = getInitials(user?.first_name, user?.last_name);
-
   return (
-    <View
-      style={[
-        styles.sidebar,
-        {
-          width: layout.width,
-          paddingTop: layout.paddingTop,
-          paddingBottom: layout.paddingBottom,
-        },
-      ]}
-    >
-      <View style={styles.topSection}>
-        <View
-          style={[
-            styles.logoBox,
-            { width: layout.logoSize, height: layout.logoSize, borderRadius: layout.logoSize / 2 },
-          ]}
-        >
-          <SvgLoader
-            svgFilePath="sidebarLogo"
-            width={layout.logoSize}
-            height={layout.logoSize}
-          />
+    <View style={styles.sidebar}>
+      <View style={styles.topBox}>
+        <View style={styles.logoBox}>
+          <View style={styles.logoInner}>
+            <SvgLoader svgFilePath="sidebarLogo" width={40} height={40} />
+          </View>
         </View>
-
-        <View style={styles.menu}>
+        <View style={styles.menuBox}>
           {menuItems.map((item) => {
             const active = isActive(item.route);
 
             return (
               <TouchableOpacity
-                key={item.label}
-                style={[
-                  styles.menuItem,
-                  { width: layout.menuItemWidth, minHeight: layout.showLabels ? 56 : 44 },
-                  active && styles.selectedMenu,
-                ]}
+                key={item.route}
+                style={[styles.menuItem, active && styles.menuItemActive]}
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate(item.route)}
               >
-                <View style={styles.menuIconBox}>
-                  <SvgLoader
-                    svgFilePath={item.icon}
-                    width={20}
-                    height={20}
-                    color={active ? '#FFFFFF' : '#8A8880'}
-                  />
-                </View>
-                {layout.showLabels ? (
+                <SvgLoader
+                  svgFilePath={item.icon}
+                  width={20}
+                  height={20}
+                  color={active ? '#FFFFFF' : '#8A8880'}
+                />
+                <View style={styles.menuLabelBox}>
                   <Text
-                    style={[styles.menuLabel, active && styles.selectedLabel]}
+                    style={[styles.menuLabel, active && styles.menuLabelActive]}
                     numberOfLines={1}
                   >
                     {item.label}
                   </Text>
-                ) : null}
+                </View>
               </TouchableOpacity>
             );
           })}
-        </View>
 
-        <View
-          style={[
-            styles.avatar,
-            {
-              width: layout.avatarSize,
-              height: layout.avatarSize,
-              borderRadius: layout.avatarSize / 2,
-            },
-          ]}
-        >
-          <Text style={styles.avatarText} numberOfLines={1}>
-            {initials}
-          </Text>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText} numberOfLines={1}>
+              {initials}
+            </Text>
+          </View>
         </View>
       </View>
 
       <TouchableOpacity
-        style={[styles.logoutButton, { width: layout.menuItemWidth }]}
+        style={styles.logoutButton}
         onPress={() => onLogoutPress?.()}
         activeOpacity={0.7}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -118,11 +87,9 @@ const Sidebar = ({ navigation, currentRoute = 'Home', onLogoutPress }: SidebarPr
         <View style={styles.logoutIconBox}>
           <SvgLoader svgFilePath="sidebarLogout" width={20} height={20} />
         </View>
-        {layout.showLabels ? (
-          <Text style={styles.logoutLabel} numberOfLines={1}>
-            Log Out
-          </Text>
-        ) : null}
+        <Text style={styles.logoutLabel} numberOfLines={1}>
+          Log Out
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -132,93 +99,86 @@ export default Sidebar;
 
 const styles = StyleSheet.create({
   sidebar: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 0,
-    gap: 24,
+    width: 104,
     alignSelf: 'stretch',
     backgroundColor: '#FFFFFF',
-    flexGrow: 0,
-  },
-  topSection: {
-    flexDirection: 'column',
+    paddingTop: 24,
+    /** Match home paddingBottom so logout lines up with Needs you bottom edge */
+    paddingBottom: 24,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 16,
-    width: '100%',
+  },
+  topBox: {
+    width: 88,
+    height: 408,
+    alignItems: 'center',
   },
   logoBox: {
+    width: 68,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    marginTop: 8,
   },
-  menu: {
-    flexDirection: 'column',
+  logoInner: {
+    width: 48,
+    height: 48,
     alignItems: 'center',
-    gap: 8,
-    width: '100%',
+    justifyContent: 'center',
+  },
+  menuBox: {
+    width: 88,
+    alignItems: 'center',
+    /** Match live card: home 24+56+16=96; logo ends at 24+8+52=84 → +12 */
+    marginTop: 12,
+    gap: 12,
   },
   menuItem: {
-    flexDirection: 'column',
-    justifyContent: 'center',
+    width: 88,
+    height: 56,
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 2,
-    gap: 4,
-    flexGrow: 0,
-    overflow: 'visible',
+    justifyContent: 'center',
   },
-  selectedMenu: {
+  menuItemActive: {
     backgroundColor: '#1F1E1C',
     borderRadius: 12,
   },
-  menuIconBox: {
-    width: 20,
-    height: 20,
-    alignItems: 'center',
+  menuLabelBox: {
+    alignSelf: 'stretch',
+    height: 16,
     justifyContent: 'center',
-    flexShrink: 0,
   },
   menuLabel: {
     fontSize: 12,
-    lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
-    fontStyle: 'normal',
     textAlign: 'center',
-    includeFontPadding: false,
-    flexGrow: 0,
-    flexShrink: 0,
-    width: '100%',
   },
-  selectedLabel: {
-    color: '#F6F5F1',
+  menuLabelActive: {
+    color: '#FFFFFF',
   },
   avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#F1EFEA',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 12,
   },
   avatarText: {
-    minWidth: 20,
-    height: 14,
     fontSize: 14,
-    lineHeight: 14,
-    letterSpacing: 0,
     color: '#8A8880',
     fontFamily: 'Inter_700Bold',
-    fontStyle: 'normal',
-    includeFontPadding: false,
     textAlign: 'center',
-    flexGrow: 0,
-    flexShrink: 0,
   },
   logoutButton: {
+    width: 87,
+    height: 56,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    paddingVertical: 8,
   },
   logoutIconBox: {
     width: 20,
@@ -228,11 +188,8 @@ const styles = StyleSheet.create({
   },
   logoutLabel: {
     fontSize: 12,
-    lineHeight: 16,
     color: '#8A8880',
     fontFamily: 'Inter_400Regular',
     textAlign: 'center',
-    includeFontPadding: false,
-    width: '100%',
   },
 });
