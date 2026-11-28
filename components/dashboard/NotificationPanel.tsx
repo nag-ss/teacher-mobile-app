@@ -24,6 +24,7 @@ import {
 } from '@/demoData/demoData';
 import NotificationSwipeRow from '@/components/dashboard/NotificationSwipeRow';
 import { useNotificationPanelResponsive } from '@/hooks/responsive/notificationPanelResponsive';
+import { useHomeResponsive } from '@/hooks/responsive/homeResponsive';
 
 const OPEN_MS = 280;
 const CLOSE_MS = 240;
@@ -133,7 +134,13 @@ const NotificationPanel = ({
   panelWidth: panelWidthProp,
 }: Props) => {
   const layout = useNotificationPanelResponsive();
+  const home = useHomeResponsive();
   const panelWidth = panelWidthProp ?? layout.panelWidth;
+  // Absolute panel ignores screen padding — match "Good morning" title top.
+  const greetingBlockHeight = home.titleLineHeight + home.subtitleSize + 4;
+  const headerPaddingTop =
+    home.paddingTop +
+    Math.max(0, (home.headerHeight - greetingBlockHeight) / 2);
   const [active, setActive] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [readIds, setReadIds] = useState<string[]>([]);
@@ -199,7 +206,7 @@ const NotificationPanel = ({
             style={[
               styles.header,
               {
-                paddingTop: layout.headerPaddingTop,
+                paddingTop: headerPaddingTop,
                 paddingHorizontal: layout.paddingHorizontal,
                 paddingBottom: layout.headerPaddingBottom,
               },
@@ -210,14 +217,24 @@ const NotificationPanel = ({
                 style={[
                   styles.title,
                   {
-                    fontSize: layout.titleSize,
-                    lineHeight: layout.titleSize + 8,
+                    fontSize: home.titleSize,
+                    lineHeight: home.titleLineHeight,
                   },
                 ]}
               >
                 Notifications
               </Text>
-              <Text style={styles.subtitle}>Today and yesterday</Text>
+              <Text
+                style={[
+                  styles.subtitle,
+                  {
+                    fontSize: home.subtitleSize,
+                    lineHeight: home.subtitleSize + 4,
+                  },
+                ]}
+              >
+                Today and yesterday
+              </Text>
             </View>
 
             <TouchableOpacity
