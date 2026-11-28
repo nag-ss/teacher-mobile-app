@@ -3,7 +3,6 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 type BrandPanelProps = {
-  compact?: boolean;
   panelWidth?: number;
   artHeight?: number;
   iconSize?: number;
@@ -14,7 +13,6 @@ type BrandPanelProps = {
 };
 
 const BrandPanel = ({
-  compact = false,
   panelWidth = 480,
   artHeight = 434,
   iconSize = 176,
@@ -23,27 +21,6 @@ const BrandPanel = ({
   headlineSize = 28,
   bodySize = 16,
 }: BrandPanelProps) => {
-  if (compact) {
-    return (
-      <View
-        style={[
-          styles.compactPanel,
-          { paddingHorizontal: padding, paddingVertical: 24 },
-        ]}
-      >
-        <View style={styles.logoRow}>
-          <View style={styles.logoIcon}>
-            <SvgLoader svgFilePath="loginLogo" width={40} height={40} />
-          </View>
-          <Text style={styles.logoText}>Super Slate</Text>
-        </View>
-        <Text style={styles.compactTagline}>
-          Every class, prepared in minutes.
-        </Text>
-      </View>
-    );
-  }
-
   return (
     <View style={[styles.panel, { width: panelWidth, padding }]}>
       <View style={[styles.logoRow, { marginBottom: sectionGap }]}>
@@ -104,11 +81,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
-  compactPanel: {
-    width: '100%',
-    backgroundColor: '#1A1A1A',
-    gap: 12,
-  },
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -129,13 +101,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat_700Bold',
     includeFontPadding: false,
     textAlignVertical: 'center',
-  },
-  compactTagline: {
-    width: '100%',
-    fontFamily: 'Inter_400Regular',
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#C8C6BE',
   },
   middle: {
     width: '100%',

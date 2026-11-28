@@ -99,22 +99,13 @@ const Login = () => {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={[styles.shell, layout.isCompact && styles.shellCompact]}>
+      <View style={styles.shell}>
         <BrandPanel {...layout.brand} />
 
-        <View
-          style={[
-            styles.formPane,
-            layout.isCompact && styles.formPaneCompact,
-            { padding: layout.formPadding },
-          ]}
-        >
+        <View style={[styles.formPane, { padding: layout.formPadding }]}>
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={[
-              styles.scrollContent,
-              layout.isCompact && styles.scrollContentCompact,
-            ]}
+            contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
@@ -175,9 +166,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  shellCompact: {
-    flexDirection: 'column',
-  },
   formPane: {
     flex: 1,
     minWidth: 0,
@@ -186,9 +174,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
-  formPaneCompact: {
-    alignItems: 'stretch',
-  },
   scroll: {
     width: '100%',
   },
@@ -196,11 +181,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  scrollContentCompact: {
-    justifyContent: 'flex-start',
-    paddingTop: 24,
-    paddingBottom: 40,
   },
 });
 
