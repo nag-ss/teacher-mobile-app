@@ -3,6 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import SvgLoader from '@/utils/SvgLoader';
 import { useSidebarResponsive } from '@/hooks/responsive/sidebarResponsive';
+import { useHomeResponsive } from '@/hooks/responsive/homeResponsive';
+
+const LOGO_MARGIN_TOP = 8;
 
 const menuItems = [
   { icon: 'sidebarHome', label: 'Home', route: 'Home' },
@@ -29,11 +32,20 @@ const Sidebar = ({
   onLogoutPress,
 }: SidebarProps) => {
   const layout = useSidebarResponsive();
+  const home = useHomeResponsive();
   const { user } = useSelector((state: any) => state.user);
   const initials = getInitials(user?.first_name, user?.last_name);
 
   const isActive = (route: string) =>
     currentRoute === route || (currentRoute === 'live-monitoring' && route === 'Home');
+
+  // Live card top = home.paddingTop + header + gap under header.
+  // Match Home tab top: paddingTop + logo block + menuMarginTop.
+  const logoBoxHeight = layout.logoSize + 4;
+  const menuMarginTop = Math.max(
+    0,
+    home.headerHeight + home.topActionsMarginBottom - LOGO_MARGIN_TOP - logoBoxHeight
+  );
 
   return (
     <View
@@ -41,8 +53,8 @@ const Sidebar = ({
         styles.sidebar,
         {
           width: layout.width,
-          paddingTop: layout.paddingTop,
-          paddingBottom: layout.paddingBottom,
+          paddingTop: home.paddingTop,
+          paddingBottom: home.paddingBottom,
         },
       ]}
     >
@@ -52,7 +64,8 @@ const Sidebar = ({
             styles.logoBox,
             {
               width: layout.logoSize + 20,
-              height: layout.logoSize + 4,
+              height: logoBoxHeight,
+              marginTop: LOGO_MARGIN_TOP,
             },
           ]}
         >
@@ -69,7 +82,12 @@ const Sidebar = ({
             />
           </View>
         </View>
-        <View style={[styles.menuBox, { width: layout.menuItemWidth }]}>
+        <View
+          style={[
+            styles.menuBox,
+            { width: layout.menuItemWidth, marginTop: menuMarginTop },
+          ]}
+        >
           {menuItems.map((item) => {
             const active = isActive(item.route);
 
@@ -164,7 +182,6 @@ const styles = StyleSheet.create({
   logoBox: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
   },
   logoInner: {
     alignItems: 'center',
@@ -172,7 +189,6 @@ const styles = StyleSheet.create({
   },
   menuBox: {
     alignItems: 'center',
-    marginTop: 12,
     gap: 12,
   },
   menuItem: {

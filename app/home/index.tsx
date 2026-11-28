@@ -28,6 +28,7 @@ const DashboardScreen = () => {
   const layout = useHomeResponsive();
   const { user } = useSelector((state: any) => state.user);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [panelWidth, setPanelWidth] = useState<number | undefined>();
   const hasNotifications = false;
   const selectedDate = moment().format('YYYY-MM-DD');
   const greetingName = user?.first_name || 'Teacher';
@@ -171,6 +172,11 @@ const DashboardScreen = () => {
         </View>
 
         <View
+          onLayout={(e) =>
+            setPanelWidth(
+              Math.round(e.nativeEvent.layout.width) + layout.paddingRight
+            )
+          }
           style={[
             styles.timelinePanel,
             {
@@ -215,6 +221,7 @@ const DashboardScreen = () => {
       <NotificationPanel
         visible={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
+        panelWidth={panelWidth}
       />
     </View>
   );

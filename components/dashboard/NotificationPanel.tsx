@@ -125,11 +125,15 @@ const NotificationRow = ({
   </View>
 );
 
-type Props = { visible: boolean; onClose: () => void };
+type Props = { visible: boolean; onClose: () => void; panelWidth?: number };
 
-const NotificationPanel = ({ visible, onClose }: Props) => {
+const NotificationPanel = ({
+  visible,
+  onClose,
+  panelWidth: panelWidthProp,
+}: Props) => {
   const layout = useNotificationPanelResponsive();
-  const panelWidth = layout.panelWidth;
+  const panelWidth = panelWidthProp ?? layout.panelWidth;
   const [active, setActive] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [readIds, setReadIds] = useState<string[]>([]);

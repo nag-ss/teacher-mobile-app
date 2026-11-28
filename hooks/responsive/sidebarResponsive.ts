@@ -17,6 +17,7 @@ export const useSidebarResponsive = (): SidebarLayout => {
   const { width } = useWindowDimensions();
 
   return useMemo(() => {
+    // Vertical padding mirrors homeResponsive so Home tab can align with Live card.
     if (width < 480) {
       return {
         isCompact: true,
@@ -25,7 +26,7 @@ export const useSidebarResponsive = (): SidebarLayout => {
         menuItemWidth: 48,
         logoSize: 40,
         avatarSize: 40,
-        paddingTop: 12,
+        paddingTop: 16,
         paddingBottom: 16,
         showLabels: false,
       };
@@ -39,8 +40,8 @@ export const useSidebarResponsive = (): SidebarLayout => {
         menuItemWidth: 72,
         logoSize: 44,
         avatarSize: 44,
-        paddingTop: 14,
-        paddingBottom: 20,
+        paddingTop: 20,
+        paddingBottom: 16,
         showLabels: true,
       };
     }
@@ -52,7 +53,7 @@ export const useSidebarResponsive = (): SidebarLayout => {
       menuItemWidth: 88,
       logoSize: 48,
       avatarSize: 48,
-      paddingTop: 16,
+      paddingTop: 24,
       paddingBottom: 24,
       showLabels: true,
     };
