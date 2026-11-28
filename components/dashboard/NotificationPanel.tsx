@@ -51,7 +51,7 @@ type RowProps = {
   expanded: boolean;
   onToggle: () => void;
   onMarkRead: () => void;
-  itemPaddingHorizontal: number;
+  paddingHorizontal: number;
   iconBoxSize: number;
 };
 
@@ -60,13 +60,13 @@ const NotificationRow = ({
   expanded,
   onToggle,
   onMarkRead,
-  itemPaddingHorizontal,
+  paddingHorizontal,
   iconBoxSize,
 }: RowProps) => (
   <View>
     <NotificationSwipeRow unread={item.unread} onMarkRead={onMarkRead}>
       {(dotStyle) => (
-        <View style={[styles.item, { paddingHorizontal: itemPaddingHorizontal }]}>
+        <View style={[styles.item, { paddingHorizontal }]}>
           <View style={styles.leading}>
             {item.unread ? <Animated.View style={[styles.unreadDot, dotStyle]} /> : null}
             <View
@@ -269,7 +269,7 @@ const NotificationPanel = ({
                         expanded={expandedId === item.id}
                         onToggle={() => toggle(item.id)}
                         onMarkRead={() => markRead(item.id)}
-                        itemPaddingHorizontal={layout.itemPaddingHorizontal}
+                        paddingHorizontal={layout.paddingHorizontal}
                         iconBoxSize={layout.iconBoxSize}
                       />
                     </View>

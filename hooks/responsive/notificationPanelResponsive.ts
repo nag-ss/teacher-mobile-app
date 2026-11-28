@@ -2,12 +2,10 @@ import { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 
 export type NotificationPanelLayout = {
+  /** Fallback when home has not measured timeline width yet. */
   panelWidth: number;
   paddingHorizontal: number;
-  headerPaddingTop: number;
   headerPaddingBottom: number;
-  titleSize: number;
-  itemPaddingHorizontal: number;
   iconBoxSize: number;
 };
 
@@ -19,10 +17,7 @@ export const useNotificationPanelResponsive = (): NotificationPanelLayout => {
       return {
         panelWidth: Math.min(width, 360),
         paddingHorizontal: 16,
-        headerPaddingTop: 14,
         headerPaddingBottom: 16,
-        titleSize: 18,
-        itemPaddingHorizontal: 16,
         iconBoxSize: 40,
       };
     }
@@ -31,10 +26,7 @@ export const useNotificationPanelResponsive = (): NotificationPanelLayout => {
       return {
         panelWidth: Math.min(420, Math.round(width * 0.72)),
         paddingHorizontal: 20,
-        headerPaddingTop: 16,
         headerPaddingBottom: 18,
-        titleSize: 18,
-        itemPaddingHorizontal: 20,
         iconBoxSize: 42,
       };
     }
@@ -42,10 +34,7 @@ export const useNotificationPanelResponsive = (): NotificationPanelLayout => {
     return {
       panelWidth: 500,
       paddingHorizontal: 24,
-      headerPaddingTop: 18,
       headerPaddingBottom: 20,
-      titleSize: 20,
-      itemPaddingHorizontal: 24,
       iconBoxSize: 44,
     };
   }, [width]);

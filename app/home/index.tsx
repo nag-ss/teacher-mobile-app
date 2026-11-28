@@ -174,7 +174,7 @@ const DashboardScreen = () => {
         <View
           onLayout={(e) =>
             setPanelWidth(
-              Math.round(e.nativeEvent.layout.width) + layout.paddingRight
+              Math.round(e.nativeEvent.layout.width) + layout.paddingHorizontal
             )
           }
           style={[
@@ -201,8 +201,7 @@ const DashboardScreen = () => {
         {
           paddingTop: layout.paddingTop,
           paddingBottom: layout.paddingBottom,
-          paddingLeft: layout.paddingHorizontal,
-          paddingRight: layout.paddingRight,
+          paddingHorizontal: layout.paddingHorizontal,
         },
       ]}
     >

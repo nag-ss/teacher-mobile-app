@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 
 export type TimelineLayout = {
-  isCompact: boolean;
   timeGutter: number;
   eventsLeft: number;
   dayLabelWidth: number;
@@ -17,7 +16,6 @@ export const useTimelineResponsive = (): TimelineLayout => {
   return useMemo(() => {
     if (width < 480) {
       return {
-        isCompact: true,
         timeGutter: 48,
         eventsLeft: 44,
         dayLabelWidth: 84,
@@ -29,7 +27,6 @@ export const useTimelineResponsive = (): TimelineLayout => {
 
     if (width < 900) {
       return {
-        isCompact: true,
         timeGutter: 54,
         eventsLeft: 50,
         dayLabelWidth: 96,
@@ -40,7 +37,6 @@ export const useTimelineResponsive = (): TimelineLayout => {
     }
 
     return {
-      isCompact: false,
       timeGutter: 62,
       eventsLeft: 44,
       dayLabelWidth: 104,
